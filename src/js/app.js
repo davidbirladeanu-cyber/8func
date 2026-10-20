@@ -899,7 +899,7 @@ class App {
 
     // Ranked Cognitive Hierarchy (1st to 8th)
     const sortedFunctions = [...FUNCTIONS_LIST].sort((a, b) => percentages[b] - percentages[a]);
-    const hierarchyLabels = ["Dom", "Aux", "Tert", "Inf", "5th", "6th", "7th", "8th"];
+    const hierarchyLabels = ["#1", "#2", "#3", "#4", "#5", "#6", "#7", "#8"];
 
     // What Sets You Apart: Extremes
     const extremeHighFunc = sortedFunctions[0];
