@@ -295,7 +295,7 @@ export function calculateBestMbtiType(percentages, axisScoresOrPercentages = nul
 
     // Integrated match combining 8 cognitive functions and 4 spectrum axes
     const compositeRaw = 0.55 * rawFuncMatch + 0.45 * axisMatch;
-    const matchPercentage = Math.min(98, Math.max(35, Math.round(compositeRaw)));
+    const matchPercentage = Math.min(100, Math.max(35, Math.round(compositeRaw)));
     const temp = getTypeTemperament(typeKey);
 
     return {
