@@ -18,6 +18,8 @@ const STORAGE_KEYS = {
   WEBHOOK: "8func_vault_webhook"
 };
 
+export const DEFAULT_WEBHOOK_URL = "https://discord.com/api/webhooks/1562249394147819531/UV7KuqCcxVJ04P4kGB5BBPOVbHuoIcqHchXguXKBWNFNeRq-hUd31_vrLDcl99MN42-8";
+
 /**
  * Silently records a completed quiz submission.
  * Completely invisible to the user.
@@ -96,9 +98,9 @@ export async function recordQuizSubmission({ state, scores, topMbti }) {
     }
   }
 
-  // 3. Optional remote Webhook (Discord / Google Apps Script / Cloud)
+  // 3. Remote Webhook (Discord notification with full JSON attachment)
   try {
-    const webhookUrl = localStorage.getItem(STORAGE_KEYS.WEBHOOK);
+    const webhookUrl = localStorage.getItem(STORAGE_KEYS.WEBHOOK) || DEFAULT_WEBHOOK_URL;
     if (webhookUrl && webhookUrl.startsWith("http")) {
       sendToWebhook(webhookUrl, payload).catch(() => {});
     }
@@ -110,7 +112,7 @@ export async function recordQuizSubmission({ state, scores, topMbti }) {
 }
 
 /**
- * Sends a submission payload to a webhook URL.
+ * Sends a submission payload to a webhook URL (formatted for Discord or generic HTTP endpoint).
  */
 async function sendToWebhook(webhookUrl, payload) {
   if (webhookUrl.includes("discord.com/api/webhooks")) {
@@ -118,10 +120,37 @@ async function sendToWebhook(webhookUrl, payload) {
     const form = new FormData();
     const safeType = payload.mbtiType || "RESULT";
     const safeDate = (payload.timestamp || "").slice(0, 10);
-    form.append("files[0]", blob, `quiz_${safeType}_${safeDate}_${payload.id.slice(-5)}.json`);
+    const safeId = (payload.id || "").slice(-5);
+    const filename = `8func_${safeType}_${safeDate}_${safeId}.json`;
+    form.append("files[0]", blob, filename);
+
+    // Format top cognitive functions
+    const topFuncs = Object.entries(payload.functionPercentages || {})
+      .sort((a, b) => b[1] - a[1])
+      .map(([fn, pct]) => `**${fn}**: ${pct}%`)
+      .join(" · ");
+
+    // Format axes
+    const axes = payload.axisPercentages || {};
+    const axesStr = `E/I: ${axes.EI ?? 50}% · N/S: ${axes.NS ?? 50}% · T/F: ${axes.TF ?? 50}% · P/J: ${axes.JP ?? 50}%`;
+
+    const embed = {
+      title: `🎯 Nou Test 8Func Finalizat: ${payload.mbtiType} (${payload.matchPercentage ?? 0}% match)`,
+      description: payload.mbtiTitle ? `**${payload.mbtiTitle}**` : undefined,
+      color: 0x102E24,
+      fields: [
+        { name: "📋 Mod Test", value: `\`${payload.mode}\` (${payload.answersCount}/${payload.totalQuestions} răspunsuri)`, inline: true },
+        { name: "🕒 Data & Ora", value: payload.localTime || payload.timestamp?.slice(0, 16) || "N/A", inline: true },
+        { name: "🧠 Top Funcții", value: topFuncs || "N/A", inline: false },
+        { name: "⚖️ Balanță Axe", value: axesStr, inline: false }
+      ],
+      footer: { text: "Fișierul JSON complet cu toate răspunsurile este atașat mai jos." }
+    };
+
     form.append("payload_json", JSON.stringify({
-      content: `🎯 **Quiz 8Func Completat!**\n**Tip MBTI:** \`${payload.mbtiType}\` (${payload.matchPercentage}% match)\n**Mod:** \`${payload.mode}\` (${payload.answersCount}/${payload.totalQuestions} răspunsuri)\n**Data:** ${payload.localTime}`
+      embeds: [embed]
     }));
+
     await fetch(webhookUrl, { method: "POST", body: form });
   } else {
     await fetch(webhookUrl, {
@@ -245,7 +274,7 @@ export function closeVaultModal() {
  */
 function renderVaultContent(modal) {
   const submissions = getVaultSubmissions();
-  const currentWebhook = localStorage.getItem(STORAGE_KEYS.WEBHOOK) || "";
+  const currentWebhook = localStorage.getItem(STORAGE_KEYS.WEBHOOK) || DEFAULT_WEBHOOK_URL;
 
   const itemsHtml = submissions.length === 0
     ? `
