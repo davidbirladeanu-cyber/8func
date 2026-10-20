@@ -257,21 +257,21 @@ test("Would You Rather scoring: Option selection contributes +1 directly to targ
 });
 
 // ----------------------------------------------------
-// 5. Cognitive Functions Normalization Formula (with Contrast Gain)
+// 5. Cognitive Functions Normalization Formula (Linear: no contrast gain)
 // ----------------------------------------------------
-test("Cognitive function normalization: functionPct with Contrast Gain (1.22)", () => {
+test("Cognitive function normalization: linear scale — SD=0%, Neutral=50%, SA=100%", () => {
   const mockQuestions = [
     { id: "ne_1", category: "function", target: "Ne", oppositePole: "Si", agreementPole: "Ne" },
     { id: "ne_2", category: "function", target: "Ne", oppositePole: "Si", agreementPole: "Ne" }
   ];
 
-  // Case 1: Strongly Agree (1.0) and Agree (0.5) -> mean = 0.75 -> boosted = 0.915 -> 95.75% -> round 96%
+  // Case 1: Strongly Agree (1.0) + Agree (0.5) -> mean = 0.75 -> (0.75+1)/2*100 = 87.5% -> round 88%
   const res1 = calculateScores(mockQuestions, {
     ne_1: "STRONGLY_AGREE",
     ne_2: "AGREE"
   });
-  assert.strictEqual(res1.percentages.Ne, 96);
-  assert.strictEqual(res1.precisePercentages.Ne, 95.75);
+  assert.strictEqual(res1.percentages.Ne, 88);
+  assert.strictEqual(res1.precisePercentages.Ne, 87.5);
 
   // Case 2: Neutral (0.0) -> mean = 0.0 -> 50%
   const res2 = calculateScores(mockQuestions, {
@@ -286,6 +286,14 @@ test("Cognitive function normalization: functionPct with Contrast Gain (1.22)", 
     ne_2: "STRONGLY_DISAGREE"
   });
   assert.strictEqual(res3.percentages.Ne, 0);
+
+  // Case 4: AGREE only -> mean = 0.5 -> (0.5+1)/2*100 = 75%
+  const res4 = calculateScores([mockQuestions[0]], { ne_1: "AGREE" });
+  assert.strictEqual(res4.percentages.Ne, 75);
+
+  // Case 5: DISAGREE only -> mean = -0.5 -> (-0.5+1)/2*100 = 25%
+  const res5 = calculateScores([mockQuestions[0]], { ne_1: "DISAGREE" });
+  assert.strictEqual(res5.percentages.Ne, 25);
 });
 
 // ----------------------------------------------------
@@ -454,8 +462,9 @@ test("Integrated Personality Match: calculateBestMbtiType integrates 8 cognitive
 
   assert.ok(rankings.length === 16, "Must rank all 16 types");
   assert.strictEqual(rankings[0].type, "INTJ", "Top match must be INTJ");
-  assert.ok(rankings[0].matchPercentage >= 75, `INTJ match (${rankings[0].matchPercentage}%) should be >= 75%`);
+  assert.ok(rankings[0].matchPercentage >= 80, `INTJ match (${rankings[0].matchPercentage}%) should be >= 80%`);
   assert.ok(rankings[0].axisMatch >= 75, `INTJ axis match (${rankings[0].axisMatch}%) should be >= 75%`);
+  assert.ok(rankings[0].functionMatch >= 80, `INTJ rank-based stack score (${rankings[0].functionMatch}%) should be >= 80%`);
 
   const esfpMatch = rankings.find(r => r.type === "ESFP");
   assert.ok(esfpMatch.matchPercentage < rankings[0].matchPercentage, "ESFP match must be lower than INTJ");
@@ -636,22 +645,22 @@ test("Axis scoring weights: exactly 70% from direct axis questions and 30% from 
   const mockQuestions = [
     // 1 direct EI question (answering Strongly Agree for E)
     { id: "direct_ei", category: "axis", dimension: "EI", agreementPole: "E", oppositePole: "I" },
-    // Function questions setting Ni to 100% and Ne to 25% (I template favored)
+    // Function questions: Ni at 100% (I favoured), Ne at 25% (E slightly favoured via Ne)
     { id: "func_ni", category: "function", target: "Ni", agreementPole: "Ni" },
     { id: "func_ne", category: "function", target: "Ne", agreementPole: "Ne" }
   ];
 
+  // Linear scale: Ne=25% needs mean = 25/100*2-1 = -0.5 -> DISAGREE
   const answers = {
-    direct_ei: 1.0,     // Direct E vote -> directPctE = 100%
-    func_ni: 1.0,       // Ni = 100%
-    func_ne: -0.409836  // Ne scaled to ~25% ((-0.409836 * 1.22 + 1) / 2 * 100 ≈ 25%)
+    direct_ei: 1.0,      // Direct E vote -> directPctE = 100%
+    func_ni: 1.0,        // Ni = 100%
+    func_ne: -0.5        // Ne = 25% (DISAGREE)
   };
 
   const res = calculateScores(mockQuestions, answers);
   assert.strictEqual(res.axisScores.EI.directPctA, 100, "Direct E percentage should be 100%");
-  
-  // Direct E is 100%, Function E is lower than 50%
-  // Final E should be 0.70 * directPctA + 0.30 * funcPctA
+
+  // Final E = 0.70 * directPctA + 0.30 * funcPctA
   const expectedCombinedE = Math.round(0.70 * res.axisScores.EI.directPctA + 0.30 * res.axisScores.EI.funcPctA);
   assert.strictEqual(res.axisScores.EI.roundA, expectedCombinedE);
   assert.ok(res.axisScores.EI.roundA >= 70, "E should be at least 70% due to 70% direct axis weight");

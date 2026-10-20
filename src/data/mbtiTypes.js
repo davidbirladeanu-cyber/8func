@@ -262,23 +262,43 @@ export function getAxisPercentagesForMatching(percentages = {}, axisScoresOrPerc
 export function calculateBestMbtiType(percentages, axisScoresOrPercentages = null) {
   const axisPcts = getAxisPercentagesForMatching(percentages, axisScoresOrPercentages);
 
+  // -------------------------------------------------------------------
+  // Rank-Based Function Stack Matching
+  // -------------------------------------------------------------------
+  // Step 1: Rank the user's 8 functions by score (rank 1 = highest score).
+  // Step 2: For each MBTI type, compare the user's function ranking against
+  //         the type's theoretical function ranking (stack[0-3] + shadow[0-3]).
+  // Step 3: Score = position-weighted match. Top positions matter most.
+  //         A 1-position swap near the top costs much more than one at the bottom.
+  // -------------------------------------------------------------------
+  const ALL_FUNCS_ORDERED = ["Ne", "Ni", "Se", "Si", "Te", "Ti", "Fe", "Fi"];
+
+  // Build user's rank map: f -> rank (1-indexed, 1 = highest percentage)
+  const funcScoresSorted = ALL_FUNCS_ORDERED
+    .map(f => ({ f, score: percentages[f] ?? 50 }))
+    .sort((a, b) => b.score - a.score);
+
+  const userRankMap = {};
+  funcScoresSorted.forEach((item, idx) => { userRankMap[item.f] = idx + 1; });
+
+  // Position weights: dominant is critical, shadow functions penalise minimally
+  const POSITION_WEIGHTS = [5, 4, 2, 1, 0.5, 0.5, 0.25, 0.25]; // sum = 13.5
+  const W_TOTAL = POSITION_WEIGHTS.reduce((a, b) => a + b, 0);
+
   const scores = Object.entries(MBTI_TYPES).map(([typeKey, typeData]) => {
-    // 1. Cognitive Function Stack Score (Grant-Brownsword + PolR/Trickster differential)
-    const pDom = percentages[typeData.stack[0]] ?? 50;
-    const pAux = percentages[typeData.stack[1]] ?? 50;
-    const pTert = percentages[typeData.stack[2]] ?? 50;
-    const pInf = percentages[typeData.stack[3]] ?? 50;
-    const pPolR = percentages[typeData.shadow[2]] ?? 50; // 7th function (Trickster / PolR)
+    // Full 8-function order for this type: dom(1) -> aux(2) -> tert(3) -> inf(4) -> shadows(5-8)
+    const typeOrder = [...typeData.stack, ...typeData.shadow];
 
-    const stackScore = (
-      4.0 * pDom +
-      3.0 * pAux +
-      1.5 * pTert +
-      0.5 * (100 - pInf) +
-      1.0 * (100 - pPolR)
-    ) / 10.0;
+    let rankScore = 0;
+    typeOrder.forEach((funcName, idx) => {
+      const typeRank = idx + 1;                        // where this function sits in the type's ideal stack
+      const userRank = userRankMap[funcName] ?? 8;     // where the user placed this function
+      const rankDiff = Math.abs(userRank - typeRank);
+      rankScore += POSITION_WEIGHTS[idx] * (1 - rankDiff / 7);
+    });
+    const rankScorePct = Math.max(0, Math.min(100, (rankScore / W_TOTAL) * 100));
 
-    // 2. Axis alignment across the 4 letters of the type
+    // Axis alignment (how strongly the 4 MBTI letters are favoured)
     const letters = typeKey.split("");
     const axisMatch = (
       (axisPcts[letters[0]] ?? 50) +
@@ -287,8 +307,8 @@ export function calculateBestMbtiType(percentages, axisScoresOrPercentages = nul
       (axisPcts[letters[3]] ?? 50)
     ) / 4.0;
 
-    // 3. Composite match percentage
-    const compositeRaw = 0.60 * stackScore + 0.40 * axisMatch;
+    // Composite: 60% rank-based stack coherence + 40% axis alignment
+    const compositeRaw = 0.60 * rankScorePct + 0.40 * axisMatch;
     const matchPercentage = Math.min(100, Math.max(30, Math.round(compositeRaw)));
     const temp = getTypeTemperament(typeKey);
 
@@ -300,7 +320,7 @@ export function calculateBestMbtiType(percentages, axisScoresOrPercentages = nul
       temperamentColor: temp.color,
       temperamentBg: temp.colorBg,
       temperamentBorder: temp.colorBorder,
-      functionMatch: Math.round(stackScore),
+      functionMatch: Math.round(rankScorePct),
       axisMatch: Math.round(axisMatch),
       matchPercentage
     };
@@ -309,5 +329,7 @@ export function calculateBestMbtiType(percentages, axisScoresOrPercentages = nul
   scores.sort((a, b) => b.matchPercentage - a.matchPercentage);
   return scores;
 }
+
+
 
 

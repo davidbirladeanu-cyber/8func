@@ -139,11 +139,13 @@ export const AXIS_FUNCTION_MAP = {
   }
 };
 
-export const CONTRAST_GAIN = 1.22;
-
+/**
+ * Linear normalization: maps raw mean in [-1, +1] to percentage in [0, 100].
+ * Strongly Disagree (-1) → 0%, Neutral (0) → 50%, Strongly Agree (+1) → 100%.
+ * No contrast gain — every question contributes equally and the scale is transparent.
+ */
 export function meanToPercent(mean) {
-  const boosted = Math.max(-1.0, Math.min(1.0, mean * CONTRAST_GAIN));
-  return ((boosted + 1.0) / 2.0) * 100.0;
+  return Math.max(0.0, Math.min(100.0, ((mean + 1.0) / 2.0) * 100.0));
 }
 
 /**
@@ -182,7 +184,7 @@ export function calculateScores(questions, answers) {
     if (ansKey === undefined || ansKey === null) return;
     answeredCount++;
 
-    const baseWeight = q.id.startsWith("D") ? 1.5 : q.id.startsWith("F") ? 2.0 : (q.weight || 1.0);
+    const baseWeight = 1.0; // Every question contributes equally regardless of format
 
     let val = 0;
     let targetPole = null;
