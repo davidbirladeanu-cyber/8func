@@ -136,10 +136,20 @@ export const AXIS_FUNCTION_MAP = {
   }
 };
 
+export function isInvertedPair(f1, f2) {
+  if (!f1 || !f2) return false;
+  const b1 = f1[0];
+  const b2 = f2[0];
+  const a1 = f1[1];
+  const a2 = f2[1];
+  return b1 === b2 && ((a1 === "e" && a2 === "i") || (a1 === "i" && a2 === "e"));
+}
+
 /**
  * Calculates axis dichotomy scores and 8 cognitive functions via a pure cumulative model.
  * Every question answered casts its exact points and weights directly into the totals.
- * No arbitrary 70%/30% percentage blending is used.
+ * Deductions between opposing functions happen ONLY on inverted pairs ('e' vs 'i' of the same letter: Te/Ti, Ne/Ni, Se/Si, Fe/Fi).
+ * An Ne/Si question does NOT decrease Si when Ne is chosen.
  * 
  * @param {Array} questions - Active questions list
  * @param {Object} answers - Map { [questionId]: "STRONGLY_AGREE" | "AGREE" | ... }
@@ -154,12 +164,10 @@ export function calculateScores(questions, answers) {
   const functionSums = {};
   const functionWeights = {};
   const functionDirectPoints = {};
-  const functionAxisPoints = {};
   FUNCTIONS_LIST.forEach(f => {
     functionSums[f] = 0;
     functionWeights[f] = 0;
     functionDirectPoints[f] = 0;
-    functionAxisPoints[f] = 0;
   });
 
   // Cumulative sums and weights for the 4 MBTI Spectrum axes
@@ -195,21 +203,6 @@ export function calculateScores(questions, answers) {
         axisWeights[dimId] += weight;
         if (signedVal > 0) axisDirectPoints[dim.poleA] += Math.abs(signedVal);
         else axisDirectPoints[dim.poleB] += Math.abs(signedVal);
-
-        // Ripple to associated cognitive functions
-        const fMap = AXIS_FUNCTION_MAP[dimId];
-        if (fMap) {
-          fMap.posFuncs.forEach(f => {
-            functionSums[f] += signedVal;
-            functionWeights[f] += weight;
-            functionAxisPoints[f] += signedVal;
-          });
-          fMap.negFuncs.forEach(f => {
-            functionSums[f] -= signedVal;
-            functionWeights[f] += weight;
-            functionAxisPoints[f] -= signedVal;
-          });
-        }
       } else if (q.category === "function") {
         const fTarget = targetPole;
         const unselected = (q.options || []).find(o => o.id !== ansKey);
@@ -220,8 +213,9 @@ export function calculateScores(questions, answers) {
         functionWeights[fTarget] += weight;
         functionDirectPoints[fTarget] += 1.0 * weight;
 
-        // Bipolar deduction: opposing function receives negative points
-        if (fOpp && functionSums[fOpp] !== undefined) {
+        // Bipolar deduction: ONLY decrease opposing function if it is an inverted pair (e vs i: Te/Ti, Ne/Ni, Se/Si, Fe/Fi)
+        // If it's Ne/Si, Ni/Se, Te/Fi, Ti/Fe, DO NOT decrease the opposing function!
+        if (fOpp && isInvertedPair(fTarget, fOpp) && functionSums[fOpp] !== undefined) {
           functionSums[fOpp] -= 1.0 * weight;
           functionWeights[fOpp] += weight;
           functionDirectPoints[fOpp] -= 1.0 * weight;
@@ -263,21 +257,6 @@ export function calculateScores(questions, answers) {
       axisWeights[dimId] += weight;
       if (signedVal > 0) axisDirectPoints[dim.poleA] += Math.abs(signedVal);
       else if (signedVal < 0) axisDirectPoints[dim.poleB] += Math.abs(signedVal);
-
-      // Ripple to associated cognitive functions
-      const fMap = AXIS_FUNCTION_MAP[dimId];
-      if (fMap) {
-        fMap.posFuncs.forEach(f => {
-          functionSums[f] += signedVal;
-          functionWeights[f] += weight;
-          functionAxisPoints[f] += signedVal;
-        });
-        fMap.negFuncs.forEach(f => {
-          functionSums[f] -= signedVal;
-          functionWeights[f] += weight;
-          functionAxisPoints[f] -= signedVal;
-        });
-      }
     } else if (q.category === "function" || q.functionId || q.target) {
       const fTarget = q.target || q.functionId || q.agreementPole;
       const fOpp = q.oppositePole || q.opposite;
@@ -289,8 +268,9 @@ export function calculateScores(questions, answers) {
         functionDirectPoints[fTarget] += val * weight;
       }
 
-      // Bipolar deduction: opposing function receives inverse signed value
-      if (fOpp && functionSums[fOpp] !== undefined) {
+      // Bipolar deduction: ONLY decrease opposing function if it is an inverted pair (e vs i: Te/Ti, Ne/Ni, Se/Si, Fe/Fi)
+      // If it's Ne/Si, Ni/Se, Te/Fi, Ti/Fe, DO NOT decrease the opposing function!
+      if (fOpp && isInvertedPair(fTarget, fOpp) && functionSums[fOpp] !== undefined) {
         functionSums[fOpp] -= val * weight;
         functionWeights[fOpp] += weight;
         functionDirectPoints[fOpp] -= val * weight;
@@ -418,7 +398,6 @@ export function calculateScores(questions, answers) {
     functionSums,
     functionWeights,
     functionDirectPoints,
-    functionAxisPoints,
     percentages,
     precisePercentages,
     insufficientData,

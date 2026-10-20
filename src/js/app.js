@@ -1321,12 +1321,6 @@ class App {
                     <span class="e-tag e-tag-solid" style="background: ${topMbti.temperamentBg}; color: ${topMbti.temperamentColor}; border: 1px solid ${topMbti.temperamentBorder}; font-weight: 800;">
                       ${topMbti.temperament} · ${topMbti.temperamentName}
                     </span>
-                    ${isCloseMatch ? `
-                      <span class="e-tag" style="background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.4); color: var(--text-strong); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem;">
-                        <span>⚖️</span>
-                        <span>${lang === 'ro' ? `Profil mixt / Frontieră (Δ ≤ 3% față de ${otherMbtis[0].type})` : `Borderline / Mixed Profile (Δ ≤ 3% vs ${otherMbtis[0].type})`}</span>
-                      </span>
-                    ` : ""}
                   </div>
                   <h2>${topMbti.title} <span style="color: ${topMbti.temperamentColor};">(${topMbti.type})</span></h2>
                 </div>

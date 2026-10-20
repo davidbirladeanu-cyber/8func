@@ -313,15 +313,7 @@ export function calculateBestMbtiType(percentages, axisScoresOrPercentages = nul
   });
 
   scores.sort((a, b) => b.matchPercentage - a.matchPercentage);
-
-  // If top 2 types have a difference <= 3%, flag as Borderline / Mixed Profile
-  const isBorderline = scores.length >= 2 && (scores[0].matchPercentage - scores[1].matchPercentage <= 3);
-  if (isBorderline) {
-    scores[0].isBorderline = true;
-    scores[0].borderlineType = scores[1].type;
-    scores[0].borderlineDiff = scores[0].matchPercentage - scores[1].matchPercentage;
-  }
-
   return scores;
 }
+
 

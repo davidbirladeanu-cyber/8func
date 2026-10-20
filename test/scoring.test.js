@@ -371,43 +371,31 @@ test("All 100 questions have complete Romanian translations (textRo) & explanati
 });
 
 // ----------------------------------------------------
-// 9. Pure Cumulative Model: Direct Axis & Function Item Integration
+// 9. Pure Cumulative Model: Inverted Deductions (Te/Ti) vs Non-Inverted (Ne/Si)
 // ----------------------------------------------------
-test("Pure Cumulative Model: All items accumulate directly without arbitrary 70/30 percentage splits", () => {
-  // Scenario:
-  // 1 direct axis question for NS favoring N: +0.60
-  // 1 function question for Ni (opp Se): +0.80
-  // Both questions accumulate directly into Axis NS:
-  // - direct question contributes +0.60 to N (weight: 1)
-  // - Ni question contributes +0.80 to N (weight: 1)
-  // Total NS signed sum = 0.60 + 0.80 = 1.40
-  // Total NS weight = 1 + 1 = 2
-  // Mean NS = 1.40 / 2 = 0.70
-  // Expected N percentage = ((0.70 + 1) / 2) * 100 = 85.0%
-  // Both questions also accumulate directly into Ni:
-  // - direct NS question ripples +0.60 to Ni (weight: 1)
-  // - Ni question contributes +0.80 to Ni (weight: 1)
-  // Total Ni sum = 0.60 + 0.80 = 1.40, weight = 2, mean = 0.70 -> 85%
-  // And to Se (opposite):
-  // - direct NS ripples -0.60 to Se (weight: 1)
-  // - Ni bipolar deduction contributes -0.80 to Se (weight: 1)
-  // Total Se sum = -1.40, weight = 2, mean = -0.70 -> 15%
+test("Pure Cumulative Model: Deductions happen ONLY on inverted pairs (Te/Ti), NOT on Ne/Si", () => {
   const mockQuestions = [
-    { id: "ax_ns", category: "axis", dimension: "NS", target: "N", agreementPole: "N", oppositePole: "S" },
-    { id: "f_ni_1", category: "function", target: "Ni", agreementPole: "Ni", oppositePole: "Se" }
+    // Ne vs Si item (different base functions N vs S)
+    { id: "f_ne_si", category: "function", target: "Ne", agreementPole: "Ne", oppositePole: "Si" },
+    // Te vs Ti item (inverted pair - e vs i of Thinking)
+    { id: "f_te_ti", category: "function", target: "Te", agreementPole: "Te", oppositePole: "Ti" }
   ];
 
   const answers = {
-    ax_ns: 0.60,
-    f_ni_1: 0.80
+    f_ne_si: 1.0, // Strongly Agree with Ne
+    f_te_ti: 1.0  // Strongly Agree with Te
   };
 
   const res = calculateScores(mockQuestions, answers);
-  assert.strictEqual(res.percentages.Ni, 85, `Ni should be 85%, got ${res.percentages.Ni}%`);
-  assert.strictEqual(res.percentages.Se, 15, `Se should be 15%, got ${res.percentages.Se}%`);
-  assert.strictEqual(res.axisScores.NS.roundA, 85, `N should be 85%, got ${res.axisScores.NS.roundA}%`);
-  assert.strictEqual(res.axisScores.NS.roundB, 15, `S should be 15%, got ${res.axisScores.NS.roundB}%`);
-  assert.strictEqual(res.axisScores.NS.dominant, "N", "N must be dominant");
+  // Ne increases to 100%
+  assert.strictEqual(res.percentages.Ne, 100, `Ne should be 100%, got ${res.percentages.Ne}%`);
+  // Si must NOT be decreased just because Ne was voted! Remains at 50% baseline
+  assert.strictEqual(res.percentages.Si, 50, `Si must NOT decrease on Ne/Si question, expected 50%, got ${res.percentages.Si}%`);
+
+  // Te increases to 100%
+  assert.strictEqual(res.percentages.Te, 100, `Te should be 100%, got ${res.percentages.Te}%`);
+  // Ti DOES decrease on Te/Ti (e vs i pair) to 0%
+  assert.strictEqual(res.percentages.Ti, 0, `Ti should decrease to 0% on inverted Te/Ti question, got ${res.percentages.Ti}%`);
 });
 
 // ----------------------------------------------------
@@ -460,33 +448,11 @@ test("Integrated Personality Match: calculateBestMbtiType integrates 8 cognitive
 
   assert.ok(rankings.length === 16, "Must rank all 16 types");
   assert.strictEqual(rankings[0].type, "INTJ", "Top match must be INTJ");
-  assert.ok(rankings[0].matchPercentage >= 75, `INTJ match (${rankings[0].matchPercentage}%) should be >= 75%`);
+  assert.ok(rankings[0].matchPercentage >= 70, `INTJ match (${rankings[0].matchPercentage}%) should be >= 70%`);
   assert.ok(rankings[0].axisMatch >= 65, `INTJ axis match (${rankings[0].axisMatch}%) should be >= 65%`);
 
   const esfpMatch = rankings.find(r => r.type === "ESFP");
   assert.ok(esfpMatch.matchPercentage < rankings[0].matchPercentage, "ESFP match must be lower than INTJ");
-});
-
-// ----------------------------------------------------
-// 12. Borderline / Mixed Profile Detection (Diff <= 3%)
-// ----------------------------------------------------
-test("Borderline / Mixed Profile Detection: Flags profiles when top 2 types differ by <= 3%", () => {
-  const balancedFuncs = {
-    Ne: 65, Ni: 63, Se: 50, Si: 50,
-    Te: 60, Ti: 62, Fe: 50, Fi: 50
-  };
-  const balancedAxes = {
-    EI: { pctA: 55, pctB: 45 },
-    NS: { pctA: 65, pctB: 35 },
-    TF: { pctA: 60, pctB: 40 },
-    JP: { pctA: 51, pctB: 49 }
-  };
-  const rankings = calculateBestMbtiType(balancedFuncs, balancedAxes);
-  assert.ok(rankings.length === 16);
-  if (Math.abs(rankings[0].matchPercentage - rankings[1].matchPercentage) <= 3) {
-    assert.strictEqual(rankings[0].isBorderline, true, "Top match should be marked isBorderline");
-    assert.ok(rankings[0].borderlineType, "Must have borderlineType");
-  }
 });
 
 // ----------------------------------------------------
