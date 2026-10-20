@@ -1,0 +1,557 @@
+import assert from "node:assert";
+import { TEST_MODES, getQuestionsForMode, ALL_QUESTIONS, QUESTIONS_100, getQuestionText, getQuestionDescription, getQuestionExplanations } from "../src/data/questions.js";
+import { calculateScores, ANSWER_OPTIONS, ANSWER_VALUE_MAP, AXIS_DIMENSIONS, getAnswerOptions, buildResultsUrlPath, parseResultsUrlPath } from "../src/js/scoring.js";
+import { FUNCTIONS_LIST } from "../src/data/functions.js";
+import { MBTI_TYPES, getTypeTemperament, calculateBestMbtiType } from "../src/data/mbtiTypes.js";
+import { t } from "../src/data/translations.js";
+
+console.log("=========================================");
+console.log("Running 8Func Scoring System Test Suite (100 Questions)");
+console.log("=========================================\n");
+
+let passedTests = 0;
+function test(name, fn) {
+  try {
+    fn();
+    console.log(`✓ PASS: ${name}`);
+    passedTests++;
+  } catch (err) {
+    console.error(`✗ FAIL: ${name}`);
+    console.error(err);
+    process.exit(1);
+  }
+}
+
+// ----------------------------------------------------
+// 1. Test Configurations and Item Counts
+// ----------------------------------------------------
+test("Rapid/Fast test configuration (24 questions = 8 axis + 16 function)", () => {
+  const rapidQs = getQuestionsForMode("rapid");
+  assert.strictEqual(rapidQs.length, 24, "Rapid must have 24 questions");
+
+  const axisQs = rapidQs.filter(q => q.category === "axis");
+  const funcQs = rapidQs.filter(q => q.category === "function");
+  assert.strictEqual(axisQs.length, 8, "Rapid must have 8 axis questions");
+  assert.strictEqual(funcQs.length, 16, "Rapid must have 16 function questions");
+
+  // 2 axis questions per dimension
+  ["EI", "NS", "TF", "JP"].forEach(dim => {
+    const dimQs = axisQs.filter(q => q.dimension === dim);
+    assert.strictEqual(dimQs.length, 2, `Rapid dimension ${dim} must have 2 questions`);
+  });
+
+  // 2 function questions per function
+  FUNCTIONS_LIST.forEach(f => {
+    const fQs = funcQs.filter(q => q.target === f);
+    assert.strictEqual(fQs.length, 2, `Rapid function ${f} must have 2 questions`);
+  });
+});
+
+test("Standard test configuration (60 questions = 20 axis + 40 function)", () => {
+  const standardQs = getQuestionsForMode("standard");
+  assert.strictEqual(standardQs.length, 60, "Standard must have 60 questions");
+
+  const axisQs = standardQs.filter(q => q.category === "axis");
+  const funcQs = standardQs.filter(q => q.category === "function");
+  assert.strictEqual(axisQs.length, 20, "Standard must have 20 axis questions");
+  assert.strictEqual(funcQs.length, 40, "Standard must have 40 function questions");
+
+  // 5 axis questions per dimension
+  ["EI", "NS", "TF", "JP"].forEach(dim => {
+    const dimQs = axisQs.filter(q => q.dimension === dim);
+    assert.strictEqual(dimQs.length, 5, `Standard dimension ${dim} must have 5 questions`);
+  });
+
+  // 5 function questions per function
+  FUNCTIONS_LIST.forEach(f => {
+    const fQs = funcQs.filter(q => q.target === f);
+    assert.strictEqual(fQs.length, 5, `Standard function ${f} must have 5 questions`);
+  });
+});
+
+test("Complete test configuration (100 questions = 36 axis + 64 function)", () => {
+  const completeQs = getQuestionsForMode("complete");
+  assert.strictEqual(completeQs.length, 100, "Complete must have 100 questions");
+
+  const axisQs = completeQs.filter(q => q.category === "axis");
+  const funcQs = completeQs.filter(q => q.category === "function");
+  assert.strictEqual(axisQs.length, 36, "Complete must have 36 axis questions");
+  assert.strictEqual(funcQs.length, 64, "Complete must have 64 function questions");
+
+  // 9 axis questions per dimension
+  ["EI", "NS", "TF", "JP"].forEach(dim => {
+    const dimQs = axisQs.filter(q => q.dimension === dim);
+    assert.strictEqual(dimQs.length, 9, `Complete dimension ${dim} must have 9 questions`);
+  });
+
+  // 8 function questions per function
+  FUNCTIONS_LIST.forEach(f => {
+    const fQs = funcQs.filter(q => q.target === f);
+    assert.strictEqual(fQs.length, 8, `Complete function ${f} must have 8 questions`);
+  });
+
+  // Formats breakdown
+  const deepQs = completeQs.filter(q => q.format === "deep");
+  const wyrQs = completeQs.filter(q => q.format === "wouldYouRather");
+  const shortQs = completeQs.filter(q => q.format === "short");
+
+  assert.strictEqual(deepQs.length, 24, "Must have 24 Deep questions");
+  assert.strictEqual(wyrQs.length, 24, "Must have 24 Would You Rather questions");
+  assert.strictEqual(shortQs.length, 52, "Must have 52 Short questions");
+});
+
+test("Question metadata integrity & distinct texts across all 100 questions", () => {
+  assert.strictEqual(ALL_QUESTIONS.length, 100, "Total pool must contain 100 questions");
+  const ids = new Set();
+  const texts = new Set();
+
+  ALL_QUESTIONS.forEach(q => {
+    assert.ok(q.id, "Question must have an id");
+    assert.ok(!ids.has(q.id), `Duplicate question id: ${q.id}`);
+    ids.add(q.id);
+
+    assert.ok(q.text && q.text.trim().length > 5, `Question ${q.id} has invalid text`);
+    assert.ok(!texts.has(q.text), `Duplicate question text found: "${q.text}"`);
+    texts.add(q.text);
+
+    assert.ok(["axis", "function"].includes(q.category), `Invalid category for ${q.id}: ${q.category}`);
+    assert.ok(["deep", "wouldYouRather", "short"].includes(q.format), `Invalid format for ${q.id}: ${q.format}`);
+    assert.ok(q.target, `Question ${q.id} must define target`);
+
+    // Description & bilingual support
+    assert.ok(q.description && q.description.trim().length > 5, `Question ${q.id} must have description`);
+    assert.ok(q.descriptionRo && q.descriptionRo.trim().length > 5, `Question ${q.id} must have descriptionRo`);
+
+    if (q.format === "wouldYouRather") {
+      assert.ok(Array.isArray(q.options) && q.options.length === 2, `WYR ${q.id} must have 2 options`);
+      q.options.forEach(opt => {
+        assert.ok(["A", "B"].includes(opt.id), `Option id must be A or B`);
+        assert.ok(opt.text && opt.text.trim().length > 2, `Option text missing`);
+        assert.ok(opt.textRo && opt.textRo.trim().length > 2, `Option textRo missing`);
+        assert.ok(opt.pole, `Option pole missing`);
+        assert.ok(opt.explanation && opt.explanation.trim().length > 5, `Option explanation missing`);
+        assert.ok(opt.explanationRo && opt.explanationRo.trim().length > 5, `Option explanationRo missing`);
+      });
+    } else {
+      assert.ok(q.oppositePole || q.opposite, `Agreement question ${q.id} must define oppositePole`);
+      assert.ok(q.agreementPole, `Agreement question ${q.id} must define agreementPole`);
+      assert.ok(q.agreementExplanation, `Agreement question ${q.id} must have agreementExplanation`);
+      assert.ok(q.disagreementExplanation, `Agreement question ${q.id} must have disagreementExplanation`);
+      assert.ok(q.neutralExplanation, `Agreement question ${q.id} must have neutralExplanation`);
+    }
+  });
+});
+
+// ----------------------------------------------------
+// 2. Answer Scale and Values
+// ----------------------------------------------------
+test("Answer scale mappings and Neutral label", () => {
+  assert.strictEqual(ANSWER_VALUE_MAP.STRONGLY_AGREE, 1.0);
+  assert.strictEqual(ANSWER_VALUE_MAP.AGREE, 0.5);
+  assert.strictEqual(ANSWER_VALUE_MAP.NEUTRAL, 0.0);
+  assert.strictEqual(ANSWER_VALUE_MAP.DISAGREE, -0.5);
+  assert.strictEqual(ANSWER_VALUE_MAP.STRONGLY_DISAGREE, -1.0);
+
+  const neutralOption = ANSWER_OPTIONS.find(opt => opt.key === "NEUTRAL");
+  assert.ok(neutralOption, "Neutral option must exist in ANSWER_OPTIONS");
+  assert.strictEqual(neutralOption.label, "Neutral", "Option label must be strictly 'Neutral'");
+  assert.strictEqual(neutralOption.points, 0.0);
+});
+
+// ----------------------------------------------------
+// 3. Reverse-Direction Answers and Scoring Rules
+// ----------------------------------------------------
+test("Scoring rules: Positive agreement favors agreementPole, Disagreement favors opposite pole", () => {
+  const mockQuestions = [
+    {
+      id: "q_e",
+      category: "axis",
+      dimension: "EI",
+      target: "E",
+      oppositePole: "I",
+      agreementPole: "E"
+    },
+    {
+      id: "q_i",
+      category: "axis",
+      dimension: "EI",
+      target: "I",
+      oppositePole: "E",
+      agreementPole: "I"
+    }
+  ];
+
+  const answersBoth = {
+    q_e: "STRONGLY_DISAGREE", // -1.0 -> 1.0 added to I
+    q_i: "STRONGLY_AGREE"     // 1.0 -> 1.0 added to I
+  };
+  const scoresBoth = calculateScores(mockQuestions, answersBoth);
+  assert.strictEqual(scoresBoth.axisScores.EI.roundA, 0, "E should be 0%");
+  assert.strictEqual(scoresBoth.axisScores.EI.roundB, 100, "I should be 100%");
+  assert.strictEqual(scoresBoth.axisScores.EI.dominant, "I", "Dominant should be I");
+});
+
+test("Scoring rules: Neutral answer contributes 0 and preserves balance", () => {
+  const mockQuestions = [
+    { id: "q1", category: "axis", dimension: "TF", target: "T", oppositePole: "F", agreementPole: "T" },
+    { id: "q2", category: "axis", dimension: "TF", target: "F", oppositePole: "T", agreementPole: "F" }
+  ];
+
+  const answers = {
+    q1: "NEUTRAL",
+    q2: "NEUTRAL"
+  };
+  const result = calculateScores(mockQuestions, answers);
+  assert.strictEqual(result.axisScores.TF.pctA, 50.0);
+  assert.strictEqual(result.axisScores.TF.pctB, 50.0);
+});
+
+// ----------------------------------------------------
+// 4. Would You Rather Scoring
+// ----------------------------------------------------
+test("Would You Rather scoring: Option selection contributes +1 directly to target pole", () => {
+  const mockWYR = [
+    {
+      id: "w_axis",
+      format: "wouldYouRather",
+      category: "axis",
+      dimension: "NS",
+      target: "N",
+      options: [
+        { id: "A", pole: "N", text: "Explore what it might imply." },
+        { id: "B", pole: "S", text: "Study what the evidence shows." }
+      ]
+    },
+    {
+      id: "w_func",
+      format: "wouldYouRather",
+      category: "function",
+      target: "Ne",
+      options: [
+        { id: "A", pole: "Ne", text: "Generate possibilities." },
+        { id: "B", pole: "Si", text: "Use proven methods." }
+      ]
+    }
+  ];
+
+  // Selecting Option A for both
+  const resA = calculateScores(mockWYR, {
+    w_axis: "A",
+    w_func: "A"
+  });
+
+  assert.strictEqual(resA.percentages.Ne, 100, "Ne should be 100% after selecting Option A (Ne +1)");
+  assert.strictEqual(resA.axisScores.NS.dominant, "N", "N should dominate after selecting Option A (N +1)");
+
+  // Selecting Option B for both
+  const resB = calculateScores(mockWYR, {
+    w_axis: "B",
+    w_func: "B"
+  });
+
+  assert.strictEqual(resB.percentages.Si, 100, "Si should be 100% after selecting Option B (Si +1)");
+  assert.strictEqual(resB.axisScores.NS.dominant, "S", "S should dominate after selecting Option B (S +1)");
+});
+
+// ----------------------------------------------------
+// 5. Cognitive Functions Normalization Formula
+// ----------------------------------------------------
+test("Cognitive function normalization: functionPct = ((meanResponse + 1) / 2) * 100", () => {
+  const mockQuestions = [
+    { id: "ne_1", category: "function", target: "Ne", oppositePole: "Si", agreementPole: "Ne" },
+    { id: "ne_2", category: "function", target: "Ne", oppositePole: "Si", agreementPole: "Ne" }
+  ];
+
+  // Case 1: Strongly Agree (1.0) and Agree (0.5) -> mean = 0.75 -> 87.5% -> round 88%
+  const res1 = calculateScores(mockQuestions, {
+    ne_1: "STRONGLY_AGREE",
+    ne_2: "AGREE"
+  });
+  assert.strictEqual(res1.percentages.Ne, 88);
+  assert.strictEqual(res1.precisePercentages.Ne, 87.5);
+
+  // Case 2: Neutral (0.0) -> mean = 0.0 -> 50%
+  const res2 = calculateScores(mockQuestions, {
+    ne_1: "NEUTRAL",
+    ne_2: "NEUTRAL"
+  });
+  assert.strictEqual(res2.percentages.Ne, 50);
+
+  // Case 3: Strongly Disagree (-1.0) -> mean = -1.0 -> 0%
+  const res3 = calculateScores(mockQuestions, {
+    ne_1: "STRONGLY_DISAGREE",
+    ne_2: "STRONGLY_DISAGREE"
+  });
+  assert.strictEqual(res3.percentages.Ne, 0);
+});
+
+// ----------------------------------------------------
+// 6. Unanswered Questions & Zero Division Handling
+// ----------------------------------------------------
+test("Unanswered questions are excluded from denominator & zero division is avoided", () => {
+  const rapidQs = getQuestionsForMode("rapid");
+  
+  const emptyRes = calculateScores(rapidQs, {});
+  assert.strictEqual(emptyRes.answeredCount, 0);
+  assert.strictEqual(emptyRes.isComplete, false);
+
+  AXIS_DIMENSIONS.forEach(dim => {
+    assert.strictEqual(emptyRes.axisScores[dim.id].pctA, 50.0);
+    assert.strictEqual(emptyRes.axisScores[dim.id].pctB, 50.0);
+  });
+
+  FUNCTIONS_LIST.forEach(f => {
+    assert.strictEqual(emptyRes.percentages[f], 50);
+    assert.strictEqual(emptyRes.insufficientData[f], true);
+  });
+
+  const partialAnswers = { [rapidQs[0].id]: "AGREE" };
+  const partialRes = calculateScores(rapidQs, partialAnswers);
+  assert.strictEqual(partialRes.answeredCount, 1);
+  assert.strictEqual(partialRes.isComplete, false);
+});
+
+// ----------------------------------------------------
+// 7. Verification of all 16 MBTI types in MBTI_TYPES
+// ----------------------------------------------------
+test("All 16 derived types exist in MBTI_TYPES dictionary", () => {
+  const poles = [
+    ["E", "I"],
+    ["N", "S"],
+    ["T", "F"],
+    ["J", "P"]
+  ];
+
+  for (const e of poles[0]) {
+    for (const n of poles[1]) {
+      for (const t of poles[2]) {
+        for (const j of poles[3]) {
+          const type = `${e}${n}${t}${j}`;
+          assert.ok(MBTI_TYPES[type], `MBTI_TYPES must contain ${type}`);
+          assert.ok(MBTI_TYPES[type].title, `${type} must have a title`);
+          const temp = getTypeTemperament(type);
+          assert.ok(temp && temp.code, `${type} must have a valid temperament`);
+        }
+      }
+    }
+  }
+});
+
+// ----------------------------------------------------
+// 8. Bilingual Question Support and Language Toggling
+// ----------------------------------------------------
+test("All 100 questions have complete Romanian translations (textRo) & explanations", () => {
+  assert.strictEqual(ALL_QUESTIONS.length, 100);
+  ALL_QUESTIONS.forEach(q => {
+    assert.ok(q.text && q.text.trim().length > 5, `EN text missing for question ${q.id}`);
+    assert.ok(q.textRo && q.textRo.trim().length > 5, `RO text missing for question ${q.id}`);
+    assert.strictEqual(getQuestionText(q, "en"), q.text);
+    assert.strictEqual(getQuestionText(q, "ro"), q.textRo);
+
+    assert.ok(getQuestionDescription(q, "en").length > 5);
+    assert.ok(getQuestionDescription(q, "ro").length > 5);
+
+    const expls = getQuestionExplanations(q, "ro");
+    assert.ok(expls !== null);
+  });
+
+  const roOptions = getAnswerOptions("ro");
+  const enOptions = getAnswerOptions("en");
+  assert.strictEqual(roOptions.length, 5);
+  assert.strictEqual(enOptions.length, 5);
+
+  const roNeutral = roOptions.find(o => o.key === "NEUTRAL");
+  assert.strictEqual(roNeutral.label, "Neutru");
+
+  const enNeutral = enOptions.find(o => o.key === "NEUTRAL");
+  assert.strictEqual(enNeutral.label, "Neutral");
+});
+
+// ----------------------------------------------------
+// 9. Integrated Model: 70% Functions / 30% Axis Weighting Calibration
+// ----------------------------------------------------
+test("Integrated Model: 70% Functions / 30% Direct Axis Weighting Calibration", () => {
+  // User scenario:
+  // Ni: 91%, Ne: 84% -> mean Intuition = 87.5%
+  // Se: 54%, Si: 36% -> mean Sensing = 45.0%
+  // Net function difference = 87.5 - 45.0 = 42.5%
+  // funcPctN = 50 + 42.5 = 92.5%
+  // Direct axis questions yield a moderate 53%
+  // final N = 0.70 * 92.5% + 0.30 * 53% = 64.75% + 15.9% = 80.65% (~81%)
+  // Under the old formula with halved difference and 50/50 weighting, this came out to only 62%.
+  // The new 70/30 weighting properly preserves the authentic 81% Intuition score.
+
+  const mockQuestions = [
+    // 1 direct axis question for N/S (slight agreement -> 53%)
+    { id: "ax_ns", category: "axis", dimension: "NS", target: "N", agreementPole: "N", oppositePole: "S" },
+    // Function questions to achieve approximate Ni, Ne, Se, Si levels
+    { id: "f_ni_1", category: "function", target: "Ni", agreementPole: "Ni", oppositePole: "Se" },
+    { id: "f_ne_1", category: "function", target: "Ne", agreementPole: "Ne", oppositePole: "Si" },
+    { id: "f_se_1", category: "function", target: "Se", agreementPole: "Se", oppositePole: "Ni" },
+    { id: "f_si_1", category: "function", target: "Si", agreementPole: "Si", oppositePole: "Ne" }
+  ];
+
+  // Setup answers
+  const answers = {
+    ax_ns: 0.12, // direct axis gives moderate ~53%
+    f_ni_1: 0.82, // Ni ~91%
+    f_ne_1: 0.68, // Ne ~84%
+    f_se_1: 0.08, // Se ~54%
+    f_si_1: -0.28 // Si ~36%
+  };
+
+  const res = calculateScores(mockQuestions, answers);
+  assert.ok(res.percentages.Ni >= 90 && res.percentages.Ni <= 92, `Ni should be ~91%, got ${res.percentages.Ni}%`);
+  assert.ok(res.percentages.Ne >= 83 && res.percentages.Ne <= 85, `Ne should be ~84%, got ${res.percentages.Ne}%`);
+  assert.ok(res.percentages.Se >= 53 && res.percentages.Se <= 55, `Se should be ~54%, got ${res.percentages.Se}%`);
+  assert.ok(res.percentages.Si >= 35 && res.percentages.Si <= 37, `Si should be ~36%, got ${res.percentages.Si}%`);
+
+  // Verify that Intuition (N) is around 80%-81% and dominant, NOT 62%!
+  assert.ok(res.axisScores.NS.roundA >= 80 && res.axisScores.NS.roundA <= 82, `N should be 80-82%, got ${res.axisScores.NS.roundA}%`);
+  assert.strictEqual(res.axisScores.NS.dominant, "N", "N must be dominant");
+});
+
+// ----------------------------------------------------
+// 10. Integrated Model: 100% Ni boosts I, N, and J
+// ----------------------------------------------------
+test("Integrated Model: 100% Ni boosts I, N, and J simultaneously on the 4 MBTI Spectrum Axes", () => {
+  const rapidQs = getQuestionsForMode("rapid");
+  const answers = {};
+
+  rapidQs.filter(q => q.category === "function" && q.target === "Ni").forEach(q => {
+    answers[q.id] = "STRONGLY_AGREE";
+  });
+
+  const res = calculateScores(rapidQs, answers);
+
+  assert.strictEqual(res.percentages.Ni, 100);
+  assert.ok(res.axisScores.EI.pctB > 50, `I (${res.axisScores.EI.pctB}%) must be greater than 50%`);
+  assert.strictEqual(res.axisScores.EI.dominant, "I", "Dominant pole on EI must be I");
+
+  assert.ok(res.axisScores.NS.pctA > 50, `N (${res.axisScores.NS.pctA}%) must be greater than 50%`);
+  assert.strictEqual(res.axisScores.NS.dominant, "N", "Dominant pole on NS must be N");
+
+  assert.ok(res.axisScores.JP.pctA > 50, `J (${res.axisScores.JP.pctA}%) must be greater than 50%`);
+  assert.strictEqual(res.axisScores.JP.dominant, "J", "Dominant pole on JP must be J");
+
+  assert.strictEqual(res.axisScores.TF.pctA, 50.0, "TF should remain 50%");
+});
+
+// ----------------------------------------------------
+// 11. Integrated Personality Match: calculateBestMbtiType
+// ----------------------------------------------------
+test("Integrated Personality Match: calculateBestMbtiType integrates 8 cognitive functions and 4 spectrum axes", () => {
+  const rapidQs = getQuestionsForMode("rapid");
+  const answers = {};
+
+  // Pure INTJ profile: high Ni, high Te, high I, N, T, J
+  rapidQs.forEach(q => {
+    if (q.category === "axis") {
+      if (["I", "N", "T", "J"].includes(q.agreementPole)) answers[q.id] = "STRONGLY_AGREE";
+      else answers[q.id] = "STRONGLY_DISAGREE";
+    } else if (q.category === "function") {
+      if (["Ni", "Te"].includes(q.target)) answers[q.id] = "STRONGLY_AGREE";
+      else if (["Fi", "Se"].includes(q.target)) answers[q.id] = "NEUTRAL";
+      else answers[q.id] = "STRONGLY_DISAGREE";
+    }
+  });
+
+  const res = calculateScores(rapidQs, answers);
+  const rankings = calculateBestMbtiType(res.percentages, res.axisScores);
+
+  assert.ok(rankings.length === 16, "Must rank all 16 types");
+  assert.strictEqual(rankings[0].type, "INTJ", "Top match must be INTJ");
+  assert.ok(rankings[0].matchPercentage >= 75, `INTJ match (${rankings[0].matchPercentage}%) should be >= 75%`);
+  assert.ok(rankings[0].axisMatch >= 75, `INTJ axis match (${rankings[0].axisMatch}%) should be >= 75%`);
+
+  const esfpMatch = rankings.find(r => r.type === "ESFP");
+  assert.ok(esfpMatch.matchPercentage < rankings[0].matchPercentage, "ESFP match must be lower than INTJ");
+});
+
+// ----------------------------------------------------
+// 12. Question Phase Ordering: Complex (Deep) -> Simple (Short) -> Would You Rather (at end)
+// ----------------------------------------------------
+test("Question Phase Ordering: Deep questions first, then Short, then Would You Rather at end", () => {
+  const completeQs = getQuestionsForMode("complete");
+  assert.strictEqual(completeQs.length, 100);
+
+  // First 24 must all be Deep
+  for (let i = 0; i < 24; i++) {
+    assert.strictEqual(completeQs[i].format, "deep", `Question at index ${i} must be deep, got ${completeQs[i].format}`);
+  }
+  // Next 52 must all be Short
+  for (let i = 24; i < 76; i++) {
+    assert.strictEqual(completeQs[i].format, "short", `Question at index ${i} must be short, got ${completeQs[i].format}`);
+  }
+  // Last 24 must all be Would You Rather
+  for (let i = 76; i < 100; i++) {
+    assert.strictEqual(completeQs[i].format, "wouldYouRather", `Question at index ${i} must be wouldYouRather, got ${completeQs[i].format}`);
+  }
+
+  // Verify internal axis and function mixing in each phase
+  const deepAxes = completeQs.slice(0, 24).filter(q => q.category === "axis").length;
+  const deepFuncs = completeQs.slice(0, 24).filter(q => q.category === "function").length;
+  assert.strictEqual(deepAxes, 8, "Deep phase must have 8 axis questions");
+  assert.strictEqual(deepFuncs, 16, "Deep phase must have 16 function questions");
+
+  const standardQs = getQuestionsForMode("standard");
+  assert.strictEqual(standardQs.length, 60);
+  for (let i = 0; i < 24; i++) {
+    assert.strictEqual(standardQs[i].format, "deep", `Standard at ${i} must be deep`);
+  }
+  for (let i = 24; i < 36; i++) {
+    assert.strictEqual(standardQs[i].format, "short", `Standard at ${i} must be short`);
+  }
+  for (let i = 36; i < 60; i++) {
+    assert.strictEqual(standardQs[i].format, "wouldYouRather", `Standard at ${i} must be wouldYouRather`);
+  }
+});
+
+// ----------------------------------------------------
+// 13. Results URL Path: Building and Parsing Format
+// ----------------------------------------------------
+test("Results URL Path: Format matches /results/I=80/E=80/N=80/S=80/T=80/F=80/J=80/P=80/Ne=80/Ni=80/Se=80/Si=80/Te=80/Ti=80/Fe=80/Fi=80/", () => {
+  const mockAxisScores = {
+    EI: { roundB: 80, roundA: 20 },
+    NS: { roundA: 85, roundB: 15 },
+    TF: { roundA: 90, roundB: 10 },
+    JP: { roundA: 75, roundB: 25 }
+  };
+  const mockPercentages = {
+    Ne: 84,
+    Ni: 91,
+    Se: 54,
+    Si: 36,
+    Te: 97,
+    Ti: 84,
+    Fe: 39,
+    Fi: 89
+  };
+
+  const path = buildResultsUrlPath(mockAxisScores, mockPercentages);
+  const expectedPath = "/results/I=80/E=20/N=85/S=15/T=90/F=10/J=75/P=25/Ne=84/Ni=91/Se=54/Si=36/Te=97/Ti=84/Fe=39/Fi=89/";
+  assert.strictEqual(path, expectedPath);
+
+  // Test parsing
+  const parsed = parseResultsUrlPath(expectedPath);
+  assert.ok(parsed !== null);
+  assert.strictEqual(parsed.I, 80);
+  assert.strictEqual(parsed.E, 20);
+  assert.strictEqual(parsed.N, 85);
+  assert.strictEqual(parsed.S, 15);
+  assert.strictEqual(parsed.T, 90);
+  assert.strictEqual(parsed.F, 10);
+  assert.strictEqual(parsed.J, 75);
+  assert.strictEqual(parsed.P, 25);
+  assert.strictEqual(parsed.Ne, 84);
+  assert.strictEqual(parsed.Ni, 91);
+  assert.strictEqual(parsed.Se, 54);
+  assert.strictEqual(parsed.Si, 36);
+  assert.strictEqual(parsed.Te, 97);
+  assert.strictEqual(parsed.Ti, 84);
+  assert.strictEqual(parsed.Fe, 39);
+  assert.strictEqual(parsed.Fi, 89);
+});
+
+console.log(`\nAll ${passedTests} tests passed successfully!`);
+

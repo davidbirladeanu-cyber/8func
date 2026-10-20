@@ -1,0 +1,278 @@
+/**
+ * 8Func - Comprehensive Bilingual Dictionary (English & Romanian)
+ */
+
+export const TRANSLATIONS = {
+  en: {
+    // Nav & Common
+    skipLink: "Skip to content",
+    switchThemeLight: "Switch to light mode",
+    switchThemeDark: "Switch to dark mode",
+    switchLang: "Comută în Română",
+    langCode: "RO",
+    currentLangName: "English",
+    retakeQuiz: "Retake quiz",
+    restartQuiz: "Restart",
+    changeMode: "Change version",
+    back: "Back",
+    next: "Next",
+    finishQuiz: "Finish & View Results",
+    questionMeta: "Question <b>{current}</b> of {total}",
+    resetConfirm: "Reset current quiz and all answers?",
+    retakeConfirm: "Retake this quiz from the beginning?",
+    quizResetToast: "Quiz reset!",
+    reportCopiedToast: "Report copied to clipboard!",
+    dataExportedToast: "Anonymous raw data exported!",
+    underQuestionsPrompt: "You have answered {answered} of {total} questions. View results anyway?",
+    inspectQuestion: "Inspect question details",
+    infoClickHint: "Info (click to reveal)",
+    modalClose: "Close",
+    modalUnderstood: "Understood",
+    functionDetailsTitle: "Function Details",
+    assessingCognitiveFunction: "Assessing Cognitive Function: {code} — {name}",
+    lowerPole: "Lower Pole (Absent):",
+    upperPole: "Upper Pole (Developed):",
+    assessingAxisPole: "Assessing MBTI Axis Pole: {code} — {name}",
+    opposingPole: "Opposing Pole:",
+    underlyingDimension: "Underlying Dimension:",
+
+    // Answer Choices
+    answers: {
+      STRONGLY_AGREE: "Strongly agree",
+      AGREE: "Agree",
+      NEUTRAL: "Neutral",
+      DISAGREE: "Disagree",
+      STRONGLY_DISAGREE: "Strongly disagree"
+    },
+
+    // Welcome Screen
+    welcomeEyebrow: "Psychometric Cognitive Assessment",
+    welcomeTitle: "Jungian Cognitive Functions & MBTI Archetypes",
+    welcomeLead: "Discover your psychological engine through authentic 8-function cognitive polarity and 4 MBTI spectrum axes.",
+    selectDepth: "Select Assessment Depth",
+    questionsCount: "questions",
+    startTest: "Start {name} Test",
+    eightFunctionsTitle: "The 8 Jungian Cognitive Functions",
+    eightFunctionsSub: "Click any function chip to inspect its psychological mechanism and polarity definition.",
+
+    // Modes
+    modes: {
+      rapid: {
+        name: "Rapid",
+        badge: "Quick",
+        subtitle: "24 questions (8 axis · 16 function)",
+        description: "Fast pulse assessment measuring the 4 MBTI axes (2 per dimension) and all 8 cognitive functions (2 per function)."
+      },
+      standard: {
+        name: "Standard",
+        badge: "Recommended",
+        subtitle: "60 questions (20 axis · 40 function)",
+        description: "Balanced calibration with 5 items per axis dimension and 5 items per cognitive function."
+      },
+      complete: {
+        name: "Complete",
+        badge: "Full Profile",
+        subtitle: "80 questions (20 axis · 60 function)",
+        description: "Exhaustive deep-dive measuring the 4 axes (20 items) and all 8 functions with extended resolution."
+      }
+    },
+
+    // Results Screen
+    analysisComplete: "Analysis complete",
+    yourCognitiveProfile: "Your cognitive <span>profile</span>",
+    closeAlternative: "Mixed Spectrum · Close Alternative: {type} ({pct}%)",
+    aSentenceDescribesYou: "A sentence that describes you",
+    aboutArchetype: "About {title} ({type})",
+    rankedHierarchyTitle: "Ranked Cognitive Hierarchy",
+    rankedHierarchySub: "Cognitive Function Agreement Scores (50% is neutral baseline)",
+    agreementScoreLabel: "score",
+    lowDataLabel: "Low data",
+    mbtiAxesTitle: "Your 4 MBTI Spectrum Axes",
+    mbtiAxesLead: "Direct axis preference scores calculated from axis item means centered at 50% (neutral).",
+    scaleGuideTitle: "Scale Interpretation Guide:",
+    scaleGuideDesc: "Percentages represent relative comparative preferences between pole item means centered at 50% (neutral baseline).",
+    tierSlight: "50–54%: Slight preference",
+    tierModerate: "55–64%: Moderate preference",
+    tierStrong: "65–100%: Stronger preference",
+    whatSetsYouApart: "What sets you apart",
+    whatSetsYouApartLead: "Your highest cognitive catalyst versus your lowest dormant blind spot.",
+    highestAgreement: "Highest Function Agreement",
+    lowestAgreement: "Lowest Function Agreement",
+    highestCap: "is your primary cognitive engine, steering how you instinctively explore ideas and process truth.",
+    lowestCap: "is your least utilized process, representing the cognitive blind spot you most often bypass.",
+    otherPersonalitiesTitle: "Other personalities you resemble",
+    otherPersonalitiesLead: "Secondary archetype alignments derived from your cognitive distribution.",
+    figuresTitle: "Historical & Notable Figures",
+    figuresLead: "Comparing your cognitive spectrum against notable minds throughout history.",
+    tabSimilarFigures: "10 Most Similar Figures",
+    tabOppositeFigures: "10 Polar Opposite Figures",
+    compAnalysisTitle: "Comparative Analysis",
+    compAnalysisLead: "Pick a historical figure to compare side-by-side across all 8 functions.",
+    selectFigureLabel: "Select a figure:",
+    youLabel: "You",
+    reviewAnswers: "Review answers",
+    copyReport: "Copy report",
+    printDownload: "Download / Print",
+    exportRawJson: "Export raw data (JSON)",
+
+    // Tiers
+    tiers: {
+      balanced: "Balanced (50% / 50%)",
+      slight: "Slight preference (Mixed profile)",
+      moderate: "Moderate preference",
+      strong: "Stronger preference"
+    },
+
+    // Axis Labels
+    axes: {
+      IE: { title: "I — E", subtitle: "Energy: Introversion vs Extraversion", left: "I", leftName: "Introversion", right: "E", rightName: "Extraversion" },
+      NS: { title: "N — S", subtitle: "Perception: Intuition vs Sensing", left: "N", leftName: "Intuition", right: "S", rightName: "Sensing" },
+      TF: { title: "T — F", subtitle: "Judgment: Thinking vs Feeling", left: "T", leftName: "Thinking", right: "F", rightName: "Feeling" },
+      PJ: { title: "P — J", subtitle: "Lifestyle: Perceiving vs Judging", left: "P", leftName: "Perceiving", right: "J", rightName: "Judging" }
+    }
+  },
+
+  ro: {
+    // Nav & Common
+    skipLink: "Sari la conținut",
+    switchThemeLight: "Comută pe modul luminos",
+    switchThemeDark: "Comută pe modul întunecat",
+    switchLang: "Switch to English",
+    langCode: "EN",
+    currentLangName: "Română",
+    retakeQuiz: "Reia testul",
+    restartQuiz: "Reîncepe",
+    changeMode: "Schimbă versiunea",
+    back: "Înapoi",
+    next: "Următoarea",
+    finishQuiz: "Finalizează și vezi rezultatele",
+    questionMeta: "Întrebarea <b>{current}</b> din {total}",
+    resetConfirm: "Resetezi testul curent și toate răspunsurile date?",
+    retakeConfirm: "Reiei acest test de la început?",
+    quizResetToast: "Testul a fost resetat!",
+    reportCopiedToast: "Raportul a fost copiat în clipboard!",
+    dataExportedToast: "Datele brute anonime au fost exportate!",
+    underQuestionsPrompt: "Ai răspuns la {answered} din {total} întrebări. Vezi rezultatele oricum?",
+    inspectQuestion: "Vezi detalii despre întrebare",
+    infoClickHint: "Informații (apasă pentru detalii)",
+    modalClose: "Închide",
+    modalUnderstood: "Am înțeles",
+    functionDetailsTitle: "Detalii Funcție Cognitivă",
+    assessingCognitiveFunction: "Evaluează Funcția Cognitivă: {code} — {name}",
+    lowerPole: "Pol Inferior (Absent):",
+    upperPole: "Pol Superior (Dezvoltat):",
+    assessingAxisPole: "Evaluează Polul MBTI: {code} — {name}",
+    opposingPole: "Pol Opus:",
+    underlyingDimension: "Dimensiunea de Bază:",
+
+    // Answer Choices
+    answers: {
+      STRONGLY_AGREE: "Total de acord",
+      AGREE: "De acord",
+      NEUTRAL: "Neutru",
+      DISAGREE: "Dezacord",
+      STRONGLY_DISAGREE: "Total dezacord"
+    },
+
+    // Welcome Screen
+    welcomeEyebrow: "Evaluare Psihometrică Cognitivă",
+    welcomeTitle: "Funcțiile Cognitive Jungiene & Arhetipurile MBTI",
+    welcomeLead: "Descoperă-ți mecanismul psihologic prin polaritatea autentică a celor 8 funcții cognitive și a celor 4 axe spectrale MBTI.",
+    selectDepth: "Alege Profunzimea Evaluării",
+    questionsCount: "întrebări",
+    startTest: "Începe testul {name}",
+    eightFunctionsTitle: "Cele 8 Funcții Cognitive Jungiene",
+    eightFunctionsSub: "Apasă pe oricare funcție pentru a-i explora mecanismul psihologic și definiția polarității.",
+
+    // Modes
+    modes: {
+      rapid: {
+        name: "Rapid",
+        badge: "Rapid",
+        subtitle: "24 întrebări (8 de axă · 16 de funcție)",
+        description: "Evaluare rapidă de calibrare ce măsoară cele 4 axe MBTI (câte 2 per dimensiune) și toate cele 8 funcții cognitive (câte 2 per funcție)."
+      },
+      standard: {
+        name: "Standard",
+        badge: "Recomandat",
+        subtitle: "60 întrebări (20 de axă · 40 de funcție)",
+        description: "Calibrare echilibrată cu câte 5 întrebări per dimensiune de axă și 5 întrebări per funcție cognitivă."
+      },
+      complete: {
+        name: "Complet",
+        badge: "Profil Complet",
+        subtitle: "80 întrebări (20 de axă · 60 de funcție)",
+        description: "Analiză detaliată completă ce măsoară cele 4 axe (20 întrebări) și toate cele 8 funcții cognitive cu rezoluție extinsă."
+      }
+    },
+
+    // Results Screen
+    analysisComplete: "Analiză finalizată",
+    yourCognitiveProfile: "Profilul tău <span>cognitiv</span>",
+    closeAlternative: "Spectru Mixt · Alternativă Apropiată: {type} ({pct}%)",
+    aSentenceDescribesYou: "O frază care te descrie",
+    aboutArchetype: "Despre {title} ({type})",
+    rankedHierarchyTitle: "Ierarhia Cognitivă Clasificată",
+    rankedHierarchySub: "Scoruri de Acord pentru Funcțiile Cognitive (50% este linia neutră de bază)",
+    agreementScoreLabel: "scor",
+    lowDataLabel: "Date limitate",
+    mbtiAxesTitle: "Cele 4 Axe Spectrale MBTI",
+    mbtiAxesLead: "Scoruri directe de preferință calculate din mediile întrebărilor de axă centrate la 50% (neutru).",
+    scaleGuideTitle: "Ghid de Interpretare a Scalei:",
+    scaleGuideDesc: "Procentele reprezintă preferințe comparative relative între mediile polilor centrate la 50% (linie neutră).",
+    tierSlight: "50–54%: Preferință ușoară",
+    tierModerate: "55–64%: Preferință moderată",
+    tierStrong: "65–100%: Preferință puternică",
+    whatSetsYouApart: "Ce te diferențiază",
+    whatSetsYouApartLead: "Cel mai activ catalizator cognitiv comparat cu cel mai adormit punct orb.",
+    highestAgreement: "Cel Mai Mare Acord Cognitiv",
+    lowestAgreement: "Cel Mai Mic Acord Cognitiv",
+    highestCap: "este motorul tău cognitiv principal, ghidând modul în care explorezi ideile și procesezi adevărul.",
+    lowestCap: "este cel mai puțin utilizat proces al tău, reprezentând punctul orb cognitiv pe care îl ocolești cel mai des.",
+    otherPersonalitiesTitle: "Alte personalități cu care te asemeni",
+    otherPersonalitiesLead: "Alinieri arhetipale secundare derivate din distribuția ta cognitivă.",
+    figuresTitle: "Personalități & Figuri Istorice",
+    figuresLead: "Comparație între spectrul tău cognitiv și minți remarcabile din istorie.",
+    tabSimilarFigures: "10 Figuri cele mai similare",
+    tabOppositeFigures: "10 Figuri polar opuse",
+    compAnalysisTitle: "Analiză Comparativă",
+    compAnalysisLead: "Alege o personalitate istorică pentru o comparație directă pe toate cele 8 funcții.",
+    selectFigureLabel: "Selectează o personalitate:",
+    youLabel: "Tu",
+    reviewAnswers: "Revizuiește răspunsurile",
+    copyReport: "Copiază raportul",
+    printDownload: "Descarcă / Printează",
+    exportRawJson: "Exportă date brute (JSON)",
+
+    // Tiers
+    tiers: {
+      balanced: "Echilibrat (50% / 50%)",
+      slight: "Preferință ușoară (Profil mixt)",
+      moderate: "Preferință moderată",
+      strong: "Preferință puternică"
+    },
+
+    // Axis Labels
+    axes: {
+      IE: { title: "I — E", subtitle: "Energie: Introversie vs Extraversie", left: "I", leftName: "Introversie", right: "E", rightName: "Extraversie" },
+      NS: { title: "N — S", subtitle: "Percepție: Intuiție vs Senzorial", left: "N", leftName: "Intuiție", right: "S", rightName: "Senzorial" },
+      TF: { title: "T — F", subtitle: "Judecată: Gândire vs Afectiv", left: "T", leftName: "Gândire", right: "F", rightName: "Afectiv" },
+      PJ: { title: "P — J", subtitle: "Stil de viață: Percepție vs Judecată", left: "P", leftName: "Percepție", right: "J", rightName: "Judecată" }
+    }
+  }
+};
+
+/**
+ * Formats a translation string with replacements.
+ * Example: t('questionMeta', { current: 1, total: 24 }, 'ro')
+ */
+export function t(key, params = {}, lang = "ro") {
+  const dict = TRANSLATIONS[lang] || TRANSLATIONS.en;
+  let text = dict[key] || TRANSLATIONS.en[key] || key;
+  if (typeof text !== "string") return text;
+
+  Object.entries(params).forEach(([k, v]) => {
+    text = text.replace(new RegExp(`\\{${k}\\}`, "g"), v);
+  });
+  return text;
+}
