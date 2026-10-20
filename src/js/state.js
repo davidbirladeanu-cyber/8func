@@ -116,9 +116,9 @@ export class AppState {
     this.answers = {};
     this.currentIndex = 0;
     this.urlResultsScores = null;
-    this.screen = "quiz";
+    const baseUrl = (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.BASE_URL) ? import.meta.env.BASE_URL : "/";
     if (window.location.pathname.includes("/results/")) {
-      history.pushState(null, "", "/");
+      history.pushState(null, "", baseUrl);
     }
     this.notify();
   }
@@ -126,8 +126,9 @@ export class AppState {
   showWelcome() {
     this.screen = "welcome";
     this.urlResultsScores = null;
+    const baseUrl = (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.BASE_URL) ? import.meta.env.BASE_URL : "/";
     if (window.location.pathname.includes("/results/")) {
-      history.pushState(null, "", "/");
+      history.pushState(null, "", baseUrl);
     }
     this.notify();
   }
@@ -270,8 +271,9 @@ export class AppState {
     this.currentIndex = 0;
     this.urlResultsScores = null;
     this.screen = "quiz";
+    const baseUrl = (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.BASE_URL) ? import.meta.env.BASE_URL : "/";
     if (window.location.pathname.includes("/results/")) {
-      history.pushState(null, "", "/");
+      history.pushState(null, "", baseUrl);
     }
     this.notify();
   }

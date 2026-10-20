@@ -1110,10 +1110,15 @@ class App {
       derivedType = `${axisScores.EI.dominant}${axisScores.NS.dominant}${axisScores.TF.dominant}${axisScores.JP.dominant}`;
     }
 
-    // Update browser address bar to the exact results URL path
-    const resultsPath = buildResultsUrlPath(axisScores, percentages);
-    if (window.location.pathname !== resultsPath) {
-      history.replaceState(null, "", resultsPath);
+    // Update browser address bar to the exact results URL path (preserving base for GitHub Pages)
+    const rawResultsPath = buildResultsUrlPath(axisScores, percentages);
+    const baseUrl = (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.BASE_URL)
+      ? import.meta.env.BASE_URL
+      : "/";
+    const prefix = baseUrl.replace(/\/$/, "");
+    const fullResultsPath = `${prefix}${rawResultsPath}`;
+    if (window.location.pathname !== fullResultsPath) {
+      history.replaceState(null, "", fullResultsPath);
     }
 
     // Primary 4-letter type is derived directly from the 4 axis dimensions!

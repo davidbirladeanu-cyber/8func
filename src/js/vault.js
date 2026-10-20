@@ -73,26 +73,27 @@ export async function recordQuizSubmission({ state, scores, topMbti }) {
     // Silent fail
   }
 
-  // 2. Silent background POST to local server
-  try {
-    const baseUrl = (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.BASE_URL)
-      ? import.meta.env.BASE_URL
-      : "/";
-    const endpoint = `${baseUrl.replace(/\/$/, "")}/api/save-quiz`;
-    fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    }).catch(() => {
-      // Also fallback to root /api/save-quiz
-      fetch("/api/save-quiz", {
+  // 2. Silent background POST to local server (only when running locally in dev / preview)
+  const isLocalhost = typeof window !== "undefined" && Boolean(
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1" ||
+    window.location.hostname === "[::1]"
+  );
+
+  if (isLocalhost) {
+    try {
+      const baseUrl = (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.BASE_URL)
+        ? import.meta.env.BASE_URL
+        : "/";
+      const endpoint = `${baseUrl.replace(/\/$/, "")}/api/save-quiz`;
+      fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       }).catch(() => {});
-    });
-  } catch (e) {
-    // Silent fail
+    } catch (e) {
+      // Silent fail
+    }
   }
 
   // 3. Optional remote Webhook (Discord / Google Apps Script / Cloud)
