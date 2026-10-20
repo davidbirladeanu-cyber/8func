@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "deploy": "vite build && gh-pages -d dist --nojekyll",
+    "build": "vite build && node scripts/postbuild.js",
+    "deploy": "npm run build && gh-pages -d dist --nojekyll",
     "preview": "vite preview",
     "test": "node test/scoring.test.js"
   },
