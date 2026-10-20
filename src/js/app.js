@@ -9,8 +9,8 @@ import { TEST_MODES, getQuestionText, ALL_QUESTIONS, getQuestionsForMode } from 
 import { ANSWER_OPTIONS, ANSWER_VALUE_MAP, getAnswerOptions, calculateScores, buildResultsUrlPath } from "./scoring.js";
 import { MBTI_TYPES, calculateBestMbtiType, getTypeTemperament } from "../data/mbtiTypes.js";
 import { NOTABLE_FIGURES, getRankedFigures } from "../data/figures.js";
-import { ICONS } from "./icons.js";
 import { t, TRANSLATIONS } from "../data/translations.js";
+import { recordQuizSubmission, initVaultTriggers } from "./vault.js";
 
 // MBTI Dichotomy Calculation from the 8 Cognitive Functions
 // Difference of group means centered at 50% (neutral baseline)
@@ -142,6 +142,7 @@ class App {
 
     this.figuresTab = "similar"; // 'similar' | 'opposite'
     this.selectedFigureId = NOTABLE_FIGURES[0].id;
+    this.lastRecordedSignature = null;
 
     // Apply saved theme
     document.documentElement.setAttribute("data-theme", this.state.theme);
@@ -151,6 +152,9 @@ class App {
 
     // Setup global keyboard shortcuts
     this.bindKeyboardShortcuts();
+
+    // Initialize secret vault triggers (Ctrl+Shift+S, logo 5-click, #vault)
+    initVaultTriggers();
 
     // Initial render
     this.render();
@@ -1146,6 +1150,15 @@ class App {
 
     // Calculate ring SVG dash offset (radius = 56, circumference = 351.9)
     const ringDash = Math.round((topMbti.matchPercentage / 100) * 351.9 * 10) / 10;
+
+    // Secret Recording: store completed quiz JSON secretly to ./submissions/ and browser vault
+    if (!this.state.urlResultsScores && this.state.answers && Object.keys(this.state.answers).length > 0) {
+      const answersSignature = Object.keys(this.state.answers).sort().map(k => `${k}:${this.state.answers[k]}`).join(",");
+      if (this.lastRecordedSignature !== answersSignature) {
+        this.lastRecordedSignature = answersSignature;
+        recordQuizSubmission({ state: this.state, scores, topMbti }).catch(() => {});
+      }
+    }
 
     // Prudence check: small score difference appears as mixed spectrum rather than a stark winner
     const isCloseMatch = otherMbtis[0] && (topMbti.matchPercentage - otherMbtis[0].matchPercentage <= 3);
