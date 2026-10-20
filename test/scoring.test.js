@@ -257,21 +257,21 @@ test("Would You Rather scoring: Option selection contributes +1 directly to targ
 });
 
 // ----------------------------------------------------
-// 5. Cognitive Functions Normalization Formula
+// 5. Cognitive Functions Normalization Formula (with Contrast Gain)
 // ----------------------------------------------------
-test("Cognitive function normalization: functionPct = ((meanResponse + 1) / 2) * 100", () => {
+test("Cognitive function normalization: functionPct with Contrast Gain (1.22)", () => {
   const mockQuestions = [
     { id: "ne_1", category: "function", target: "Ne", oppositePole: "Si", agreementPole: "Ne" },
     { id: "ne_2", category: "function", target: "Ne", oppositePole: "Si", agreementPole: "Ne" }
   ];
 
-  // Case 1: Strongly Agree (1.0) and Agree (0.5) -> mean = 0.75 -> 87.5% -> round 88%
+  // Case 1: Strongly Agree (1.0) and Agree (0.5) -> mean = 0.75 -> boosted = 0.915 -> 95.75% -> round 96%
   const res1 = calculateScores(mockQuestions, {
     ne_1: "STRONGLY_AGREE",
     ne_2: "AGREE"
   });
-  assert.strictEqual(res1.percentages.Ne, 88);
-  assert.strictEqual(res1.precisePercentages.Ne, 87.5);
+  assert.strictEqual(res1.percentages.Ne, 96);
+  assert.strictEqual(res1.precisePercentages.Ne, 95.75);
 
   // Case 2: Neutral (0.0) -> mean = 0.0 -> 50%
   const res2 = calculateScores(mockQuestions, {
@@ -371,31 +371,41 @@ test("All 100 questions have complete Romanian translations (textRo) & explanati
 });
 
 // ----------------------------------------------------
-// 9. Pure Cumulative Model: Inverted Deductions (Te/Ti) vs Non-Inverted (Ne/Si)
+// 9. Reformed Cumulative Model: Differential Axis Ripple (Ne vs Ni leaves NS unchanged)
 // ----------------------------------------------------
-test("Pure Cumulative Model: Deductions happen ONLY on inverted pairs (Te/Ti), NOT on Ne/Si", () => {
+test("Reformed Cumulative Model: Differential Axis Ripple (Ne vs Ni leaves NS unchanged)", () => {
   const mockQuestions = [
-    // Ne vs Si item (different base functions N vs S)
-    { id: "f_ne_si", category: "function", target: "Ne", agreementPole: "Ne", oppositePole: "Si" },
-    // Te vs Ti item (inverted pair - e vs i of Thinking)
+    // Ne vs Ni: same base function N, inverted e vs i
+    { id: "f_ne_ni", category: "function", target: "Ne", agreementPole: "Ne", oppositePole: "Ni" },
+    // Te vs Ti: same base function T, inverted e vs i
     { id: "f_te_ti", category: "function", target: "Te", agreementPole: "Te", oppositePole: "Ti" }
   ];
 
   const answers = {
-    f_ne_si: 1.0, // Strongly Agree with Ne
+    f_ne_ni: 1.0, // Strongly Agree with Ne
     f_te_ti: 1.0  // Strongly Agree with Te
   };
 
   const res = calculateScores(mockQuestions, answers);
-  // Ne increases to 100%
-  assert.strictEqual(res.percentages.Ne, 100, `Ne should be 100%, got ${res.percentages.Ne}%`);
-  // Si must NOT be decreased just because Ne was voted! Remains at 50% baseline
-  assert.strictEqual(res.percentages.Si, 50, `Si must NOT decrease on Ne/Si question, expected 50%, got ${res.percentages.Si}%`);
+  // Ne increases to 100%, Ni decreases to 0%
+  assert.strictEqual(res.percentages.Ne, 100);
+  assert.strictEqual(res.percentages.Ni, 0);
 
-  // Te increases to 100%
-  assert.strictEqual(res.percentages.Te, 100, `Te should be 100%, got ${res.percentages.Te}%`);
-  // Ti DOES decrease on Te/Ti (e vs i pair) to 0%
-  assert.strictEqual(res.percentages.Ti, 0, `Ti should decrease to 0% on inverted Te/Ti question, got ${res.percentages.Ti}%`);
+  // Te increases to 100%, Ti decreases to 0%
+  assert.strictEqual(res.percentages.Te, 100);
+  assert.strictEqual(res.percentages.Ti, 0);
+
+  // Differential axis check: Ne vs Ni must NOT alter the NS axis! (netDir = 0)
+  assert.strictEqual(res.axisScores.NS.pctA, 50);
+  assert.strictEqual(res.axisScores.NS.pctB, 50);
+
+  // Differential axis check: Te vs Ti must NOT alter the TF axis! (netDir = 0)
+  assert.strictEqual(res.axisScores.TF.pctA, 50);
+  assert.strictEqual(res.axisScores.TF.pctB, 50);
+
+  // Both Ne and Te push E/I towards E (100%)
+  assert.strictEqual(res.axisScores.EI.roundA, 100);
+  assert.strictEqual(res.axisScores.EI.dominant, "E");
 });
 
 // ----------------------------------------------------
@@ -448,8 +458,8 @@ test("Integrated Personality Match: calculateBestMbtiType integrates 8 cognitive
 
   assert.ok(rankings.length === 16, "Must rank all 16 types");
   assert.strictEqual(rankings[0].type, "INTJ", "Top match must be INTJ");
-  assert.ok(rankings[0].matchPercentage >= 70, `INTJ match (${rankings[0].matchPercentage}%) should be >= 70%`);
-  assert.ok(rankings[0].axisMatch >= 65, `INTJ axis match (${rankings[0].axisMatch}%) should be >= 65%`);
+  assert.ok(rankings[0].matchPercentage >= 75, `INTJ match (${rankings[0].matchPercentage}%) should be >= 75%`);
+  assert.ok(rankings[0].axisMatch >= 75, `INTJ axis match (${rankings[0].axisMatch}%) should be >= 75%`);
 
   const esfpMatch = rankings.find(r => r.type === "ESFP");
   assert.ok(esfpMatch.matchPercentage < rankings[0].matchPercentage, "ESFP match must be lower than INTJ");

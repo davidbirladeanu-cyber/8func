@@ -263,28 +263,22 @@ export function calculateBestMbtiType(percentages, axisScoresOrPercentages = nul
   const axisPcts = getAxisPercentagesForMatching(percentages, axisScoresOrPercentages);
 
   const scores = Object.entries(MBTI_TYPES).map(([typeKey, typeData]) => {
-    const target = getPrototypeVector(typeData);
+    // 1. Cognitive Function Stack Score (Grant-Brownsword + PolR/Trickster differential)
+    const pDom = percentages[typeData.stack[0]] ?? 50;
+    const pAux = percentages[typeData.stack[1]] ?? 50;
+    const pTert = percentages[typeData.stack[2]] ?? 50;
+    const pInf = percentages[typeData.stack[3]] ?? 50;
+    const pPolR = percentages[typeData.shadow[2]] ?? 50; // 7th function (Trickster / PolR)
 
-    let weightedDiff = 0;
-    let totalWeights = 0;
+    const stackScore = (
+      4.0 * pDom +
+      3.0 * pAux +
+      1.5 * pTert +
+      0.5 * (100 - pInf) +
+      1.0 * (100 - pPolR)
+    ) / 10.0;
 
-    ALL_FUNCS.forEach(f => {
-      const u = percentages[f] ?? 50;
-      const t = target[f];
-      let w = 1.0;
-      if (f === typeData.stack[0]) w = 2.5;
-      else if (f === typeData.stack[1]) w = 2.0;
-      else if (f === typeData.stack[2]) w = 1.4;
-      else if (f === typeData.stack[3]) w = 1.2;
-
-      weightedDiff += Math.abs(u - t) * w;
-      totalWeights += w;
-    });
-
-    const avgDiff = weightedDiff / totalWeights;
-    const rawFuncMatch = Math.max(0, 100 - avgDiff * 1.15);
-
-    // Calculate match from the 4 MBTI Spectrum Axes (E/I, N/S, T/F, J/P)
+    // 2. Axis alignment across the 4 letters of the type
     const letters = typeKey.split("");
     const axisMatch = (
       (axisPcts[letters[0]] ?? 50) +
@@ -293,9 +287,9 @@ export function calculateBestMbtiType(percentages, axisScoresOrPercentages = nul
       (axisPcts[letters[3]] ?? 50)
     ) / 4.0;
 
-    // Integrated match combining 8 cognitive functions and 4 spectrum axes
-    const compositeRaw = 0.55 * rawFuncMatch + 0.45 * axisMatch;
-    const matchPercentage = Math.min(100, Math.max(35, Math.round(compositeRaw)));
+    // 3. Composite match percentage
+    const compositeRaw = 0.60 * stackScore + 0.40 * axisMatch;
+    const matchPercentage = Math.min(100, Math.max(30, Math.round(compositeRaw)));
     const temp = getTypeTemperament(typeKey);
 
     return {
@@ -306,7 +300,7 @@ export function calculateBestMbtiType(percentages, axisScoresOrPercentages = nul
       temperamentColor: temp.color,
       temperamentBg: temp.colorBg,
       temperamentBorder: temp.colorBorder,
-      functionMatch: Math.round(rawFuncMatch),
+      functionMatch: Math.round(stackScore),
       axisMatch: Math.round(axisMatch),
       matchPercentage
     };

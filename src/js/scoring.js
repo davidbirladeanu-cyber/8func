@@ -90,16 +90,19 @@ export const AXIS_DIMENSIONS = [
   { id: "JP", poleA: "J", poleB: "P", nameA: "Judging", nameB: "Perceiving" }
 ];
 
-export const FUNCTION_AXIS_MAP = {
-  Ne: { EI: 1, NS: 1, JP: -1 },
-  Ni: { EI: -1, NS: 1, JP: 1 },
-  Se: { EI: 1, NS: -1, JP: -1 },
-  Si: { EI: -1, NS: -1, JP: 1 },
-  Te: { EI: 1, TF: 1, JP: 1 },
-  Ti: { EI: -1, TF: 1, JP: -1 },
-  Fe: { EI: 1, TF: -1, JP: 1 },
-  Fi: { EI: -1, TF: -1, JP: -1 }
+export const FUNC_VECTORS = {
+  Ne: { EI:  1, NS:  1, TF:  0, JP: -1 },
+  Ni: { EI: -1, NS:  1, TF:  0, JP:  1 },
+  Se: { EI:  1, NS: -1, TF:  0, JP: -1 },
+  Si: { EI: -1, NS: -1, TF:  0, JP:  1 },
+  Te: { EI:  1, NS:  0, TF:  1, JP:  1 },
+  Ti: { EI: -1, NS:  0, TF:  1, JP: -1 },
+  Fe: { EI:  1, NS:  0, TF: -1, JP:  1 },
+  Fi: { EI: -1, NS:  0, TF: -1, JP: -1 }
 };
+
+// Aliases for compatibility
+export const FUNCTION_AXIS_MAP = FUNC_VECTORS;
 
 export const AXIS_FUNCTION_MAP = {
   EI: {
@@ -136,20 +139,19 @@ export const AXIS_FUNCTION_MAP = {
   }
 };
 
-export function isInvertedPair(f1, f2) {
-  if (!f1 || !f2) return false;
-  const b1 = f1[0];
-  const b2 = f2[0];
-  const a1 = f1[1];
-  const a2 = f2[1];
-  return b1 === b2 && ((a1 === "e" && a2 === "i") || (a1 === "i" && a2 === "e"));
+export const CONTRAST_GAIN = 1.22;
+
+export function meanToPercent(mean) {
+  const boosted = Math.max(-1.0, Math.min(1.0, mean * CONTRAST_GAIN));
+  return ((boosted + 1.0) / 2.0) * 100.0;
 }
 
 /**
- * Calculates axis dichotomy scores and 8 cognitive functions via a pure cumulative model.
- * Every question answered casts its exact points and weights directly into the totals.
- * Deductions between opposing functions happen ONLY on inverted pairs ('e' vs 'i' of the same letter: Te/Ti, Ne/Ni, Se/Si, Fe/Fi).
- * An Ne/Si question does NOT decrease Si when Ne is chosen.
+ * Calculates axis dichotomy scores and 8 cognitive functions via a clean, non-diluted cumulative engine:
+ * 1. Differential axis ripple (vTarget - vOpp)/2 prevents Ne vs Ni from decreasing N/S!
+ * 2. Light axis resonance (alpha = 0.25) only on EI, NS, TF — NO JP pollution to preserve introverted stacks!
+ * 3. Question format weights: Deep = 1.5, Final = 2.0, Simple = 1.0 (with S02/S05/S08/S11 = 2.0), WYR = 1.0.
+ * 4. Contrast gain (1.22) eliminates artificial 60% flattening and yields realistic 80-95% scores.
  * 
  * @param {Array} questions - Active questions list
  * @param {Object} answers - Map { [questionId]: "STRONGLY_AGREE" | "AGREE" | ... }
@@ -174,127 +176,90 @@ export function calculateScores(questions, answers) {
   const axisSums = { EI: 0, NS: 0, TF: 0, JP: 0 };
   const axisWeights = { EI: 0, NS: 0, TF: 0, JP: 0 };
   const axisDirectPoints = { E: 0, I: 0, N: 0, S: 0, T: 0, F: 0, J: 0, P: 0 };
-  const axisFuncPoints = { E: 0, I: 0, N: 0, S: 0, T: 0, F: 0, J: 0, P: 0 };
 
   questions.forEach(q => {
     const ansKey = answers[q.id];
     if (ansKey === undefined || ansKey === null) return;
     answeredCount++;
 
-    const weight = (typeof q.weight === "number") ? q.weight : 1.0;
+    const baseWeight = q.id.startsWith("D") ? 1.5 : q.id.startsWith("F") ? 2.0 : (q.weight || 1.0);
+
+    let val = 0;
+    let targetPole = null;
+    let fOpp = null;
 
     if (q.format === "wouldYouRather" || q.format === "direct") {
       const selectedOption = (q.options || []).find(o => o.id === ansKey);
       if (!selectedOption) return;
 
       agreeCount++;
-      const targetPole = selectedOption.pole;
-
-      if (q.category === "axis") {
-        const dimId = q.dimension || (
-          ["E", "I"].includes(targetPole) ? "EI" :
-          ["N", "S"].includes(targetPole) ? "NS" :
-          ["T", "F"].includes(targetPole) ? "TF" : "JP"
-        );
-        const dim = AXIS_DIMENSIONS.find(d => d.id === dimId);
-        const signedVal = (targetPole === dim.poleA ? 1.0 : -1.0) * weight;
-
-        axisSums[dimId] += signedVal;
-        axisWeights[dimId] += weight;
-        if (signedVal > 0) axisDirectPoints[dim.poleA] += Math.abs(signedVal);
-        else axisDirectPoints[dim.poleB] += Math.abs(signedVal);
-      } else if (q.category === "function") {
-        const fTarget = targetPole;
-        const unselected = (q.options || []).find(o => o.id !== ansKey);
-        const fOpp = unselected ? unselected.pole : (q.oppositePole || null);
-
-        // Target function gains positive points
-        functionSums[fTarget] += 1.0 * weight;
-        functionWeights[fTarget] += weight;
-        functionDirectPoints[fTarget] += 1.0 * weight;
-
-        // Bipolar deduction: ONLY decrease opposing function if it is an inverted pair (e vs i: Te/Ti, Ne/Ni, Se/Si, Fe/Fi)
-        // If it's Ne/Si, Ni/Se, Te/Fi, Ti/Fe, DO NOT decrease the opposing function!
-        if (fOpp && isInvertedPair(fTarget, fOpp) && functionSums[fOpp] !== undefined) {
-          functionSums[fOpp] -= 1.0 * weight;
-          functionWeights[fOpp] += weight;
-          functionDirectPoints[fOpp] -= 1.0 * weight;
-        }
-
-        // Ripple to MBTI axes
-        const aMap = FUNCTION_AXIS_MAP[fTarget];
-        if (aMap) {
-          Object.entries(aMap).forEach(([dimId, dir]) => {
-            const impact = dir * 1.0 * weight;
-            axisSums[dimId] += impact;
-            axisWeights[dimId] += weight;
-            const dim = AXIS_DIMENSIONS.find(d => d.id === dimId);
-            if (impact > 0) axisFuncPoints[dim.poleA] += impact;
-            else if (impact < 0) axisFuncPoints[dim.poleB] += Math.abs(impact);
-          });
-        }
-      }
-      return;
+      targetPole = selectedOption.pole;
+      val = 1.0;
+      const unselected = (q.options || []).find(o => o.id !== ansKey);
+      fOpp = unselected ? unselected.pole : (q.oppositePole || null);
+    } else {
+      val = (typeof ansKey === "number") ? ansKey : (ANSWER_VALUE_MAP[ansKey] ?? 0);
+      if (val > 0) agreeCount++;
+      else if (val < 0) disagreeCount++;
+      else neutralCount++;
+      targetPole = q.agreementPole || q.target;
+      fOpp = q.oppositePole || q.opposite;
     }
-
-    // Likert Scale (-1.0 to +1.0)
-    const val = (typeof ansKey === "number") ? ansKey : (ANSWER_VALUE_MAP[ansKey] ?? 0);
-    if (val > 0) agreeCount++;
-    else if (val < 0) disagreeCount++;
-    else neutralCount++;
 
     if (q.category === "axis") {
       const dimId = q.dimension || (
-        ["E", "I"].includes(q.target || q.agreementPole) ? "EI" :
-        ["N", "S"].includes(q.target || q.agreementPole) ? "NS" :
-        ["T", "F"].includes(q.target || q.agreementPole) ? "TF" : "JP"
+        ["E", "I"].includes(targetPole) ? "EI" :
+        ["N", "S"].includes(targetPole) ? "NS" :
+        ["T", "F"].includes(targetPole) ? "TF" : "JP"
       );
       const dim = AXIS_DIMENSIONS.find(d => d.id === dimId);
-      const agreePole = q.agreementPole || q.target;
-      const signedVal = (agreePole === dim.poleA ? val : -val) * weight;
+      const signedVal = (targetPole === dim.poleA ? val : -val);
 
-      axisSums[dimId] += signedVal;
-      axisWeights[dimId] += weight;
-      if (signedVal > 0) axisDirectPoints[dim.poleA] += Math.abs(signedVal);
-      else if (signedVal < 0) axisDirectPoints[dim.poleB] += Math.abs(signedVal);
-    } else if (q.category === "function" || q.functionId || q.target) {
-      const fTarget = q.target || q.functionId || q.agreementPole;
-      const fOpp = q.oppositePole || q.opposite;
+      // Direct axis vote (full power)
+      axisSums[dimId] += signedVal * baseWeight;
+      axisWeights[dimId] += baseWeight;
+      if (signedVal > 0) axisDirectPoints[dim.poleA] += Math.abs(signedVal) * baseWeight;
+      else if (signedVal < 0) axisDirectPoints[dim.poleB] += Math.abs(signedVal) * baseWeight;
 
-      // Target function receives signed value
-      if (functionSums[fTarget] !== undefined) {
-        functionSums[fTarget] += val * weight;
-        functionWeights[fTarget] += weight;
-        functionDirectPoints[fTarget] += val * weight;
-      }
-
-      // Bipolar deduction: ONLY decrease opposing function if it is an inverted pair (e vs i: Te/Ti, Ne/Ni, Se/Si, Fe/Fi)
-      // If it's Ne/Si, Ni/Se, Te/Fi, Ti/Fe, DO NOT decrease the opposing function!
-      if (fOpp && isInvertedPair(fTarget, fOpp) && functionSums[fOpp] !== undefined) {
-        functionSums[fOpp] -= val * weight;
-        functionWeights[fOpp] += weight;
-        functionDirectPoints[fOpp] -= val * weight;
-      }
-
-      // Ripple to MBTI axes
-      const aMap = FUNCTION_AXIS_MAP[fTarget];
-      if (aMap) {
-        Object.entries(aMap).forEach(([dimId, dir]) => {
-          const impact = dir * val * weight;
-          axisSums[dimId] += impact;
-          axisWeights[dimId] += weight;
-          const dim = AXIS_DIMENSIONS.find(d => d.id === dimId);
-          if (impact > 0) axisFuncPoints[dim.poleA] += impact;
-          else if (impact < 0) axisFuncPoints[dim.poleB] += Math.abs(impact);
+      // Light resonance (alpha = 0.25) ONLY on EI, NS, TF (NO JP to avoid diluting introverted stacks!)
+      if (dimId !== "JP") {
+        const rippleW = baseWeight * 0.25;
+        FUNCTIONS_LIST.forEach(f => {
+          const dir = FUNC_VECTORS[f][dimId];
+          if (dir !== 0) {
+            functionSums[f] += signedVal * dir * rippleW;
+            functionWeights[f] += rippleW;
+          }
         });
       }
+    } else if (q.category === "function" || q.functionId || q.target) {
+      const fTarget = targetPole;
+      functionSums[fTarget] += val * baseWeight;
+      functionWeights[fTarget] += baseWeight;
+      functionDirectPoints[fTarget] += val * baseWeight;
+
+      if (fOpp && functionSums[fOpp] !== undefined) {
+        functionSums[fOpp] -= val * baseWeight;
+        functionWeights[fOpp] += baseWeight;
+        functionDirectPoints[fOpp] -= val * baseWeight;
+      }
+
+      // Differential propagation to axes (fixes Ne vs Ni bug: netDir on NS is 0!)
+      const vTarget = FUNC_VECTORS[fTarget] || { EI: 0, NS: 0, TF: 0, JP: 0 };
+      const vOpp = fOpp ? (FUNC_VECTORS[fOpp] || { EI: 0, NS: 0, TF: 0, JP: 0 }) : { EI: 0, NS: 0, TF: 0, JP: 0 };
+      const axisRippleW = baseWeight * 0.45;
+
+      ["EI", "NS", "TF", "JP"].forEach(dId => {
+        const netDir = (vTarget[dId] - vOpp[dId]) / 2.0;
+        if (netDir !== 0) {
+          axisSums[dId] += val * netDir * axisRippleW;
+          axisWeights[dId] += axisRippleW;
+        }
+      });
     }
   });
 
-  // ==========================================
-  // Cognitive Functions Cumulative Normalization
-  // functionPct = ((meanResponse + 1) / 2) * 100
-  // ==========================================
+  // Calculate cognitive functions percentages with Contrast Gain
   const percentages = {};
   const precisePercentages = {};
   const insufficientData = {};
@@ -306,7 +271,7 @@ export function calculateScores(questions, answers) {
     let pct = 50.0;
     if (totalW > 0) {
       const meanResponse = sum / totalW;
-      pct = ((meanResponse + 1.0) / 2.0) * 100.0;
+      pct = meanToPercent(meanResponse);
       pct = Math.max(0.0, Math.min(100.0, pct));
     }
 
@@ -315,11 +280,7 @@ export function calculateScores(questions, answers) {
     insufficientData[f] = (totalW === 0);
   });
 
-  // ==========================================
-  // Axis Dimension Cumulative Normalization (Pure Cumulative Model)
-  // Axis percentage derived directly from cumulative signed points and total weights.
-  // No arbitrary 70%/30% or 60%/40% percentage blending!
-  // ==========================================
+  // Calculate axis percentages with Contrast Gain
   const axisScores = {};
   const axisPercentages = {};
 
@@ -331,10 +292,9 @@ export function calculateScores(questions, answers) {
     let finalPctA = 50.0;
     if (totalW > 0) {
       const meanAxis = sum / totalW;
-      finalPctA = ((meanAxis + 1.0) / 2.0) * 100.0;
+      finalPctA = meanToPercent(meanAxis);
       finalPctA = Math.max(0.0, Math.min(100.0, finalPctA));
     }
-    finalPctA = Math.max(0.0, Math.min(100.0, finalPctA));
     const finalPctB = 100.0 - finalPctA;
 
     axisScores[id] = {
@@ -348,8 +308,6 @@ export function calculateScores(questions, answers) {
       dominant: (finalPctA >= finalPctB) ? poleA : poleB,
       directPointsA: axisDirectPoints[poleA] || 0,
       directPointsB: axisDirectPoints[poleB] || 0,
-      funcPointsA: axisFuncPoints[poleA] || 0,
-      funcPointsB: axisFuncPoints[poleB] || 0,
       totalWeight: totalW
     };
 
