@@ -90,116 +90,229 @@ export const AXIS_DIMENSIONS = [
   { id: "JP", poleA: "J", poleB: "P", nameA: "Judging", nameB: "Perceiving" }
 ];
 
+export const FUNCTION_AXIS_MAP = {
+  Ne: { EI: 1, NS: 1, JP: -1 },
+  Ni: { EI: -1, NS: 1, JP: 1 },
+  Se: { EI: 1, NS: -1, JP: -1 },
+  Si: { EI: -1, NS: -1, JP: 1 },
+  Te: { EI: 1, TF: 1, JP: 1 },
+  Ti: { EI: -1, TF: 1, JP: -1 },
+  Fe: { EI: 1, TF: -1, JP: 1 },
+  Fi: { EI: -1, TF: -1, JP: -1 }
+};
+
 export const AXIS_FUNCTION_MAP = {
   EI: {
     poleA: "E",
     poleB: "I",
+    posFuncs: ["Ne", "Se", "Te", "Fe"],
+    negFuncs: ["Ni", "Si", "Ti", "Fi"],
     funcsA: ["Ne", "Se", "Te", "Fe"],
     funcsB: ["Ni", "Si", "Ti", "Fi"]
   },
   NS: {
     poleA: "N",
     poleB: "S",
+    posFuncs: ["Ne", "Ni"],
+    negFuncs: ["Se", "Si"],
     funcsA: ["Ne", "Ni"],
     funcsB: ["Se", "Si"]
   },
   TF: {
     poleA: "T",
     poleB: "F",
+    posFuncs: ["Te", "Ti"],
+    negFuncs: ["Fe", "Fi"],
     funcsA: ["Te", "Ti"],
     funcsB: ["Fe", "Fi"]
   },
   JP: {
     poleA: "J",
     poleB: "P",
+    posFuncs: ["Ni", "Si", "Te", "Fe"],
+    negFuncs: ["Ne", "Se", "Ti", "Fi"],
     funcsA: ["Te", "Fe", "Ni", "Si"],
     funcsB: ["Ne", "Se", "Ti", "Fi"]
   }
 };
 
 /**
- * Calculates axis dichotomy scores and 8 independent cognitive function agreement scores.
+ * Calculates axis dichotomy scores and 8 cognitive functions via a pure cumulative model.
+ * Every question answered casts its exact points and weights directly into the totals.
+ * No arbitrary 70%/30% percentage blending is used.
  * 
  * @param {Array} questions - Active questions list
  * @param {Object} answers - Map { [questionId]: "STRONGLY_AGREE" | "AGREE" | ... }
  */
 export function calculateScores(questions, answers) {
-  // Total answered tracking
   let answeredCount = 0;
   let agreeCount = 0;
   let disagreeCount = 0;
   let neutralCount = 0;
 
-  // Axis contributions and assigned counts
-  const axisContributions = { E: 0, I: 0, N: 0, S: 0, T: 0, F: 0, J: 0, P: 0 };
-  const axisAssignedAnswered = { E: 0, I: 0, N: 0, S: 0, T: 0, F: 0, J: 0, P: 0 };
-
-  // Function sum of responses and count per function
-  const functionResponseSums = {};
-  const functionAnsweredCounts = {};
+  // Cumulative sums and weights for the 8 cognitive functions
+  const functionSums = {};
+  const functionWeights = {};
+  const functionDirectPoints = {};
+  const functionAxisPoints = {};
   FUNCTIONS_LIST.forEach(f => {
-    functionResponseSums[f] = 0;
-    functionAnsweredCounts[f] = 0;
+    functionSums[f] = 0;
+    functionWeights[f] = 0;
+    functionDirectPoints[f] = 0;
+    functionAxisPoints[f] = 0;
   });
+
+  // Cumulative sums and weights for the 4 MBTI Spectrum axes
+  const axisSums = { EI: 0, NS: 0, TF: 0, JP: 0 };
+  const axisWeights = { EI: 0, NS: 0, TF: 0, JP: 0 };
+  const axisDirectPoints = { E: 0, I: 0, N: 0, S: 0, T: 0, F: 0, J: 0, P: 0 };
+  const axisFuncPoints = { E: 0, I: 0, N: 0, S: 0, T: 0, F: 0, J: 0, P: 0 };
 
   questions.forEach(q => {
     const ansKey = answers[q.id];
     if (ansKey === undefined || ansKey === null) return;
+    answeredCount++;
+
+    const weight = (typeof q.weight === "number") ? q.weight : 1.0;
 
     if (q.format === "wouldYouRather" || q.format === "direct") {
-      answeredCount++;
       const selectedOption = (q.options || []).find(o => o.id === ansKey);
-      if (selectedOption) {
-        agreeCount++;
-        const targetPole = selectedOption.pole;
-        if (q.category === "axis") {
-          axisContributions[targetPole] = (axisContributions[targetPole] || 0) + 1.0;
-          axisAssignedAnswered[targetPole] = (axisAssignedAnswered[targetPole] || 0) + 1;
-        } else if (q.category === "function") {
-          if (functionResponseSums[targetPole] !== undefined) {
-            functionResponseSums[targetPole] += 1.0;
-            functionAnsweredCounts[targetPole]++;
-          }
+      if (!selectedOption) return;
+
+      agreeCount++;
+      const targetPole = selectedOption.pole;
+
+      if (q.category === "axis") {
+        const dimId = q.dimension || (
+          ["E", "I"].includes(targetPole) ? "EI" :
+          ["N", "S"].includes(targetPole) ? "NS" :
+          ["T", "F"].includes(targetPole) ? "TF" : "JP"
+        );
+        const dim = AXIS_DIMENSIONS.find(d => d.id === dimId);
+        const signedVal = (targetPole === dim.poleA ? 1.0 : -1.0) * weight;
+
+        axisSums[dimId] += signedVal;
+        axisWeights[dimId] += weight;
+        if (signedVal > 0) axisDirectPoints[dim.poleA] += Math.abs(signedVal);
+        else axisDirectPoints[dim.poleB] += Math.abs(signedVal);
+
+        // Ripple to associated cognitive functions
+        const fMap = AXIS_FUNCTION_MAP[dimId];
+        if (fMap) {
+          fMap.posFuncs.forEach(f => {
+            functionSums[f] += signedVal;
+            functionWeights[f] += weight;
+            functionAxisPoints[f] += signedVal;
+          });
+          fMap.negFuncs.forEach(f => {
+            functionSums[f] -= signedVal;
+            functionWeights[f] += weight;
+            functionAxisPoints[f] -= signedVal;
+          });
+        }
+      } else if (q.category === "function") {
+        const fTarget = targetPole;
+        const unselected = (q.options || []).find(o => o.id !== ansKey);
+        const fOpp = unselected ? unselected.pole : (q.oppositePole || null);
+
+        // Target function gains positive points
+        functionSums[fTarget] += 1.0 * weight;
+        functionWeights[fTarget] += weight;
+        functionDirectPoints[fTarget] += 1.0 * weight;
+
+        // Bipolar deduction: opposing function receives negative points
+        if (fOpp && functionSums[fOpp] !== undefined) {
+          functionSums[fOpp] -= 1.0 * weight;
+          functionWeights[fOpp] += weight;
+          functionDirectPoints[fOpp] -= 1.0 * weight;
+        }
+
+        // Ripple to MBTI axes
+        const aMap = FUNCTION_AXIS_MAP[fTarget];
+        if (aMap) {
+          Object.entries(aMap).forEach(([dimId, dir]) => {
+            const impact = dir * 1.0 * weight;
+            axisSums[dimId] += impact;
+            axisWeights[dimId] += weight;
+            const dim = AXIS_DIMENSIONS.find(d => d.id === dimId);
+            if (impact > 0) axisFuncPoints[dim.poleA] += impact;
+            else if (impact < 0) axisFuncPoints[dim.poleB] += Math.abs(impact);
+          });
         }
       }
       return;
     }
 
+    // Likert Scale (-1.0 to +1.0)
     const val = (typeof ansKey === "number") ? ansKey : (ANSWER_VALUE_MAP[ansKey] ?? 0);
-    answeredCount++;
-
     if (val > 0) agreeCount++;
     else if (val < 0) disagreeCount++;
     else neutralCount++;
 
     if (q.category === "axis") {
+      const dimId = q.dimension || (
+        ["E", "I"].includes(q.target || q.agreementPole) ? "EI" :
+        ["N", "S"].includes(q.target || q.agreementPole) ? "NS" :
+        ["T", "F"].includes(q.target || q.agreementPole) ? "TF" : "JP"
+      );
+      const dim = AXIS_DIMENSIONS.find(d => d.id === dimId);
       const agreePole = q.agreementPole || q.target;
-      const oppPole = q.oppositePole || q.opposite;
-      const weight = (typeof q.weight === "number") ? q.weight : 1.0;
+      const signedVal = (agreePole === dim.poleA ? val : -val) * weight;
 
-      // Track answered question assigned to its agreementPole
-      if (axisAssignedAnswered[agreePole] !== undefined) {
-        axisAssignedAnswered[agreePole] += weight;
-      }
+      axisSums[dimId] += signedVal;
+      axisWeights[dimId] += weight;
+      if (signedVal > 0) axisDirectPoints[dim.poleA] += Math.abs(signedVal);
+      else if (signedVal < 0) axisDirectPoints[dim.poleB] += Math.abs(signedVal);
 
-      // Positive value -> add |val| * weight to agreementPole
-      // Negative value -> add |val| * weight to opposite pole
-      if (val > 0) {
-        axisContributions[agreePole] = (axisContributions[agreePole] || 0) + Math.abs(val) * weight;
-      } else if (val < 0) {
-        axisContributions[oppPole] = (axisContributions[oppPole] || 0) + Math.abs(val) * weight;
+      // Ripple to associated cognitive functions
+      const fMap = AXIS_FUNCTION_MAP[dimId];
+      if (fMap) {
+        fMap.posFuncs.forEach(f => {
+          functionSums[f] += signedVal;
+          functionWeights[f] += weight;
+          functionAxisPoints[f] += signedVal;
+        });
+        fMap.negFuncs.forEach(f => {
+          functionSums[f] -= signedVal;
+          functionWeights[f] += weight;
+          functionAxisPoints[f] -= signedVal;
+        });
       }
     } else if (q.category === "function" || q.functionId || q.target) {
-      const f = q.target || q.functionId || q.agreementPole;
-      if (functionResponseSums[f] !== undefined) {
-        functionResponseSums[f] += val;
-        functionAnsweredCounts[f]++;
+      const fTarget = q.target || q.functionId || q.agreementPole;
+      const fOpp = q.oppositePole || q.opposite;
+
+      // Target function receives signed value
+      if (functionSums[fTarget] !== undefined) {
+        functionSums[fTarget] += val * weight;
+        functionWeights[fTarget] += weight;
+        functionDirectPoints[fTarget] += val * weight;
+      }
+
+      // Bipolar deduction: opposing function receives inverse signed value
+      if (fOpp && functionSums[fOpp] !== undefined) {
+        functionSums[fOpp] -= val * weight;
+        functionWeights[fOpp] += weight;
+        functionDirectPoints[fOpp] -= val * weight;
+      }
+
+      // Ripple to MBTI axes
+      const aMap = FUNCTION_AXIS_MAP[fTarget];
+      if (aMap) {
+        Object.entries(aMap).forEach(([dimId, dir]) => {
+          const impact = dir * val * weight;
+          axisSums[dimId] += impact;
+          axisWeights[dimId] += weight;
+          const dim = AXIS_DIMENSIONS.find(d => d.id === dimId);
+          if (impact > 0) axisFuncPoints[dim.poleA] += impact;
+          else if (impact < 0) axisFuncPoints[dim.poleB] += Math.abs(impact);
+        });
       }
     }
   });
 
   // ==========================================
-  // Cognitive Functions Normalization
+  // Cognitive Functions Cumulative Normalization
   // functionPct = ((meanResponse + 1) / 2) * 100
   // ==========================================
   const percentages = {};
@@ -207,111 +320,64 @@ export function calculateScores(questions, answers) {
   const insufficientData = {};
 
   FUNCTIONS_LIST.forEach(f => {
-    const n = functionAnsweredCounts[f] || 0;
-    const sum = functionResponseSums[f] || 0;
+    const totalW = functionWeights[f] || 0;
+    const sum = functionSums[f] || 0;
 
     let pct = 50.0;
-    if (n > 0) {
-      const meanResponse = sum / n;
+    if (totalW > 0) {
+      const meanResponse = sum / totalW;
       pct = ((meanResponse + 1.0) / 2.0) * 100.0;
       pct = Math.max(0.0, Math.min(100.0, pct));
     }
 
     precisePercentages[f] = pct;
     percentages[f] = Math.round(pct);
-    insufficientData[f] = (n === 0);
+    insufficientData[f] = (totalW === 0);
   });
 
   // ==========================================
-  // Axis Dimension Normalization (Integrated 70/30 Model)
-  // Combines direct axis items (30%) and cognitive functions (70%):
-  // - EI integrates E/I direct items and Ne, Se, Te, Fe vs Ni, Si, Ti, Fi
-  // - NS integrates N/S direct items and Ne, Ni vs Se, Si
-  // - TF integrates T/F direct items and Te, Ti vs Fe, Fi
-  // - JP integrates J/P direct items and Te, Fe, Ni, Si vs Ne, Se, Ti, Fi
+  // Axis Dimension Cumulative Normalization (Pure Cumulative Model)
+  // Axis percentage derived directly from cumulative signed points and total weights.
+  // No arbitrary 70%/30% or 60%/40% percentage blending!
   // ==========================================
   const axisScores = {};
   const axisPercentages = {};
 
   AXIS_DIMENSIONS.forEach(dim => {
-    const { poleA, poleB } = dim;
-    const countA = axisAssignedAnswered[poleA] || 0;
-    const countB = axisAssignedAnswered[poleB] || 0;
-    const hasAxisQuestions = (countA > 0 || countB > 0);
-
-    const meanA = countA > 0 ? (axisContributions[poleA] / countA) : 0;
-    const meanB = countB > 0 ? (axisContributions[poleB] / countB) : 0;
-
-    let axisPctA = 50.0;
-    if (hasAxisQuestions) {
-      axisPctA = 50.0 + 50.0 * (meanA - meanB) / 2.0;
-      axisPctA = Math.max(0.0, Math.min(100.0, axisPctA));
-    }
-
-    const fMap = AXIS_FUNCTION_MAP[dim.id];
-    let countFuncA = 0;
-    let countFuncB = 0;
-    let sumPctA = 0;
-    let sumPctB = 0;
-
-    fMap.funcsA.forEach(f => {
-      sumPctA += precisePercentages[f];
-      countFuncA += (functionAnsweredCounts[f] || 0);
-    });
-    fMap.funcsB.forEach(f => {
-      sumPctB += precisePercentages[f];
-      countFuncB += (functionAnsweredCounts[f] || 0);
-    });
-
-    const meanFuncA = sumPctA / fMap.funcsA.length;
-    const meanFuncB = sumPctB / fMap.funcsB.length;
-    const hasFuncQuestions = (countFuncA > 0 || countFuncB > 0);
-
-    let funcPctA = 50.0;
-    if (hasFuncQuestions) {
-      // Direct net difference without artificial halving
-      funcPctA = 50.0 + (meanFuncA - meanFuncB);
-      funcPctA = Math.max(0.0, Math.min(100.0, funcPctA));
-    }
+    const { poleA, poleB, id } = dim;
+    const totalW = axisWeights[id] || 0;
+    const sum = axisSums[id] || 0;
 
     let finalPctA = 50.0;
-    if (hasAxisQuestions && hasFuncQuestions) {
-      // Configured 70% cognitive function substrate + 30% direct self-report
-      finalPctA = 0.30 * axisPctA + 0.70 * funcPctA;
-    } else if (hasAxisQuestions) {
-      finalPctA = axisPctA;
-    } else if (hasFuncQuestions) {
-      finalPctA = funcPctA;
-    } else {
-      finalPctA = 50.0;
+    if (totalW > 0) {
+      const meanAxis = sum / totalW;
+      finalPctA = ((meanAxis + 1.0) / 2.0) * 100.0;
+      finalPctA = Math.max(0.0, Math.min(100.0, finalPctA));
     }
     finalPctA = Math.max(0.0, Math.min(100.0, finalPctA));
     const finalPctB = 100.0 - finalPctA;
 
-    axisScores[dim.id] = {
-      dimension: dim.id,
+    axisScores[id] = {
+      dimension: id,
       poleA,
       poleB,
-      meanA,
-      meanB,
-      countA,
-      countB,
-      axisPctA,
-      axisPctB: 100.0 - axisPctA,
-      funcPctA,
-      funcPctB: 100.0 - funcPctA,
       pctA: finalPctA,
       pctB: finalPctB,
       roundA: Math.round(finalPctA),
       roundB: Math.round(finalPctB),
-      dominant: (finalPctA >= finalPctB) ? poleA : poleB
+      dominant: (finalPctA >= finalPctB) ? poleA : poleB,
+      directPointsA: axisDirectPoints[poleA] || 0,
+      directPointsB: axisDirectPoints[poleB] || 0,
+      funcPointsA: axisFuncPoints[poleA] || 0,
+      funcPointsB: axisFuncPoints[poleB] || 0,
+      totalWeight: totalW
     };
 
     axisPercentages[poleA] = Math.round(finalPctA);
     axisPercentages[poleB] = Math.round(finalPctB);
   });
 
-  // Calculate 4-letter type directly from the 4 integrated axis dimensions
+  // Calculate 4-letter type directly from the 4 cumulative axis dimensions
   const derivedType = `${axisScores.EI.dominant}${axisScores.NS.dominant}${axisScores.TF.dominant}${axisScores.JP.dominant}`;
 
   // Response bias checks
@@ -348,7 +414,11 @@ export function calculateScores(questions, answers) {
     axisScores,
     axisPercentages,
     derivedType,
-    rawScores: functionResponseSums,
+    rawScores: functionSums,
+    functionSums,
+    functionWeights,
+    functionDirectPoints,
+    functionAxisPoints,
     percentages,
     precisePercentages,
     insufficientData,

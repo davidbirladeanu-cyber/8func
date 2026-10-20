@@ -1322,8 +1322,9 @@ class App {
                       ${topMbti.temperament} · ${topMbti.temperamentName}
                     </span>
                     ${isCloseMatch ? `
-                      <span class="e-tag" style="background: var(--paper); border: 1px solid var(--line); color: var(--text-muted); font-size: 0.72rem;">
-                        ${t('closeAlternative', { type: otherMbtis[0].type, pct: otherMbtis[0].matchPercentage }, lang)}
+                      <span class="e-tag" style="background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.4); color: var(--text-strong); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem;">
+                        <span>⚖️</span>
+                        <span>${lang === 'ro' ? `Profil mixt / Frontieră (Δ ≤ 3% față de ${otherMbtis[0].type})` : `Borderline / Mixed Profile (Δ ≤ 3% vs ${otherMbtis[0].type})`}</span>
                       </span>
                     ` : ""}
                   </div>

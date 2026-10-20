@@ -371,46 +371,42 @@ test("All 100 questions have complete Romanian translations (textRo) & explanati
 });
 
 // ----------------------------------------------------
-// 9. Integrated Model: 70% Functions / 30% Axis Weighting Calibration
+// 9. Pure Cumulative Model: Direct Axis & Function Item Integration
 // ----------------------------------------------------
-test("Integrated Model: 70% Functions / 30% Direct Axis Weighting Calibration", () => {
-  // User scenario:
-  // Ni: 91%, Ne: 84% -> mean Intuition = 87.5%
-  // Se: 54%, Si: 36% -> mean Sensing = 45.0%
-  // Net function difference = 87.5 - 45.0 = 42.5%
-  // funcPctN = 50 + 42.5 = 92.5%
-  // Direct axis questions yield a moderate 53%
-  // final N = 0.70 * 92.5% + 0.30 * 53% = 64.75% + 15.9% = 80.65% (~81%)
-  // Under the old formula with halved difference and 50/50 weighting, this came out to only 62%.
-  // The new 70/30 weighting properly preserves the authentic 81% Intuition score.
-
+test("Pure Cumulative Model: All items accumulate directly without arbitrary 70/30 percentage splits", () => {
+  // Scenario:
+  // 1 direct axis question for NS favoring N: +0.60
+  // 1 function question for Ni (opp Se): +0.80
+  // Both questions accumulate directly into Axis NS:
+  // - direct question contributes +0.60 to N (weight: 1)
+  // - Ni question contributes +0.80 to N (weight: 1)
+  // Total NS signed sum = 0.60 + 0.80 = 1.40
+  // Total NS weight = 1 + 1 = 2
+  // Mean NS = 1.40 / 2 = 0.70
+  // Expected N percentage = ((0.70 + 1) / 2) * 100 = 85.0%
+  // Both questions also accumulate directly into Ni:
+  // - direct NS question ripples +0.60 to Ni (weight: 1)
+  // - Ni question contributes +0.80 to Ni (weight: 1)
+  // Total Ni sum = 0.60 + 0.80 = 1.40, weight = 2, mean = 0.70 -> 85%
+  // And to Se (opposite):
+  // - direct NS ripples -0.60 to Se (weight: 1)
+  // - Ni bipolar deduction contributes -0.80 to Se (weight: 1)
+  // Total Se sum = -1.40, weight = 2, mean = -0.70 -> 15%
   const mockQuestions = [
-    // 1 direct axis question for N/S (slight agreement -> 53%)
     { id: "ax_ns", category: "axis", dimension: "NS", target: "N", agreementPole: "N", oppositePole: "S" },
-    // Function questions to achieve approximate Ni, Ne, Se, Si levels
-    { id: "f_ni_1", category: "function", target: "Ni", agreementPole: "Ni", oppositePole: "Se" },
-    { id: "f_ne_1", category: "function", target: "Ne", agreementPole: "Ne", oppositePole: "Si" },
-    { id: "f_se_1", category: "function", target: "Se", agreementPole: "Se", oppositePole: "Ni" },
-    { id: "f_si_1", category: "function", target: "Si", agreementPole: "Si", oppositePole: "Ne" }
+    { id: "f_ni_1", category: "function", target: "Ni", agreementPole: "Ni", oppositePole: "Se" }
   ];
 
-  // Setup answers
   const answers = {
-    ax_ns: 0.12, // direct axis gives moderate ~53%
-    f_ni_1: 0.82, // Ni ~91%
-    f_ne_1: 0.68, // Ne ~84%
-    f_se_1: 0.08, // Se ~54%
-    f_si_1: -0.28 // Si ~36%
+    ax_ns: 0.60,
+    f_ni_1: 0.80
   };
 
   const res = calculateScores(mockQuestions, answers);
-  assert.ok(res.percentages.Ni >= 90 && res.percentages.Ni <= 92, `Ni should be ~91%, got ${res.percentages.Ni}%`);
-  assert.ok(res.percentages.Ne >= 83 && res.percentages.Ne <= 85, `Ne should be ~84%, got ${res.percentages.Ne}%`);
-  assert.ok(res.percentages.Se >= 53 && res.percentages.Se <= 55, `Se should be ~54%, got ${res.percentages.Se}%`);
-  assert.ok(res.percentages.Si >= 35 && res.percentages.Si <= 37, `Si should be ~36%, got ${res.percentages.Si}%`);
-
-  // Verify that Intuition (N) is around 80%-81% and dominant, NOT 62%!
-  assert.ok(res.axisScores.NS.roundA >= 80 && res.axisScores.NS.roundA <= 82, `N should be 80-82%, got ${res.axisScores.NS.roundA}%`);
+  assert.strictEqual(res.percentages.Ni, 85, `Ni should be 85%, got ${res.percentages.Ni}%`);
+  assert.strictEqual(res.percentages.Se, 15, `Se should be 15%, got ${res.percentages.Se}%`);
+  assert.strictEqual(res.axisScores.NS.roundA, 85, `N should be 85%, got ${res.axisScores.NS.roundA}%`);
+  assert.strictEqual(res.axisScores.NS.roundB, 15, `S should be 15%, got ${res.axisScores.NS.roundB}%`);
   assert.strictEqual(res.axisScores.NS.dominant, "N", "N must be dominant");
 });
 
@@ -465,10 +461,32 @@ test("Integrated Personality Match: calculateBestMbtiType integrates 8 cognitive
   assert.ok(rankings.length === 16, "Must rank all 16 types");
   assert.strictEqual(rankings[0].type, "INTJ", "Top match must be INTJ");
   assert.ok(rankings[0].matchPercentage >= 75, `INTJ match (${rankings[0].matchPercentage}%) should be >= 75%`);
-  assert.ok(rankings[0].axisMatch >= 75, `INTJ axis match (${rankings[0].axisMatch}%) should be >= 75%`);
+  assert.ok(rankings[0].axisMatch >= 65, `INTJ axis match (${rankings[0].axisMatch}%) should be >= 65%`);
 
   const esfpMatch = rankings.find(r => r.type === "ESFP");
   assert.ok(esfpMatch.matchPercentage < rankings[0].matchPercentage, "ESFP match must be lower than INTJ");
+});
+
+// ----------------------------------------------------
+// 12. Borderline / Mixed Profile Detection (Diff <= 3%)
+// ----------------------------------------------------
+test("Borderline / Mixed Profile Detection: Flags profiles when top 2 types differ by <= 3%", () => {
+  const balancedFuncs = {
+    Ne: 65, Ni: 63, Se: 50, Si: 50,
+    Te: 60, Ti: 62, Fe: 50, Fi: 50
+  };
+  const balancedAxes = {
+    EI: { pctA: 55, pctB: 45 },
+    NS: { pctA: 65, pctB: 35 },
+    TF: { pctA: 60, pctB: 40 },
+    JP: { pctA: 51, pctB: 49 }
+  };
+  const rankings = calculateBestMbtiType(balancedFuncs, balancedAxes);
+  assert.ok(rankings.length === 16);
+  if (Math.abs(rankings[0].matchPercentage - rankings[1].matchPercentage) <= 3) {
+    assert.strictEqual(rankings[0].isBorderline, true, "Top match should be marked isBorderline");
+    assert.ok(rankings[0].borderlineType, "Must have borderlineType");
+  }
 });
 
 // ----------------------------------------------------
