@@ -315,6 +315,46 @@ a {
   color: var(--accent);
 }
 
+.order-toggle {
+  height: 38px;
+  padding: 0 0.85rem;
+  border-radius: var(--radius-pill);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: var(--ink-700);
+  border: 1px solid var(--line);
+  background: var(--paper);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  user-select: none;
+}
+
+.order-toggle:hover {
+  color: var(--text-strong);
+  background: var(--card-bg);
+  border-color: var(--line-strong);
+  transform: translateY(-1px);
+}
+
+.order-toggle svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+.order-toggle .order-label {
+  font-weight: 800;
+  font-size: 0.82rem;
+  color: var(--accent);
+}
+
+
 .e-btn {
   display: inline-flex;
   align-items: center;
@@ -2724,6 +2764,11 @@ a {
     height: 34px;
   }
   .lang-toggle {
+    height: 34px;
+    padding: 0 0.65rem;
+    font-size: 0.78rem;
+  }
+  .order-toggle {
     height: 34px;
     padding: 0 0.65rem;
     font-size: 0.78rem;

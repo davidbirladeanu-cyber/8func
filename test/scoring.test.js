@@ -552,6 +552,48 @@ test("Target Sorting Order: Questions within each phase sorted by I, E, N, S, T,
 });
 
 // ----------------------------------------------------
+// 12c. Order Modes (format / function / random)
+// ----------------------------------------------------
+test("Order Modes: 'function' groups by target across test, 'format' groups by phase, 'random' shuffles", () => {
+  const TARGET_ORDER = [
+    "I", "E",
+    "N", "S",
+    "T", "F",
+    "J", "P",
+    "Ne", "Ni", "Se", "Si", "Te", "Ti", "Fe", "Fi"
+  ];
+  const targetRank = new Map(TARGET_ORDER.map((t, idx) => [t.toUpperCase(), idx]));
+
+  // Function mode: Target rank is monotonic across the ENTIRE test
+  const funcQs = getQuestionsForMode("complete", "function");
+  assert.strictEqual(funcQs.length, 100);
+  let prevRank = -1;
+  funcQs.forEach(q => {
+    const rank = targetRank.get((q.target || "").toUpperCase());
+    assert.ok(rank !== undefined, `Target ${q.target} on question ${q.id} must be in TARGET_ORDER`);
+    assert.ok(rank >= prevRank, `Function mode: question ${q.id} (target ${q.target}, rank ${rank}) must be >= ${prevRank}`);
+    prevRank = rank;
+  });
+
+  // Format mode: Format rank is monotonic across test (Deep -> Short -> WYR -> Direct)
+  const formatQs = getQuestionsForMode("complete", "format");
+  assert.strictEqual(formatQs.length, 100);
+  const formatRank = { deep: 1, short: 2, wouldYouRather: 3, direct: 4 };
+  let prevFormatRank = 1;
+  formatQs.forEach(q => {
+    const r = formatRank[q.format];
+    assert.ok(r >= prevFormatRank, `Format mode: ${q.id} format ${q.format} must be >= ${prevFormatRank}`);
+    prevFormatRank = r;
+  });
+
+  // Random mode: Contains all 100 items
+  const randQs = getQuestionsForMode("complete", "random");
+  assert.strictEqual(randQs.length, 100);
+  const ids = new Set(randQs.map(q => q.id));
+  assert.strictEqual(ids.size, 100);
+});
+
+// ----------------------------------------------------
 // 13. Results URL Path: Building and Parsing Format
 // ----------------------------------------------------
 test("Results URL Path: Format matches /results/I=80/E=80/N=80/S=80/T=80/F=80/J=80/P=80/Ne=80/Ni=80/Se=80/Si=80/Te=80/Ti=80/Fe=80/Fi=80/", () => {

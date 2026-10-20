@@ -13,6 +13,7 @@ const STORAGE_KEYS = {
   AUTO_ADVANCE: "8func_auto_advance_v2",
   THEME: "8func_theme_v2",
   LANG: "8func_lang_v2",
+  ORDER: "8func_order_v2",
   SCREEN: "8func_screen_v2"
 };
 
@@ -27,12 +28,15 @@ export class AppState {
     const savedMode = localStorage.getItem(STORAGE_KEYS.MODE);
     this.mode = TEST_MODES[savedMode] ? savedMode : "standard";
 
-    // Question ordering is deterministic: Deep -> Simple (Short) -> Rather (Would You Rather) -> Direct
-    // And within each section sorted by: I, E, N, S, T, F, J, P, Ne, Ni, Se, Si, Te, Ti, Fe, Fi
-    this.randomized = false;
+    // Question order mode: 'format' (Deep -> Short -> WYR -> Direct), 'function' (I -> E -> N -> S...), or 'random'
+    const savedOrder = localStorage.getItem(STORAGE_KEYS.ORDER);
+    this.orderMode = (savedOrder === "format" || savedOrder === "function" || savedOrder === "random")
+      ? savedOrder
+      : "format";
+    this.randomized = this.orderMode === "random";
 
     // Build question bank for mode
-    this.questions = getQuestionsForMode(this.mode);
+    this.questions = getQuestionsForMode(this.mode, this.orderMode);
 
     // Load answers map
     try {
@@ -108,7 +112,7 @@ export class AppState {
   selectMode(modeKey) {
     if (!TEST_MODES[modeKey]) return;
     this.mode = modeKey;
-    this.questions = getQuestionsForMode(this.mode);
+    this.questions = getQuestionsForMode(this.mode, this.orderMode);
     this.answers = {};
     this.currentIndex = 0;
     this.urlResultsScores = null;
@@ -190,11 +194,38 @@ export class AppState {
     this.notify();
   }
 
-  toggleRandomize() {
-    this.randomized = !this.randomized;
-    this.questions = getQuestionsForMode(this.mode, this.randomized);
-    this.currentIndex = 0;
+  toggleOrderMode() {
+    const modes = ["format", "function", "random"];
+    const nextIdx = (modes.indexOf(this.orderMode) + 1) % modes.length;
+    this.setOrderMode(modes[nextIdx]);
+  }
+
+  setOrderMode(newOrder) {
+    if (!["format", "function", "random"].includes(newOrder)) return;
+    this.orderMode = newOrder;
+    this.randomized = this.orderMode === "random";
+    try {
+      localStorage.setItem(STORAGE_KEYS.ORDER, this.orderMode);
+    } catch (e) {
+      console.warn("Storage save error", e);
+    }
+
+    const currentQId = this.questions[this.currentIndex]?.id;
+    this.questions = getQuestionsForMode(this.mode, this.orderMode);
+
+    if (currentQId) {
+      const newIdx = this.questions.findIndex(q => q.id === currentQId);
+      if (newIdx !== -1) {
+        this.currentIndex = newIdx;
+      } else {
+        this.currentIndex = Math.min(this.currentIndex, this.questions.length - 1);
+      }
+    }
     this.notify();
+  }
+
+  toggleRandomize() {
+    this.toggleOrderMode();
   }
 
   showResults() {
@@ -208,7 +239,7 @@ export class AppState {
   }
 
   resetQuiz() {
-    this.questions = getQuestionsForMode(this.mode);
+    this.questions = getQuestionsForMode(this.mode, this.orderMode);
     this.answers = {};
     this.currentIndex = 0;
     this.urlResultsScores = null;

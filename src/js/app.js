@@ -412,6 +412,18 @@ class App {
     const langLabel = lang === "ro" ? "RO" : "EN";
     const langTitle = lang === "ro" ? "Switch to English" : "Comută în Română";
 
+    const orderMode = this.state.orderMode || "format";
+    let orderIcon = ICONS.layers;
+    let orderLabel = t('orderFormat', {}, lang);
+    if (orderMode === "function") {
+      orderIcon = ICONS.brain;
+      orderLabel = t('orderFunction', {}, lang);
+    } else if (orderMode === "random") {
+      orderIcon = ICONS.shuffle;
+      orderLabel = t('orderRandom', {}, lang);
+    }
+    const orderTooltip = t('orderTooltip', { mode: orderLabel }, lang);
+
     return `
       <header class="ed e-nav">
         <div class="e-wrap">
@@ -425,6 +437,10 @@ class App {
             <button class="lang-toggle" type="button" aria-label="${langTitle}" title="${langTitle}" id="lang-toggle-btn">
               ${ICONS.globe}
               <span class="lang-code">${langLabel}</span>
+            </button>
+            <button class="order-toggle" type="button" aria-label="${orderTooltip}" title="${orderTooltip}" id="order-toggle-btn">
+              ${orderIcon}
+              <span class="order-label">${orderLabel}</span>
             </button>
             ${this.state.screen === "results" ? `
               <button class="e-btn e-btn-primary e-btn-sm" type="button" id="nav-retake-btn">
@@ -450,6 +466,9 @@ class App {
 
     const langBtn = document.getElementById("lang-toggle-btn");
     if (langBtn) langBtn.addEventListener("click", () => this.state.toggleLang());
+
+    const orderBtn = document.getElementById("order-toggle-btn");
+    if (orderBtn) orderBtn.addEventListener("click", () => this.state.toggleOrderMode());
 
     const logoBtn = document.getElementById("nav-logo-btn");
     if (logoBtn) logoBtn.addEventListener("click", () => this.state.showWelcome());
@@ -815,7 +834,7 @@ class App {
   renderQuestionBreakdown(percentages, axisScores, lang) {
     const questions = (this.state.questions && this.state.questions.length > 0)
       ? this.state.questions
-      : ALL_QUESTIONS;
+      : getQuestionsForMode("complete", this.state.orderMode);
     const answers = this.state.answers || {};
     const hasAnswers = Object.keys(answers).length > 0;
 
