@@ -175,17 +175,19 @@ export function calculateScores(questions, answers) {
     if (q.category === "axis") {
       const agreePole = q.agreementPole || q.target;
       const oppPole = q.oppositePole || q.opposite;
+      const weight = (typeof q.weight === "number") ? q.weight : 1.0;
+
       // Track answered question assigned to its agreementPole
       if (axisAssignedAnswered[agreePole] !== undefined) {
-        axisAssignedAnswered[agreePole]++;
+        axisAssignedAnswered[agreePole] += weight;
       }
 
-      // Positive value -> add |val| to agreementPole
-      // Negative value -> add |val| to opposite pole
+      // Positive value -> add |val| * weight to agreementPole
+      // Negative value -> add |val| * weight to opposite pole
       if (val > 0) {
-        axisContributions[agreePole] = (axisContributions[agreePole] || 0) + Math.abs(val);
+        axisContributions[agreePole] = (axisContributions[agreePole] || 0) + Math.abs(val) * weight;
       } else if (val < 0) {
-        axisContributions[oppPole] = (axisContributions[oppPole] || 0) + Math.abs(val);
+        axisContributions[oppPole] = (axisContributions[oppPole] || 0) + Math.abs(val) * weight;
       }
     } else if (q.category === "function" || q.functionId || q.target) {
       const f = q.target || q.functionId || q.agreementPole;

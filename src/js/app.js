@@ -1541,6 +1541,15 @@ class App {
                 <span>${ICONS.download}</span>
                 <span>${t('printDownload', {}, lang)}</span>
               </button>
+              <button class="e-btn e-btn-outline" type="button" id="download-answers-btn">
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 15px; height: 15px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg></span>
+                <span>${t('downloadAnswersJson', {}, lang)}</span>
+              </button>
+              <button class="e-btn e-btn-outline" type="button" id="upload-answers-btn">
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 15px; height: 15px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg></span>
+                <span>${t('uploadAnswersJson', {}, lang)}</span>
+              </button>
+              <input type="file" id="upload-answers-input" accept=".json,application/json" style="display:none;" />
               <button class="e-btn e-btn-outline" type="button" id="export-json-btn">
                 <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 15px; height: 15px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></span>
                 <span>${t('exportRawJson', {}, lang)}</span>
@@ -1763,6 +1772,88 @@ class App {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         this.showToast(t('dataExportedToast', {}, lang));
+      });
+    }
+
+    // Download answers JSON
+    const downloadAnswersBtn = document.getElementById("download-answers-btn");
+    if (downloadAnswersBtn) {
+      downloadAnswersBtn.addEventListener("click", () => {
+        const payload = {
+          app: "8Func",
+          version: "2.0",
+          mode: this.state.mode,
+          timestamp: new Date().toISOString(),
+          answers: this.state.answers || {}
+        };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `8func_answers_${this.state.mode}_${Date.now()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        this.showToast(lang === "ro" ? "Răspunsurile au fost descărcate!" : "Answers downloaded!");
+      });
+    }
+
+    // Upload answers JSON
+    const uploadAnswersBtn = document.getElementById("upload-answers-btn");
+    const uploadAnswersInput = document.getElementById("upload-answers-input");
+    if (uploadAnswersBtn && uploadAnswersInput) {
+      uploadAnswersBtn.addEventListener("click", () => {
+        uploadAnswersInput.value = "";
+        uploadAnswersInput.click();
+      });
+
+      uploadAnswersInput.addEventListener("change", (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          try {
+            const data = JSON.parse(event.target.result);
+            let importedAnswers = null;
+
+            if (data.answers && typeof data.answers === "object" && !Array.isArray(data.answers)) {
+              importedAnswers = data.answers;
+            } else if (data.rawItemResponses && Array.isArray(data.rawItemResponses)) {
+              importedAnswers = {};
+              data.rawItemResponses.forEach(item => {
+                if (item.id && item.responseKey) {
+                  importedAnswers[item.id] = item.responseKey;
+                }
+              });
+            } else if (typeof data === "object" && !Array.isArray(data)) {
+              importedAnswers = data;
+            }
+
+            if (!importedAnswers || Object.keys(importedAnswers).length === 0) {
+              alert(t('invalidAnswersFileToast', {}, lang));
+              return;
+            }
+
+            if (data.mode && TEST_MODES[data.mode]) {
+              this.state.mode = data.mode;
+            }
+
+            this.state.answers = importedAnswers;
+            try {
+              localStorage.setItem("8func_answers_v2", JSON.stringify(this.state.answers));
+              localStorage.setItem("8func_mode_v2", this.state.mode);
+            } catch (err) {}
+
+            this.state.questions = getQuestionsForMode(this.state.mode, this.state.orderMode);
+            this.state.showResults();
+            this.showToast(t('answersLoadedToast', {}, lang));
+          } catch (parseErr) {
+            alert((lang === "ro" ? "Eroare la procesarea fișierului JSON: " : "Error parsing JSON file: ") + parseErr.message);
+          }
+        };
+        reader.readAsText(file);
       });
     }
 

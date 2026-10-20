@@ -117,6 +117,10 @@ export const TRANSLATIONS = {
     reviewAnswers: "Review answers",
     copyReport: "Copy report",
     printDownload: "Download / Print",
+    downloadAnswersJson: "Download answers (JSON)",
+    uploadAnswersJson: "Upload answers (JSON)",
+    answersLoadedToast: "Answers successfully loaded! Results updated.",
+    invalidAnswersFileToast: "Invalid answers JSON file!",
     exportRawJson: "Export raw data (JSON)",
 
     // Breakdown Section
@@ -262,6 +266,10 @@ export const TRANSLATIONS = {
     reviewAnswers: "Revizuiește răspunsurile",
     copyReport: "Copiază raportul",
     printDownload: "Descarcă / Printează",
+    downloadAnswersJson: "Descarcă răspunsurile (JSON)",
+    uploadAnswersJson: "Încarcă răspunsuri (JSON)",
+    answersLoadedToast: "Răspunsurile au fost încărcate! Rezultatele s-au actualizat.",
+    invalidAnswersFileToast: "Fișierul JSON nu conține răspunsuri valide!",
     exportRawJson: "Exportă date brute (JSON)",
 
     // Breakdown Section

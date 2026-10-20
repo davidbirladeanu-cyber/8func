@@ -62,10 +62,10 @@ test("Standard test configuration (60 questions = 20 axis + 40 function)", () =>
     assert.strictEqual(dimQs.length, 5, `Standard dimension ${dim} must have 5 questions`);
   });
 
-  // 5 function questions per function
+  // 10 function evaluations per function (target or opposite pole across 40 function questions)
   FUNCTIONS_LIST.forEach(f => {
-    const fQs = funcQs.filter(q => q.target === f);
-    assert.strictEqual(fQs.length, 5, `Standard function ${f} must have 5 questions`);
+    const fQs = funcQs.filter(q => q.target === f || q.oppositePole === f);
+    assert.strictEqual(fQs.length, 10, `Standard function ${f} must have 10 evaluations`);
   });
 });
 
