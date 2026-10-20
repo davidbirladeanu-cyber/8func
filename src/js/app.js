@@ -5,7 +5,7 @@
 
 import { AppState } from "./state.js";
 import { COGNITIVE_FUNCTIONS, FUNCTIONS_LIST } from "../data/functions.js";
-import { TEST_MODES, getQuestionText, ALL_QUESTIONS } from "../data/questions.js";
+import { TEST_MODES, getQuestionText, ALL_QUESTIONS, getQuestionsForMode } from "../data/questions.js";
 import { ANSWER_OPTIONS, ANSWER_VALUE_MAP, getAnswerOptions, calculateScores, buildResultsUrlPath } from "./scoring.js";
 import { MBTI_TYPES, calculateBestMbtiType, getTypeTemperament } from "../data/mbtiTypes.js";
 import { NOTABLE_FIGURES, getRankedFigures } from "../data/figures.js";
@@ -1836,18 +1836,7 @@ class App {
               return;
             }
 
-            if (data.mode && TEST_MODES[data.mode]) {
-              this.state.mode = data.mode;
-            }
-
-            this.state.answers = importedAnswers;
-            try {
-              localStorage.setItem("8func_answers_v2", JSON.stringify(this.state.answers));
-              localStorage.setItem("8func_mode_v2", this.state.mode);
-            } catch (err) {}
-
-            this.state.questions = getQuestionsForMode(this.state.mode, this.state.orderMode);
-            this.state.showResults();
+            this.state.loadAnswers(importedAnswers, data.mode);
             this.showToast(t('answersLoadedToast', {}, lang));
           } catch (parseErr) {
             alert((lang === "ro" ? "Eroare la procesarea fișierului JSON: " : "Error parsing JSON file: ") + parseErr.message);

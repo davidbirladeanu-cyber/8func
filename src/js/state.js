@@ -228,6 +228,32 @@ export class AppState {
     this.toggleOrderMode();
   }
 
+  loadAnswers(importedAnswers, mode = null) {
+    if (!importedAnswers || typeof importedAnswers !== "object") return;
+    this.answers = importedAnswers;
+    if (mode && TEST_MODES[mode]) {
+      this.mode = mode;
+    } else {
+      const count = Object.keys(importedAnswers).length;
+      if (count > 60) this.mode = "complete";
+      else if (count > 24) this.mode = "standard";
+      else this.mode = "rapid";
+    }
+    try {
+      localStorage.setItem(STORAGE_KEYS.ANSWERS, JSON.stringify(this.answers));
+      localStorage.setItem(STORAGE_KEYS.MODE, this.mode);
+    } catch (e) {
+      console.warn("Storage save error", e);
+    }
+    this.urlResultsScores = null;
+    this.questions = getQuestionsForMode(this.mode, this.orderMode);
+    this.screen = "results";
+    if (window.location.pathname.includes("/results/")) {
+      history.pushState(null, "", "/");
+    }
+    this.notify();
+  }
+
   showResults() {
     this.screen = "results";
     this.notify();
