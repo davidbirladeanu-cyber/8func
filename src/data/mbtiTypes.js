@@ -233,19 +233,19 @@ export function getAxisPercentagesForMatching(percentages = {}, axisScoresOrPerc
   const getP = (f) => (percentages && percentages[f] !== undefined ? percentages[f] : 50);
   const meanE = (getP("Ne") + getP("Se") + getP("Te") + getP("Fe")) / 4;
   const meanI = (getP("Ni") + getP("Si") + getP("Ti") + getP("Fi")) / 4;
-  const pctE = Math.max(0, Math.min(100, 50 + (meanE - meanI) / 2));
+  const pctE = Math.max(0, Math.min(100, 50 + (meanE - meanI)));
 
   const meanN = (getP("Ne") + getP("Ni")) / 2;
   const meanS = (getP("Se") + getP("Si")) / 2;
-  const pctN = Math.max(0, Math.min(100, 50 + (meanN - meanS) / 2));
+  const pctN = Math.max(0, Math.min(100, 50 + (meanN - meanS)));
 
   const meanT = (getP("Te") + getP("Ti")) / 2;
   const meanF = (getP("Fe") + getP("Fi")) / 2;
-  const pctT = Math.max(0, Math.min(100, 50 + (meanT - meanF) / 2));
+  const pctT = Math.max(0, Math.min(100, 50 + (meanT - meanF)));
 
   const meanJ = (getP("Te") + getP("Fe") + getP("Ni") + getP("Si")) / 4;
   const meanP = (getP("Ne") + getP("Se") + getP("Ti") + getP("Fi")) / 4;
-  const pctJ = Math.max(0, Math.min(100, 50 + (meanJ - meanP) / 2));
+  const pctJ = Math.max(0, Math.min(100, 50 + (meanJ - meanP)));
 
   return {
     E: pctE,

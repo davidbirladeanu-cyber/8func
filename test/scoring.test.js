@@ -371,41 +371,37 @@ test("All 100 questions have complete Romanian translations (textRo) & explanati
 });
 
 // ----------------------------------------------------
-// 9. Reformed Cumulative Model: Differential Axis Ripple (Ne vs Ni leaves NS unchanged)
+// 9. Clean Cognitive Function Scoring: Choosing Te does not decrease Ti
 // ----------------------------------------------------
-test("Reformed Cumulative Model: Differential Axis Ripple (Ne vs Ni leaves NS unchanged)", () => {
+test("Clean Function Scoring: Choosing Te does not decrease Ti, functions contribute via templates", () => {
   const mockQuestions = [
-    // Ne vs Ni: same base function N, inverted e vs i
-    { id: "f_ne_ni", category: "function", target: "Ne", agreementPole: "Ne", oppositePole: "Ni" },
-    // Te vs Ti: same base function T, inverted e vs i
-    { id: "f_te_ti", category: "function", target: "Te", agreementPole: "Te", oppositePole: "Ti" }
+    { id: "f_ne", category: "function", target: "Ne", agreementPole: "Ne", oppositePole: "Ni" },
+    { id: "f_te", category: "function", target: "Te", agreementPole: "Te", oppositePole: "Ti" }
   ];
 
   const answers = {
-    f_ne_ni: 1.0, // Strongly Agree with Ne
-    f_te_ti: 1.0  // Strongly Agree with Te
+    f_ne: 1.0, // Strongly Agree with Ne
+    f_te: 1.0  // Strongly Agree with Te
   };
 
   const res = calculateScores(mockQuestions, answers);
-  // Ne increases to 100%, Ni decreases to 0%
+  // Ne increases to 100%, Ni remains unpenalized at baseline 50%
   assert.strictEqual(res.percentages.Ne, 100);
-  assert.strictEqual(res.percentages.Ni, 0);
+  assert.strictEqual(res.percentages.Ni, 50);
 
-  // Te increases to 100%, Ti decreases to 0%
+  // Te increases to 100%, Ti remains unpenalized at baseline 50%
   assert.strictEqual(res.percentages.Te, 100);
-  assert.strictEqual(res.percentages.Ti, 0);
+  assert.strictEqual(res.percentages.Ti, 50);
 
-  // Differential axis check: Ne vs Ni must NOT alter the NS axis! (netDir = 0)
-  assert.strictEqual(res.axisScores.NS.pctA, 50);
-  assert.strictEqual(res.axisScores.NS.pctB, 50);
-
-  // Differential axis check: Te vs Ti must NOT alter the TF axis! (netDir = 0)
-  assert.strictEqual(res.axisScores.TF.pctA, 50);
-  assert.strictEqual(res.axisScores.TF.pctB, 50);
-
-  // Both Ne and Te push E/I towards E (100%)
-  assert.strictEqual(res.axisScores.EI.roundA, 100);
+  // Both Ne and Te are Extraverted functions -> E template is higher than I template
+  assert.ok(res.axisScores.EI.pctA > 50, "Extraversion should be greater than 50%");
   assert.strictEqual(res.axisScores.EI.dominant, "E");
+
+  // Ne boosts N on NS axis via function template
+  assert.ok(res.axisScores.NS.pctA > 50, "N should be greater than 50%");
+
+  // Te boosts T on TF axis via function template
+  assert.ok(res.axisScores.TF.pctA > 50, "T should be greater than 50%");
 });
 
 // ----------------------------------------------------
@@ -631,6 +627,34 @@ test("Results URL Path: Format matches /results/I=80/E=80/N=80/S=80/T=80/F=80/J=
   assert.strictEqual(parsed.Ti, 84);
   assert.strictEqual(parsed.Fe, 39);
   assert.strictEqual(parsed.Fi, 89);
+});
+
+// ----------------------------------------------------
+// 14. Explicit 70% Direct Axis + 30% Function Template Weighting
+// ----------------------------------------------------
+test("Axis scoring weights: exactly 70% from direct axis questions and 30% from function template", () => {
+  const mockQuestions = [
+    // 1 direct EI question (answering Strongly Agree for E)
+    { id: "direct_ei", category: "axis", dimension: "EI", agreementPole: "E", oppositePole: "I" },
+    // Function questions setting Ni to 100% and Ne to 25% (I template favored)
+    { id: "func_ni", category: "function", target: "Ni", agreementPole: "Ni" },
+    { id: "func_ne", category: "function", target: "Ne", agreementPole: "Ne" }
+  ];
+
+  const answers = {
+    direct_ei: 1.0,     // Direct E vote -> directPctE = 100%
+    func_ni: 1.0,       // Ni = 100%
+    func_ne: -0.409836  // Ne scaled to ~25% ((-0.409836 * 1.22 + 1) / 2 * 100 ≈ 25%)
+  };
+
+  const res = calculateScores(mockQuestions, answers);
+  assert.strictEqual(res.axisScores.EI.directPctA, 100, "Direct E percentage should be 100%");
+  
+  // Direct E is 100%, Function E is lower than 50%
+  // Final E should be 0.70 * directPctA + 0.30 * funcPctA
+  const expectedCombinedE = Math.round(0.70 * res.axisScores.EI.directPctA + 0.30 * res.axisScores.EI.funcPctA);
+  assert.strictEqual(res.axisScores.EI.roundA, expectedCombinedE);
+  assert.ok(res.axisScores.EI.roundA >= 70, "E should be at least 70% due to 70% direct axis weight");
 });
 
 console.log(`\nAll ${passedTests} tests passed successfully!`);

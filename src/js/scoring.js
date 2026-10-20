@@ -215,47 +215,17 @@ export function calculateScores(questions, answers) {
       const dim = AXIS_DIMENSIONS.find(d => d.id === dimId);
       const signedVal = (targetPole === dim.poleA ? val : -val);
 
-      // Direct axis vote (full power)
+      // Direct axis vote
       axisSums[dimId] += signedVal * baseWeight;
       axisWeights[dimId] += baseWeight;
       if (signedVal > 0) axisDirectPoints[dim.poleA] += Math.abs(signedVal) * baseWeight;
       else if (signedVal < 0) axisDirectPoints[dim.poleB] += Math.abs(signedVal) * baseWeight;
-
-      // Light resonance (alpha = 0.25) ONLY on EI, NS, TF (NO JP to avoid diluting introverted stacks!)
-      if (dimId !== "JP") {
-        const rippleW = baseWeight * 0.25;
-        FUNCTIONS_LIST.forEach(f => {
-          const dir = FUNC_VECTORS[f][dimId];
-          if (dir !== 0) {
-            functionSums[f] += signedVal * dir * rippleW;
-            functionWeights[f] += rippleW;
-          }
-        });
-      }
     } else if (q.category === "function" || q.functionId || q.target) {
       const fTarget = targetPole;
       functionSums[fTarget] += val * baseWeight;
       functionWeights[fTarget] += baseWeight;
       functionDirectPoints[fTarget] += val * baseWeight;
-
-      if (fOpp && functionSums[fOpp] !== undefined) {
-        functionSums[fOpp] -= val * baseWeight;
-        functionWeights[fOpp] += baseWeight;
-        functionDirectPoints[fOpp] -= val * baseWeight;
-      }
-
-      // Differential propagation to axes (fixes Ne vs Ni bug: netDir on NS is 0!)
-      const vTarget = FUNC_VECTORS[fTarget] || { EI: 0, NS: 0, TF: 0, JP: 0 };
-      const vOpp = fOpp ? (FUNC_VECTORS[fOpp] || { EI: 0, NS: 0, TF: 0, JP: 0 }) : { EI: 0, NS: 0, TF: 0, JP: 0 };
-      const axisRippleW = baseWeight * 0.45;
-
-      ["EI", "NS", "TF", "JP"].forEach(dId => {
-        const netDir = (vTarget[dId] - vOpp[dId]) / 2.0;
-        if (netDir !== 0) {
-          axisSums[dId] += val * netDir * axisRippleW;
-          axisWeights[dId] += axisRippleW;
-        }
-      });
+      // Note: No deduction from fOpp (Te does NOT decrease Ti)
     }
   });
 
@@ -280,21 +250,45 @@ export function calculateScores(questions, answers) {
     insufficientData[f] = (totalW === 0);
   });
 
-  // Calculate axis percentages with Contrast Gain
+  // Calculate axis percentages: 70% direct axis questions + 30% cognitive function template
   const axisScores = {};
   const axisPercentages = {};
 
   AXIS_DIMENSIONS.forEach(dim => {
     const { poleA, poleB, id } = dim;
-    const totalW = axisWeights[id] || 0;
-    const sum = axisSums[id] || 0;
+    const dimConfig = AXIS_FUNCTION_MAP[id];
 
-    let finalPctA = 50.0;
-    if (totalW > 0) {
-      const meanAxis = sum / totalW;
-      finalPctA = meanToPercent(meanAxis);
-      finalPctA = Math.max(0.0, Math.min(100.0, finalPctA));
+    // 1. Direct Axis questions
+    const directW = axisWeights[id] || 0;
+    const directSum = axisSums[id] || 0;
+    let directPctA = 50.0;
+    if (directW > 0) {
+      const meanDirect = directSum / directW;
+      directPctA = Math.max(0.0, Math.min(100.0, meanToPercent(meanDirect)));
     }
+    const directPctB = 100.0 - directPctA;
+
+    // 2. Cognitive Function Template
+    const meanFuncA = dimConfig.funcsA.reduce((sum, f) => sum + precisePercentages[f], 0) / dimConfig.funcsA.length;
+    const meanFuncB = dimConfig.funcsB.reduce((sum, f) => sum + precisePercentages[f], 0) / dimConfig.funcsB.length;
+    const funcPctA = Math.max(0.0, Math.min(100.0, 50.0 + (meanFuncA - meanFuncB)));
+    const funcPctB = 100.0 - funcPctA;
+
+    // 3. Final Combined Axis Score: 70% Direct Axis Questions + 30% Function Template
+    let finalPctA = 50.0;
+    const totalFuncW = dimConfig.funcsA.concat(dimConfig.funcsB).reduce((sum, f) => sum + (functionWeights[f] || 0), 0);
+
+    if (directW > 0 && totalFuncW > 0) {
+      finalPctA = 0.70 * directPctA + 0.30 * funcPctA;
+    } else if (directW > 0) {
+      finalPctA = directPctA;
+    } else if (totalFuncW > 0) {
+      finalPctA = funcPctA;
+    } else {
+      finalPctA = 50.0;
+    }
+
+    finalPctA = Math.max(0.0, Math.min(100.0, finalPctA));
     const finalPctB = 100.0 - finalPctA;
 
     axisScores[id] = {
@@ -306,9 +300,13 @@ export function calculateScores(questions, answers) {
       roundA: Math.round(finalPctA),
       roundB: Math.round(finalPctB),
       dominant: (finalPctA >= finalPctB) ? poleA : poleB,
+      directPctA: Math.round(directPctA),
+      directPctB: Math.round(directPctB),
+      funcPctA: Math.round(funcPctA),
+      funcPctB: Math.round(funcPctB),
       directPointsA: axisDirectPoints[poleA] || 0,
       directPointsB: axisDirectPoints[poleB] || 0,
-      totalWeight: totalW
+      totalWeight: directW
     };
 
     axisPercentages[poleA] = Math.round(finalPctA);
