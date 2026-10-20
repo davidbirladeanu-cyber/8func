@@ -146,7 +146,7 @@ export function calculateScores(questions, answers) {
     const ansKey = answers[q.id];
     if (ansKey === undefined || ansKey === null) return;
 
-    if (q.format === "wouldYouRather") {
+    if (q.format === "wouldYouRather" || q.format === "direct") {
       answeredCount++;
       const selectedOption = (q.options || []).find(o => o.id === ansKey);
       if (selectedOption) {

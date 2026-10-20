@@ -168,7 +168,7 @@ class App {
       const q = this.state.getCurrentQuestion();
       if (!q) return;
 
-      if (q.format === "wouldYouRather") {
+      if (q.format === "wouldYouRather" || q.format === "direct") {
         if (e.key === "1" || e.key === "a" || e.key === "A") {
           this.handleAnswerClick(q.id, "A");
         } else if (e.key === "2" || e.key === "b" || e.key === "B") {
@@ -250,7 +250,7 @@ class App {
 
     const description = (lang === "ro" && question.descriptionRo) ? question.descriptionRo : (question.description || "");
 
-    if (question.format === "wouldYouRather") {
+    if (question.format === "wouldYouRather" || question.format === "direct") {
       const opts = question.options || [];
       const optsHtml = opts.map(opt => {
         const text = (lang === "ro" && opt.textRo) ? opt.textRo : opt.text;
@@ -613,7 +613,7 @@ class App {
 
     // Answer choices (either Would You Rather choices or 5-point agreement scale)
     let answersContentHtml = "";
-    if (question.format === "wouldYouRather") {
+    if (question.format === "wouldYouRather" || question.format === "direct") {
       const wyrOpts = question.options || [];
       answersContentHtml = `
         <div class="wyr-options-grid" role="radiogroup" aria-label="Would you rather choices">

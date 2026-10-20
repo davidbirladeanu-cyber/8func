@@ -84,20 +84,22 @@ test("Complete test configuration (100 questions = 36 axis + 64 function)", () =
     assert.strictEqual(dimQs.length, 9, `Complete dimension ${dim} must have 9 questions`);
   });
 
-  // 8 function questions per function
+  // 16 function evaluations per function (target or opposite pole across 64 function questions)
   FUNCTIONS_LIST.forEach(f => {
-    const fQs = funcQs.filter(q => q.target === f);
-    assert.strictEqual(fQs.length, 8, `Complete function ${f} must have 8 questions`);
+    const fQs = funcQs.filter(q => q.target === f || q.oppositePole === f);
+    assert.strictEqual(fQs.length, 16, `Complete function ${f} must have 16 evaluations`);
   });
 
   // Formats breakdown
   const deepQs = completeQs.filter(q => q.format === "deep");
-  const wyrQs = completeQs.filter(q => q.format === "wouldYouRather");
   const shortQs = completeQs.filter(q => q.format === "short");
+  const wyrQs = completeQs.filter(q => q.format === "wouldYouRather");
+  const directQs = completeQs.filter(q => q.format === "direct");
 
   assert.strictEqual(deepQs.length, 24, "Must have 24 Deep questions");
-  assert.strictEqual(wyrQs.length, 24, "Must have 24 Would You Rather questions");
-  assert.strictEqual(shortQs.length, 52, "Must have 52 Short questions");
+  assert.strictEqual(shortQs.length, 36, "Must have 36 Short questions");
+  assert.strictEqual(wyrQs.length, 36, "Must have 36 Would You Rather questions");
+  assert.strictEqual(directQs.length, 4, "Must have 4 Direct questions");
 });
 
 test("Question metadata integrity & distinct texts across all 100 questions", () => {
@@ -111,19 +113,20 @@ test("Question metadata integrity & distinct texts across all 100 questions", ()
     ids.add(q.id);
 
     assert.ok(q.text && q.text.trim().length > 5, `Question ${q.id} has invalid text`);
-    assert.ok(!texts.has(q.text), `Duplicate question text found: "${q.text}"`);
-    texts.add(q.text);
+    const uniqueKey = q.format === "direct" ? `${q.text} [${q.dimension}]` : q.text;
+    assert.ok(!texts.has(uniqueKey), `Duplicate question text found: "${q.text}"`);
+    texts.add(uniqueKey);
 
     assert.ok(["axis", "function"].includes(q.category), `Invalid category for ${q.id}: ${q.category}`);
-    assert.ok(["deep", "wouldYouRather", "short"].includes(q.format), `Invalid format for ${q.id}: ${q.format}`);
+    assert.ok(["deep", "wouldYouRather", "short", "direct"].includes(q.format), `Invalid format for ${q.id}: ${q.format}`);
     assert.ok(q.target, `Question ${q.id} must define target`);
 
     // Description & bilingual support
     assert.ok(q.description && q.description.trim().length > 5, `Question ${q.id} must have description`);
     assert.ok(q.descriptionRo && q.descriptionRo.trim().length > 5, `Question ${q.id} must have descriptionRo`);
 
-    if (q.format === "wouldYouRather") {
-      assert.ok(Array.isArray(q.options) && q.options.length === 2, `WYR ${q.id} must have 2 options`);
+    if (q.format === "wouldYouRather" || q.format === "direct") {
+      assert.ok(Array.isArray(q.options) && q.options.length === 2, `Question ${q.id} must have 2 options`);
       q.options.forEach(opt => {
         assert.ok(["A", "B"].includes(opt.id), `Option id must be A or B`);
         assert.ok(opt.text && opt.text.trim().length > 2, `Option text missing`);
@@ -469,9 +472,9 @@ test("Integrated Personality Match: calculateBestMbtiType integrates 8 cognitive
 });
 
 // ----------------------------------------------------
-// 12. Question Phase Ordering: Complex (Deep) -> Simple (Short) -> Would You Rather (at end)
+// 12. Question Phase Ordering: Complex (Deep) -> Simple (Short) -> Would You Rather -> Direct Final
 // ----------------------------------------------------
-test("Question Phase Ordering: Deep questions first, then Short, then Would You Rather at end", () => {
+test("Question Phase Ordering: Deep questions first, then Short, then Would You Rather, then Direct Final", () => {
   const completeQs = getQuestionsForMode("complete");
   assert.strictEqual(completeQs.length, 100);
 
@@ -479,13 +482,17 @@ test("Question Phase Ordering: Deep questions first, then Short, then Would You 
   for (let i = 0; i < 24; i++) {
     assert.strictEqual(completeQs[i].format, "deep", `Question at index ${i} must be deep, got ${completeQs[i].format}`);
   }
-  // Next 52 must all be Short
-  for (let i = 24; i < 76; i++) {
+  // Next 36 must all be Short
+  for (let i = 24; i < 60; i++) {
     assert.strictEqual(completeQs[i].format, "short", `Question at index ${i} must be short, got ${completeQs[i].format}`);
   }
-  // Last 24 must all be Would You Rather
-  for (let i = 76; i < 100; i++) {
+  // Next 36 must all be Would You Rather
+  for (let i = 60; i < 96; i++) {
     assert.strictEqual(completeQs[i].format, "wouldYouRather", `Question at index ${i} must be wouldYouRather, got ${completeQs[i].format}`);
+  }
+  // Last 4 must all be Direct Final
+  for (let i = 96; i < 100; i++) {
+    assert.strictEqual(completeQs[i].format, "direct", `Question at index ${i} must be direct, got ${completeQs[i].format}`);
   }
 
   // Verify internal axis and function mixing in each phase
@@ -499,11 +506,14 @@ test("Question Phase Ordering: Deep questions first, then Short, then Would You 
   for (let i = 0; i < 24; i++) {
     assert.strictEqual(standardQs[i].format, "deep", `Standard at ${i} must be deep`);
   }
-  for (let i = 24; i < 36; i++) {
+  for (let i = 24; i < 40; i++) {
     assert.strictEqual(standardQs[i].format, "short", `Standard at ${i} must be short`);
   }
-  for (let i = 36; i < 60; i++) {
+  for (let i = 40; i < 56; i++) {
     assert.strictEqual(standardQs[i].format, "wouldYouRather", `Standard at ${i} must be wouldYouRather`);
+  }
+  for (let i = 56; i < 60; i++) {
+    assert.strictEqual(standardQs[i].format, "direct", `Standard at ${i} must be direct`);
   }
 });
 
