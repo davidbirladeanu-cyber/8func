@@ -5,8 +5,8 @@
 
 import { AppState } from "./state.js";
 import { COGNITIVE_FUNCTIONS, FUNCTIONS_LIST } from "../data/functions.js";
-import { TEST_MODES, getQuestionText } from "../data/questions.js";
-import { ANSWER_OPTIONS, getAnswerOptions, calculateScores, buildResultsUrlPath } from "./scoring.js";
+import { TEST_MODES, getQuestionText, ALL_QUESTIONS } from "../data/questions.js";
+import { ANSWER_OPTIONS, ANSWER_VALUE_MAP, getAnswerOptions, calculateScores, buildResultsUrlPath } from "./scoring.js";
 import { MBTI_TYPES, calculateBestMbtiType, getTypeTemperament } from "../data/mbtiTypes.js";
 import { NOTABLE_FIGURES, getRankedFigures } from "../data/figures.js";
 import { ICONS } from "./icons.js";
@@ -812,6 +812,240 @@ class App {
     }
   }
 
+  renderQuestionBreakdown(percentages, axisScores, lang) {
+    const questions = (this.state.questions && this.state.questions.length > 0)
+      ? this.state.questions
+      : ALL_QUESTIONS;
+    const answers = this.state.answers || {};
+    const hasAnswers = Object.keys(answers).length > 0;
+
+    const cardsHtml = questions.map((q, idx) => {
+      const qNum = idx + 1;
+      const qText = getQuestionText(q, lang);
+      const userAnsKey = answers[q.id];
+      const hasAnswer = userAnsKey !== undefined && userAnsKey !== null;
+
+      // Extract associated function and axis tags for filtering
+      const tags = [];
+      if (q.category === "function") {
+        if (q.target) tags.push(q.target);
+        if (q.oppositePole) tags.push(q.oppositePole);
+        if (q.options) q.options.forEach(o => { if (o.pole) tags.push(o.pole); });
+      } else if (q.category === "axis") {
+        if (q.dimension) tags.push(q.dimension);
+        if (q.target) tags.push(q.target);
+        if (q.oppositePole) tags.push(q.oppositePole);
+        if (q.options) q.options.forEach(o => { if (o.pole) tags.push(o.pole); });
+      }
+
+      let impactBadge = "";
+      let impactBadgeColor = "var(--text-muted)";
+      let ansLabel = "";
+      let impactDesc = "";
+
+      if (hasAnswer) {
+        if (q.format === "wouldYouRather" || q.format === "direct") {
+          const opt = (q.options || []).find(o => o.id === userAnsKey);
+          const optText = (lang === "ro" && opt?.textRo) ? opt.textRo : opt?.text;
+          ansLabel = `${lang === "ro" ? "Opțiunea" : "Option"} ${userAnsKey}: "${optText || ""}"`;
+          const targetPole = opt?.pole || "";
+          impactBadge = `+1.0 → ${targetPole}`;
+          impactBadgeColor = COGNITIVE_FUNCTIONS[targetPole]?.color || "var(--accent)";
+          impactDesc = lang === "ro"
+            ? `Alegerea directă a adăugat +1.0 punct pentru ${targetPole}.`
+            : `Your direct choice added +1.0 point to ${targetPole}.`;
+        } else {
+          // Agreement scale
+          const val = ANSWER_VALUE_MAP[userAnsKey] ?? 0;
+          const scaleLabelsRo = {
+            STRONGLY_AGREE: "Total de acord (+1.0)",
+            AGREE: "De acord (+0.5)",
+            NEUTRAL: "Neutru (0.0)",
+            DISAGREE: "Dezacord (-0.5)",
+            STRONGLY_DISAGREE: "Total dezacord (-1.0)"
+          };
+          const scaleLabelsEn = {
+            STRONGLY_AGREE: "Strongly agree (+1.0)",
+            AGREE: "Agree (+0.5)",
+            NEUTRAL: "Neutral (0.0)",
+            DISAGREE: "Disagree (-0.5)",
+            STRONGLY_DISAGREE: "Strongly disagree (-1.0)"
+          };
+          ansLabel = (lang === "ro" ? scaleLabelsRo[userAnsKey] : scaleLabelsEn[userAnsKey]) || userAnsKey;
+
+          if (q.category === "function") {
+            if (val > 0) {
+              impactBadge = `+${val.toFixed(1)} → ${q.target}`;
+              impactBadgeColor = COGNITIVE_FUNCTIONS[q.target]?.color || "var(--accent)";
+              impactDesc = lang === "ro"
+                ? `Acordul a crescut scorul funcției ${q.target} (+${val.toFixed(1)}).`
+                : `Agreement raised ${q.target} score (+${val.toFixed(1)}).`;
+            } else if (val < 0) {
+              const opp = q.oppositePole || "Opus";
+              impactBadge = `+${Math.abs(val).toFixed(1)} → ${opp}`;
+              impactBadgeColor = COGNITIVE_FUNCTIONS[opp]?.color || "var(--accent)";
+              impactDesc = lang === "ro"
+                ? `Dezacordul a orientat punctajul spre funcția opusă ${opp} (+${Math.abs(val).toFixed(1)}).`
+                : `Disagreement shifted points to opposite ${opp} (+${Math.abs(val).toFixed(1)}).`;
+            } else {
+              impactBadge = lang === "ro" ? "0.0 (Neutru)" : "0.0 (Neutral)";
+              impactBadgeColor = "var(--text-muted)";
+              impactDesc = lang === "ro"
+                ? "Răspunsul neutru nu a modificat balanța între funcții."
+                : "Neutral response maintained baseline balance.";
+            }
+          } else {
+            // Axis item
+            if (val > 0) {
+              const target = q.agreementPole || q.target;
+              impactBadge = `+${val.toFixed(1)} → ${target}`;
+              impactBadgeColor = "var(--accent)";
+              impactDesc = lang === "ro"
+                ? `Acordul a favorizat polul ${target} (+${val.toFixed(1)}).`
+                : `Agreement favored pole ${target} (+${val.toFixed(1)}).`;
+            } else if (val < 0) {
+              const opp = q.oppositePole || q.opposite;
+              impactBadge = `+${Math.abs(val).toFixed(1)} → ${opp}`;
+              impactBadgeColor = "var(--accent)";
+              impactDesc = lang === "ro"
+                ? `Dezacordul a favorizat polul opus ${opp} (+${Math.abs(val).toFixed(1)}).`
+                : `Disagreement favored opposite pole ${opp} (+${Math.abs(val).toFixed(1)}).`;
+            } else {
+              impactBadge = lang === "ro" ? "0.0 (Neutru)" : "0.0 (Neutral)";
+              impactBadgeColor = "var(--text-muted)";
+              impactDesc = lang === "ro"
+                ? `Răspuns neutru pe axa ${q.dimension || ""}.`
+                : `Neutral response on axis ${q.dimension || ""}.`;
+            }
+          }
+        }
+      } else {
+        // Shared URL / no local answers
+        ansLabel = lang === "ro" ? "Ghid de calibrare întrebare" : "Question calibration reference";
+        if (q.category === "function") {
+          impactBadge = `${q.target} ⟷ ${q.oppositePole || ""}`;
+          impactBadgeColor = COGNITIVE_FUNCTIONS[q.target]?.color || "var(--accent)";
+          impactDesc = lang === "ro"
+            ? `Acord: favorizează ${q.target} (+1.0) · Dezacord: favorizează ${q.oppositePole} (+1.0)`
+            : `Agree: favors ${q.target} (+1.0) · Disagree: favors ${q.oppositePole} (+1.0)`;
+        } else {
+          impactBadge = `Axa ${q.dimension || q.target}`;
+          impactBadgeColor = "var(--accent)";
+          impactDesc = lang === "ro"
+            ? `Acord: favorizează ${q.target} · Dezacord: favorizează ${q.oppositePole}`
+            : `Agree: favors ${q.target} · Disagree: favors ${q.oppositePole}`;
+        }
+      }
+
+      const categoryLabel = q.category === "axis"
+        ? (lang === "ro" ? `Axă MBTI (${q.dimension || q.target})` : `MBTI Axis (${q.dimension || q.target})`)
+        : (lang === "ro" ? `Funcție (${q.target} vs ${q.oppositePole || ""})` : `Function (${q.target} vs ${q.oppositePole || ""})`);
+
+      return `
+        <div class="breakdown-card" data-tags="${tags.join(" ")}" data-category="${q.category}">
+          <div class="breakdown-card-top">
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+              <span class="breakdown-qid">#${qNum} · ${q.id}</span>
+              <span class="breakdown-cat-tag">${categoryLabel}</span>
+            </div>
+            <span class="breakdown-impact-pill" style="color: ${impactBadgeColor}; border-color: color-mix(in srgb, ${impactBadgeColor} 35%, transparent); background: color-mix(in srgb, ${impactBadgeColor} 10%, transparent);">
+              ${impactBadge}
+            </span>
+          </div>
+          <p class="breakdown-qtext">"${qText}"</p>
+          <div class="breakdown-answer-box">
+            <div class="breakdown-ans-label">
+              <span style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em;">${t('yourAnswerLabel', {}, lang)}:</span>
+              <strong style="margin-left: 0.35rem; color: var(--text-strong);">${ansLabel}</strong>
+            </div>
+            <p class="breakdown-ans-expl">${impactDesc}</p>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    const funcsList = FUNCTIONS_LIST;
+    const axesList = [
+      { id: "EI", label: "E / I" },
+      { id: "NS", label: "N / S" },
+      { id: "TF", label: "T / F" },
+      { id: "JP", label: "P / J" }
+    ];
+
+    return `
+      <section class="e-panel" id="question-breakdown">
+        <div class="e-sec-head">
+          <p class="e-eyebrow" style="color: var(--accent);">${t('breakdownEyebrow', {}, lang)}</p>
+          <h2 class="e-sec-title">${t('breakdownTitle', {}, lang)}</h2>
+          <p class="e-sec-lead">${t('breakdownLead', {}, lang)}</p>
+        </div>
+
+        ${!hasAnswers ? `
+          <div style="background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 0.9rem 1.2rem; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+            💡 ${t('sharedUrlConsultationNote', {}, lang)}
+          </div>
+        ` : ""}
+
+        <!-- Filter Chips -->
+        <div class="breakdown-filter-container">
+          <div class="breakdown-filter-row">
+            <span class="breakdown-filter-title">${lang === "ro" ? "Filtru rapid:" : "Quick filter:"}</span>
+            <button type="button" class="breakdown-chip active" data-filter="all">
+              ${t('filterAll', {}, lang)} <span class="breakdown-count-badge">${questions.length}</span>
+            </button>
+          </div>
+
+          <div class="breakdown-filter-row">
+            <span class="breakdown-filter-title">${t('filterFuncGroup', {}, lang)}:</span>
+            <div class="breakdown-chips-wrap">
+              ${funcsList.map(f => {
+                const color = COGNITIVE_FUNCTIONS[f]?.color || "var(--accent)";
+                const pct = percentages[f] ?? 50;
+                return `
+                  <button type="button" class="breakdown-chip" data-filter="${f}" style="--c: ${color};">
+                    <span style="color: ${color}; font-weight: 800;">${f}</span>
+                    <span class="breakdown-pct-tag">${pct}%</span>
+                  </button>
+                `;
+              }).join("")}
+            </div>
+          </div>
+
+          <div class="breakdown-filter-row">
+            <span class="breakdown-filter-title">${t('filterAxisGroup', {}, lang)}:</span>
+            <div class="breakdown-chips-wrap">
+              ${axesList.map(ax => {
+                let pcts = "";
+                if (ax.id === "EI") pcts = `I: ${axisScores.EI?.roundB ?? 50}% · E: ${axisScores.EI?.roundA ?? 50}%`;
+                else if (ax.id === "NS") pcts = `N: ${axisScores.NS?.roundA ?? 50}% · S: ${axisScores.NS?.roundB ?? 50}%`;
+                else if (ax.id === "TF") pcts = `T: ${axisScores.TF?.roundA ?? 50}% · F: ${axisScores.TF?.roundB ?? 50}%`;
+                else if (ax.id === "JP") pcts = `P: ${axisScores.JP?.roundB ?? 50}% · J: ${axisScores.JP?.roundA ?? 50}%`;
+                return `
+                  <button type="button" class="breakdown-chip" data-filter="${ax.id}">
+                    <b>${ax.label}</b>
+                    <span class="breakdown-pct-tag">${pcts}</span>
+                  </button>
+                `;
+              }).join("")}
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Feedback Status Banner -->
+        <div id="breakdown-filter-banner" class="breakdown-summary-banner">
+          <span id="breakdown-filter-banner-text">
+            ${t('questionsFoundForFilter', { count: questions.length }, lang)}
+          </span>
+        </div>
+
+        <!-- Questions List -->
+        <div class="breakdown-list" id="breakdown-questions-list">
+          ${cardsHtml}
+        </div>
+      </section>
+    `;
+  }
+
   renderResults() {
     const lang = this.state.lang || "ro";
     const modeConfig = this.state.getModeConfig();
@@ -1266,6 +1500,8 @@ class App {
               </div>
             </section>
 
+            ${this.renderQuestionBreakdown(percentages, axisScores, lang)}
+
             <!-- Bottom Actions -->
             <div class="e-actions">
               <button class="e-btn e-btn-primary" type="button" id="retake-test-btn">
@@ -1345,9 +1581,67 @@ class App {
     const reviewBtn = document.getElementById("review-answers-btn");
     if (reviewBtn) {
       reviewBtn.addEventListener("click", () => {
-        this.state.showQuiz();
+        const targetSec = document.getElementById("question-breakdown");
+        if (targetSec) {
+          targetSec.scrollIntoView({ behavior: "smooth" });
+        }
       });
     }
+
+    const filterChips = document.querySelectorAll(".breakdown-chip");
+    const cards = document.querySelectorAll(".breakdown-card");
+    const bannerText = document.getElementById("breakdown-filter-banner-text");
+
+    filterChips.forEach(chip => {
+      chip.addEventListener("click", () => {
+        filterChips.forEach(c => c.classList.remove("active"));
+        chip.classList.add("active");
+
+        const filter = chip.getAttribute("data-filter");
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+          const tags = (card.getAttribute("data-tags") || "").split(" ");
+          let show = false;
+          if (filter === "all") {
+            show = true;
+          } else {
+            show = tags.includes(filter);
+          }
+
+          if (show) {
+            card.style.display = "flex";
+            visibleCount++;
+          } else {
+            card.style.display = "none";
+          }
+        });
+
+        if (bannerText) {
+          if (filter === "all") {
+            bannerText.textContent = t('questionsFoundForFilter', { count: visibleCount }, lang);
+          } else if (COGNITIVE_FUNCTIONS[filter]) {
+            const fn = COGNITIVE_FUNCTIONS[filter];
+            const fnName = lang === "ro" ? (fn.nameRo || fn.name) : fn.name;
+            const pct = percentages[filter] ?? 50;
+            bannerText.innerHTML = lang === "ro"
+              ? `Funcția <strong>${filter} (${fnName})</strong> · Scor obținut: <strong style="color: ${fn.color};">${pct}%</strong> — ${visibleCount} întrebări au influențat această funcție:`
+              : `Function <strong>${filter} (${fnName})</strong> · Score: <strong style="color: ${fn.color};">${pct}%</strong> — ${visibleCount} questions influenced this function:`;
+          } else {
+            const axisNames = {
+              EI: lang === "ro" ? "Introversie vs Extraversie (E/I)" : "Introversion vs Extraversion (E/I)",
+              NS: lang === "ro" ? "Intuiție vs Senzorial (N/S)" : "Intuition vs Sensing (N/S)",
+              TF: lang === "ro" ? "Gândire vs Afectiv (T/F)" : "Thinking vs Feeling (T/F)",
+              JP: lang === "ro" ? "Stil de viață: Percepție vs Judecată (P/J)" : "Lifestyle: Perceiving vs Judging (P/J)"
+            };
+            const axisTitle = axisNames[filter] || filter;
+            bannerText.innerHTML = lang === "ro"
+              ? `Axa <strong>${axisTitle}</strong> — ${visibleCount} întrebări au calibrat acest spectru:`
+              : `Axis <strong>${axisTitle}</strong> — ${visibleCount} questions calibrated this preference:`;
+          }
+        }
+      });
+    });
 
     const printBtn = document.getElementById("print-results-btn");
     if (printBtn) {

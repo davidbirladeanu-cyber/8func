@@ -115,6 +115,18 @@ export const TRANSLATIONS = {
     printDownload: "Download / Print",
     exportRawJson: "Export raw data (JSON)",
 
+    // Breakdown Section
+    breakdownEyebrow: "Score Transparency",
+    breakdownTitle: "How your answers influenced each function & axis",
+    breakdownLead: "Filter by any cognitive function or axis to see the exact questions that shaped your score, the choices you made, and their directional contribution.",
+    filterAll: "All",
+    filterAxisGroup: "Axes",
+    filterFuncGroup: "Functions",
+    yourAnswerLabel: "Your answer",
+    impactLabel: "Directional pull",
+    sharedUrlConsultationNote: "Viewing a shared profile link. Below is the full calibration guide showing how each question shapes scores.",
+    questionsFoundForFilter: "{count} questions mapped to this focus",
+
     // Tiers
     tiers: {
       balanced: "Balanced (50% / 50%)",
@@ -243,6 +255,18 @@ export const TRANSLATIONS = {
     copyReport: "Copiază raportul",
     printDownload: "Descarcă / Printează",
     exportRawJson: "Exportă date brute (JSON)",
+
+    // Breakdown Section
+    breakdownEyebrow: "Transparență Totală",
+    breakdownTitle: "Cum au influențat răspunsurile tale funcțiile și axele",
+    breakdownLead: "Filtrează după orice funcție cognitivă sau axă pentru a vedea exact întrebările care ți-au format scorul, opțiunile alese și contribuția lor direcțională.",
+    filterAll: "Toate",
+    filterAxisGroup: "Axe",
+    filterFuncGroup: "Funcții",
+    yourAnswerLabel: "Răspunsul tău",
+    impactLabel: "Influență și Direcție",
+    sharedUrlConsultationNote: "Vizualizezi un profil dintr-un link partajat. Mai jos este ghidul complet ce arată cum influențează fiecare întrebare scorurile.",
+    questionsFoundForFilter: "{count} întrebări asociate acestui filtru",
 
     // Tiers
     tiers: {
