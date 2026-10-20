@@ -518,6 +518,40 @@ test("Question Phase Ordering: Deep questions first, then Short, then Would You 
 });
 
 // ----------------------------------------------------
+// 12b. Deterministic Target Sorting Order: I, E, N, S, T, F, J, P, Ne, Ni, Se, Si, Te, Ti, Fe, Fi
+// ----------------------------------------------------
+test("Target Sorting Order: Questions within each phase sorted by I, E, N, S, T, F, J, P, Ne, Ni, Se, Si, Te, Ti, Fe, Fi", () => {
+  const TARGET_ORDER = [
+    "I", "E",
+    "N", "S",
+    "T", "F",
+    "J", "P",
+    "Ne", "Ni", "Se", "Si", "Te", "Ti", "Fe", "Fi"
+  ];
+  const targetRank = new Map(TARGET_ORDER.map((t, idx) => [t.toUpperCase(), idx]));
+
+  ["rapid", "standard", "complete"].forEach(mode => {
+    const qs = getQuestionsForMode(mode);
+    let currentFormat = null;
+    let lastRank = -1;
+
+    qs.forEach((q, idx) => {
+      if (q.format !== currentFormat) {
+        currentFormat = q.format;
+        lastRank = -1;
+      }
+      const rank = targetRank.get((q.target || "").toUpperCase());
+      assert.ok(rank !== undefined, `Target ${q.target} on question ${q.id} must be in TARGET_ORDER`);
+      assert.ok(
+        rank >= lastRank,
+        `Mode ${mode}: Question ${q.id} (target ${q.target}, rank ${rank}) is out of order after rank ${lastRank}`
+      );
+      lastRank = rank;
+    });
+  });
+});
+
+// ----------------------------------------------------
 // 13. Results URL Path: Building and Parsing Format
 // ----------------------------------------------------
 test("Results URL Path: Format matches /results/I=80/E=80/N=80/S=80/T=80/F=80/J=80/P=80/Ne=80/Ni=80/Se=80/Si=80/Te=80/Ti=80/Fe=80/Fi=80/", () => {

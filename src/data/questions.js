@@ -2493,8 +2493,53 @@ export const QUESTIONS_100 = [
   }
 ];
 
+export const TARGET_ORDER = [
+  "I", "E",
+  "N", "S",
+  "T", "F",
+  "J", "P",
+  "Ne", "Ni", "Se", "Si", "Te", "Ti", "Fe", "Fi"
+];
+
+const TARGET_ORDER_MAP = new Map(
+  TARGET_ORDER.map((target, index) => [target.toUpperCase(), index])
+);
+
+export function sortQuestionsByTarget(questions) {
+  return [...questions].sort((a, b) => {
+    const aTargetKey = (a.target || "").toUpperCase();
+    const bTargetKey = (b.target || "").toUpperCase();
+
+    const aIdx = TARGET_ORDER_MAP.has(aTargetKey) ? TARGET_ORDER_MAP.get(aTargetKey) : 999;
+    const bIdx = TARGET_ORDER_MAP.has(bTargetKey) ? TARGET_ORDER_MAP.get(bTargetKey) : 999;
+
+    if (aIdx !== bIdx) {
+      return aIdx - bIdx;
+    }
+
+    return (a.id || "").localeCompare(b.id || "");
+  });
+}
+
+export function sortQuestionsByFormatAndTarget(questions) {
+  const formatRank = { deep: 1, short: 2, wouldYouRather: 3, direct: 4 };
+  return [...questions].sort((a, b) => {
+    const fA = formatRank[a.format] || 99;
+    const fB = formatRank[b.format] || 99;
+    if (fA !== fB) return fA - fB;
+
+    const aTargetKey = (a.target || "").toUpperCase();
+    const bTargetKey = (b.target || "").toUpperCase();
+    const aIdx = TARGET_ORDER_MAP.has(aTargetKey) ? TARGET_ORDER_MAP.get(aTargetKey) : 999;
+    const bIdx = TARGET_ORDER_MAP.has(bTargetKey) ? TARGET_ORDER_MAP.get(bTargetKey) : 999;
+    if (aIdx !== bIdx) return aIdx - bIdx;
+
+    return (a.id || "").localeCompare(b.id || "");
+  });
+}
+
 export const QUESTIONS_80 = QUESTIONS_100.slice(0, 80); // Compatibility alias
-export const ALL_QUESTIONS = QUESTIONS_100;
+export const ALL_QUESTIONS = sortQuestionsByFormatAndTarget(QUESTIONS_100);
 
 function shuffle(array) {
   const arr = [...array];
@@ -2505,56 +2550,60 @@ function shuffle(array) {
   return arr;
 }
 
-export function getQuestionsForMode(modeKey = "standard", shouldShuffle = true) {
+export function getQuestionsForMode(modeKey = "standard", shouldShuffle = false) {
   const normalizedKey = (modeKey === "quick" || modeKey === "fast") ? "rapid" : ((modeKey === "recommended") ? "standard" : modeKey);
   const mode = TEST_MODES[normalizedKey] || TEST_MODES.standard;
 
   let questions = [];
   if (mode.totalQuestions === 24) {
     // Fast: All 24 Deep questions (8 axis + 16 function items)
-    // Random as axes and functions
+    // Sorted by target: I, E, N, S, T, F, J, P, Ne, Ni, Se, Si, Te, Ti, Fe, Fi
     const deepQuestions = QUESTIONS_100.filter(q => q.format === "deep");
-    questions = shouldShuffle ? shuffle(deepQuestions) : [...deepQuestions];
+    questions = shouldShuffle ? shuffle(deepQuestions) : sortQuestionsByTarget(deepQuestions);
   } else if (mode.totalQuestions === 60) {
     // Standard: 20 axis items + 40 function items (60 total)
     // Flow:
-    // 1. Deep (24): 8 axis + 16 function (shuffled internally)
-    // 2. Short (16): 4 axis + 12 function (shuffled internally)
-    // 3. Would You Rather (16): 4 axis + 12 function (shuffled internally)
+    // 1. Deep (24): 8 axis + 16 function
+    // 2. Short (16): 4 axis + 12 function
+    // 3. Would You Rather (16): 4 axis + 12 function
     // 4. Direct Final (4): 4 axis (F01-F04)
+    // Each phase sorted by target: I, E, N, S, T, F, J, P, Ne, Ni, Se, Si, Te, Ti, Fe, Fi
     const deepQuestions = QUESTIONS_100.filter(q => q.format === "deep"); // 24
-    const deepPhase = shouldShuffle ? shuffle(deepQuestions) : [...deepQuestions];
+    const deepPhase = shouldShuffle ? shuffle(deepQuestions) : sortQuestionsByTarget(deepQuestions);
 
     const shortAxisIds = ["S01", "S04", "S07", "S10"]; // 4 (EI, NS, TF, JP)
     const shortFuncIds = ["S13", "S14", "S16", "S17", "S19", "S20", "S22", "S23", "S25", "S28", "S31", "S34"]; // 12
     const shortItems = [...shortAxisIds, ...shortFuncIds].map(id => QUESTIONS_100.find(q => q.id === id));
-    const shortPhase = shouldShuffle ? shuffle(shortItems) : [...shortItems];
+    const shortPhase = shouldShuffle ? shuffle(shortItems) : sortQuestionsByTarget(shortItems);
 
     const wyrAxisIds = ["W01", "W04", "W07", "W10"]; // 4 (EI, NS, TF, JP)
     const wyrFuncIds = ["W13", "W14", "W16", "W17", "W19", "W20", "W22", "W23", "W26", "W29", "W32", "W35"]; // 12
     const wyrItems = [...wyrAxisIds, ...wyrFuncIds].map(id => QUESTIONS_100.find(q => q.id === id));
-    const wyrPhase = shouldShuffle ? shuffle(wyrItems) : [...wyrItems];
+    const wyrPhase = shouldShuffle ? shuffle(wyrItems) : sortQuestionsByTarget(wyrItems);
 
-    const directFinalPhase = QUESTIONS_100.filter(q => q.format === "direct"); // 4 (F01-F04)
+    const directFinalItems = QUESTIONS_100.filter(q => q.format === "direct"); // 4 (F01-F04)
+    const directFinalPhase = shouldShuffle ? shuffle(directFinalItems) : sortQuestionsByTarget(directFinalItems);
 
     questions = [...deepPhase, ...shortPhase, ...wyrPhase, ...directFinalPhase];
   } else {
     // Complete: All 100 questions
     // Flow:
-    // 1. Deep (24 questions, shuffled internally)
-    // 2. Short (36 questions, shuffled internally)
-    // 3. Would You Rather (36 questions, shuffled internally)
+    // 1. Deep (24 questions)
+    // 2. Short (36 questions)
+    // 3. Would You Rather (36 questions)
     // 4. Direct Final (4 questions: F01-F04)
+    // Each phase sorted by target: I, E, N, S, T, F, J, P, Ne, Ni, Se, Si, Te, Ti, Fe, Fi
     const deepPhase = QUESTIONS_100.filter(q => q.format === "deep"); // 24
     const shortPhase = QUESTIONS_100.filter(q => q.format === "short"); // 36
     const wyrPhase = QUESTIONS_100.filter(q => q.format === "wouldYouRather"); // 36
     const directFinalPhase = QUESTIONS_100.filter(q => q.format === "direct"); // 4
 
-    const deepShuffled = shouldShuffle ? shuffle(deepPhase) : [...deepPhase];
-    const shortShuffled = shouldShuffle ? shuffle(shortPhase) : [...shortPhase];
-    const wyrShuffled = shouldShuffle ? shuffle(wyrPhase) : [...wyrPhase];
+    const deepOrdered = shouldShuffle ? shuffle(deepPhase) : sortQuestionsByTarget(deepPhase);
+    const shortOrdered = shouldShuffle ? shuffle(shortPhase) : sortQuestionsByTarget(shortPhase);
+    const wyrOrdered = shouldShuffle ? shuffle(wyrPhase) : sortQuestionsByTarget(wyrPhase);
+    const directOrdered = shouldShuffle ? shuffle(directFinalPhase) : sortQuestionsByTarget(directFinalPhase);
 
-    questions = [...deepShuffled, ...shortShuffled, ...wyrShuffled, ...directFinalPhase];
+    questions = [...deepOrdered, ...shortOrdered, ...wyrOrdered, ...directOrdered];
   }
 
   return questions;

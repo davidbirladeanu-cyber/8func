@@ -27,8 +27,9 @@ export class AppState {
     const savedMode = localStorage.getItem(STORAGE_KEYS.MODE);
     this.mode = TEST_MODES[savedMode] ? savedMode : "standard";
 
-    // Ordering is always randomized within phases
-    this.randomized = true;
+    // Question ordering is deterministic: Deep -> Simple (Short) -> Rather (Would You Rather) -> Direct
+    // And within each section sorted by: I, E, N, S, T, F, J, P, Ne, Ni, Se, Si, Te, Ti, Fe, Fi
+    this.randomized = false;
 
     // Build question bank for mode
     this.questions = getQuestionsForMode(this.mode);
