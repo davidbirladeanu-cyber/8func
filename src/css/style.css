@@ -3706,18 +3706,24 @@ a {
   display: flex;
   align-items: center;
   gap: 0.95rem;
-  padding: 0.9rem 1.1rem;
-  border-radius: var(--radius-lg);
-  background: var(--paper);
-  border: 1px solid var(--line);
-  transition: all var(--transition-fast);
+  padding: 1.05rem 1.25rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), outline var(--transition-fast);
   cursor: pointer;
+  box-sizing: border-box;
 }
 
-.fig-list-item:hover, .fig-list-item.selected {
-  border-color: var(--accent);
+.fig-list-item:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.fig-list-item.selected {
+  outline: 2.5px solid #ffffff;
+  outline-offset: 2px;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
 }
 
 .fig-num {
@@ -3786,41 +3792,15 @@ a {
 }
 
 .fig-role-text {
-  font-size: 0.78rem;
-  color: var(--text-muted);
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.9);
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  flex-wrap: wrap;
-  margin: 0.2rem 0;
-}
-
-.mbti-axis-sq-group {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  vertical-align: middle;
-}
-
-.mbti-axis-sq {
-  width: 19px;
-  height: 19px;
-  border-radius: 4px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-display);
-  font-size: 0.68rem;
-  font-weight: 900;
-  color: #ffffff;
-  line-height: 1;
-  text-transform: uppercase;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
-  transition: transform var(--transition-fast);
-}
-
-.mbti-axis-sq:hover {
-  transform: scale(1.15);
+  gap: 0.35rem;
+  margin: 0.15rem 0 0.35rem 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .fig-bar-track {

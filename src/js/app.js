@@ -68,28 +68,11 @@ export function calculateMbtiDichotomies(percentages) {
   };
 }
 
-export function getAxisLetterColor(letter) {
-  switch (letter) {
-    case "E": return "#4361ab";
-    case "I": return "#4d69ba";
-    case "N": return "#95637e";
-    case "S": return "#e5c727";
-    case "T": return "#72cccd";
-    case "F": return "#9ac262";
-    case "J": return "#395296";
-    case "P": return "#5573c7";
-    default: return "#4d69ba";
-  }
-}
-
-export function getMbtiAxisSquaresHtml(mbti) {
-  if (!mbti || typeof mbti !== "string" || mbti.length < 4) return mbti || "";
-  const chars = mbti.toUpperCase().slice(0, 4).split("");
-  return `
-    <span class="mbti-axis-sq-group" aria-label="${mbti}">
-      ${chars.map(ch => `<span class="mbti-axis-sq" style="background: ${getAxisLetterColor(ch)};" title="${ch}">${ch}</span>`).join("")}
-    </span>
-  `;
+export function getPreferenceTier(pct) {
+  if (pct === 50) return "Balanced (50% / 50%)";
+  if (pct <= 54) return "Slight preference (Mixed profile)";
+  if (pct <= 64) return "Moderate preference";
+  return "Stronger preference";
 }
 
 // The 4 MBTI Dichotomy Spectrum Axes (I-E, N-S, T-F, P-J)
@@ -1315,23 +1298,27 @@ class App {
       const scoreToShow = fig.similarity;
       const cleanRole = fig.role ? fig.role.replace(/\s*·\s*[A-Z]{4}\s*$/i, "").trim() : (fig.profession || "");
 
+      const figColors = getMbtiTileColors(fig.mbti);
+
       return `
-        <div class="fig-list-item ${isSelected ? 'selected' : ''}" data-id="${fig.id}">
-          <span class="fig-num">${numStr}</span>
+        <div class="fig-list-item ${isSelected ? 'selected' : ''}" data-id="${fig.id}" style="background: ${figColors.bg}; color: #ffffff;">
+          <span class="fig-num" style="color: #ffffff; opacity: 0.85;">${numStr}</span>
           ${fig.photo ? `
             <img class="fig-avatar-img" src="${fig.photo}" alt="${fig.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-            <div class="fig-avatar-fallback" style="display:none; background:${temp.color};">${fig.avatar || fig.name.charAt(0)}</div>
+            <div class="fig-avatar-fallback" style="display:none; background: rgba(0,0,0,0.22); color: #ffffff;">${fig.avatar || fig.name.charAt(0)}</div>
           ` : `
-            <div class="fig-avatar-fallback" style="background:${temp.color};">${fig.avatar || fig.name.charAt(0)}</div>
+            <div class="fig-avatar-fallback" style="background: rgba(0,0,0,0.22); color: #ffffff;">${fig.avatar || fig.name.charAt(0)}</div>
           `}
           <div class="fig-info">
             <div class="fig-info-top">
-              <h4 class="fig-name">${fig.name}</h4>
-              <span class="fig-pct" style="color: ${temp.color};">${scoreToShow}%</span>
+              <h4 class="fig-name" style="color: #ffffff;">${fig.name}</h4>
+              <span class="fig-pct" style="color: #ffffff;">${scoreToShow}%</span>
             </div>
-            <div class="fig-role-text">${cleanRole} · ${getMbtiAxisSquaresHtml(fig.mbti)}</div>
-            <div class="fig-bar-track">
-              <div class="fig-bar-fill" style="width: ${scoreToShow}%; background: ${temp.color};"></div>
+            <div class="fig-role-text" style="color: rgba(255,255,255,0.92);">
+              <span>${cleanRole}</span> · <b style="color: #ffffff; background: rgba(0,0,0,0.22); padding: 0.12rem 0.55rem; border-radius: 999px; font-weight: 800; font-size: 0.74rem;">${fig.mbti}</b>
+            </div>
+            <div class="fig-bar-track" style="background: rgba(0,0,0,0.25);">
+              <div class="fig-bar-fill" style="width: ${scoreToShow}%; background: #ffffff;"></div>
             </div>
           </div>
         </div>
@@ -1638,7 +1625,7 @@ class App {
                       <h3 class="comp-v2-name">${currentComparisonFigure.name}</h3>
                       <span class="comp-v2-pct" style="color: ${currentFigTemp.color};">${figSim}%</span>
                     </div>
-                    <div class="comp-v2-subtitle">${compCleanRole} · ${getMbtiAxisSquaresHtml(currentComparisonFigure.mbti)}</div>
+                    <div class="comp-v2-subtitle">${compCleanRole} · <b style="color: ${currentFigTemp.color};">${currentComparisonFigure.mbti}</b></div>
                     <div class="comp-v2-bar-track">
                       <div class="comp-v2-bar-fill" style="width: ${figSim}%; background: ${currentFigTemp.color};"></div>
                     </div>
@@ -1874,7 +1861,7 @@ class App {
                 </div>
                 <div style="min-width: 0;">
                   <div style="font-weight: 700; font-size: 0.92rem; color: var(--text-strong); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${fig.name}</div>
-                  <div style="font-size: 0.76rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.35rem; margin-top: 0.15rem;"><span>${itemCleanRole}</span><span>·</span>${getMbtiAxisSquaresHtml(fig.mbti)}</div>
+                  <div style="font-size: 0.76rem; color: var(--text-muted);">${itemCleanRole} · <b style="color: ${temp.color};">${fig.mbti}</b></div>
                 </div>
               </div>
               <span style="font-family: var(--font-display); font-weight: 800; font-size: 0.88rem; color: ${temp.color}; margin-left: 0.75rem; flex-shrink: 0;">${fig.similarity}% match</span>
