@@ -1201,117 +1201,65 @@ class App {
     const compassY = Math.max(10, Math.min(90, 100 - pN));
 
     // ========================================================
-    // 4 Axes (Energy, N-S, T-F, P-J) - 2x2 Grid Layout
+    // 4 Axes Minimalist Layout (Image 3)
     // ========================================================
-    const axesDict = TRANSLATIONS[lang]?.axes || TRANSLATIONS.en.axes;
-    const tiersDict = TRANSLATIONS[lang]?.tiers || TRANSLATIONS.en.tiers;
-
-    const mbtiAxesRowsHtml = MBTI_SPECTRUM_AXES.map((axis, idx) => {
-      let lPct = 50;
-      let rPct = 50;
-      let axisName = "";
-      if (axis.dichotomy === "IE") {
-        lPct = axisScores.EI.roundB; // I
-        rPct = axisScores.EI.roundA; // E
-        axisName = "Energy";
-      } else if (axis.dichotomy === "NS") {
-        lPct = axisScores.NS.roundA; // N
-        rPct = axisScores.NS.roundB; // S
-        axisName = "N — S";
-      } else if (axis.dichotomy === "TF") {
-        lPct = axisScores.TF.roundA; // T
-        rPct = axisScores.TF.roundB; // F
-        axisName = "T — F";
-      } else if (axis.dichotomy === "PJ") {
-        lPct = axisScores.JP.roundB; // P
-        rPct = axisScores.JP.roundA; // J
-        axisName = "P — J";
+    const axesData = [
+      {
+        id: "energy",
+        name: "ENERGY",
+        leftName: lang === "ro" ? "Extraversie" : "Extraversion",
+        rightName: lang === "ro" ? "Introversie" : "Introversion",
+        leftPct: axisScores.EI.roundA, // E
+        rightPct: axisScores.EI.roundB, // I
+        color: "#4d69ba",
+        pos: Math.max(5, Math.min(95, axisScores.EI.roundB))
+      },
+      {
+        id: "mind",
+        name: "MIND",
+        leftName: lang === "ro" ? "Intuiție" : "Intuition",
+        rightName: lang === "ro" ? "Senzorial" : "Sensing",
+        leftPct: axisScores.NS.roundA, // N
+        rightPct: axisScores.NS.roundB, // S
+        color: axisScores.NS.roundA >= axisScores.NS.roundB ? "#95637e" : "#e5c727",
+        pos: Math.max(5, Math.min(95, axisScores.NS.roundB))
+      },
+      {
+        id: "nature",
+        name: "NATURE",
+        leftName: lang === "ro" ? "Gândire" : "Thinking",
+        rightName: lang === "ro" ? "Sentiment" : "Feeling",
+        leftPct: axisScores.TF.roundA, // T
+        rightPct: axisScores.TF.roundB, // F
+        color: axisScores.TF.roundA >= axisScores.TF.roundB ? "#72cccd" : "#9ac262",
+        pos: Math.max(5, Math.min(95, axisScores.TF.roundB))
+      },
+      {
+        id: "tactics",
+        name: "TACTICS",
+        leftName: lang === "ro" ? "Judecată" : "Judging",
+        rightName: lang === "ro" ? "Percepție" : "Perceiving",
+        leftPct: axisScores.JP.roundA, // J
+        rightPct: axisScores.JP.roundB, // P
+        color: "#4d69ba",
+        pos: Math.max(5, Math.min(95, axisScores.JP.roundB))
       }
+    ];
 
-      const axisDef = axesDict[axis.dichotomy] || axis;
-      const leftName = axisDef.leftName;
-      const rightName = axisDef.rightName;
-
-      let activeColor = "#9C988C";
-      let domPct = 50;
-      let domName = leftName;
-      let domPole = axis.left;
-      let dotLeft = "50%";
-      let fillLeft = "50%";
-      let fillWidth = "0%";
-      let leftWin = false;
-      let rightWin = false;
-
-      const getTierName = (pct) => {
-        if (pct === 50) return tiersDict.balanced;
-        if (pct <= 54) return tiersDict.slight;
-        if (pct <= 64) return tiersDict.moderate;
-        return tiersDict.strong;
-      };
-
-      if (lPct > 50) {
-        const tier = getTierName(lPct);
-        activeColor = axis.leftColor;
-        domPct = lPct;
-        domName = leftName;
-        domPole = axis.left;
-        const rawDot = 100 - lPct;
-        const clampedDot = Math.max(4, Math.min(96, rawDot));
-        dotLeft = `${clampedDot}%`;
-        fillLeft = `${clampedDot}%`;
-        fillWidth = `${50 - clampedDot}%`;
-        leftWin = true;
-      } else if (rPct > 50) {
-        const tier = getTierName(rPct);
-        activeColor = axis.rightColor;
-        domPct = rPct;
-        domName = rightName;
-        domPole = axis.right;
-        const rawDot = rPct;
-        const clampedDot = Math.max(4, Math.min(96, rawDot));
-        dotLeft = `${clampedDot}%`;
-        fillLeft = `50%`;
-        fillWidth = `${clampedDot - 50}%`;
-        rightWin = true;
-      }
-
-      const tier = getTierName(domPct);
-      const valueText = domPct > 50 ? `${domPct}% ${domName} (${domPole}) · ${tier}` : tiersDict.balanced;
-
-      const axisIcons = {
-        EI: "⚡",
-        SN: "🔮",
-        TF: "⚖️",
-        PJ: "🎯"
-      };
-      const numStr = String(idx + 1).padStart(2, "0");
-      const icon = axisIcons[axis.dichotomy] || "✦";
-
+    const mbtiAxesRowsHtml = axesData.map(ax => {
       return `
-        <li class="cute-card" style="align-items: flex-start;">
-          <span class="cute-num">${numStr}</span>
-          <div class="cute-avatar" style="background: ${activeColor}22; color: ${activeColor}; border: 1.5px solid ${activeColor};">
-            ${icon}
+        <div class="minimal-axis-item">
+          <div class="minimal-axis-top">
+            <span class="minimal-axis-title">${ax.name}</span>
           </div>
-          <div class="cute-info">
-            <div class="cute-info-top">
-              <h4 class="cute-name">${axisName}</h4>
-              <span class="cute-pct" style="color: ${activeColor};">${domPct}%</span>
-            </div>
-            <div class="cute-sub">
-              ${leftName} vs ${rightName} · <b style="color: ${activeColor};">${domName} (${domPole})</b>
-            </div>
-            <div class="cute-bar-track" style="position: relative; height: 6px; overflow: visible; margin-top: 0.45rem;">
-              <div class="cute-bar-fill" style="width: 100%; background: var(--line);"></div>
-              <span style="position: absolute; left: 50%; top: -2px; bottom: -2px; width: 2px; background: var(--text-muted); opacity: 0.6;"></span>
-              <span style="position: absolute; left: ${dotLeft}; top: 50%; transform: translate(-50%, -50%); width: 12px; height: 12px; border-radius: 50%; background: ${activeColor}; box-shadow: 0 0 8px ${activeColor};"></span>
-            </div>
-            <div class="cute-poles-mini">
-              <span class="${leftWin ? 'cute-pole-win' : ''}">${axis.left} (${lPct}%)</span>
-              <span class="${rightWin ? 'cute-pole-win' : ''}">(${rPct}%) ${axis.right}</span>
-            </div>
+          <div class="minimal-axis-track">
+            <div class="minimal-axis-thumb" style="left: ${ax.pos}%; background: ${ax.color}; box-shadow: 0 0 10px ${ax.color}88;"></div>
           </div>
-        </li>
+          <div class="minimal-axis-labels">
+            <span class="axis-lbl-left">${ax.leftName} ${ax.leftPct}%</span>
+            <span class="axis-lbl-right">${ax.rightPct}% ${ax.rightName}</span>
+          </div>
+        </div>
       `;
     }).join("");
 
@@ -1441,91 +1389,71 @@ class App {
               </div>
             </article>
 
-            <!-- Ranked Cognitive Hierarchy -->
+            <!-- Cognitive Hierarchy -->
             <section class="e-panel" id="cognitive-hierarchy">
-              <div class="e-sec-head hierarchy-sec-head">
-                <h2 class="hierarchy-sec-title">RANKED COGNITIVE HIERARCHY</h2>
+              <div class="e-sec-head hierarchy-sec-head" style="margin-bottom: 1.25rem;">
+                <h2 class="hierarchy-sec-title">COGNITIVE HIERARCHY</h2>
               </div>
               <div class="hierarchy-tiles-row">
                 ${sortedFunctions.map((f, idx) => {
                   const numStr = `#${idx + 1}`;
-                  const func = COGNITIVE_FUNCTIONS[f];
-                  const color = func.color;
-                  const colorLight = func.colorLight || `${color}30`;
-                  const colorDark = func.colorDark || color;
-                  const funcName = func.nameRo || func.name;
                   const pct = percentages[f];
+                  let bg = "#95637e";
+                  let textColor = "#ffffff";
+                  if (f === "Ne" || f === "Ni") {
+                    bg = "#95637e";
+                    textColor = "#ffffff";
+                  } else if (f === "Te" || f === "Ti") {
+                    bg = "#72cccd";
+                    textColor = "#0f2b2c";
+                  } else if (f === "Se" || f === "Si") {
+                    bg = "#e5c727";
+                    textColor = "#2c2300";
+                  } else if (f === "Fe" || f === "Fi") {
+                    bg = "#9ac262";
+                    textColor = "#142c08";
+                  }
                   return `
-                    <div class="hierarchy-tile" style="--t-bg: ${colorLight}; --t-fg: ${colorDark}; --t-border: ${color};" title="${f} — ${funcName} (${pct}%)">
-                      <span class="hierarchy-tile-num">${numStr}</span>
-                      <strong class="hierarchy-tile-code">${f}</strong>
-                      <span class="hierarchy-tile-pct">${pct}%</span>
-                      <span class="hierarchy-tile-name">${funcName}</span>
+                    <div class="hierarchy-tile-sq" style="--sq-bg: ${bg}; --sq-text: ${textColor};" title="${f} (${pct}%)">
+                      <span class="hierarchy-sq-num">${numStr}</span>
+                      <strong class="hierarchy-sq-code">${f}</strong>
+                      <span class="hierarchy-sq-score">${pct}% score</span>
                     </div>
                   `;
                 }).join("")}
               </div>
             </section>
 
-            <!-- 4 Axes (Cute 2x2 Grid) -->
+            <!-- 4 Axes Minimalist (Image 3) -->
             <section class="e-panel" id="mbti-axes">
-              <div class="e-sec-head" style="margin-bottom: 1.25rem;">
+              <div class="e-sec-head" style="margin-bottom: 1.5rem;">
                 <h2 class="e-sec-title">4 Axes</h2>
               </div>
-              <ul class="e-axes-grid-2x2">
+              <div class="minimal-axes-grid">
                 ${mbtiAxesRowsHtml}
-              </ul>
+              </div>
             </section>
 
-            <!-- 4 Spectrum Compass / Coordinate Map -->
+            <!-- Spectrum (Image 2 style) -->
             <section class="e-panel" id="spectrum-compass">
-              <div class="e-sec-head" style="margin-bottom: 1.25rem;">
-                <h2 class="e-sec-title">4 Spectrum</h2>
+              <div class="e-sec-head" style="margin-bottom: 1.5rem;">
+                <h2 class="e-sec-title">Spectrum</h2>
               </div>
-              <div class="spectrum-compass-box">
-                <div class="spectrum-crosshair-x"></div>
-                <div class="spectrum-crosshair-y"></div>
-                <div class="spectrum-grid-circle" style="width: 38%; height: 38%;"></div>
-                <div class="spectrum-grid-circle" style="width: 72%; height: 72%;"></div>
+              <div class="spectrum-compass-container">
+                <div class="spectrum-cardinal-lbl spectrum-lbl-top">INTUITION</div>
+                <div class="spectrum-cardinal-lbl spectrum-lbl-bottom">SENSING</div>
+                <div class="spectrum-cardinal-lbl spectrum-lbl-left">FEELING</div>
+                <div class="spectrum-cardinal-lbl spectrum-lbl-right">THINKING</div>
 
-                <!-- Quadrant Corner Watermarks -->
-                <span class="spectrum-corner-tag spectrum-corner-tr">NT · ANALYSTS</span>
-                <span class="spectrum-corner-tag spectrum-corner-tl">NF · DIPLOMATS</span>
-                <span class="spectrum-corner-tag spectrum-corner-br">ST · PRAGMATICS</span>
-                <span class="spectrum-corner-tag spectrum-corner-bl">SF · SENTINELS</span>
+                <div class="spectrum-quadrant-plane">
+                  <div class="spectrum-quadrant quad-tl" title="NF · Intuition & Feeling"></div>
+                  <div class="spectrum-quadrant quad-tr" title="NT · Intuition & Thinking"></div>
+                  <div class="spectrum-quadrant quad-bl" title="SF · Sensing & Feeling"></div>
+                  <div class="spectrum-quadrant quad-br" title="ST · Sensing & Thinking"></div>
+                  <div class="spectrum-crosshair-h"></div>
+                  <div class="spectrum-crosshair-v"></div>
 
-                <!-- SUS: N (Intuiție) -->
-                <div class="spectrum-cardinal-badge spectrum-cardinal-n">
-                  <span style="display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: #8A3AA025; color: #8A3AA0; font-weight: 800; font-size: 0.72rem; border: 1px solid #8A3AA0;">N</span>
-                  <span style="font-weight: 800; color: var(--text-strong); font-size: 0.82rem;">N · Intuiție</span>
-                  <span style="font-weight: 800; color: #8A3AA0; font-size: 0.82rem;">${pN}%</span>
-                </div>
-
-                <!-- JOS: S (Senzație) -->
-                <div class="spectrum-cardinal-badge spectrum-cardinal-s">
-                  <span style="display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: #D9770625; color: #D97706; font-weight: 800; font-size: 0.72rem; border: 1px solid #D97706;">S</span>
-                  <span style="font-weight: 800; color: var(--text-strong); font-size: 0.82rem;">S · Senzație</span>
-                  <span style="font-weight: 800; color: #D97706; font-size: 0.82rem;">${pS}%</span>
-                </div>
-
-                <!-- STÂNGA: F (Sentiment) -->
-                <div class="spectrum-cardinal-badge spectrum-cardinal-f">
-                  <span style="display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: #16A34A25; color: #16A34A; font-weight: 800; font-size: 0.72rem; border: 1px solid #16A34A;">F</span>
-                  <span style="font-weight: 800; color: var(--text-strong); font-size: 0.82rem;">F · Sentiment</span>
-                  <span style="font-weight: 800; color: #16A34A; font-size: 0.82rem;">${pF}%</span>
-                </div>
-
-                <!-- DREAPTA: T (Gândire) -->
-                <div class="spectrum-cardinal-badge spectrum-cardinal-t">
-                  <span style="display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: #0284C725; color: #0284C7; font-weight: 800; font-size: 0.72rem; border: 1px solid #0284C7;">T</span>
-                  <span style="font-weight: 800; color: var(--text-strong); font-size: 0.82rem;">T · Gândire</span>
-                  <span style="font-weight: 800; color: #0284C7; font-size: 0.82rem;">${pT}%</span>
-                </div>
-
-                <!-- User coordinate dot -->
-                <div class="spectrum-user-dot" style="left: ${compassX}%; top: ${compassY}%;" title="Tu (${topMbti.type}: ${pT}% T, ${pN}% N)">
-                  <span style="font-size: 11px;">✦</span>
-                  <span class="spectrum-user-tag">${topMbti.type} (${topMbti.matchPercentage}%)</span>
+                  <div class="spectrum-plot-dot" style="left: ${compassX}%; top: ${compassY}%;" title="${topMbti.type}"></div>
                 </div>
               </div>
             </section>
@@ -1533,8 +1461,7 @@ class App {
             <!-- Differences (What sets you apart) -->
             <section class="e-panel" id="differences">
               <div class="e-sec-head" style="margin-bottom: 1.5rem;">
-                <h2 class="e-sec-title">${t('whatSetsYouApart', {}, lang)}</h2>
-                <p class="e-sec-lead" style="margin-bottom: 0;">${t('whatSetsYouApartLead', {}, lang)}</p>
+                <h2 class="e-sec-title">${lang === "ro" ? "Diferențe" : "Differences"}</h2>
               </div>
               <div class="diff-grid">
                 <!-- Highest Function Card -->
@@ -1546,6 +1473,18 @@ class App {
                   <div class="diff-pct diff-pct-high">${highPct}%</div>
                   <p class="diff-desc">
                     <b>${COGNITIVE_FUNCTIONS[extremeHighFunc].nameRo || COGNITIVE_FUNCTIONS[extremeHighFunc].name}</b> ${t('highestCap', {}, lang)}
+                  </p>
+                </div>
+
+                <!-- Balanced Function Card -->
+                <div class="diff-card diff-card-balanced">
+                  <div class="diff-card-head">
+                    <span class="diff-badge diff-badge-balanced">BALANCED FUNCTION</span>
+                    <span class="diff-func-code">${COGNITIVE_FUNCTIONS[balancedFunc].code}</span>
+                  </div>
+                  <div class="diff-pct diff-pct-balanced">${percentages[balancedFunc]}%</div>
+                  <p class="diff-desc">
+                    <b>${COGNITIVE_FUNCTIONS[balancedFunc].nameRo || COGNITIVE_FUNCTIONS[balancedFunc].name}</b> ${t('balancedCap', {}, lang)}
                   </p>
                 </div>
 
@@ -1563,11 +1502,10 @@ class App {
               </div>
             </section>
 
-            <!-- Resemble (formerly Other Personalities You Resemble) -->
+            <!-- Resemble -->
             <section class="e-panel" id="personalidades">
               <div class="e-sec-head" style="margin-bottom: 1.5rem;">
                 <h2 class="e-sec-title">Resemble</h2>
-                <p class="e-sec-lead" style="margin-bottom: 0;">${t('otherPersonalitiesLead', {}, lang)}</p>
               </div>
               <div class="resemble-grid">
                 ${otherMbtis.map(m => {
