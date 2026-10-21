@@ -1180,8 +1180,29 @@ class App {
     const lowPct = percentages[extremeLowFunc];
     const balancedFunc = [...sortedFunctions].sort((a, b) => Math.abs((percentages[a] ?? 50) - 50) - Math.abs((percentages[b] ?? 50) - 50))[0];
 
-    // Figures Ranking (10 Similar & 10 Opposite)
-    const { similar: similarFigures, opposite: oppositeFigures, all: allFigures } = getRankedFigures(percentages);
+    // Color helpers matching Cognitive Hierarchy palette
+    const getFuncTileColors = (f) => {
+      if (f === "Ne" || f === "Ni") return { bg: "#95637e", text: "#ffffff" };
+      if (f === "Te" || f === "Ti") return { bg: "#72cccd", text: "#0d2b2c" };
+      if (f === "Se" || f === "Si") return { bg: "#e5c727", text: "#2a2100" };
+      if (f === "Fe" || f === "Fi") return { bg: "#9ac262", text: "#142b08" };
+      return { bg: "#95637e", text: "#ffffff" };
+    };
+
+    const getMbtiTileColors = (type) => {
+      if (type.includes("N") && type.includes("T")) return { bg: "#95637e", text: "#ffffff" };
+      if (type.includes("N") && type.includes("F")) return { bg: "#9ac262", text: "#142b08" };
+      if (type.includes("S") && type.includes("T")) return { bg: "#72cccd", text: "#0d2b2c" };
+      if (type.includes("S") && type.includes("F")) return { bg: "#e5c727", text: "#2a2100" };
+      return { bg: "#95637e", text: "#ffffff" };
+    };
+
+    const highColors = getFuncTileColors(extremeHighFunc);
+    const balColors = getFuncTileColors(balancedFunc);
+    const lowColors = getFuncTileColors(extremeLowFunc);
+
+    // Figures Ranking (10 Similar & 10 Opposite) from 196 personalities dataset
+    const { similar: similarFigures, opposite: oppositeFigures, all: allFigures } = getRankedFigures(percentages, axisScores);
     const displayedFigures = this.figuresTab === "similar" ? similarFigures : oppositeFigures;
 
     let currentComparisonFigure = allFigures.find(f => f.id === this.selectedFigureId);
@@ -1295,7 +1316,7 @@ class App {
 
     // Comparative Analysis Sliders (Image 3 style)
     const currentFigTemp = getTypeTemperament(currentComparisonFigure.mbti);
-    const figSim = calculateFigureSimilarity(percentages, currentComparisonFigure.scores);
+    const figSim = calculateFigureSimilarity(percentages, axisScores, currentComparisonFigure);
     const figCompatText = figSim >= 85 ? "Very high compatibility" : (figSim >= 70 ? "High compatibility" : (figSim >= 50 ? "Moderate compatibility" : "Low compatibility"));
 
     const compSliders = [
@@ -1304,28 +1325,28 @@ class App {
         left: "N (Intuiție)",
         right: "S (Senzorial)",
         uPos: axisScores.NS.roundA,
-        fPos: currentComparisonFigure.scores.Ni > currentComparisonFigure.scores.Si ? 75 : 25
+        fPos: currentComparisonFigure.axes ? currentComparisonFigure.axes.N : 50
       },
       {
         name: "Gândire vs Afectiv (T / F)",
         left: "T (Gândire)",
         right: "F (Sentiment)",
         uPos: axisScores.TF.roundA,
-        fPos: currentComparisonFigure.scores.Te > currentComparisonFigure.scores.Fe ? 75 : 25
+        fPos: currentComparisonFigure.axes ? currentComparisonFigure.axes.T : 50
       },
       {
         name: "Extraversie vs Introversie (E / I)",
         left: "E (Extraversie)",
         right: "I (Introversie)",
         uPos: axisScores.EI.roundA,
-        fPos: currentComparisonFigure.mbti.startsWith("E") ? 80 : 20
+        fPos: currentComparisonFigure.axes ? currentComparisonFigure.axes.E : 50
       },
       {
         name: "Stil de viață: Judecată vs Percepție (J / P)",
         left: "J (Judecată)",
         right: "P (Percepție)",
         uPos: axisScores.JP.roundA,
-        fPos: currentComparisonFigure.mbti.endsWith("J") ? 80 : 20
+        fPos: currentComparisonFigure.axes ? currentComparisonFigure.axes.J : 50
       }
     ];
 
@@ -1391,8 +1412,8 @@ class App {
 
             <!-- Cognitive Hierarchy -->
             <section class="e-panel" id="cognitive-hierarchy">
-              <div class="e-sec-head hierarchy-sec-head" style="margin-bottom: 1.25rem;">
-                <h2 class="hierarchy-sec-title">COGNITIVE HIERARCHY</h2>
+              <div class="e-sec-head" style="margin-bottom: 1.5rem;">
+                <h2 class="e-sec-title">COGNITIVE HIERARCHY</h2>
               </div>
               <div class="hierarchy-tiles-row">
                 ${sortedFunctions.map((f, idx) => {
@@ -1465,38 +1486,38 @@ class App {
               </div>
               <div class="diff-grid">
                 <!-- Highest Function Card -->
-                <div class="diff-card diff-card-high">
+                <div class="diff-card" style="background: ${highColors.bg}; color: ${highColors.text}; border-radius: 14px; border: none;">
                   <div class="diff-card-head">
-                    <span class="diff-badge diff-badge-high">HIGHEST FUNCTION</span>
-                    <span class="diff-func-code">${COGNITIVE_FUNCTIONS[extremeHighFunc].code}</span>
+                    <span class="diff-badge" style="background: rgba(0, 0, 0, 0.16); color: currentColor; border: 1px solid rgba(0, 0, 0, 0.12);">HIGHEST FUNCTION</span>
+                    <span class="diff-func-code" style="color: currentColor;">${COGNITIVE_FUNCTIONS[extremeHighFunc].code}</span>
                   </div>
-                  <div class="diff-pct diff-pct-high">${highPct}%</div>
-                  <p class="diff-desc">
-                    <b>${COGNITIVE_FUNCTIONS[extremeHighFunc].nameRo || COGNITIVE_FUNCTIONS[extremeHighFunc].name}</b> ${t('highestCap', {}, lang)}
+                  <div class="diff-pct" style="color: currentColor;">${highPct}%</div>
+                  <p class="diff-desc" style="color: currentColor; opacity: 0.95;">
+                    <b style="color: currentColor;">${COGNITIVE_FUNCTIONS[extremeHighFunc].nameRo || COGNITIVE_FUNCTIONS[extremeHighFunc].name}</b> ${t('highestCap', {}, lang)}
                   </p>
                 </div>
 
                 <!-- Balanced Function Card -->
-                <div class="diff-card diff-card-balanced">
+                <div class="diff-card" style="background: ${balColors.bg}; color: ${balColors.text}; border-radius: 14px; border: none;">
                   <div class="diff-card-head">
-                    <span class="diff-badge diff-badge-balanced">BALANCED FUNCTION</span>
-                    <span class="diff-func-code">${COGNITIVE_FUNCTIONS[balancedFunc].code}</span>
+                    <span class="diff-badge" style="background: rgba(0, 0, 0, 0.16); color: currentColor; border: 1px solid rgba(0, 0, 0, 0.12);">BALANCED FUNCTION</span>
+                    <span class="diff-func-code" style="color: currentColor;">${COGNITIVE_FUNCTIONS[balancedFunc].code}</span>
                   </div>
-                  <div class="diff-pct diff-pct-balanced">${percentages[balancedFunc]}%</div>
-                  <p class="diff-desc">
-                    <b>${COGNITIVE_FUNCTIONS[balancedFunc].nameRo || COGNITIVE_FUNCTIONS[balancedFunc].name}</b> ${t('balancedCap', {}, lang)}
+                  <div class="diff-pct" style="color: currentColor;">${percentages[balancedFunc]}%</div>
+                  <p class="diff-desc" style="color: currentColor; opacity: 0.95;">
+                    <b style="color: currentColor;">${COGNITIVE_FUNCTIONS[balancedFunc].nameRo || COGNITIVE_FUNCTIONS[balancedFunc].name}</b> ${t('balancedCap', {}, lang)}
                   </p>
                 </div>
 
                 <!-- Lowest Function Card -->
-                <div class="diff-card diff-card-low">
+                <div class="diff-card" style="background: ${lowColors.bg}; color: ${lowColors.text}; border-radius: 14px; border: none;">
                   <div class="diff-card-head">
-                    <span class="diff-badge diff-badge-low">LOWEST FUNCTION</span>
-                    <span class="diff-func-code">${COGNITIVE_FUNCTIONS[extremeLowFunc].code}</span>
+                    <span class="diff-badge" style="background: rgba(0, 0, 0, 0.16); color: currentColor; border: 1px solid rgba(0, 0, 0, 0.12);">LOWEST FUNCTION</span>
+                    <span class="diff-func-code" style="color: currentColor;">${COGNITIVE_FUNCTIONS[extremeLowFunc].code}</span>
                   </div>
-                  <div class="diff-pct diff-pct-low">${lowPct}%</div>
-                  <p class="diff-desc">
-                    <b>${COGNITIVE_FUNCTIONS[extremeLowFunc].nameRo || COGNITIVE_FUNCTIONS[extremeLowFunc].name}</b> ${t('lowestCap', {}, lang)}
+                  <div class="diff-pct" style="color: currentColor;">${lowPct}%</div>
+                  <p class="diff-desc" style="color: currentColor; opacity: 0.95;">
+                    <b style="color: currentColor;">${COGNITIVE_FUNCTIONS[extremeLowFunc].nameRo || COGNITIVE_FUNCTIONS[extremeLowFunc].name}</b> ${t('lowestCap', {}, lang)}
                   </p>
                 </div>
               </div>
@@ -1509,20 +1530,21 @@ class App {
               </div>
               <div class="resemble-grid">
                 ${otherMbtis.map(m => {
+                  const mColors = getMbtiTileColors(m.type);
                   return `
-                    <div class="resemble-card" style="--c-accent: ${m.temperamentColor};">
+                    <div class="resemble-card" style="background: ${mColors.bg}; color: ${mColors.text}; border-radius: 14px; border: none;">
                       <div class="resemble-card-head">
-                        <span class="resemble-tag" style="background: ${m.temperamentBg}; color: ${m.temperamentColor}; border: 1px solid ${m.temperamentBorder};">
+                        <span class="resemble-tag" style="background: rgba(0, 0, 0, 0.16); color: currentColor; border: 1px solid rgba(0, 0, 0, 0.12);">
                           ${m.type}
                         </span>
-                        <span class="resemble-pct" style="color: ${m.temperamentColor};">
+                        <span class="resemble-pct" style="color: currentColor;">
                           ${m.matchPercentage}%
                         </span>
                       </div>
-                      <h3 class="resemble-name">${m.title}</h3>
-                      <p class="resemble-desc">${m.description}</p>
+                      <h3 class="resemble-name" style="color: currentColor;">${m.title}</h3>
+                      <p class="resemble-desc" style="color: currentColor; opacity: 0.95;">${m.description}</p>
                       <div class="resemble-stack">
-                        ${m.stack.map(st => `<span class="resemble-stack-pill">${st}</span>`).join("")}
+                        ${m.stack.map(st => `<span class="resemble-stack-pill" style="background: rgba(0, 0, 0, 0.15); color: currentColor; border: 1px solid rgba(0, 0, 0, 0.12); font-weight: 800;">${st}</span>`).join("")}
                       </div>
                     </div>
                   `;
@@ -1562,7 +1584,7 @@ class App {
                   type="text" 
                   id="figure-search-input" 
                   class="comp-search-bar" 
-                  placeholder="🔍 Caută o personalitate (ex: Marcus Aurelius, Tesla, Trump, Nietzsche, Foucault)..." 
+                  placeholder="🔍 Caută o personalitate (ex: John Lennon, Tesla, Einstein, Brad Pitt, Steve Jobs)..." 
                 />
               </div>
 
