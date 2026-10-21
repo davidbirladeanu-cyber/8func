@@ -8,7 +8,7 @@ import { COGNITIVE_FUNCTIONS, FUNCTIONS_LIST } from "../data/functions.js";
 import { TEST_MODES, getQuestionText, ALL_QUESTIONS, getQuestionsForMode } from "../data/questions.js";
 import { ANSWER_OPTIONS, ANSWER_VALUE_MAP, getAnswerOptions, calculateScores, buildResultsUrlPath } from "./scoring.js";
 import { MBTI_TYPES, calculateBestMbtiType, getTypeTemperament } from "../data/mbtiTypes.js";
-import { NOTABLE_FIGURES, getRankedFigures } from "../data/figures.js";
+import { NOTABLE_FIGURES, getRankedFigures, calculateFigureSimilarity } from "../data/figures.js";
 import { ICONS } from "./icons.js";
 import { t, TRANSLATIONS } from "../data/translations.js";
 import { recordQuizSubmission, initVaultTriggers } from "./vault.js";
