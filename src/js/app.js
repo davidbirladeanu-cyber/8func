@@ -1190,13 +1190,15 @@ class App {
       this.selectedFigureId = currentComparisonFigure.id;
     }
 
-    // 4 Spectrum Coordinates (N: top-left, T: top-right, F: bottom-left, S: bottom-right)
-    const pN = axisScores?.NS?.roundA ?? 50;
-    const pS = axisScores?.NS?.roundB ?? 50;
-    const pT = axisScores?.TF?.roundA ?? 50;
-    const pF = axisScores?.TF?.roundB ?? 50;
-    const compassX = Math.max(12, Math.min(88, Math.round(50 + (pT - pF) / 2)));
-    const compassY = Math.max(12, Math.min(88, Math.round(50 - (pN - pS) / 2)));
+    // 4 Spectrum Coordinates (N sus, S jos, F stanga, T dreapta)
+    const pN = axisScores?.NS?.roundA ?? 50; // % N (Intuiție)
+    const pS = axisScores?.NS?.roundB ?? 50; // % S (Senzație)
+    const pT = axisScores?.TF?.roundA ?? 50; // % T (Gândire)
+    const pF = axisScores?.TF?.roundB ?? 50; // % F (Sentiment)
+    // F stanga (0%) -> T dreapta (100%)
+    const compassX = Math.max(10, Math.min(90, pT));
+    // N sus (0%) -> S jos (100%)
+    const compassY = Math.max(10, Math.min(90, 100 - pN));
 
     // ========================================================
     // 4 Axes (Energy, N-S, T-F, P-J) - 2x2 Grid Layout
@@ -1495,63 +1497,45 @@ class App {
               <div class="spectrum-compass-box">
                 <div class="spectrum-crosshair-x"></div>
                 <div class="spectrum-crosshair-y"></div>
-                <div class="spectrum-grid-circle" style="width: 130px; height: 130px;"></div>
-                <div class="spectrum-grid-circle" style="width: 250px; height: 250px;"></div>
+                <div class="spectrum-grid-circle" style="width: 38%; height: 38%;"></div>
+                <div class="spectrum-grid-circle" style="width: 72%; height: 72%;"></div>
 
-                <!-- Top Left: N -->
-                <div class="spectrum-quadrant-badge spectrum-quadrant-tl">
-                  <div style="display: flex; align-items: center; gap: 0.45rem;">
-                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: #8A3AA025; color: #8A3AA0; font-weight: 800; font-size: 0.72rem; border: 1px solid #8A3AA0;">N</span>
-                    <span style="font-weight: 800; color: var(--text-strong); font-size: 0.88rem;">Intuiție (N)</span>
-                    <span style="font-weight: 800; color: #8A3AA0; font-size: 0.88rem; margin-left: auto;">${axisScores.NS.roundA}%</span>
-                  </div>
-                  <span style="color: var(--text-muted); font-size: 0.72rem; margin-top: 0.2rem;">Ni ${percentages.Ni ?? 50}% · Ne ${percentages.Ne ?? 50}%</span>
-                  <div class="cute-bar-track" style="height: 3.5px; margin-top: 0.25rem;">
-                    <div class="cute-bar-fill" style="width: ${axisScores.NS.roundA}%; background: #8A3AA0;"></div>
-                  </div>
+                <!-- Quadrant Corner Watermarks -->
+                <span class="spectrum-corner-tag spectrum-corner-tr">NT · ANALYSTS</span>
+                <span class="spectrum-corner-tag spectrum-corner-tl">NF · DIPLOMATS</span>
+                <span class="spectrum-corner-tag spectrum-corner-br">ST · PRAGMATICS</span>
+                <span class="spectrum-corner-tag spectrum-corner-bl">SF · SENTINELS</span>
+
+                <!-- SUS: N (Intuiție) -->
+                <div class="spectrum-cardinal-badge spectrum-cardinal-n">
+                  <span style="display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: #8A3AA025; color: #8A3AA0; font-weight: 800; font-size: 0.72rem; border: 1px solid #8A3AA0;">N</span>
+                  <span style="font-weight: 800; color: var(--text-strong); font-size: 0.82rem;">N · Intuiție</span>
+                  <span style="font-weight: 800; color: #8A3AA0; font-size: 0.82rem;">${pN}%</span>
                 </div>
 
-                <!-- Top Right: T -->
-                <div class="spectrum-quadrant-badge spectrum-quadrant-tr">
-                  <div style="display: flex; align-items: center; gap: 0.45rem;">
-                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: #0284C725; color: #0284C7; font-weight: 800; font-size: 0.72rem; border: 1px solid #0284C7;">T</span>
-                    <span style="font-weight: 800; color: var(--text-strong); font-size: 0.88rem;">Gândire (T)</span>
-                    <span style="font-weight: 800; color: #0284C7; font-size: 0.88rem; margin-left: auto;">${axisScores.TF.roundA}%</span>
-                  </div>
-                  <span style="color: var(--text-muted); font-size: 0.72rem; margin-top: 0.2rem;">Te ${percentages.Te ?? 50}% · Ti ${percentages.Ti ?? 50}%</span>
-                  <div class="cute-bar-track" style="height: 3.5px; margin-top: 0.25rem;">
-                    <div class="cute-bar-fill" style="width: ${axisScores.TF.roundA}%; background: #0284C7;"></div>
-                  </div>
+                <!-- JOS: S (Senzație) -->
+                <div class="spectrum-cardinal-badge spectrum-cardinal-s">
+                  <span style="display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: #D9770625; color: #D97706; font-weight: 800; font-size: 0.72rem; border: 1px solid #D97706;">S</span>
+                  <span style="font-weight: 800; color: var(--text-strong); font-size: 0.82rem;">S · Senzație</span>
+                  <span style="font-weight: 800; color: #D97706; font-size: 0.82rem;">${pS}%</span>
                 </div>
 
-                <!-- Bottom Left: F -->
-                <div class="spectrum-quadrant-badge spectrum-quadrant-bl">
-                  <div style="display: flex; align-items: center; gap: 0.45rem;">
-                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: #16A34A25; color: #16A34A; font-weight: 800; font-size: 0.72rem; border: 1px solid #16A34A;">F</span>
-                    <span style="font-weight: 800; color: var(--text-strong); font-size: 0.88rem;">Sentiment (F)</span>
-                    <span style="font-weight: 800; color: #16A34A; font-size: 0.88rem; margin-left: auto;">${axisScores.TF.roundB}%</span>
-                  </div>
-                  <span style="color: var(--text-muted); font-size: 0.72rem; margin-top: 0.2rem;">Fi ${percentages.Fi ?? 50}% · Fe ${percentages.Fe ?? 50}%</span>
-                  <div class="cute-bar-track" style="height: 3.5px; margin-top: 0.25rem;">
-                    <div class="cute-bar-fill" style="width: ${axisScores.TF.roundB}%; background: #16A34A;"></div>
-                  </div>
+                <!-- STÂNGA: F (Sentiment) -->
+                <div class="spectrum-cardinal-badge spectrum-cardinal-f">
+                  <span style="display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: #16A34A25; color: #16A34A; font-weight: 800; font-size: 0.72rem; border: 1px solid #16A34A;">F</span>
+                  <span style="font-weight: 800; color: var(--text-strong); font-size: 0.82rem;">F · Sentiment</span>
+                  <span style="font-weight: 800; color: #16A34A; font-size: 0.82rem;">${pF}%</span>
                 </div>
 
-                <!-- Bottom Right: S -->
-                <div class="spectrum-quadrant-badge spectrum-quadrant-br">
-                  <div style="display: flex; align-items: center; gap: 0.45rem;">
-                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: #D9770625; color: #D97706; font-weight: 800; font-size: 0.72rem; border: 1px solid #D97706;">S</span>
-                    <span style="font-weight: 800; color: var(--text-strong); font-size: 0.88rem;">Senzație (S)</span>
-                    <span style="font-weight: 800; color: #D97706; font-size: 0.88rem; margin-left: auto;">${axisScores.NS.roundB}%</span>
-                  </div>
-                  <span style="color: var(--text-muted); font-size: 0.72rem; margin-top: 0.2rem;">Se ${percentages.Se ?? 50}% · Si ${percentages.Si ?? 50}%</span>
-                  <div class="cute-bar-track" style="height: 3.5px; margin-top: 0.25rem;">
-                    <div class="cute-bar-fill" style="width: ${axisScores.NS.roundB}%; background: #D97706;"></div>
-                  </div>
+                <!-- DREAPTA: T (Gândire) -->
+                <div class="spectrum-cardinal-badge spectrum-cardinal-t">
+                  <span style="display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: #0284C725; color: #0284C7; font-weight: 800; font-size: 0.72rem; border: 1px solid #0284C7;">T</span>
+                  <span style="font-weight: 800; color: var(--text-strong); font-size: 0.82rem;">T · Gândire</span>
+                  <span style="font-weight: 800; color: #0284C7; font-size: 0.82rem;">${pT}%</span>
                 </div>
 
                 <!-- User coordinate dot -->
-                <div class="spectrum-user-dot" style="left: ${compassX}%; top: ${compassY}%;" title="Tu (${topMbti.type})">
+                <div class="spectrum-user-dot" style="left: ${compassX}%; top: ${compassY}%;" title="Tu (${topMbti.type}: ${pT}% T, ${pN}% N)">
                   <span style="font-size: 11px;">✦</span>
                   <span class="spectrum-user-tag">${topMbti.type} (${topMbti.matchPercentage}%)</span>
                 </div>

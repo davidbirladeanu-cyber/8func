@@ -3015,12 +3015,12 @@ a {
   font-weight: 800;
 }
 
-/* 4 Spectrum Compass / Coordinate Plane */
+/* 4 Spectrum Compass / Coordinate Plane (Perfect Square) */
 .spectrum-compass-box {
   position: relative;
   width: 100%;
-  max-width: 600px;
-  height: 380px;
+  max-width: 440px;
+  aspect-ratio: 1 / 1;
   margin: 1.5rem auto 1rem;
   background: var(--card-bg);
   border: 1.5px solid var(--line);
@@ -3060,24 +3060,62 @@ a {
   pointer-events: none;
 }
 
-.spectrum-quadrant-badge {
+/* Cardinal Badges (N sus, S jos, F stanga, T dreapta) */
+.spectrum-cardinal-badge {
   position: absolute;
   display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  padding: 0.45rem 0.75rem;
-  border-radius: var(--radius-md);
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-pill);
   background: var(--paper);
   border: 1px solid var(--line);
-  font-size: 0.76rem;
-  z-index: 2;
-  box-shadow: var(--shadow-sm);
+  font-size: 0.78rem;
+  z-index: 3;
+  box-shadow: var(--shadow-xs);
+  white-space: nowrap;
 }
 
-.spectrum-quadrant-tl { top: 1rem; left: 1rem; }
-.spectrum-quadrant-tr { top: 1rem; right: 1rem; text-align: right; }
-.spectrum-quadrant-bl { bottom: 1rem; left: 1rem; }
-.spectrum-quadrant-br { bottom: 1rem; right: 1rem; text-align: right; }
+.spectrum-cardinal-n {
+  top: 0.85rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.spectrum-cardinal-s {
+  bottom: 0.85rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.spectrum-cardinal-f {
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.spectrum-cardinal-t {
+  right: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.spectrum-corner-tag {
+  position: absolute;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  opacity: 0.45;
+  letter-spacing: 0.05em;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.spectrum-corner-tl { top: 0.9rem; left: 0.9rem; }
+.spectrum-corner-tr { top: 0.9rem; right: 0.9rem; }
+.spectrum-corner-bl { bottom: 0.9rem; left: 0.9rem; }
+.spectrum-corner-br { bottom: 0.9rem; right: 0.9rem; }
 
 .spectrum-user-dot {
   position: absolute;
