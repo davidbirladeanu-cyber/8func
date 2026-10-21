@@ -3377,14 +3377,88 @@ a {
 }
 
 /* ==========================================================================
-   Spectrum Quadrant Map (POZA 2)
+   Spectrum Quadrant Maps (POZA 2 & 4 Axes Style)
    ========================================================================== */
+.spectrum-dual-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  width: 100%;
+}
+
+@media (max-width: 860px) {
+  .spectrum-dual-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+.spectrum-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 1.4rem 1.25rem 1.3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.spectrum-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+}
+
+.spectrum-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 0.5rem;
+  padding: 0 0.5rem;
+  box-sizing: border-box;
+}
+
+.spectrum-card-info {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+}
+
+.spectrum-card-title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.spectrum-card-axes {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted, rgba(255, 255, 255, 0.5));
+  letter-spacing: 0.04em;
+}
+
+.spectrum-card-badge {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
 .spectrum-compass-container {
   position: relative;
   width: 100%;
-  max-width: 480px;
-  margin: 1rem auto;
-  padding: 2.5rem 5.5rem;
+  max-width: 440px;
+  margin: 0.5rem auto;
+  padding: 2.3rem 4.8rem;
   box-sizing: border-box;
   display: flex;
   align-items: center;
@@ -3393,7 +3467,7 @@ a {
 
 @media (max-width: 600px) {
   .spectrum-compass-container {
-    padding: 2.2rem 4.5rem;
+    padding: 2.1rem 4.2rem;
   }
 }
 
@@ -3406,7 +3480,7 @@ a {
 .spectrum-cardinal-lbl {
   position: absolute;
   font-family: var(--font-display);
-  font-size: 0.95rem;
+  font-size: 0.86rem;
   font-weight: 900;
   letter-spacing: 0.06em;
   color: #FFFFFF;
@@ -3416,30 +3490,30 @@ a {
 
 @media (max-width: 480px) {
   .spectrum-cardinal-lbl {
-    font-size: 0.78rem;
+    font-size: 0.75rem;
   }
 }
 
 .spectrum-lbl-top {
-  top: 0.25rem;
+  top: 0.35rem;
   left: 50%;
   transform: translateX(-50%);
 }
 
 .spectrum-lbl-bottom {
-  bottom: 0.25rem;
+  bottom: 0.35rem;
   left: 50%;
   transform: translateX(-50%);
 }
 
 .spectrum-lbl-left {
-  left: 0.5rem;
+  left: 0.45rem;
   top: 50%;
   transform: translateY(-50%);
 }
 
 .spectrum-lbl-right {
-  right: 0.5rem;
+  right: 0.45rem;
   top: 50%;
   transform: translateY(-50%);
 }
@@ -3448,7 +3522,7 @@ a {
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
-  border-radius: 28px;
+  border-radius: 26px;
   overflow: hidden;
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -3462,6 +3536,7 @@ a {
   transition: filter var(--transition-fast);
 }
 
+/* Plane 1: Mind & Nature (4 Axes Colors) */
 .spectrum-quadrant.quad-tl {
   background: #9ac262; /* NF: Intuition & Feeling */
 }
@@ -3476,6 +3551,28 @@ a {
 
 .spectrum-quadrant.quad-br {
   background: #72cccd; /* ST: Sensing & Thinking */
+}
+
+/* Plane 2: Energy & Tactics (4 Axes Blues) */
+.spectrum-quadrant.quad-ej {
+  background: #395296; /* EJ: Extraversion & Judging */
+}
+
+.spectrum-quadrant.quad-ep {
+  background: #4361ab; /* EP: Extraversion & Perceiving */
+}
+
+.spectrum-quadrant.quad-ij {
+  background: #4d69ba; /* IJ: Introversion & Judging */
+}
+
+.spectrum-quadrant.quad-ip {
+  background: #5573c7; /* IP: Introversion & Perceiving */
+}
+
+.spectrum-quadrant-plane-blue .spectrum-crosshair-h,
+.spectrum-quadrant-plane-blue .spectrum-crosshair-v {
+  background: rgba(255, 255, 255, 0.22);
 }
 
 .spectrum-crosshair-h {
@@ -3509,7 +3606,7 @@ a {
   height: 22px;
   border-radius: 50%;
   background: #1c1d1f;
-  border: 2px solid rgba(255, 255, 255, 0.22);
+  border: 2.5px solid #ffffff;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
   z-index: 5;
   cursor: pointer;
@@ -3519,6 +3616,28 @@ a {
 .spectrum-plot-dot:hover {
   transform: translate(-50%, -50%) scale(1.25);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.8);
+}
+
+.spectrum-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 0.4rem;
+  padding: 0 0.5rem;
+  box-sizing: border-box;
+}
+
+.spectrum-card-highlight {
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.spectrum-card-coords {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted, rgba(255, 255, 255, 0.6));
 }
 
 /* What Sets You Apart 3-card layout */

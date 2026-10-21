@@ -1211,7 +1211,8 @@ class App {
       this.selectedFigureId = currentComparisonFigure.id;
     }
 
-    // 4 Spectrum Coordinates (N sus, S jos, F stanga, T dreapta)
+    // 4 Spectrum Coordinates
+    // Spectrum 1: Mind & Nature (N sus, S jos, F stanga, T dreapta)
     const pN = axisScores?.NS?.roundA ?? 50; // % N (Intuiție)
     const pS = axisScores?.NS?.roundB ?? 50; // % S (Senzație)
     const pT = axisScores?.TF?.roundA ?? 50; // % T (Gândire)
@@ -1220,6 +1221,35 @@ class App {
     const compassX = Math.max(10, Math.min(90, pT));
     // N sus (0%) -> S jos (100%)
     const compassY = Math.max(10, Math.min(90, 100 - pN));
+
+    // Spectrum 2: Energy & Tactics (E sus, I jos, J stanga, P dreapta)
+    const pE = axisScores?.EI?.roundA ?? 50; // % E (Extraversie)
+    const pI = axisScores?.EI?.roundB ?? 50; // % I (Introversie)
+    const pJ = axisScores?.JP?.roundA ?? 50; // % J (Judecată)
+    const pP = axisScores?.JP?.roundB ?? 50; // % P (Percepție)
+    // J stanga (0%) -> P dreapta (100%)
+    const compass2X = Math.max(10, Math.min(90, pP));
+    // E sus (0%) -> I jos (100%)
+    const compass2Y = Math.max(10, Math.min(90, pI));
+
+    // Determine Quadrants and Titles for both Spectrums
+    const s1QuadCode = (pN >= pS ? "N" : "S") + (pF >= pT ? "F" : "T");
+    const s1QuadNames = {
+      NF: { code: "NF", name: lang === "ro" ? "Intuiție & Sentiment" : "Intuition & Feeling", color: "#9ac262" },
+      NT: { code: "NT", name: lang === "ro" ? "Intuiție & Gândire" : "Intuition & Thinking", color: "#95637e" },
+      SF: { code: "SF", name: lang === "ro" ? "Senzorial & Sentiment" : "Sensing & Feeling", color: "#e5c727" },
+      ST: { code: "ST", name: lang === "ro" ? "Senzorial & Gândire" : "Sensing & Thinking", color: "#72cccd" }
+    };
+    const activeS1 = s1QuadNames[s1QuadCode] || s1QuadNames.NT;
+
+    const s2QuadCode = (pE >= pI ? "E" : "I") + (pJ >= pP ? "J" : "P");
+    const s2QuadNames = {
+      EJ: { code: "EJ", name: lang === "ro" ? "Extraversie & Judecată" : "Extraversion & Judging", color: "#395296" },
+      EP: { code: "EP", name: lang === "ro" ? "Extraversie & Percepție" : "Extraversion & Perceiving", color: "#4361ab" },
+      IJ: { code: "IJ", name: lang === "ro" ? "Introversie & Judecată" : "Introversion & Judging", color: "#4d69ba" },
+      IP: { code: "IP", name: lang === "ro" ? "Introversie & Percepție" : "Introversion & Perceiving", color: "#5573c7" }
+    };
+    const activeS2 = s2QuadNames[s2QuadCode] || s2QuadNames.EP;
 
     // ========================================================
     // 4 Axes Minimalist Layout with Colored Boxes (like Cognitive Hierarchy)
@@ -1480,26 +1510,79 @@ class App {
               </div>
             </section>
 
-            <!-- Spectrum (Image 2 style) -->
+            <!-- Spectrum (Dual Compasses: Mind & Nature, Energy & Tactics) -->
             <section class="e-panel" id="spectrum-compass">
               <div class="e-sec-head" style="margin-bottom: 1.5rem;">
                 <h2 class="e-sec-title">Spectrum</h2>
               </div>
-              <div class="spectrum-compass-container">
-                <div class="spectrum-cardinal-lbl spectrum-lbl-top">INTUITION</div>
-                <div class="spectrum-cardinal-lbl spectrum-lbl-bottom">SENSING</div>
-                <div class="spectrum-cardinal-lbl spectrum-lbl-left">FEELING</div>
-                <div class="spectrum-cardinal-lbl spectrum-lbl-right">THINKING</div>
+              
+              <div class="spectrum-dual-grid">
+                <!-- Spectrum 1: Mind & Nature (Existing) -->
+                <div class="spectrum-card">
+                  <div class="spectrum-card-header">
+                    <div class="spectrum-card-info">
+                      <h3 class="spectrum-card-title">${lang === "ro" ? "Minte & Natură" : "Mind & Nature"}</h3>
+                      <span class="spectrum-card-axes">N-S · F-T</span>
+                    </div>
+                    <span class="spectrum-card-badge" style="background: ${activeS1.color}; color: #ffffff;">${activeS1.code}</span>
+                  </div>
 
-                <div class="spectrum-quadrant-plane">
-                  <div class="spectrum-quadrant quad-tl" title="NF · Intuition & Feeling"></div>
-                  <div class="spectrum-quadrant quad-tr" title="NT · Intuition & Thinking"></div>
-                  <div class="spectrum-quadrant quad-bl" title="SF · Sensing & Feeling"></div>
-                  <div class="spectrum-quadrant quad-br" title="ST · Sensing & Thinking"></div>
-                  <div class="spectrum-crosshair-h"></div>
-                  <div class="spectrum-crosshair-v"></div>
+                  <div class="spectrum-compass-container">
+                    <div class="spectrum-cardinal-lbl spectrum-lbl-top">${lang === "ro" ? "INTUIȚIE" : "INTUITION"}</div>
+                    <div class="spectrum-cardinal-lbl spectrum-lbl-bottom">${lang === "ro" ? "SENZORIAL" : "SENSING"}</div>
+                    <div class="spectrum-cardinal-lbl spectrum-lbl-left">${lang === "ro" ? "SENTIMENT" : "FEELING"}</div>
+                    <div class="spectrum-cardinal-lbl spectrum-lbl-right">${lang === "ro" ? "GÂNDIRE" : "THINKING"}</div>
 
-                  <div class="spectrum-plot-dot" style="left: ${compassX}%; top: ${compassY}%;" title="${topMbti.type}"></div>
+                    <div class="spectrum-quadrant-plane">
+                      <div class="spectrum-quadrant quad-tl" title="NF · ${lang === "ro" ? "Intuiție & Sentiment" : "Intuition & Feeling"}"></div>
+                      <div class="spectrum-quadrant quad-tr" title="NT · ${lang === "ro" ? "Intuiție & Gândire" : "Intuition & Thinking"}"></div>
+                      <div class="spectrum-quadrant quad-bl" title="SF · ${lang === "ro" ? "Senzorial & Sentiment" : "Sensing & Feeling"}"></div>
+                      <div class="spectrum-quadrant quad-br" title="ST · ${lang === "ro" ? "Senzorial & Gândire" : "Sensing & Thinking"}"></div>
+                      <div class="spectrum-crosshair-h"></div>
+                      <div class="spectrum-crosshair-v"></div>
+
+                      <div class="spectrum-plot-dot" style="left: ${compassX}%; top: ${compassY}%;" title="${topMbti.type} (${activeS1.code})"></div>
+                    </div>
+                  </div>
+
+                  <div class="spectrum-card-footer">
+                    <span class="spectrum-card-highlight">${activeS1.name}</span>
+                    <span class="spectrum-card-coords">${pN >= pS ? pN + '% N' : pS + '% S'} · ${pF >= pT ? pF + '% F' : pT + '% T'}</span>
+                  </div>
+                </div>
+
+                <!-- Spectrum 2: Energy & Tactics (New I E vs J P) -->
+                <div class="spectrum-card">
+                  <div class="spectrum-card-header">
+                    <div class="spectrum-card-info">
+                      <h3 class="spectrum-card-title">${lang === "ro" ? "Energie & Tactică" : "Energy & Tactics"}</h3>
+                      <span class="spectrum-card-axes">E-I · J-P</span>
+                    </div>
+                    <span class="spectrum-card-badge" style="background: ${activeS2.color}; color: #ffffff;">${activeS2.code}</span>
+                  </div>
+
+                  <div class="spectrum-compass-container">
+                    <div class="spectrum-cardinal-lbl spectrum-lbl-top">${lang === "ro" ? "EXTRAVERSIE" : "EXTRAVERSION"}</div>
+                    <div class="spectrum-cardinal-lbl spectrum-lbl-bottom">${lang === "ro" ? "INTROVERSIE" : "INTROVERSION"}</div>
+                    <div class="spectrum-cardinal-lbl spectrum-lbl-left">${lang === "ro" ? "JUDECĂTĂ" : "JUDGING"}</div>
+                    <div class="spectrum-cardinal-lbl spectrum-lbl-right">${lang === "ro" ? "PERCEPȚIE" : "PERCEIVING"}</div>
+
+                    <div class="spectrum-quadrant-plane spectrum-quadrant-plane-blue">
+                      <div class="spectrum-quadrant quad-ej" title="EJ · ${lang === "ro" ? "Extraversie & Judecată" : "Extraversion & Judging"}"></div>
+                      <div class="spectrum-quadrant quad-ep" title="EP · ${lang === "ro" ? "Extraversie & Percepție" : "Extraversion & Perceiving"}"></div>
+                      <div class="spectrum-quadrant quad-ij" title="IJ · ${lang === "ro" ? "Introversie & Judecată" : "Introversion & Judging"}"></div>
+                      <div class="spectrum-quadrant quad-ip" title="IP · ${lang === "ro" ? "Introversie & Percepție" : "Introversion & Perceiving"}"></div>
+                      <div class="spectrum-crosshair-h"></div>
+                      <div class="spectrum-crosshair-v"></div>
+
+                      <div class="spectrum-plot-dot" style="left: ${compass2X}%; top: ${compass2Y}%;" title="${topMbti.type} (${activeS2.code})"></div>
+                    </div>
+                  </div>
+
+                  <div class="spectrum-card-footer">
+                    <span class="spectrum-card-highlight">${activeS2.name}</span>
+                    <span class="spectrum-card-coords">${pE >= pI ? pE + '% E' : pI + '% I'} · ${pJ >= pP ? pJ + '% J' : pP + '% P'}</span>
+                  </div>
                 </div>
               </div>
             </section>
