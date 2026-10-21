@@ -3380,35 +3380,20 @@ a {
    Minimalist Dual Spectrum Compasses
    ========================================================================== */
 #spectrum-compass {
-  padding: 2.5rem 1.75rem;
+  padding: 2.75rem 2.5rem;
 }
 
 @media (max-width: 600px) {
   #spectrum-compass {
-    padding: 2rem 1rem;
+    padding: 2rem 1.25rem;
   }
 }
 
-.spectrum-dual-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 2rem;
-  width: 100%;
-  align-items: start;
-}
-
-@media (max-width: 900px) {
-  .spectrum-dual-grid {
-    grid-template-columns: 1fr;
-    gap: 3.5rem;
-  }
-}
-
-.spectrum-col {
-  min-width: 0;
+.spectrum-single-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   width: 100%;
 }
 
@@ -3416,25 +3401,25 @@ a {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   width: 100%;
-  max-width: 440px;
+  max-width: 580px;
+  margin: 0 auto;
 }
 
 .spectrum-center-row {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  display: flex;
   align-items: center;
-  justify-items: center;
-  gap: 0.65rem;
+  justify-content: center;
+  gap: 1.5rem;
   width: 100%;
-  max-width: 440px;
 }
 
 .spectrum-cardinal-lbl {
   font-family: var(--font-display);
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.05em;
+  font-size: 0.95rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
   color: var(--text-strong);
   user-select: none;
   white-space: nowrap;
@@ -3451,23 +3436,21 @@ a {
 }
 
 .spectrum-lbl-top {
-  margin-bottom: 0.75rem;
+  margin-bottom: 1.15rem;
   text-align: center;
 }
 
 .spectrum-lbl-bottom {
-  margin-top: 0.75rem;
+  margin-top: 1.15rem;
   text-align: center;
 }
 
 .spectrum-lbl-left {
-  justify-self: end;
   text-align: right;
   white-space: nowrap;
 }
 
 .spectrum-lbl-right {
-  justify-self: start;
   text-align: left;
   white-space: nowrap;
 }
@@ -3475,39 +3458,38 @@ a {
 .spectrum-quadrant-plane {
   position: relative;
   width: 100%;
-  max-width: 290px;
+  max-width: 370px;
   aspect-ratio: 1 / 1;
-  border-radius: 26px;
+  border-radius: 34px;
   overflow: hidden;
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
-  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.35);
-  justify-self: center;
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
 }
 
-@media (max-width: 900px) {
-  .spectrum-quadrant-plane {
-    max-width: 340px;
-    border-radius: 30px;
-  }
-
-  .spectrum-cardinal-lbl {
-    font-size: 0.85rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .spectrum-cardinal-lbl {
-    font-size: 0.72rem;
-    letter-spacing: 0.03em;
-  }
+@media (max-width: 540px) {
   .spectrum-center-row {
-    gap: 0.4rem;
+    gap: 0.75rem;
   }
+
+  .spectrum-cardinal-lbl {
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+  }
+
   .spectrum-quadrant-plane {
-    max-width: 240px;
-    border-radius: 20px;
+    max-width: 270px;
+    border-radius: 24px;
+  }
+
+  .spectrum-lbl-top {
+    margin-bottom: 0.85rem;
+  }
+
+  .spectrum-lbl-bottom {
+    margin-top: 0.85rem;
   }
 }
 
@@ -3583,24 +3565,24 @@ a {
 .spectrum-plot-dot {
   position: absolute;
   transform: translate(-50%, -50%);
-  width: 24px;
-  height: 24px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  background: #1c1d1f;
-  border: 2.5px solid #ffffff;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+  background: #ffffff;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45), 0 0 10px rgba(255, 255, 255, 0.85);
   z-index: 5;
   cursor: pointer;
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s;
 }
 
 .spectrum-plot-dot:hover {
-  transform: translate(-50%, -50%) scale(1.25);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.8);
+  transform: translate(-50%, -50%) scale(1.3);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.5), 0 0 16px rgba(255, 255, 255, 1);
 }
 
 .spectrum-bottom-bar {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3608,11 +3590,10 @@ a {
 
 .spectrum-coord-lbl {
   font-family: var(--font-display);
-  font-size: 0.92rem;
+  font-size: 1.05rem;
   font-weight: 800;
   color: var(--text-strong);
-  letter-spacing: 0.03em;
-  opacity: 0.9;
+  letter-spacing: 0.04em;
 }
 
 [data-theme="dark"] .spectrum-coord-lbl {
@@ -4125,11 +4106,11 @@ a {
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   background: #ffffff;
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35), 0 0 10px rgba(255, 255, 255, 0.85);
   z-index: 2;
   transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }

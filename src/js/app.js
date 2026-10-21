@@ -1547,63 +1547,34 @@ class App {
               </div>
             </section>
 
-            <!-- Spectrum (Minimalist Dual Compasses: Mind & Nature, Energy & Tactics) -->
+            <!-- Spectrum (Minimalist Single Compass: Mind & Nature, Poza 2 style) -->
             <section class="e-panel" id="spectrum-compass">
               <div class="e-sec-head" style="margin-bottom: 2rem;">
                 <h2 class="e-sec-title">Spectrum</h2>
               </div>
               
-              <div class="spectrum-dual-grid">
-                <!-- Spectrum 1: Mind & Nature -->
-                <div class="spectrum-col">
-                  <div class="spectrum-compass-wrap">
-                    <div class="spectrum-cardinal-lbl spectrum-lbl-top">${s1Top}</div>
-                    <div class="spectrum-center-row">
-                      <div class="spectrum-cardinal-lbl spectrum-lbl-left">${s1Left}</div>
-                      <div class="spectrum-quadrant-plane">
-                        <div class="spectrum-quadrant quad-tl" title="NF"></div>
-                        <div class="spectrum-quadrant quad-tr" title="NT"></div>
-                        <div class="spectrum-quadrant quad-bl" title="SF"></div>
-                        <div class="spectrum-quadrant quad-br" title="ST"></div>
-                        <div class="spectrum-crosshair-h"></div>
-                        <div class="spectrum-crosshair-v"></div>
+              <div class="spectrum-single-wrap">
+                <div class="spectrum-compass-wrap">
+                  <div class="spectrum-cardinal-lbl spectrum-lbl-top">${s1Top}</div>
+                  <div class="spectrum-center-row">
+                    <div class="spectrum-cardinal-lbl spectrum-lbl-left">${s1Left}</div>
+                    <div class="spectrum-quadrant-plane">
+                      <div class="spectrum-quadrant quad-tl" title="NF"></div>
+                      <div class="spectrum-quadrant quad-tr" title="NT"></div>
+                      <div class="spectrum-quadrant quad-bl" title="SF"></div>
+                      <div class="spectrum-quadrant quad-br" title="ST"></div>
+                      <div class="spectrum-crosshair-h"></div>
+                      <div class="spectrum-crosshair-v"></div>
 
-                        <div class="spectrum-plot-dot" style="left: ${compassX}%; top: ${compassY}%;" title="${topMbti.type}"></div>
-                      </div>
-                      <div class="spectrum-cardinal-lbl spectrum-lbl-right">${s1Right}</div>
+                      <div class="spectrum-plot-dot" style="left: ${compassX}%; top: ${compassY}%;" title="${topMbti.type}"></div>
                     </div>
-                    <div class="spectrum-cardinal-lbl spectrum-lbl-bottom">${s1Bottom}</div>
+                    <div class="spectrum-cardinal-lbl spectrum-lbl-right">${s1Right}</div>
                   </div>
-
-                  <div class="spectrum-bottom-bar">
-                    <span class="spectrum-coord-lbl">${s1Coords}</span>
-                  </div>
+                  <div class="spectrum-cardinal-lbl spectrum-lbl-bottom">${s1Bottom}</div>
                 </div>
 
-                <!-- Spectrum 2: Energy & Tactics -->
-                <div class="spectrum-col">
-                  <div class="spectrum-compass-wrap">
-                    <div class="spectrum-cardinal-lbl spectrum-lbl-top">${s2Top}</div>
-                    <div class="spectrum-center-row">
-                      <div class="spectrum-cardinal-lbl spectrum-lbl-left">${s2Left}</div>
-                      <div class="spectrum-quadrant-plane spectrum-quadrant-plane-blue">
-                        <div class="spectrum-quadrant quad-ej" title="EJ"></div>
-                        <div class="spectrum-quadrant quad-ep" title="EP"></div>
-                        <div class="spectrum-quadrant quad-ij" title="IJ"></div>
-                        <div class="spectrum-quadrant quad-ip" title="IP"></div>
-                        <div class="spectrum-crosshair-h"></div>
-                        <div class="spectrum-crosshair-v"></div>
-
-                        <div class="spectrum-plot-dot" style="left: ${compass2X}%; top: ${compass2Y}%;" title="${topMbti.type}"></div>
-                      </div>
-                      <div class="spectrum-cardinal-lbl spectrum-lbl-right">${s2Right}</div>
-                    </div>
-                    <div class="spectrum-cardinal-lbl spectrum-lbl-bottom">${s2Bottom}</div>
-                  </div>
-
-                  <div class="spectrum-bottom-bar">
-                    <span class="spectrum-coord-lbl">${s2Coords}</span>
-                  </div>
+                <div class="spectrum-bottom-bar">
+                  <span class="spectrum-coord-lbl">${s1Coords}</span>
                 </div>
               </div>
             </section>
