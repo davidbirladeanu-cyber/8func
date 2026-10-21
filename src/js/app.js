@@ -1276,22 +1276,38 @@ class App {
       const tier = getTierName(domPct);
       const valueText = domPct > 50 ? `${domPct}% ${domName} (${domPole}) · ${tier}` : tiersDict.balanced;
 
+      const axisIcons = {
+        EI: "⚡",
+        SN: "🔮",
+        TF: "⚖️",
+        PJ: "🎯"
+      };
+      const numStr = String(idx + 1).padStart(2, "0");
+      const icon = axisIcons[axis.dichotomy] || "✦";
+
       return `
-        <li class="e-axis-card" style="--ac: ${activeColor};">
-          <div class="e-axis-card-top">
-            <span class="e-axis-card-name">${axisName}: ${domPct}%</span>
-            <span class="e-axis-card-tag" style="background: color-mix(in srgb, ${activeColor} 14%, transparent); color: ${activeColor}; border: 1px solid color-mix(in srgb, ${activeColor} 30%, transparent);">
-              ${valueText}
-            </span>
+        <li class="cute-card" style="align-items: flex-start;">
+          <span class="cute-num">${numStr}</span>
+          <div class="cute-avatar" style="background: ${activeColor}22; color: ${activeColor}; border: 1.5px solid ${activeColor};">
+            ${icon}
           </div>
-          <div class="e-atrack" style="height: 10px;" role="img" aria-label="${axisName}: ${leftName} ${lPct}%, ${rightName} ${rPct}%">
-            <i class="e-afill" style="left: ${fillLeft}; width: ${fillWidth}; background: ${activeColor};"></i>
-            <span class="e-amid"></span>
-            <span class="e-adot" style="left: ${dotLeft}; width: 14px; height: 14px; top: -2px; background: ${activeColor};"></span>
-          </div>
-          <div class="e-axis-card-poles">
-            <span class="${leftWin ? 'pole-win' : ''}">${leftName} ${axis.left} (${lPct}%)</span>
-            <span class="${rightWin ? 'pole-win' : ''}">(${rPct}%) ${axis.right} ${rightName}</span>
+          <div class="cute-info">
+            <div class="cute-info-top">
+              <h4 class="cute-name">${axisName}</h4>
+              <span class="cute-pct" style="color: ${activeColor};">${domPct}%</span>
+            </div>
+            <div class="cute-sub">
+              ${leftName} vs ${rightName} · <b style="color: ${activeColor};">${domName} (${domPole})</b>
+            </div>
+            <div class="cute-bar-track" style="position: relative; height: 6px; overflow: visible; margin-top: 0.45rem;">
+              <div class="cute-bar-fill" style="width: 100%; background: var(--line);"></div>
+              <span style="position: absolute; left: 50%; top: -2px; bottom: -2px; width: 2px; background: var(--text-muted); opacity: 0.6;"></span>
+              <span style="position: absolute; left: ${dotLeft}; top: 50%; transform: translate(-50%, -50%); width: 12px; height: 12px; border-radius: 50%; background: ${activeColor}; box-shadow: 0 0 8px ${activeColor};"></span>
+            </div>
+            <div class="cute-poles-mini">
+              <span class="${leftWin ? 'cute-pole-win' : ''}">${axis.left} (${lPct}%)</span>
+              <span class="${rightWin ? 'cute-pole-win' : ''}">(${rPct}%) ${axis.right}</span>
+            </div>
           </div>
         </li>
       `;
@@ -1429,29 +1445,41 @@ class App {
               </div>
             </article>
 
-            <!-- Cognitive Hierarchy (Separated Panel) -->
+            <!-- Cognitive Hierarchy (Cute Grid Style) -->
             <section class="e-panel" id="cognitive-hierarchy">
-              <div class="e-sec-head" style="margin-bottom: 1rem;">
+              <div class="e-sec-head" style="margin-bottom: 1.25rem;">
                 <h2 class="e-sec-title">Cognitive Hierarchy</h2>
               </div>
-              <div class="hierarchy-grid">
+              <div class="hierarchy-grid-cute">
                 ${sortedFunctions.map((f, idx) => {
+                  const numStr = String(idx + 1).padStart(2, "0");
                   const roleName = hierarchyLabels[idx] || `${idx + 1}th`;
                   const color = COGNITIVE_FUNCTIONS[f].color;
                   return `
-                    <div class="hierarchy-item" style="border-top: 3px solid ${color};">
-                      <span class="hierarchy-role">${roleName}</span>
-                      <span class="hierarchy-func" style="color: ${color};">${f}</span>
-                      <span class="hierarchy-pct" style="white-space: nowrap; font-size: 0.72rem;">${percentages[f]}% scor</span>
+                    <div class="cute-card">
+                      <span class="cute-num">${numStr}</span>
+                      <div class="cute-avatar" style="background: ${color}22; color: ${color}; border: 1.5px solid ${color};">
+                        ${f}
+                      </div>
+                      <div class="cute-info">
+                        <div class="cute-info-top">
+                          <h4 class="cute-name">${COGNITIVE_FUNCTIONS[f].nameRo || COGNITIVE_FUNCTIONS[f].name}</h4>
+                          <span class="cute-pct" style="color: ${color};">${percentages[f]}%</span>
+                        </div>
+                        <div class="cute-sub">${roleName} · <b style="color: ${color};">${f}</b></div>
+                        <div class="cute-bar-track">
+                          <div class="cute-bar-fill" style="width: ${percentages[f]}%; background: ${color};"></div>
+                        </div>
+                      </div>
                     </div>
                   `;
                 }).join("")}
               </div>
             </section>
 
-            <!-- 4 Axes (2x2 Grid) -->
+            <!-- 4 Axes (Cute 2x2 Grid) -->
             <section class="e-panel" id="mbti-axes">
-              <div class="e-sec-head" style="margin-bottom: 0.75rem;">
+              <div class="e-sec-head" style="margin-bottom: 1.25rem;">
                 <h2 class="e-sec-title">4 Axes</h2>
               </div>
               <ul class="e-axes-grid-2x2">
@@ -1461,7 +1489,7 @@ class App {
 
             <!-- 4 Spectrum Compass / Coordinate Map -->
             <section class="e-panel" id="spectrum-compass">
-              <div class="e-sec-head" style="margin-bottom: 0.75rem;">
+              <div class="e-sec-head" style="margin-bottom: 1.25rem;">
                 <h2 class="e-sec-title">4 Spectrum</h2>
               </div>
               <div class="spectrum-compass-box">
@@ -1472,26 +1500,54 @@ class App {
 
                 <!-- Top Left: N -->
                 <div class="spectrum-quadrant-badge spectrum-quadrant-tl">
-                  <span style="font-weight: 800; color: #8A3AA0; font-size: 0.92rem;">N · Intuiție</span>
-                  <span style="color: var(--text-muted); font-size: 0.74rem;">${percentages.Ni ?? 50}% Ni / ${percentages.Ne ?? 50}% Ne</span>
+                  <div style="display: flex; align-items: center; gap: 0.45rem;">
+                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: #8A3AA025; color: #8A3AA0; font-weight: 800; font-size: 0.72rem; border: 1px solid #8A3AA0;">N</span>
+                    <span style="font-weight: 800; color: var(--text-strong); font-size: 0.88rem;">Intuiție (N)</span>
+                    <span style="font-weight: 800; color: #8A3AA0; font-size: 0.88rem; margin-left: auto;">${axisScores.NS.roundA}%</span>
+                  </div>
+                  <span style="color: var(--text-muted); font-size: 0.72rem; margin-top: 0.2rem;">Ni ${percentages.Ni ?? 50}% · Ne ${percentages.Ne ?? 50}%</span>
+                  <div class="cute-bar-track" style="height: 3.5px; margin-top: 0.25rem;">
+                    <div class="cute-bar-fill" style="width: ${axisScores.NS.roundA}%; background: #8A3AA0;"></div>
+                  </div>
                 </div>
 
                 <!-- Top Right: T -->
                 <div class="spectrum-quadrant-badge spectrum-quadrant-tr">
-                  <span style="font-weight: 800; color: #0284C7; font-size: 0.92rem;">T · Gândire</span>
-                  <span style="color: var(--text-muted); font-size: 0.74rem;">${percentages.Te ?? 50}% Te / ${percentages.Ti ?? 50}% Ti</span>
+                  <div style="display: flex; align-items: center; gap: 0.45rem;">
+                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: #0284C725; color: #0284C7; font-weight: 800; font-size: 0.72rem; border: 1px solid #0284C7;">T</span>
+                    <span style="font-weight: 800; color: var(--text-strong); font-size: 0.88rem;">Gândire (T)</span>
+                    <span style="font-weight: 800; color: #0284C7; font-size: 0.88rem; margin-left: auto;">${axisScores.TF.roundA}%</span>
+                  </div>
+                  <span style="color: var(--text-muted); font-size: 0.72rem; margin-top: 0.2rem;">Te ${percentages.Te ?? 50}% · Ti ${percentages.Ti ?? 50}%</span>
+                  <div class="cute-bar-track" style="height: 3.5px; margin-top: 0.25rem;">
+                    <div class="cute-bar-fill" style="width: ${axisScores.TF.roundA}%; background: #0284C7;"></div>
+                  </div>
                 </div>
 
                 <!-- Bottom Left: F -->
                 <div class="spectrum-quadrant-badge spectrum-quadrant-bl">
-                  <span style="font-weight: 800; color: #16A34A; font-size: 0.92rem;">F · Sentiment</span>
-                  <span style="color: var(--text-muted); font-size: 0.74rem;">${percentages.Fi ?? 50}% Fi / ${percentages.Fe ?? 50}% Fe</span>
+                  <div style="display: flex; align-items: center; gap: 0.45rem;">
+                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: #16A34A25; color: #16A34A; font-weight: 800; font-size: 0.72rem; border: 1px solid #16A34A;">F</span>
+                    <span style="font-weight: 800; color: var(--text-strong); font-size: 0.88rem;">Sentiment (F)</span>
+                    <span style="font-weight: 800; color: #16A34A; font-size: 0.88rem; margin-left: auto;">${axisScores.TF.roundB}%</span>
+                  </div>
+                  <span style="color: var(--text-muted); font-size: 0.72rem; margin-top: 0.2rem;">Fi ${percentages.Fi ?? 50}% · Fe ${percentages.Fe ?? 50}%</span>
+                  <div class="cute-bar-track" style="height: 3.5px; margin-top: 0.25rem;">
+                    <div class="cute-bar-fill" style="width: ${axisScores.TF.roundB}%; background: #16A34A;"></div>
+                  </div>
                 </div>
 
                 <!-- Bottom Right: S -->
                 <div class="spectrum-quadrant-badge spectrum-quadrant-br">
-                  <span style="font-weight: 800; color: #D97706; font-size: 0.92rem;">S · Senzație</span>
-                  <span style="color: var(--text-muted); font-size: 0.74rem;">${percentages.Se ?? 50}% Se / ${percentages.Si ?? 50}% Si</span>
+                  <div style="display: flex; align-items: center; gap: 0.45rem;">
+                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: #D9770625; color: #D97706; font-weight: 800; font-size: 0.72rem; border: 1px solid #D97706;">S</span>
+                    <span style="font-weight: 800; color: var(--text-strong); font-size: 0.88rem;">Senzație (S)</span>
+                    <span style="font-weight: 800; color: #D97706; font-size: 0.88rem; margin-left: auto;">${axisScores.NS.roundB}%</span>
+                  </div>
+                  <span style="color: var(--text-muted); font-size: 0.72rem; margin-top: 0.2rem;">Se ${percentages.Se ?? 50}% · Si ${percentages.Si ?? 50}%</span>
+                  <div class="cute-bar-track" style="height: 3.5px; margin-top: 0.25rem;">
+                    <div class="cute-bar-fill" style="width: ${axisScores.NS.roundB}%; background: #D97706;"></div>
+                  </div>
                 </div>
 
                 <!-- User coordinate dot -->
@@ -1502,68 +1558,121 @@ class App {
               </div>
             </section>
 
-            <!-- What Sets You Apart (3 Cards) -->
+            <!-- Procent (formerly What Sets You Apart) -->
             <section class="e-panel" id="assinatura">
-              <div class="e-sec-head" style="margin-bottom: 1rem;">
-                <h2 class="e-sec-title">What sets you apart</h2>
+              <div class="e-sec-head" style="margin-bottom: 1.25rem;">
+                <h2 class="e-sec-title">Procent</h2>
               </div>
               <div class="e-dist-3">
-                <article class="e-dcard" style="border-top: 3px solid #16A34A;">
-                  <div class="e-dcard-head">
-                    <span class="e-tag e-tag-solid" style="color: #16A34A; border-color: rgba(22, 163, 74, 0.3); font-weight: 800;">Highest Function</span>
-                    <h3 style="color: ${COGNITIVE_FUNCTIONS[extremeHighFunc].color};">${COGNITIVE_FUNCTIONS[extremeHighFunc].code}</h3>
+                <div class="cute-card cute-card-vertical">
+                  <div class="cute-card-row">
+                    <span class="cute-num">01</span>
+                    <div class="cute-avatar" style="background: #16A34A25; color: #16A34A; border: 1.5px solid #16A34A;">
+                      🏆
+                    </div>
+                    <div class="cute-info">
+                      <div class="cute-info-top">
+                        <h4 class="cute-name">Highest Function</h4>
+                        <span class="cute-pct" style="color: #16A34A;">${highPct}%</span>
+                      </div>
+                      <div class="cute-sub">${COGNITIVE_FUNCTIONS[extremeHighFunc].nameRo || COGNITIVE_FUNCTIONS[extremeHighFunc].name} · <b style="color: #16A34A;">${COGNITIVE_FUNCTIONS[extremeHighFunc].code}</b></div>
+                    </div>
                   </div>
-                  <p class="e-big" style="color: ${COGNITIVE_FUNCTIONS[extremeHighFunc].color};">${highPct}%</p>
-                  <p class="e-cap">
+                  <div class="cute-bar-track" style="margin: 0.5rem 0 0.4rem 0;">
+                    <div class="cute-bar-fill" style="width: ${highPct}%; background: #16A34A;"></div>
+                  </div>
+                  <p class="cute-desc">
                     <b>${COGNITIVE_FUNCTIONS[extremeHighFunc].nameRo || COGNITIVE_FUNCTIONS[extremeHighFunc].name}</b> este forța ta cognitivă dominantă pe care te sprijini spontan în luarea deciziilor.
                   </p>
-                </article>
+                </div>
 
-                <article class="e-dcard" style="border-top: 3px solid #C23A45;">
-                  <div class="e-dcard-head">
-                    <span class="e-tag e-tag-solid" style="color: #C23A45; border-color: rgba(194, 58, 69, 0.3); font-weight: 800;">Lowest Function</span>
-                    <h3 style="color: ${COGNITIVE_FUNCTIONS[extremeLowFunc].color};">${COGNITIVE_FUNCTIONS[extremeLowFunc].code}</h3>
+                <div class="cute-card cute-card-vertical">
+                  <div class="cute-card-row">
+                    <span class="cute-num">02</span>
+                    <div class="cute-avatar" style="background: #C23A4525; color: #C23A45; border: 1.5px solid #C23A45;">
+                      🎯
+                    </div>
+                    <div class="cute-info">
+                      <div class="cute-info-top">
+                        <h4 class="cute-name">Lowest Function</h4>
+                        <span class="cute-pct" style="color: #C23A45;">${lowPct}%</span>
+                      </div>
+                      <div class="cute-sub">${COGNITIVE_FUNCTIONS[extremeLowFunc].nameRo || COGNITIVE_FUNCTIONS[extremeLowFunc].name} · <b style="color: #C23A45;">${COGNITIVE_FUNCTIONS[extremeLowFunc].code}</b></div>
+                    </div>
                   </div>
-                  <p class="e-big low">${lowPct}%</p>
-                  <p class="e-cap">
+                  <div class="cute-bar-track" style="margin: 0.5rem 0 0.4rem 0;">
+                    <div class="cute-bar-fill" style="width: ${lowPct}%; background: #C23A45;"></div>
+                  </div>
+                  <p class="cute-desc">
                     <b>${COGNITIVE_FUNCTIONS[extremeLowFunc].nameRo || COGNITIVE_FUNCTIONS[extremeLowFunc].name}</b> reprezintă unghiul mort (blind spot), cel mai puțin accesat proces în mod conștient.
                   </p>
-                </article>
+                </div>
 
-                <article class="e-dcard" style="border-top: 3px solid #0284C7;">
-                  <div class="e-dcard-head">
-                    <span class="e-tag e-tag-solid" style="color: #0284C7; border-color: rgba(2, 132, 199, 0.3); font-weight: 800;">Balanced Function</span>
-                    <h3 style="color: ${COGNITIVE_FUNCTIONS[balancedFunc].color};">${COGNITIVE_FUNCTIONS[balancedFunc].code}</h3>
+                <div class="cute-card cute-card-vertical">
+                  <div class="cute-card-row">
+                    <span class="cute-num">03</span>
+                    <div class="cute-avatar" style="background: #0284C725; color: #0284C7; border: 1.5px solid #0284C7;">
+                      ⚖️
+                    </div>
+                    <div class="cute-info">
+                      <div class="cute-info-top">
+                        <h4 class="cute-name">Balanced Function</h4>
+                        <span class="cute-pct" style="color: #0284C7;">${percentages[balancedFunc]}%</span>
+                      </div>
+                      <div class="cute-sub">${COGNITIVE_FUNCTIONS[balancedFunc].nameRo || COGNITIVE_FUNCTIONS[balancedFunc].name} · <b style="color: #0284C7;">${COGNITIVE_FUNCTIONS[balancedFunc].code}</b></div>
+                    </div>
                   </div>
-                  <p class="e-big" style="color: #0284C7;">${percentages[balancedFunc]}%</p>
-                  <p class="e-cap">
+                  <div class="cute-bar-track" style="margin: 0.5rem 0 0.4rem 0;">
+                    <div class="cute-bar-fill" style="width: ${percentages[balancedFunc]}%; background: #0284C7;"></div>
+                  </div>
+                  <p class="cute-desc">
                     <b>${COGNITIVE_FUNCTIONS[balancedFunc].nameRo || COGNITIVE_FUNCTIONS[balancedFunc].name}</b> este cea mai neutră și flexibilă funcție, activată contextual fără eforturi extreme.
                   </p>
-                </article>
+                </div>
               </div>
             </section>
 
-            <!-- Other Personalities You Resemble -->
+            <!-- Resemble (formerly Other Personalities You Resemble) -->
             <section class="e-panel" id="personalidades">
-              <div class="e-sec-head" style="margin-bottom: 1rem;">
-                <h2 class="e-sec-title">Other personalities you resemble</h2>
+              <div class="e-sec-head" style="margin-bottom: 1.25rem;">
+                <h2 class="e-sec-title">Resemble</h2>
               </div>
-              <div class="e-others-grid">
-                ${otherMbtis.map(m => `
-                  <article class="e-ocard" style="--c: ${m.temperamentColor}; --cb: ${m.temperamentBg}; border-top: 3px solid ${m.temperamentColor};">
-                    <div class="e-ocard-top">
-                      <span class="e-tag" style="background: ${m.temperamentBg}; color: ${m.temperamentColor}; border: 1px solid ${m.temperamentBorder}; font-weight: 800; text-transform: uppercase;">
-                        ${m.temperamentName} · ${m.type}
-                      </span>
-                      <span class="e-ocard-pct" style="color: ${m.temperamentColor}; font-weight: 800;">${m.matchPercentage}% match</span>
+              <div class="e-dist-3">
+                ${otherMbtis.map((m, idx) => {
+                  const numStr = String(idx + 1).padStart(2, "0");
+                  const tempIcons = {
+                    Analysts: "♟️",
+                    Diplomats: "🕊️",
+                    Sentinels: "🛡️",
+                    Explorers: "🎨"
+                  };
+                  const icon = tempIcons[m.temperamentName] || "✦";
+
+                  return `
+                    <div class="cute-card cute-card-vertical">
+                      <div class="cute-card-row">
+                        <span class="cute-num">${numStr}</span>
+                        <div class="cute-avatar" style="background: ${m.temperamentColor}25; color: ${m.temperamentColor}; border: 1.5px solid ${m.temperamentColor};">
+                          ${icon}
+                        </div>
+                        <div class="cute-info">
+                          <div class="cute-info-top">
+                            <h4 class="cute-name">${m.title}</h4>
+                            <span class="cute-pct" style="color: ${m.temperamentColor};">${m.matchPercentage}%</span>
+                          </div>
+                          <div class="cute-sub">${m.temperamentName} · <b style="color: ${m.temperamentColor};">${m.type}</b></div>
+                        </div>
+                      </div>
+                      <div class="cute-bar-track" style="margin: 0.5rem 0 0.4rem 0;">
+                        <div class="cute-bar-fill" style="width: ${m.matchPercentage}%; background: ${m.temperamentColor};"></div>
+                      </div>
+                      <p class="cute-desc">${m.description}</p>
+                      <div class="e-ocard-stack" style="margin-top: 0.35rem;">
+                        ${m.stack.map(st => `<span class="e-stack-tag">${st}</span>`).join("")}
+                      </div>
                     </div>
-                    <h3>${m.title}</h3>
-                    <p>${m.description}</p>
-                    <div class="e-ocard-stack">
-                      ${m.stack.map(st => `<span class="e-stack-tag">${st}</span>`).join("")}
-                    </div>
-                  </article>
-                `).join("")}
+                  `;
+                }).join("")}
               </div>
             </section>
 
