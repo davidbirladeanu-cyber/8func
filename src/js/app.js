@@ -1203,6 +1203,7 @@ class App {
 
     // Figures Ranking (10 Similar & 10 Opposite) from 196 personalities dataset
     const { similar: similarFigures, opposite: oppositeFigures, all: allFigures } = getRankedFigures(percentages, axisScores);
+    this.allFigures = allFigures;
     const displayedFigures = this.figuresTab === "similar" ? similarFigures : oppositeFigures;
 
     let currentComparisonFigure = allFigures.find(f => f.id === this.selectedFigureId);
@@ -1210,6 +1211,40 @@ class App {
       currentComparisonFigure = similarFigures[0] || allFigures[0];
       this.selectedFigureId = currentComparisonFigure.id;
     }
+
+    // Role / Profession bilingual helper
+    const getFigureRole = (fig, l) => {
+      let role = fig.role ? fig.role.replace(/\s*·\s*[A-Z]{4}\s*$/i, "").trim() : (fig.profession || "");
+      if (l === "en") {
+        const roToEn = {
+          muzician: "Musician",
+          actor: "Actor",
+          "actriță": "Actress",
+          filosof: "Philosopher",
+          fizician: "Physicist",
+          antreprenor: "Entrepreneur",
+          scriitor: "Writer",
+          psiholog: "Psychologist",
+          politician: "Politician",
+          inventator: "Inventor",
+          regizor: "Film Director",
+          sportiv: "Athlete",
+          om_de_stiinta: "Scientist",
+          istoric: "Historian",
+          cântăreț: "Singer",
+          pictor: "Painter",
+          om_politic: "Statesman",
+          general: "Military General",
+          lider_spiritual: "Spiritual Leader",
+          matematician: "Mathematician",
+          economist: "Economist",
+          jurnalist: "Journalist"
+        };
+        const lower = role.toLowerCase().trim();
+        return roToEn[lower] || (role ? role.charAt(0).toUpperCase() + role.slice(1) : "");
+      }
+      return role ? (role.charAt(0).toUpperCase() + role.slice(1)) : "";
+    };
 
     // 4 Spectrum Coordinates
     // Spectrum 1: Mind & Nature (N sus, S jos, F stanga, T dreapta)
@@ -1232,28 +1267,30 @@ class App {
     // E sus (0%) -> I jos (100%)
     const compass2Y = Math.max(10, Math.min(90, pI));
 
-    // Determine Quadrants and Titles for both Spectrums
+    // Quadrants for both Spectrums
     const s1QuadCode = (pN >= pS ? "N" : "S") + (pF >= pT ? "F" : "T");
-    const s1QuadNames = {
-      NF: { code: "NF", name: lang === "ro" ? "Intuiție & Sentiment" : "Intuition & Feeling", color: "#9ac262" },
-      NT: { code: "NT", name: lang === "ro" ? "Intuiție & Gândire" : "Intuition & Thinking", color: "#95637e" },
-      SF: { code: "SF", name: lang === "ro" ? "Senzorial & Sentiment" : "Sensing & Feeling", color: "#e5c727" },
-      ST: { code: "ST", name: lang === "ro" ? "Senzorial & Gândire" : "Sensing & Thinking", color: "#72cccd" }
-    };
-    const activeS1 = s1QuadNames[s1QuadCode] || s1QuadNames.NT;
+    const s1QuadColors = { NF: "#9ac262", NT: "#95637e", SF: "#e5c727", ST: "#72cccd" };
+    const activeS1 = { code: s1QuadCode, color: s1QuadColors[s1QuadCode] || "#95637e" };
 
     const s2QuadCode = (pE >= pI ? "E" : "I") + (pJ >= pP ? "J" : "P");
-    const s2QuadNames = {
-      EJ: { code: "EJ", name: lang === "ro" ? "Extraversie & Judecată" : "Extraversion & Judging", color: "#395296" },
-      EP: { code: "EP", name: lang === "ro" ? "Extraversie & Percepție" : "Extraversion & Perceiving", color: "#4361ab" },
-      IJ: { code: "IJ", name: lang === "ro" ? "Introversie & Judecată" : "Introversion & Judging", color: "#4d69ba" },
-      IP: { code: "IP", name: lang === "ro" ? "Introversie & Percepție" : "Introversion & Perceiving", color: "#5573c7" }
-    };
-    const activeS2 = s2QuadNames[s2QuadCode] || s2QuadNames.EP;
+    const s2QuadColors = { EJ: "#395296", EP: "#4361ab", IJ: "#4d69ba", IP: "#5573c7" };
+    const activeS2 = { code: s2QuadCode, color: s2QuadColors[s2QuadCode] || "#4361ab" };
+
+    // Minimalist Spectrum Labels & Coordinates
+    const s1Top = lang === "ro" ? "INTUIȚIE" : "INTUITION";
+    const s1Bottom = lang === "ro" ? "SENZORIAL" : "SENSING";
+    const s1Left = lang === "ro" ? "SENTIMENT" : "FEELING";
+    const s1Right = lang === "ro" ? "GÂNDIRE" : "THINKING";
+    const s1Coords = `${pN >= pS ? pN + '% N' : pS + '% S'} · ${pF >= pT ? pF + '% F' : pT + '% T'}`;
+
+    const s2Top = lang === "ro" ? "EXTRAVERSIE" : "EXTRAVERSION";
+    const s2Bottom = lang === "ro" ? "INTROVERSIE" : "INTROVERSION";
+    const s2Left = lang === "ro" ? "JUDECĂTĂ" : "JUDGING";
+    const s2Right = lang === "ro" ? "PERCEPȚIE" : "PERCEIVING";
+    const s2Coords = `${pE >= pI ? pE + '% E' : pI + '% I'} · ${pJ >= pP ? pJ + '% J' : pP + '% P'}`;
 
     // ========================================================
     // 4 Axes Minimalist Layout with Colored Boxes (like Cognitive Hierarchy)
-    // Extraversion vs Introversion & Judging vs Perceiving get subtle shades of #4d69ba
     // ========================================================
     const energyColor = axisScores.EI.roundA >= axisScores.EI.roundB ? "#4361ab" : "#4d69ba";
     const mindColor = axisScores.NS.roundA >= axisScores.NS.roundB ? "#95637e" : "#e5c727";
@@ -1263,7 +1300,7 @@ class App {
     const axesData = [
       {
         id: "energy",
-        name: "ENERGY",
+        name: lang === "ro" ? "ENERGIE" : "ENERGY",
         leftName: lang === "ro" ? "Extraversie" : "Extraversion",
         rightName: lang === "ro" ? "Introversie" : "Introversion",
         leftPct: axisScores.EI.roundA, // E
@@ -1273,7 +1310,7 @@ class App {
       },
       {
         id: "mind",
-        name: "MIND",
+        name: lang === "ro" ? "MINTE" : "MIND",
         leftName: lang === "ro" ? "Intuiție" : "Intuition",
         rightName: lang === "ro" ? "Senzorial" : "Sensing",
         leftPct: axisScores.NS.roundA, // N
@@ -1283,7 +1320,7 @@ class App {
       },
       {
         id: "nature",
-        name: "NATURE",
+        name: lang === "ro" ? "NATURĂ" : "NATURE",
         leftName: lang === "ro" ? "Gândire" : "Thinking",
         rightName: lang === "ro" ? "Sentiment" : "Feeling",
         leftPct: axisScores.TF.roundA, // T
@@ -1293,7 +1330,7 @@ class App {
       },
       {
         id: "tactics",
-        name: "TACTICS",
+        name: lang === "ro" ? "TACTICĂ" : "TACTICS",
         leftName: lang === "ro" ? "Judecată" : "Judging",
         rightName: lang === "ro" ? "Percepție" : "Perceiving",
         leftPct: axisScores.JP.roundA, // J
@@ -1326,7 +1363,7 @@ class App {
       const isSelected = fig.id === currentComparisonFigure.id;
       const temp = getTypeTemperament(fig.mbti);
       const scoreToShow = fig.similarity;
-      const cleanRole = fig.role ? fig.role.replace(/\s*·\s*[A-Z]{4}\s*$/i, "").trim() : (fig.profession || "");
+      const cleanRole = getFigureRole(fig, lang);
 
       const figColors = getMbtiTileColors(fig.mbti);
 
@@ -1358,12 +1395,12 @@ class App {
     // Comparative Analysis Sliders (Image 2 style with Colored Boxes)
     const currentFigTemp = getTypeTemperament(currentComparisonFigure.mbti);
     const figSim = calculateFigureSimilarity(percentages, axisScores, currentComparisonFigure);
-    const compCleanRole = currentComparisonFigure.role ? currentComparisonFigure.role.replace(/\s*·\s*[A-Z]{4}\s*$/i, "").trim() : (currentComparisonFigure.profession || "");
+    const compCleanRole = getFigureRole(currentComparisonFigure, lang);
 
     const compAxesData = [
       {
         id: "energy",
-        name: "ENERGY",
+        name: lang === "ro" ? "ENERGIE" : "ENERGY",
         color: energyColor,
         leftLabel: lang === "ro" ? `Extraversie ${axisScores.EI.roundA}%` : `Extraversion ${axisScores.EI.roundA}%`,
         rightLabel: lang === "ro" ? `${axisScores.EI.roundB}% Introversie` : `${axisScores.EI.roundB}% Introversion`,
@@ -1374,7 +1411,7 @@ class App {
       },
       {
         id: "mind",
-        name: "MIND",
+        name: lang === "ro" ? "MINTE" : "MIND",
         color: mindColor,
         leftLabel: lang === "ro" ? `Intuiție ${axisScores.NS.roundA}%` : `Intuition ${axisScores.NS.roundA}%`,
         rightLabel: lang === "ro" ? `${axisScores.NS.roundB}% Senzorial` : `${axisScores.NS.roundB}% Sensing`,
@@ -1385,7 +1422,7 @@ class App {
       },
       {
         id: "nature",
-        name: "NATURE",
+        name: lang === "ro" ? "NATURĂ" : "NATURE",
         color: natureColor,
         leftLabel: lang === "ro" ? `Gândire ${axisScores.TF.roundA}%` : `Thinking ${axisScores.TF.roundA}%`,
         rightLabel: lang === "ro" ? `${axisScores.TF.roundB}% Sentiment` : `${axisScores.TF.roundB}% Feeling`,
@@ -1396,7 +1433,7 @@ class App {
       },
       {
         id: "tactics",
-        name: "TACTICS",
+        name: lang === "ro" ? "TACTICĂ" : "TACTICS",
         color: tacticsColor,
         leftLabel: lang === "ro" ? `Judecată ${axisScores.JP.roundA}%` : `Judging ${axisScores.JP.roundA}%`,
         rightLabel: lang === "ro" ? `${axisScores.JP.roundB}% Percepție` : `${axisScores.JP.roundB}% Perceiving`,
@@ -1415,7 +1452,7 @@ class App {
           </div>
           <div class="comp-v2-track">
             <!-- White Dot (User: "punctele necolorate albe esti tu") -->
-            <div class="comp-v2-dot-user" style="left: ${ax.uPos}%;" title="Tu"></div>
+            <div class="comp-v2-dot-user" style="left: ${ax.uPos}%;" title="${lang === 'ro' ? 'Tu' : 'You'}"></div>
             <!-- Colored Dot (Figure: "punctele colorate vor lua imaginea omului cand o voi adauga") -->
             <div class="comp-v2-dot-fig" style="left: ${ax.fPos}%; border-color: rgba(255,255,255,0.6);" title="${currentComparisonFigure.name}">
               ${currentComparisonFigure.photo ? `
@@ -1473,7 +1510,7 @@ class App {
             <!-- Cognitive Hierarchy -->
             <section class="e-panel" id="cognitive-hierarchy">
               <div class="e-sec-head" style="margin-bottom: 1.5rem;">
-                <h2 class="e-sec-title">Cognitive Hierarchy</h2>
+                <h2 class="e-sec-title">${lang === "ro" ? "Ierarhia Cognitivă" : "Cognitive Hierarchy"}</h2>
               </div>
               <div class="hierarchy-tiles-row">
                 ${sortedFunctions.map((f, idx) => {
@@ -1503,85 +1540,77 @@ class App {
             <!-- 4 Axes Minimalist (Image 3) -->
             <section class="e-panel" id="mbti-axes">
               <div class="e-sec-head" style="margin-bottom: 1.5rem;">
-                <h2 class="e-sec-title">4 Axes</h2>
+                <h2 class="e-sec-title">${lang === "ro" ? "Cele 4 Axe" : "4 Axes"}</h2>
               </div>
               <div class="minimal-axes-grid">
                 ${mbtiAxesRowsHtml}
               </div>
             </section>
 
-            <!-- Spectrum (Dual Compasses: Mind & Nature, Energy & Tactics) -->
+            <!-- Spectrum (Minimalist Dual Compasses: Mind & Nature, Energy & Tactics) -->
             <section class="e-panel" id="spectrum-compass">
-              <div class="e-sec-head" style="margin-bottom: 1.5rem;">
+              <div class="e-sec-head" style="margin-bottom: 2rem;">
                 <h2 class="e-sec-title">Spectrum</h2>
               </div>
               
               <div class="spectrum-dual-grid">
-                <!-- Spectrum 1: Mind & Nature (Existing) -->
-                <div class="spectrum-card">
-                  <div class="spectrum-card-header">
-                    <div class="spectrum-card-info">
-                      <h3 class="spectrum-card-title">${lang === "ro" ? "Minte & Natură" : "Mind & Nature"}</h3>
-                      <span class="spectrum-card-axes">N-S · F-T</span>
-                    </div>
-                    <span class="spectrum-card-badge" style="background: ${activeS1.color}; color: #ffffff;">${activeS1.code}</span>
+                <!-- Spectrum 1: Mind & Nature -->
+                <div class="spectrum-col">
+                  <div class="spectrum-top-bar">
+                    <span class="spectrum-quad-badge" style="background: ${activeS1.color};">${activeS1.code}</span>
                   </div>
 
-                  <div class="spectrum-compass-container">
-                    <div class="spectrum-cardinal-lbl spectrum-lbl-top">${lang === "ro" ? "INTUIȚIE" : "INTUITION"}</div>
-                    <div class="spectrum-cardinal-lbl spectrum-lbl-bottom">${lang === "ro" ? "SENZORIAL" : "SENSING"}</div>
-                    <div class="spectrum-cardinal-lbl spectrum-lbl-left">${lang === "ro" ? "SENTIMENT" : "FEELING"}</div>
-                    <div class="spectrum-cardinal-lbl spectrum-lbl-right">${lang === "ro" ? "GÂNDIRE" : "THINKING"}</div>
+                  <div class="spectrum-compass-wrap">
+                    <div class="spectrum-cardinal-lbl spectrum-lbl-top">${s1Top}</div>
+                    <div class="spectrum-center-row">
+                      <div class="spectrum-cardinal-lbl spectrum-lbl-left">${s1Left}</div>
+                      <div class="spectrum-quadrant-plane">
+                        <div class="spectrum-quadrant quad-tl" title="NF"></div>
+                        <div class="spectrum-quadrant quad-tr" title="NT"></div>
+                        <div class="spectrum-quadrant quad-bl" title="SF"></div>
+                        <div class="spectrum-quadrant quad-br" title="ST"></div>
+                        <div class="spectrum-crosshair-h"></div>
+                        <div class="spectrum-crosshair-v"></div>
 
-                    <div class="spectrum-quadrant-plane">
-                      <div class="spectrum-quadrant quad-tl" title="NF · ${lang === "ro" ? "Intuiție & Sentiment" : "Intuition & Feeling"}"></div>
-                      <div class="spectrum-quadrant quad-tr" title="NT · ${lang === "ro" ? "Intuiție & Gândire" : "Intuition & Thinking"}"></div>
-                      <div class="spectrum-quadrant quad-bl" title="SF · ${lang === "ro" ? "Senzorial & Sentiment" : "Sensing & Feeling"}"></div>
-                      <div class="spectrum-quadrant quad-br" title="ST · ${lang === "ro" ? "Senzorial & Gândire" : "Sensing & Thinking"}"></div>
-                      <div class="spectrum-crosshair-h"></div>
-                      <div class="spectrum-crosshair-v"></div>
-
-                      <div class="spectrum-plot-dot" style="left: ${compassX}%; top: ${compassY}%;" title="${topMbti.type} (${activeS1.code})"></div>
+                        <div class="spectrum-plot-dot" style="left: ${compassX}%; top: ${compassY}%;" title="${topMbti.type}"></div>
+                      </div>
+                      <div class="spectrum-cardinal-lbl spectrum-lbl-right">${s1Right}</div>
                     </div>
+                    <div class="spectrum-cardinal-lbl spectrum-lbl-bottom">${s1Bottom}</div>
                   </div>
 
-                  <div class="spectrum-card-footer">
-                    <span class="spectrum-card-highlight">${activeS1.name}</span>
-                    <span class="spectrum-card-coords">${pN >= pS ? pN + '% N' : pS + '% S'} · ${pF >= pT ? pF + '% F' : pT + '% T'}</span>
+                  <div class="spectrum-bottom-bar">
+                    <span class="spectrum-coord-lbl">${s1Coords}</span>
                   </div>
                 </div>
 
-                <!-- Spectrum 2: Energy & Tactics (New I E vs J P) -->
-                <div class="spectrum-card">
-                  <div class="spectrum-card-header">
-                    <div class="spectrum-card-info">
-                      <h3 class="spectrum-card-title">${lang === "ro" ? "Energie & Tactică" : "Energy & Tactics"}</h3>
-                      <span class="spectrum-card-axes">E-I · J-P</span>
-                    </div>
-                    <span class="spectrum-card-badge" style="background: ${activeS2.color}; color: #ffffff;">${activeS2.code}</span>
+                <!-- Spectrum 2: Energy & Tactics -->
+                <div class="spectrum-col">
+                  <div class="spectrum-top-bar">
+                    <span class="spectrum-quad-badge" style="background: ${activeS2.color};">${activeS2.code}</span>
                   </div>
 
-                  <div class="spectrum-compass-container">
-                    <div class="spectrum-cardinal-lbl spectrum-lbl-top">${lang === "ro" ? "EXTRAVERSIE" : "EXTRAVERSION"}</div>
-                    <div class="spectrum-cardinal-lbl spectrum-lbl-bottom">${lang === "ro" ? "INTROVERSIE" : "INTROVERSION"}</div>
-                    <div class="spectrum-cardinal-lbl spectrum-lbl-left">${lang === "ro" ? "JUDECĂTĂ" : "JUDGING"}</div>
-                    <div class="spectrum-cardinal-lbl spectrum-lbl-right">${lang === "ro" ? "PERCEPȚIE" : "PERCEIVING"}</div>
+                  <div class="spectrum-compass-wrap">
+                    <div class="spectrum-cardinal-lbl spectrum-lbl-top">${s2Top}</div>
+                    <div class="spectrum-center-row">
+                      <div class="spectrum-cardinal-lbl spectrum-lbl-left">${s2Left}</div>
+                      <div class="spectrum-quadrant-plane spectrum-quadrant-plane-blue">
+                        <div class="spectrum-quadrant quad-ej" title="EJ"></div>
+                        <div class="spectrum-quadrant quad-ep" title="EP"></div>
+                        <div class="spectrum-quadrant quad-ij" title="IJ"></div>
+                        <div class="spectrum-quadrant quad-ip" title="IP"></div>
+                        <div class="spectrum-crosshair-h"></div>
+                        <div class="spectrum-crosshair-v"></div>
 
-                    <div class="spectrum-quadrant-plane spectrum-quadrant-plane-blue">
-                      <div class="spectrum-quadrant quad-ej" title="EJ · ${lang === "ro" ? "Extraversie & Judecată" : "Extraversion & Judging"}"></div>
-                      <div class="spectrum-quadrant quad-ep" title="EP · ${lang === "ro" ? "Extraversie & Percepție" : "Extraversion & Perceiving"}"></div>
-                      <div class="spectrum-quadrant quad-ij" title="IJ · ${lang === "ro" ? "Introversie & Judecată" : "Introversion & Judging"}"></div>
-                      <div class="spectrum-quadrant quad-ip" title="IP · ${lang === "ro" ? "Introversie & Percepție" : "Introversion & Perceiving"}"></div>
-                      <div class="spectrum-crosshair-h"></div>
-                      <div class="spectrum-crosshair-v"></div>
-
-                      <div class="spectrum-plot-dot" style="left: ${compass2X}%; top: ${compass2Y}%;" title="${topMbti.type} (${activeS2.code})"></div>
+                        <div class="spectrum-plot-dot" style="left: ${compass2X}%; top: ${compass2Y}%;" title="${topMbti.type}"></div>
+                      </div>
+                      <div class="spectrum-cardinal-lbl spectrum-lbl-right">${s2Right}</div>
                     </div>
+                    <div class="spectrum-cardinal-lbl spectrum-lbl-bottom">${s2Bottom}</div>
                   </div>
 
-                  <div class="spectrum-card-footer">
-                    <span class="spectrum-card-highlight">${activeS2.name}</span>
-                    <span class="spectrum-card-coords">${pE >= pI ? pE + '% E' : pI + '% I'} · ${pJ >= pP ? pJ + '% J' : pP + '% P'}</span>
+                  <div class="spectrum-bottom-bar">
+                    <span class="spectrum-coord-lbl">${s2Coords}</span>
                   </div>
                 </div>
               </div>
@@ -1596,7 +1625,7 @@ class App {
                 <!-- Highest Function Card -->
                 <div class="diff-card" style="background: ${highColors.bg}; color: #ffffff;">
                   <div class="diff-card-head">
-                    <span class="diff-badge">HIGHEST</span>
+                    <span class="diff-badge">${lang === "ro" ? "DOMINANTĂ" : "HIGHEST"}</span>
                     <span class="diff-pct">${highPct}%</span>
                   </div>
                   <h3 class="diff-name">${extremeHighFunc}</h3>
@@ -1608,7 +1637,7 @@ class App {
                 <!-- Balanced Function Card -->
                 <div class="diff-card" style="background: ${balColors.bg}; color: #ffffff;">
                   <div class="diff-card-head">
-                    <span class="diff-badge">BALANCED</span>
+                    <span class="diff-badge">${lang === "ro" ? "ECHILIBRATĂ" : "BALANCED"}</span>
                     <span class="diff-pct">${percentages[balancedFunc]}%</span>
                   </div>
                   <h3 class="diff-name">${balancedFunc}</h3>
@@ -1620,7 +1649,7 @@ class App {
                 <!-- Lowest Function Card -->
                 <div class="diff-card" style="background: ${lowColors.bg}; color: #ffffff;">
                   <div class="diff-card-head">
-                    <span class="diff-badge">LOWEST</span>
+                    <span class="diff-badge">${lang === "ro" ? "INFERIOARĂ" : "LOWEST"}</span>
                     <span class="diff-pct">${lowPct}%</span>
                   </div>
                   <h3 class="diff-name">${extremeLowFunc}</h3>
@@ -1634,7 +1663,7 @@ class App {
             <!-- Resemble (Image 1 style) -->
             <section class="e-panel" id="personalidades">
               <div class="e-sec-head" style="margin-bottom: 1.5rem;">
-                <h2 class="e-sec-title">Resemble</h2>
+                <h2 class="e-sec-title">${lang === "ro" ? "Asemănare" : "Resemble"}</h2>
               </div>
               <div class="resemble-grid">
                 ${otherMbtis.map(m => {
@@ -1659,15 +1688,15 @@ class App {
             <!-- Notable Figures -->
             <section class="e-panel" id="figuras">
               <div class="e-sec-head" style="margin-bottom: 0.75rem;">
-                <h2 class="e-sec-title">Notable Figures</h2>
+                <h2 class="e-sec-title">${lang === "ro" ? "Personalități Notabile" : "Notable Figures"}</h2>
               </div>
 
               <div class="fig-tabs">
                 <button class="fig-tab ${this.figuresTab === 'similar' ? 'active' : ''}" type="button" id="tab-similar-btn">
-                  Similar Figures
+                  ${lang === "ro" ? "Personalități Similare" : "Similar Figures"}
                 </button>
                 <button class="fig-tab ${this.figuresTab === 'opposite' ? 'active' : ''}" type="button" id="tab-opposite-btn">
-                  Opposite Figures
+                  ${lang === "ro" ? "Personalități Opuse" : "Opposite Figures"}
                 </button>
               </div>
 
@@ -1679,7 +1708,7 @@ class App {
             <!-- Comparative Analysis (Image 2 style) -->
             <section class="e-panel" id="comparar">
               <div class="e-sec-head" style="margin-bottom: 1rem;">
-                <h2 class="e-sec-title">Comparative Analysis</h2>
+                <h2 class="e-sec-title">${lang === "ro" ? "Analiză Comparativă" : "Comparative Analysis"}</h2>
               </div>
 
               <!-- Search personality bar with Autocomplete Dropdown -->
@@ -1689,7 +1718,7 @@ class App {
                   id="figure-search-input" 
                   class="comp-search-bar" 
                   autocomplete="off"
-                  placeholder="🔍 Caută o personalitate (ex: John Lennon, Tesla, Einstein, Brad Pitt, Steve Jobs)..." 
+                  placeholder="${lang === 'ro' ? '🔍 Caută o personalitate (ex: John Lennon, Tesla, Einstein, Brad Pitt, Steve Jobs)...' : '🔍 Search a personality (e.g. John Lennon, Tesla, Einstein, Brad Pitt, Steve Jobs)...'}" 
                 />
                 <div id="figure-autocomplete-list" class="figure-autocomplete-dropdown" style="display: none;"></div>
               </div>
@@ -1778,10 +1807,10 @@ class App {
       </div>
     `;
 
-    this.attachResultsEvents(percentages, topMbti, modeConfig, answeredCount, rawScores, axisScores, derivedType);
+    this.attachResultsEvents(percentages, topMbti, modeConfig, answeredCount, rawScores, axisScores, derivedType, allFigures);
   }
 
-  attachResultsEvents(percentages, topMbti, modeConfig, answeredCount = 0, rawScores = {}, axisScores = {}, derivedType = "") {
+  attachResultsEvents(percentages, topMbti, modeConfig, answeredCount = 0, rawScores = {}, axisScores = {}, derivedType = "", allFigures = []) {
     this.attachNavEvents();
     const lang = this.state.lang || "ro";
 
@@ -1913,6 +1942,8 @@ class App {
     const searchInput = document.getElementById("figure-search-input");
     const dropdown = document.getElementById("figure-autocomplete-list");
     if (searchInput && dropdown) {
+      const figuresToSearch = (allFigures && allFigures.length > 0) ? allFigures : (this.allFigures || []);
+
       searchInput.addEventListener("input", (e) => {
         const query = e.target.value.toLowerCase().trim();
         if (!query) {
@@ -1921,14 +1952,15 @@ class App {
           return;
         }
 
-        const matches = allFigures.filter(f => 
-          f.name.toLowerCase().includes(query) || 
-          f.role.toLowerCase().includes(query) ||
-          f.mbti.toLowerCase().includes(query)
-        ).slice(0, 8);
+        const matches = figuresToSearch.filter(f => {
+          const name = (f.name || "").toLowerCase();
+          const role = (f.role || f.profession || "").toLowerCase();
+          const mbti = (f.mbti || "").toLowerCase();
+          return name.includes(query) || role.includes(query) || mbti.includes(query);
+        }).slice(0, 8);
 
         if (matches.length === 0) {
-          dropdown.innerHTML = `<div class="autocomplete-no-match" style="padding: 0.85rem 1rem; color: var(--text-muted); font-size: 0.85rem;">Nicio personalitate găsită pentru "${query}"</div>`;
+          dropdown.innerHTML = `<div class="autocomplete-no-match" style="padding: 0.85rem 1rem; color: var(--text-muted); font-size: 0.85rem;">${lang === 'ro' ? 'Nicio personalitate găsită pentru "' + query + '"' : 'No personality found for "' + query + '"'}</div>`;
           dropdown.style.display = "block";
           return;
         }
@@ -1936,6 +1968,7 @@ class App {
         dropdown.innerHTML = matches.map(fig => {
           const temp = getTypeTemperament(fig.mbti);
           const itemCleanRole = fig.role ? fig.role.replace(/\s*·\s*[A-Z]{4}\s*$/i, "").trim() : (fig.profession || "");
+          const matchLabel = lang === "ro" ? `${fig.similarity}% compatibilitate` : `${fig.similarity}% match`;
           return `
             <div class="autocomplete-item" data-id="${fig.id}" style="display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 1rem; border-bottom: 1px solid var(--line); cursor: pointer; transition: background 0.15s ease;">
               <div style="display: flex; align-items: center; gap: 0.75rem; min-width: 0;">
@@ -1947,7 +1980,7 @@ class App {
                   <div style="font-size: 0.76rem; color: var(--text-muted);">${itemCleanRole} · <b style="color: ${temp.color};">${fig.mbti}</b></div>
                 </div>
               </div>
-              <span style="font-family: var(--font-display); font-weight: 800; font-size: 0.88rem; color: ${temp.color}; margin-left: 0.75rem; flex-shrink: 0;">${fig.similarity}% match</span>
+              <span style="font-family: var(--font-display); font-weight: 800; font-size: 0.88rem; color: ${temp.color}; margin-left: 0.75rem; flex-shrink: 0;">${matchLabel}</span>
             </div>
           `;
         }).join("");
@@ -1957,12 +1990,10 @@ class App {
         dropdown.querySelectorAll(".autocomplete-item").forEach(item => {
           item.addEventListener("click", () => {
             const id = item.getAttribute("data-id");
-            const selected = allFigures.find(f => f.id === id);
+            const selected = figuresToSearch.find(f => f.id === id);
             if (selected) {
               this.selectedFigureId = selected.id;
               this.renderResults();
-              const inputAfter = document.getElementById("figure-search-input");
-              if (inputAfter) inputAfter.value = selected.name;
               const compSection = document.getElementById("comparar");
               if (compSection) compSection.scrollIntoView({ behavior: "smooth" });
             }
@@ -1976,16 +2007,15 @@ class App {
           e.preventDefault();
           const query = searchInput.value.toLowerCase().trim();
           if (!query) return;
-          const match = allFigures.find(f => 
-            f.name.toLowerCase().includes(query) || 
-            f.role.toLowerCase().includes(query) ||
-            f.mbti.toLowerCase().includes(query)
-          );
+          const match = figuresToSearch.find(f => {
+            const name = (f.name || "").toLowerCase();
+            const role = (f.role || f.profession || "").toLowerCase();
+            const mbti = (f.mbti || "").toLowerCase();
+            return name.includes(query) || role.includes(query) || mbti.includes(query);
+          });
           if (match) {
             this.selectedFigureId = match.id;
             this.renderResults();
-            const inputAfter = document.getElementById("figure-search-input");
-            if (inputAfter) inputAfter.value = match.name;
             const compSection = document.getElementById("comparar");
             if (compSection) compSection.scrollIntoView({ behavior: "smooth" });
           }
