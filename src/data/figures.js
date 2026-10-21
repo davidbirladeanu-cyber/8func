@@ -5960,8 +5960,10 @@ export function calculateFigureSimilarity(userScores, userAxisScores, figure) {
 export function getRankedFigures(userScores, userAxisScores) {
   const list = NOTABLE_FIGURES.map(fig => {
     const similarity = calculateFigureSimilarity(userScores, userAxisScores, fig);
+    const cleanRole = fig.role ? fig.role.replace(/\s*·\s*[A-Z]{4}\s*$/i, "").trim() : (fig.profession || "");
     return {
       ...fig,
+      role: cleanRole,
       similarity,
       oppositeScore: 100 - similarity
     };

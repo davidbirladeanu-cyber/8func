@@ -1222,8 +1222,14 @@ class App {
     const compassY = Math.max(10, Math.min(90, 100 - pN));
 
     // ========================================================
-    // 4 Axes Minimalist Layout (Image 3)
+    // 4 Axes Minimalist Layout with Colored Boxes (like Cognitive Hierarchy)
+    // Extraversion vs Introversion & Judging vs Perceiving get subtle shades of #4d69ba
     // ========================================================
+    const energyColor = axisScores.EI.roundA >= axisScores.EI.roundB ? "#4361ab" : "#4d69ba";
+    const mindColor = axisScores.NS.roundA >= axisScores.NS.roundB ? "#95637e" : "#e5c727";
+    const natureColor = axisScores.TF.roundA >= axisScores.TF.roundB ? "#72cccd" : "#9ac262";
+    const tacticsColor = axisScores.JP.roundA >= axisScores.JP.roundB ? "#395296" : "#5573c7";
+
     const axesData = [
       {
         id: "energy",
@@ -1232,7 +1238,7 @@ class App {
         rightName: lang === "ro" ? "Introversie" : "Introversion",
         leftPct: axisScores.EI.roundA, // E
         rightPct: axisScores.EI.roundB, // I
-        color: "#4d69ba",
+        color: energyColor,
         pos: Math.max(5, Math.min(95, axisScores.EI.roundB))
       },
       {
@@ -1242,7 +1248,7 @@ class App {
         rightName: lang === "ro" ? "Senzorial" : "Sensing",
         leftPct: axisScores.NS.roundA, // N
         rightPct: axisScores.NS.roundB, // S
-        color: axisScores.NS.roundA >= axisScores.NS.roundB ? "#95637e" : "#e5c727",
+        color: mindColor,
         pos: Math.max(5, Math.min(95, axisScores.NS.roundB))
       },
       {
@@ -1252,7 +1258,7 @@ class App {
         rightName: lang === "ro" ? "Sentiment" : "Feeling",
         leftPct: axisScores.TF.roundA, // T
         rightPct: axisScores.TF.roundB, // F
-        color: axisScores.TF.roundA >= axisScores.TF.roundB ? "#72cccd" : "#9ac262",
+        color: natureColor,
         pos: Math.max(5, Math.min(95, axisScores.TF.roundB))
       },
       {
@@ -1262,19 +1268,19 @@ class App {
         rightName: lang === "ro" ? "Percepție" : "Perceiving",
         leftPct: axisScores.JP.roundA, // J
         rightPct: axisScores.JP.roundB, // P
-        color: "#4d69ba",
+        color: tacticsColor,
         pos: Math.max(5, Math.min(95, axisScores.JP.roundB))
       }
     ];
 
     const mbtiAxesRowsHtml = axesData.map(ax => {
       return `
-        <div class="minimal-axis-item">
+        <div class="minimal-axis-card" style="background: ${ax.color}; color: #ffffff;">
           <div class="minimal-axis-top">
             <span class="minimal-axis-title">${ax.name}</span>
           </div>
           <div class="minimal-axis-track">
-            <div class="minimal-axis-thumb" style="left: ${ax.pos}%; background: ${ax.color}; box-shadow: 0 0 10px ${ax.color}88;"></div>
+            <div class="minimal-axis-thumb" style="left: ${ax.pos}%;"></div>
           </div>
           <div class="minimal-axis-labels">
             <span class="axis-lbl-left">${ax.leftName} ${ax.leftPct}%</span>
@@ -1290,6 +1296,7 @@ class App {
       const isSelected = fig.id === currentComparisonFigure.id;
       const temp = getTypeTemperament(fig.mbti);
       const scoreToShow = fig.similarity;
+      const cleanRole = fig.role ? fig.role.replace(/\s*·\s*[A-Z]{4}\s*$/i, "").trim() : (fig.profession || "");
 
       return `
         <div class="fig-list-item ${isSelected ? 'selected' : ''}" data-id="${fig.id}">
@@ -1305,7 +1312,7 @@ class App {
               <h4 class="fig-name">${fig.name}</h4>
               <span class="fig-pct" style="color: ${temp.color};">${scoreToShow}%</span>
             </div>
-            <div class="fig-role-text">${fig.role} · <b style="color: ${temp.color};">${fig.mbti}</b></div>
+            <div class="fig-role-text">${cleanRole} · <b style="color: ${temp.color};">${fig.mbti}</b></div>
             <div class="fig-bar-track">
               <div class="fig-bar-fill" style="width: ${scoreToShow}%; background: ${temp.color};"></div>
             </div>
@@ -1314,60 +1321,76 @@ class App {
       `;
     }).join("");
 
-    // Comparative Analysis Sliders (Image 3 style)
+    // Comparative Analysis Sliders (Image 2 style)
     const currentFigTemp = getTypeTemperament(currentComparisonFigure.mbti);
     const figSim = calculateFigureSimilarity(percentages, axisScores, currentComparisonFigure);
-    const figCompatText = figSim >= 85 ? "Very high compatibility" : (figSim >= 70 ? "High compatibility" : (figSim >= 50 ? "Moderate compatibility" : "Low compatibility"));
+    const compCleanRole = currentComparisonFigure.role ? currentComparisonFigure.role.replace(/\s*·\s*[A-Z]{4}\s*$/i, "").trim() : (currentComparisonFigure.profession || "");
 
-    const compSliders = [
+    const compAxesData = [
       {
-        name: "Intuiție vs Senzorial (N / S)",
-        left: "N (Intuiție)",
-        right: "S (Senzorial)",
-        uPos: axisScores.NS.roundA,
-        fPos: currentComparisonFigure.axes ? currentComparisonFigure.axes.N : 50
+        id: "energy",
+        name: "ENERGY",
+        leftLabel: lang === "ro" ? `Extraversie ${axisScores.EI.roundA}%` : `Extraversion ${axisScores.EI.roundA}%`,
+        rightLabel: lang === "ro" ? `${axisScores.EI.roundB}% Introversie` : `${axisScores.EI.roundB}% Introversion`,
+        uPos: Math.max(5, Math.min(95, axisScores.EI.roundB)),
+        fPos: Math.max(5, Math.min(95, currentComparisonFigure.axes ? currentComparisonFigure.axes.I : (currentComparisonFigure.mbti.includes("I") ? 75 : 25))),
+        uPct: axisScores.EI.roundB,
+        fPct: currentComparisonFigure.axes ? currentComparisonFigure.axes.I : (currentComparisonFigure.mbti.includes("I") ? 75 : 25)
       },
       {
-        name: "Gândire vs Afectiv (T / F)",
-        left: "T (Gândire)",
-        right: "F (Sentiment)",
-        uPos: axisScores.TF.roundA,
-        fPos: currentComparisonFigure.axes ? currentComparisonFigure.axes.T : 50
+        id: "mind",
+        name: "MIND",
+        leftLabel: lang === "ro" ? `Intuiție ${axisScores.NS.roundA}%` : `Intuition ${axisScores.NS.roundA}%`,
+        rightLabel: lang === "ro" ? `${axisScores.NS.roundB}% Senzorial` : `${axisScores.NS.roundB}% Sensing`,
+        uPos: Math.max(5, Math.min(95, axisScores.NS.roundB)),
+        fPos: Math.max(5, Math.min(95, currentComparisonFigure.axes ? currentComparisonFigure.axes.S : (currentComparisonFigure.mbti.includes("S") ? 75 : 25))),
+        uPct: axisScores.NS.roundB,
+        fPct: currentComparisonFigure.axes ? currentComparisonFigure.axes.S : (currentComparisonFigure.mbti.includes("S") ? 75 : 25)
       },
       {
-        name: "Extraversie vs Introversie (E / I)",
-        left: "E (Extraversie)",
-        right: "I (Introversie)",
-        uPos: axisScores.EI.roundA,
-        fPos: currentComparisonFigure.axes ? currentComparisonFigure.axes.E : 50
+        id: "nature",
+        name: "NATURE",
+        leftLabel: lang === "ro" ? `Gândire ${axisScores.TF.roundA}%` : `Thinking ${axisScores.TF.roundA}%`,
+        rightLabel: lang === "ro" ? `${axisScores.TF.roundB}% Sentiment` : `${axisScores.TF.roundB}% Feeling`,
+        uPos: Math.max(5, Math.min(95, axisScores.TF.roundB)),
+        fPos: Math.max(5, Math.min(95, currentComparisonFigure.axes ? currentComparisonFigure.axes.F : (currentComparisonFigure.mbti.includes("F") ? 75 : 25))),
+        uPct: axisScores.TF.roundB,
+        fPct: currentComparisonFigure.axes ? currentComparisonFigure.axes.F : (currentComparisonFigure.mbti.includes("F") ? 75 : 25)
       },
       {
-        name: "Stil de viață: Judecată vs Percepție (J / P)",
-        left: "J (Judecată)",
-        right: "P (Percepție)",
-        uPos: axisScores.JP.roundA,
-        fPos: currentComparisonFigure.axes ? currentComparisonFigure.axes.J : 50
+        id: "tactics",
+        name: "TACTICS",
+        leftLabel: lang === "ro" ? `Judecată ${axisScores.JP.roundA}%` : `Judging ${axisScores.JP.roundA}%`,
+        rightLabel: lang === "ro" ? `${axisScores.JP.roundB}% Percepție` : `${axisScores.JP.roundB}% Perceiving`,
+        uPos: Math.max(5, Math.min(95, axisScores.JP.roundB)),
+        fPos: Math.max(5, Math.min(95, currentComparisonFigure.axes ? currentComparisonFigure.axes.P : (currentComparisonFigure.mbti.includes("P") ? 75 : 25))),
+        uPct: axisScores.JP.roundB,
+        fPct: currentComparisonFigure.axes ? currentComparisonFigure.axes.P : (currentComparisonFigure.mbti.includes("P") ? 75 : 25)
       }
     ];
 
-    const compSlidersHtml = compSliders.map(s => {
-      const uClamp = Math.max(6, Math.min(94, s.uPos));
-      const fClamp = Math.max(6, Math.min(94, s.fPos));
+    const compAxesHtml = compAxesData.map(ax => {
       return `
-        <div class="comp-slider-row">
-          <div class="comp-slider-head">
-            <span>${s.name}</span>
+        <div class="comp-v2-axis">
+          <div class="comp-v2-axis-title">
+            <span class="comp-v2-accent">|</span>
+            <span>${ax.name}</span>
           </div>
-          <div class="comp-slider-track">
-            <span class="e-amid"></span>
-            <div class="comp-slider-thumb-user" style="left: ${uClamp}%;" title="Tu: ${s.uPos}%">👤</div>
-            <div class="comp-slider-thumb-fig" style="left: ${fClamp}%; border-color: ${currentFigTemp.color};" title="${currentComparisonFigure.name}: ${s.fPos}%">
-              ${currentComparisonFigure.photo ? `<img src="${currentComparisonFigure.photo}" alt="${currentComparisonFigure.name}">` : `<span>${currentComparisonFigure.name.charAt(0)}</span>`}
+          <div class="comp-v2-track">
+            <!-- White Dot (User: "punctele necolorate albe esti tu") -->
+            <div class="comp-v2-dot-user" style="left: ${ax.uPos}%;" title="Tu"></div>
+            <!-- Colored Dot (Figure: "punctele colorate vor lua imaginea omului cand o voi adauga") -->
+            <div class="comp-v2-dot-fig" style="left: ${ax.fPos}%; background: ${currentFigTemp.color};" title="${currentComparisonFigure.name}">
+              ${currentComparisonFigure.photo ? `
+                <img src="${currentComparisonFigure.photo}" alt="${currentComparisonFigure.name}" />
+              ` : `
+                <span>${currentComparisonFigure.avatar || currentComparisonFigure.name.charAt(0)}</span>
+              `}
             </div>
           </div>
-          <div class="comp-slider-labels">
-            <span>${s.left}</span>
-            <span>${s.right}</span>
+          <div class="comp-v2-labels">
+            <span class="comp-v2-lbl-left">${ax.leftLabel}</span>
+            <span class="comp-v2-lbl-right">${ax.rightLabel}</span>
           </div>
         </div>
       `;
@@ -1474,69 +1497,51 @@ class App {
               </div>
             </section>
 
-            <!-- Differences (What sets you apart) -->
+            <!-- Differences (Image 1 style) -->
             <section class="e-panel" id="differences">
               <div class="e-sec-head" style="margin-bottom: 1.5rem;">
                 <h2 class="e-sec-title">${lang === "ro" ? "Diferențe" : "Differences"}</h2>
               </div>
               <div class="diff-grid">
-                <!-- Highest Function Card (Styled like Resemble) -->
-                <div class="diff-card" style="background: ${highColors.bg}; color: #ffffff; border-radius: 14px; border: none;">
-                  <div class="diff-card-head" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
-                    <span class="diff-pct" style="font-family: var(--font-display); font-size: 1.55rem; font-weight: 900; line-height: 1; color: #ffffff; margin: 0; text-shadow: 0 1px 2px rgba(0,0,0,0.45);">
-                      ${highPct}%
-                    </span>
-                    <span class="diff-badge" style="background: rgba(0, 0, 0, 0.18); color: #ffffff; border: 1px solid rgba(0, 0, 0, 0.14); padding: 0.32rem 0.85rem; border-radius: var(--radius-pill); font-family: var(--font-display); font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; text-shadow: 0 1px 2px rgba(0,0,0,0.45);">
-                      HIGHEST
-                    </span>
+                <!-- Highest Function Card -->
+                <div class="diff-card" style="background: ${highColors.bg}; color: #ffffff;">
+                  <div class="diff-card-head">
+                    <span class="diff-badge">HIGHEST</span>
+                    <span class="diff-pct">${highPct}%</span>
                   </div>
-                  <h3 class="diff-name" style="font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; color: #ffffff; margin: 0 0 0.75rem 0; letter-spacing: -0.015em; text-shadow: 0 1px 3px rgba(0,0,0,0.45);">
-                    ${COGNITIVE_FUNCTIONS[extremeHighFunc].code} <span style="font-size: 0.95rem; font-weight: 700; opacity: 0.9;">· ${COGNITIVE_FUNCTIONS[extremeHighFunc].nameRo || COGNITIVE_FUNCTIONS[extremeHighFunc].name}</span>
-                  </h3>
-                  <p class="diff-desc" style="font-size: 0.9rem; line-height: 1.58; color: #ffffff; opacity: 0.95; margin: 0; flex: 1; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">
+                  <h3 class="diff-name">${extremeHighFunc}</h3>
+                  <p class="diff-desc">
                     ${t('highestCap', {}, lang)}
                   </p>
                 </div>
 
-                <!-- Balanced Function Card (Styled like Resemble) -->
-                <div class="diff-card" style="background: ${balColors.bg}; color: #ffffff; border-radius: 14px; border: none;">
-                  <div class="diff-card-head" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
-                    <span class="diff-pct" style="font-family: var(--font-display); font-size: 1.55rem; font-weight: 900; line-height: 1; color: #ffffff; margin: 0; text-shadow: 0 1px 2px rgba(0,0,0,0.45);">
-                      ${percentages[balancedFunc]}%
-                    </span>
-                    <span class="diff-badge" style="background: rgba(0, 0, 0, 0.18); color: #ffffff; border: 1px solid rgba(0, 0, 0, 0.14); padding: 0.32rem 0.85rem; border-radius: var(--radius-pill); font-family: var(--font-display); font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; text-shadow: 0 1px 2px rgba(0,0,0,0.45);">
-                      BALANCED
-                    </span>
+                <!-- Balanced Function Card -->
+                <div class="diff-card" style="background: ${balColors.bg}; color: #ffffff;">
+                  <div class="diff-card-head">
+                    <span class="diff-badge">BALANCED</span>
+                    <span class="diff-pct">${percentages[balancedFunc]}%</span>
                   </div>
-                  <h3 class="diff-name" style="font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; color: #ffffff; margin: 0 0 0.75rem 0; letter-spacing: -0.015em; text-shadow: 0 1px 3px rgba(0,0,0,0.45);">
-                    ${COGNITIVE_FUNCTIONS[balancedFunc].code} <span style="font-size: 0.95rem; font-weight: 700; opacity: 0.9;">· ${COGNITIVE_FUNCTIONS[balancedFunc].nameRo || COGNITIVE_FUNCTIONS[balancedFunc].name}</span>
-                  </h3>
-                  <p class="diff-desc" style="font-size: 0.9rem; line-height: 1.58; color: #ffffff; opacity: 0.95; margin: 0; flex: 1; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">
+                  <h3 class="diff-name">${balancedFunc}</h3>
+                  <p class="diff-desc">
                     ${t('balancedCap', {}, lang)}
                   </p>
                 </div>
 
-                <!-- Lowest Function Card (Styled like Resemble) -->
-                <div class="diff-card" style="background: ${lowColors.bg}; color: #ffffff; border-radius: 14px; border: none;">
-                  <div class="diff-card-head" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
-                    <span class="diff-pct" style="font-family: var(--font-display); font-size: 1.55rem; font-weight: 900; line-height: 1; color: #ffffff; margin: 0; text-shadow: 0 1px 2px rgba(0,0,0,0.45);">
-                      ${lowPct}%
-                    </span>
-                    <span class="diff-badge" style="background: rgba(0, 0, 0, 0.18); color: #ffffff; border: 1px solid rgba(0, 0, 0, 0.14); padding: 0.32rem 0.85rem; border-radius: var(--radius-pill); font-family: var(--font-display); font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; text-shadow: 0 1px 2px rgba(0,0,0,0.45);">
-                      LOWEST
-                    </span>
+                <!-- Lowest Function Card -->
+                <div class="diff-card" style="background: ${lowColors.bg}; color: #ffffff;">
+                  <div class="diff-card-head">
+                    <span class="diff-badge">LOWEST</span>
+                    <span class="diff-pct">${lowPct}%</span>
                   </div>
-                  <h3 class="diff-name" style="font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; color: #ffffff; margin: 0 0 0.75rem 0; letter-spacing: -0.015em; text-shadow: 0 1px 3px rgba(0,0,0,0.45);">
-                    ${COGNITIVE_FUNCTIONS[extremeLowFunc].code} <span style="font-size: 0.95rem; font-weight: 700; opacity: 0.9;">· ${COGNITIVE_FUNCTIONS[extremeLowFunc].nameRo || COGNITIVE_FUNCTIONS[extremeLowFunc].name}</span>
-                  </h3>
-                  <p class="diff-desc" style="font-size: 0.9rem; line-height: 1.58; color: #ffffff; opacity: 0.95; margin: 0; flex: 1; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">
+                  <h3 class="diff-name">${extremeLowFunc}</h3>
+                  <p class="diff-desc">
                     ${t('lowestCap', {}, lang)}
                   </p>
                 </div>
               </div>
             </section>
 
-            <!-- Resemble -->
+            <!-- Resemble (Image 1 style) -->
             <section class="e-panel" id="personalidades">
               <div class="e-sec-head" style="margin-bottom: 1.5rem;">
                 <h2 class="e-sec-title">Resemble</h2>
@@ -1545,19 +1550,15 @@ class App {
                 ${otherMbtis.map(m => {
                   const mColors = getMbtiTileColors(m.type);
                   return `
-                    <div class="resemble-card" style="background: ${mColors.bg}; color: #ffffff; border-radius: 14px; border: none;">
-                      <div class="resemble-card-head" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
-                        <span class="resemble-pct" style="font-family: var(--font-display); font-size: 1.55rem; font-weight: 900; line-height: 1; color: #ffffff; margin: 0; text-shadow: 0 1px 2px rgba(0,0,0,0.45);">
-                          ${m.matchPercentage}%
-                        </span>
-                        <span class="resemble-tag" style="background: rgba(0, 0, 0, 0.18); color: #ffffff; border: 1px solid rgba(0, 0, 0, 0.14); padding: 0.32rem 0.85rem; border-radius: var(--radius-pill); font-family: var(--font-display); font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; text-shadow: 0 1px 2px rgba(0,0,0,0.45);">
-                          ${m.type}
-                        </span>
+                    <div class="resemble-card" style="background: ${mColors.bg}; color: #ffffff;">
+                      <div class="resemble-card-head">
+                        <span class="resemble-tag">${m.type}</span>
+                        <span class="resemble-pct">${m.matchPercentage}%</span>
                       </div>
-                      <h3 class="resemble-name" style="font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; color: #ffffff; margin: 0 0 0.75rem 0; letter-spacing: -0.015em; text-shadow: 0 1px 3px rgba(0,0,0,0.45);">${m.title}</h3>
-                      <p class="resemble-desc" style="font-size: 0.9rem; line-height: 1.58; color: #ffffff; opacity: 0.95; margin: 0 0 1.35rem 0; flex: 1; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">${m.description}</p>
+                      <h3 class="resemble-name">${m.title}</h3>
+                      <p class="resemble-desc">${m.description}</p>
                       <div class="resemble-stack">
-                        ${m.stack.map(st => `<span class="resemble-stack-pill" style="background: rgba(0, 0, 0, 0.18); color: #ffffff; border: 1px solid rgba(0, 0, 0, 0.14); font-weight: 800; text-shadow: 0 1px 2px rgba(0,0,0,0.45);">${st}</span>`).join("")}
+                        ${m.stack.map(st => `<span class="resemble-stack-pill">${st}</span>`).join("")}
                       </div>
                     </div>
                   `;
@@ -1565,7 +1566,7 @@ class App {
               </div>
             </section>
 
-            <!-- Notable Figures (formerly Historical & Notable Figures) -->
+            <!-- Notable Figures -->
             <section class="e-panel" id="figuras">
               <div class="e-sec-head" style="margin-bottom: 0.75rem;">
                 <h2 class="e-sec-title">Notable Figures</h2>
@@ -1585,7 +1586,7 @@ class App {
               </div>
             </section>
 
-            <!-- Comparative Analysis (Image 3 style) -->
+            <!-- Comparative Analysis (Image 2 style) -->
             <section class="e-panel" id="comparar">
               <div class="e-sec-head" style="margin-bottom: 1rem;">
                 <h2 class="e-sec-title">Comparative Analysis</h2>
@@ -1598,43 +1599,34 @@ class App {
                   id="figure-search-input" 
                   class="comp-search-bar" 
                   autocomplete="off"
-                  placeholder="🔍 Caută o personalitate (ex: Jesus, John Lennon, Tesla, Einstein, Brad Pitt)..." 
+                  placeholder="🔍 Caută o personalitate (ex: John Lennon, Tesla, Einstein, Brad Pitt, Steve Jobs)..." 
                 />
                 <div id="figure-autocomplete-list" class="figure-autocomplete-dropdown" style="display: none;"></div>
               </div>
 
-              <!-- Comparison Card (Image 3 style) -->
+              <!-- Comparison Card (Image 2 style) -->
               <div class="comp-card-v2">
-                <div class="comp-hero-top">
+                <div class="comp-v2-header">
                   ${currentComparisonFigure.photo ? `
-                    <img class="comp-avatar-lg" src="${currentComparisonFigure.photo}" alt="${currentComparisonFigure.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                    <div class="fig-avatar-fallback comp-avatar-lg" style="display:none; background:${currentFigTemp.color};">${currentComparisonFigure.avatar || currentComparisonFigure.name.charAt(0)}</div>
+                    <img class="comp-v2-avatar" src="${currentComparisonFigure.photo}" alt="${currentComparisonFigure.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                    <div class="comp-v2-avatar comp-v2-avatar-fallback" style="display:none; background:${currentFigTemp.color};">${currentComparisonFigure.avatar || currentComparisonFigure.name.charAt(0)}</div>
                   ` : `
-                    <div class="fig-avatar-fallback comp-avatar-lg" style="background:${currentFigTemp.color};">${currentComparisonFigure.avatar || currentComparisonFigure.name.charAt(0)}</div>
+                    <div class="comp-v2-avatar comp-v2-avatar-fallback" style="background:${currentFigTemp.color}26; border: 2px solid ${currentFigTemp.color};">${currentComparisonFigure.avatar || currentComparisonFigure.name.charAt(0)}</div>
                   `}
-                  <div style="flex: 1; min-width: 0;">
-                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
-                      <span class="e-tag" style="background: ${currentFigTemp.colorBg}; color: ${currentFigTemp.color}; border: 1px solid ${currentFigTemp.colorBorder}; font-weight: 800; font-size: 0.74rem;">Personality · ${currentComparisonFigure.mbti}</span>
+                  <div class="comp-v2-header-info">
+                    <div class="comp-v2-top-row">
+                      <h3 class="comp-v2-name">${currentComparisonFigure.name}</h3>
+                      <span class="comp-v2-pct" style="color: ${currentFigTemp.color};">${figSim}%</span>
                     </div>
-                    <h3 style="font-family: var(--font-display); font-size: 1.35rem; font-weight: 800; margin: 0 0 0.2rem; color: var(--text-strong);">${currentComparisonFigure.name}</h3>
-                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">${currentComparisonFigure.role}</div>
-                    <div style="font-size: 0.9rem; font-weight: 800; color: ${currentFigTemp.color};">
-                      ${figSim}% match · <span style="color: var(--text-muted); font-weight: 600;">${figCompatText}</span>
+                    <div class="comp-v2-subtitle">${compCleanRole} · <b style="color: ${currentFigTemp.color};">${currentComparisonFigure.mbti}</b></div>
+                    <div class="comp-v2-bar-track">
+                      <div class="comp-v2-bar-fill" style="width: ${figSim}%; background: ${currentFigTemp.color};"></div>
                     </div>
                   </div>
                 </div>
 
-                <p style="font-size: 0.88rem; line-height: 1.55; color: var(--text-muted); margin: 0 0 1.25rem; font-style: italic; border-left: 2px solid ${currentFigTemp.color}; padding-left: 0.75rem;">
-                  "${currentComparisonFigure.quote}"
-                </p>
-
-                <div style="border-top: 1px solid var(--line); padding-top: 1.25rem;">
-                  <div style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.85rem;">
-                    Balanță Comparativă pe Spectre (Tu vs ${currentComparisonFigure.name})
-                  </div>
-                  <div class="comp-slider-box">
-                    ${compSlidersHtml}
-                  </div>
+                <div class="comp-v2-axes-box">
+                  ${compAxesHtml}
                 </div>
               </div>
             </section>
@@ -1853,6 +1845,7 @@ class App {
 
         dropdown.innerHTML = matches.map(fig => {
           const temp = getTypeTemperament(fig.mbti);
+          const itemCleanRole = fig.role ? fig.role.replace(/\s*·\s*[A-Z]{4}\s*$/i, "").trim() : (fig.profession || "");
           return `
             <div class="autocomplete-item" data-id="${fig.id}" style="display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 1rem; border-bottom: 1px solid var(--line); cursor: pointer; transition: background 0.15s ease;">
               <div style="display: flex; align-items: center; gap: 0.75rem; min-width: 0;">
@@ -1861,7 +1854,7 @@ class App {
                 </div>
                 <div style="min-width: 0;">
                   <div style="font-weight: 700; font-size: 0.92rem; color: var(--text-strong); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${fig.name}</div>
-                  <div style="font-size: 0.76rem; color: var(--text-muted);">${fig.role}</div>
+                  <div style="font-size: 0.76rem; color: var(--text-muted);">${itemCleanRole} · <b style="color: ${temp.color};">${fig.mbti}</b></div>
                 </div>
               </div>
               <span style="font-family: var(--font-display); font-weight: 800; font-size: 0.88rem; color: ${temp.color}; margin-left: 0.75rem; flex-shrink: 0;">${fig.similarity}% match</span>
@@ -1885,6 +1878,28 @@ class App {
             }
           });
         });
+      });
+
+      // Select first match on Enter
+      searchInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          const query = searchInput.value.toLowerCase().trim();
+          if (!query) return;
+          const match = allFigures.find(f => 
+            f.name.toLowerCase().includes(query) || 
+            f.role.toLowerCase().includes(query) ||
+            f.mbti.toLowerCase().includes(query)
+          );
+          if (match) {
+            this.selectedFigureId = match.id;
+            this.renderResults();
+            const inputAfter = document.getElementById("figure-search-input");
+            if (inputAfter) inputAfter.value = match.name;
+            const compSection = document.getElementById("comparar");
+            if (compSection) compSection.scrollIntoView({ behavior: "smooth" });
+          }
+        }
       });
 
       // Close dropdown when clicking outside
