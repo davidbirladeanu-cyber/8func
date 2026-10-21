@@ -68,11 +68,28 @@ export function calculateMbtiDichotomies(percentages) {
   };
 }
 
-export function getPreferenceTier(pct) {
-  if (pct === 50) return "Balanced (50% / 50%)";
-  if (pct <= 54) return "Slight preference (Mixed profile)";
-  if (pct <= 64) return "Moderate preference";
-  return "Stronger preference";
+export function getAxisLetterColor(letter) {
+  switch (letter) {
+    case "E": return "#4361ab";
+    case "I": return "#4d69ba";
+    case "N": return "#95637e";
+    case "S": return "#e5c727";
+    case "T": return "#72cccd";
+    case "F": return "#9ac262";
+    case "J": return "#395296";
+    case "P": return "#5573c7";
+    default: return "#4d69ba";
+  }
+}
+
+export function getMbtiAxisSquaresHtml(mbti) {
+  if (!mbti || typeof mbti !== "string" || mbti.length < 4) return mbti || "";
+  const chars = mbti.toUpperCase().slice(0, 4).split("");
+  return `
+    <span class="mbti-axis-sq-group" aria-label="${mbti}">
+      ${chars.map(ch => `<span class="mbti-axis-sq" style="background: ${getAxisLetterColor(ch)};" title="${ch}">${ch}</span>`).join("")}
+    </span>
+  `;
 }
 
 // The 4 MBTI Dichotomy Spectrum Axes (I-E, N-S, T-F, P-J)
@@ -1312,7 +1329,7 @@ class App {
               <h4 class="fig-name">${fig.name}</h4>
               <span class="fig-pct" style="color: ${temp.color};">${scoreToShow}%</span>
             </div>
-            <div class="fig-role-text">${cleanRole} · <b style="color: ${temp.color};">${fig.mbti}</b></div>
+            <div class="fig-role-text">${cleanRole} · ${getMbtiAxisSquaresHtml(fig.mbti)}</div>
             <div class="fig-bar-track">
               <div class="fig-bar-fill" style="width: ${scoreToShow}%; background: ${temp.color};"></div>
             </div>
@@ -1321,7 +1338,7 @@ class App {
       `;
     }).join("");
 
-    // Comparative Analysis Sliders (Image 2 style)
+    // Comparative Analysis Sliders (Image 2 style with Colored Boxes)
     const currentFigTemp = getTypeTemperament(currentComparisonFigure.mbti);
     const figSim = calculateFigureSimilarity(percentages, axisScores, currentComparisonFigure);
     const compCleanRole = currentComparisonFigure.role ? currentComparisonFigure.role.replace(/\s*·\s*[A-Z]{4}\s*$/i, "").trim() : (currentComparisonFigure.profession || "");
@@ -1330,6 +1347,7 @@ class App {
       {
         id: "energy",
         name: "ENERGY",
+        color: energyColor,
         leftLabel: lang === "ro" ? `Extraversie ${axisScores.EI.roundA}%` : `Extraversion ${axisScores.EI.roundA}%`,
         rightLabel: lang === "ro" ? `${axisScores.EI.roundB}% Introversie` : `${axisScores.EI.roundB}% Introversion`,
         uPos: Math.max(5, Math.min(95, axisScores.EI.roundB)),
@@ -1340,6 +1358,7 @@ class App {
       {
         id: "mind",
         name: "MIND",
+        color: mindColor,
         leftLabel: lang === "ro" ? `Intuiție ${axisScores.NS.roundA}%` : `Intuition ${axisScores.NS.roundA}%`,
         rightLabel: lang === "ro" ? `${axisScores.NS.roundB}% Senzorial` : `${axisScores.NS.roundB}% Sensing`,
         uPos: Math.max(5, Math.min(95, axisScores.NS.roundB)),
@@ -1350,6 +1369,7 @@ class App {
       {
         id: "nature",
         name: "NATURE",
+        color: natureColor,
         leftLabel: lang === "ro" ? `Gândire ${axisScores.TF.roundA}%` : `Thinking ${axisScores.TF.roundA}%`,
         rightLabel: lang === "ro" ? `${axisScores.TF.roundB}% Sentiment` : `${axisScores.TF.roundB}% Feeling`,
         uPos: Math.max(5, Math.min(95, axisScores.TF.roundB)),
@@ -1360,6 +1380,7 @@ class App {
       {
         id: "tactics",
         name: "TACTICS",
+        color: tacticsColor,
         leftLabel: lang === "ro" ? `Judecată ${axisScores.JP.roundA}%` : `Judging ${axisScores.JP.roundA}%`,
         rightLabel: lang === "ro" ? `${axisScores.JP.roundB}% Percepție` : `${axisScores.JP.roundB}% Perceiving`,
         uPos: Math.max(5, Math.min(95, axisScores.JP.roundB)),
@@ -1371,16 +1392,15 @@ class App {
 
     const compAxesHtml = compAxesData.map(ax => {
       return `
-        <div class="comp-v2-axis">
+        <div class="comp-v2-axis-card" style="background: ${ax.color}; color: #ffffff;">
           <div class="comp-v2-axis-title">
-            <span class="comp-v2-accent">|</span>
             <span>${ax.name}</span>
           </div>
           <div class="comp-v2-track">
             <!-- White Dot (User: "punctele necolorate albe esti tu") -->
             <div class="comp-v2-dot-user" style="left: ${ax.uPos}%;" title="Tu"></div>
             <!-- Colored Dot (Figure: "punctele colorate vor lua imaginea omului cand o voi adauga") -->
-            <div class="comp-v2-dot-fig" style="left: ${ax.fPos}%; background: ${currentFigTemp.color};" title="${currentComparisonFigure.name}">
+            <div class="comp-v2-dot-fig" style="left: ${ax.fPos}%; border-color: rgba(255,255,255,0.6);" title="${currentComparisonFigure.name}">
               ${currentComparisonFigure.photo ? `
                 <img src="${currentComparisonFigure.photo}" alt="${currentComparisonFigure.name}" />
               ` : `
@@ -1618,14 +1638,14 @@ class App {
                       <h3 class="comp-v2-name">${currentComparisonFigure.name}</h3>
                       <span class="comp-v2-pct" style="color: ${currentFigTemp.color};">${figSim}%</span>
                     </div>
-                    <div class="comp-v2-subtitle">${compCleanRole} · <b style="color: ${currentFigTemp.color};">${currentComparisonFigure.mbti}</b></div>
+                    <div class="comp-v2-subtitle">${compCleanRole} · ${getMbtiAxisSquaresHtml(currentComparisonFigure.mbti)}</div>
                     <div class="comp-v2-bar-track">
                       <div class="comp-v2-bar-fill" style="width: ${figSim}%; background: ${currentFigTemp.color};"></div>
                     </div>
                   </div>
                 </div>
 
-                <div class="comp-v2-axes-box">
+                <div class="comp-v2-axes-grid">
                   ${compAxesHtml}
                 </div>
               </div>
@@ -1854,7 +1874,7 @@ class App {
                 </div>
                 <div style="min-width: 0;">
                   <div style="font-weight: 700; font-size: 0.92rem; color: var(--text-strong); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${fig.name}</div>
-                  <div style="font-size: 0.76rem; color: var(--text-muted);">${itemCleanRole} · <b style="color: ${temp.color};">${fig.mbti}</b></div>
+                  <div style="font-size: 0.76rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.35rem; margin-top: 0.15rem;"><span>${itemCleanRole}</span><span>·</span>${getMbtiAxisSquaresHtml(fig.mbti)}</div>
                 </div>
               </div>
               <span style="font-family: var(--font-display); font-weight: 800; font-size: 0.88rem; color: ${temp.color}; margin-left: 0.75rem; flex-shrink: 0;">${fig.similarity}% match</span>

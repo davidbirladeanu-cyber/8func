@@ -3788,9 +3788,39 @@ a {
 .fig-role-text {
   font-size: 0.78rem;
   color: var(--text-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin: 0.2rem 0;
+}
+
+.mbti-axis-sq-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  vertical-align: middle;
+}
+
+.mbti-axis-sq {
+  width: 19px;
+  height: 19px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1;
+  text-transform: uppercase;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transition: transform var(--transition-fast);
+}
+
+.mbti-axis-sq:hover {
+  transform: scale(1.15);
 }
 
 .fig-bar-track {
@@ -3943,44 +3973,55 @@ a {
   border-radius: 999px;
 }
 
-.comp-v2-axes-box {
-  display: flex;
-  flex-direction: column;
-  gap: 1.75rem;
+.comp-v2-axes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.35rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.comp-v2-axis {
+@media (max-width: 820px) {
+  .comp-v2-axes-grid {
+    grid-template-columns: 1fr;
+    gap: 1.15rem;
+  }
+}
+
+.comp-v2-axis-card {
+  border-radius: 14px;
+  padding: 1.55rem 1.65rem;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.comp-v2-axis-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
 .comp-v2-axis-title {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
+  justify-content: space-between;
+  margin-bottom: 0.65rem;
   font-family: var(--font-display);
-  font-size: 1rem;
+  font-size: 0.98rem;
   font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #ffffff;
 }
 
-.comp-v2-accent {
-  color: #e5c727;
-  font-weight: 900;
-  font-size: 1.15rem;
-  line-height: 1;
-  margin-right: 0.15rem;
-}
-
 .comp-v2-track {
   position: relative;
   width: 100%;
-  height: 5px;
-  background: rgba(255, 255, 255, 0.12);
+  height: 7px;
+  background: rgba(0, 0, 0, 0.25);
   border-radius: 999px;
-  margin: 1.15rem 0 0.85rem 0;
+  margin: 0.85rem 0 0.75rem 0;
 }
 
 .comp-v2-dot-user {
