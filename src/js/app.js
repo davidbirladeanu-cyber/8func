@@ -1173,11 +1173,12 @@ class App {
     const sortedFunctions = [...FUNCTIONS_LIST].sort((a, b) => percentages[b] - percentages[a]);
     const hierarchyLabels = ["#1", "#2", "#3", "#4", "#5", "#6", "#7", "#8"];
 
-    // What Sets You Apart: Extremes
+    // What Sets You Apart: Extremes & Balanced
     const extremeHighFunc = sortedFunctions[0];
     const extremeLowFunc = sortedFunctions[7];
     const highPct = percentages[extremeHighFunc];
     const lowPct = percentages[extremeLowFunc];
+    const balancedFunc = [...sortedFunctions].sort((a, b) => Math.abs((percentages[a] ?? 50) - 50) - Math.abs((percentages[b] ?? 50) - 50))[0];
 
     // Figures Ranking (10 Similar & 10 Opposite)
     const { similar: similarFigures, opposite: oppositeFigures, all: allFigures } = getRankedFigures(percentages);
@@ -1189,9 +1190,16 @@ class App {
       this.selectedFigureId = currentComparisonFigure.id;
     }
 
+    // 4 Spectrum Coordinates (N: top-left, T: top-right, F: bottom-left, S: bottom-right)
+    const pN = axisScores?.NS?.roundA ?? 50;
+    const pS = axisScores?.NS?.roundB ?? 50;
+    const pT = axisScores?.TF?.roundA ?? 50;
+    const pF = axisScores?.TF?.roundB ?? 50;
+    const compassX = Math.max(12, Math.min(88, Math.round(50 + (pT - pF) / 2)));
+    const compassY = Math.max(12, Math.min(88, Math.round(50 - (pN - pS) / 2)));
+
     // ========================================================
-    // The 4 MBTI Spectrum Axes (I-E, N-S, T-F, P-J)
-    // Directly derived from Axis questions: poleA_pct = 50 + 50 * (meanA - meanB) / 2
+    // 4 Axes (Energy, N-S, T-F, P-J) - 2x2 Grid Layout
     // ========================================================
     const axesDict = TRANSLATIONS[lang]?.axes || TRANSLATIONS.en.axes;
     const tiersDict = TRANSLATIONS[lang]?.tiers || TRANSLATIONS.en.tiers;
@@ -1199,18 +1207,23 @@ class App {
     const mbtiAxesRowsHtml = MBTI_SPECTRUM_AXES.map((axis, index) => {
       let lPct = 50;
       let rPct = 50;
+      let axisName = "";
       if (axis.dichotomy === "IE") {
         lPct = axisScores.EI.roundB; // I
         rPct = axisScores.EI.roundA; // E
+        axisName = "Energy";
       } else if (axis.dichotomy === "NS") {
         lPct = axisScores.NS.roundA; // N
         rPct = axisScores.NS.roundB; // S
+        axisName = "N — S";
       } else if (axis.dichotomy === "TF") {
         lPct = axisScores.TF.roundA; // T
         rPct = axisScores.TF.roundB; // F
+        axisName = "T — F";
       } else if (axis.dichotomy === "PJ") {
         lPct = axisScores.JP.roundB; // P
         rPct = axisScores.JP.roundA; // J
+        axisName = "P — J";
       }
 
       const axisDef = axesDict[axis.dichotomy] || axis;
@@ -1218,10 +1231,12 @@ class App {
       const rightName = axisDef.rightName;
 
       let activeColor = "#9C988C";
-      let valueText = tiersDict.balanced;
+      let domPct = 50;
+      let domName = leftName;
+      let domPole = axis.left;
+      let dotLeft = "50%";
       let fillLeft = "50%";
       let fillWidth = "0%";
-      let dotLeft = "50%";
       let leftWin = false;
       let rightWin = false;
 
@@ -1235,9 +1250,11 @@ class App {
       if (lPct > 50) {
         const tier = getTierName(lPct);
         activeColor = axis.leftColor;
-        valueText = `${lPct}% ${leftName} (${axis.left}) · ${tier}`;
+        domPct = lPct;
+        domName = leftName;
+        domPole = axis.left;
         const rawDot = 100 - lPct;
-        const clampedDot = Math.max(3, Math.min(97, rawDot));
+        const clampedDot = Math.max(4, Math.min(96, rawDot));
         dotLeft = `${clampedDot}%`;
         fillLeft = `${clampedDot}%`;
         fillWidth = `${50 - clampedDot}%`;
@@ -1245,64 +1262,126 @@ class App {
       } else if (rPct > 50) {
         const tier = getTierName(rPct);
         activeColor = axis.rightColor;
-        valueText = `${rPct}% ${rightName} (${axis.right}) · ${tier}`;
+        domPct = rPct;
+        domName = rightName;
+        domPole = axis.right;
         const rawDot = rPct;
-        const clampedDot = Math.max(3, Math.min(97, rawDot));
+        const clampedDot = Math.max(4, Math.min(96, rawDot));
         dotLeft = `${clampedDot}%`;
         fillLeft = `50%`;
         fillWidth = `${clampedDot - 50}%`;
         rightWin = true;
-      } else {
-        valueText = tiersDict.balanced;
       }
 
+      const tier = getTierName(domPct);
+      const valueText = domPct > 50 ? `${domPct}% ${domName} (${domPole}) · ${tier}` : tiersDict.balanced;
+
       return `
-        <li class="e-axis-row" style="--ac: ${activeColor}; --al: ${axis.leftColor}; --ar: ${axis.rightColor}; --rank: ${index};">
-          <div class="e-axis-row-head">
-            <h3>${axisDef.title} <span class="axis-sub-title">· ${axisDef.subtitle}</span></h3>
-            <span class="e-axis-value">${valueText}</span>
+        <li class="e-axis-card" style="--ac: ${activeColor};">
+          <div class="e-axis-card-top">
+            <span class="e-axis-card-name">${axisName}: ${domPct}%</span>
+            <span class="e-axis-card-tag" style="background: color-mix(in srgb, ${activeColor} 14%, transparent); color: ${activeColor}; border: 1px solid color-mix(in srgb, ${activeColor} 30%, transparent);">
+              ${valueText}
+            </span>
           </div>
-          <div class="e-atrack" role="img" aria-label="${axisDef.title}: ${leftName} ${lPct}%, ${rightName} ${rPct}%">
-            <i class="e-afill" style="left: ${fillLeft}; width: ${fillWidth};"></i>
+          <div class="e-atrack" style="height: 10px;" role="img" aria-label="${axisName}: ${leftName} ${lPct}%, ${rightName} ${rPct}%">
+            <i class="e-afill" style="left: ${fillLeft}; width: ${fillWidth}; background: ${activeColor};"></i>
             <span class="e-amid"></span>
-            <span class="e-adot" style="left: ${dotLeft};"></span>
+            <span class="e-adot" style="left: ${dotLeft}; width: 14px; height: 14px; top: -2px; background: ${activeColor};"></span>
           </div>
-          <div class="e-axis-poles">
-            <div class="e-pole e-left ${leftWin ? 'e-win' : ''}">
-              ${axis.leftIcon}
-              <b>${axis.left} <span class="pole-desc">(${leftName})</span> <span class="pole-pct" style="margin-left: 0.25rem; font-weight: 800; font-size: 0.82rem;">${lPct}%</span></b>
-            </div>
-            <div class="e-pole e-right ${rightWin ? 'e-win' : ''}">
-              <b><span class="pole-pct" style="margin-right: 0.25rem; font-weight: 800; font-size: 0.82rem;">${rPct}%</span> <span class="pole-desc">(${rightName}) </span>${axis.right}</b>
-              ${axis.rightIcon}
-            </div>
+          <div class="e-axis-card-poles">
+            <span class="${leftWin ? 'pole-win' : ''}">${leftName} ${axis.left} (${lPct}%)</span>
+            <span class="${rightWin ? 'pole-win' : ''}">(${rPct}%) ${axis.right} ${rightName}</span>
           </div>
         </li>
       `;
     }).join("");
 
-
-    // Comparative Analysis Bars
-    const compBarsHtml = FUNCTIONS_LIST.map(f => {
-      const fn = COGNITIVE_FUNCTIONS[f];
-      const uScore = percentages[f] ?? 50;
-      const figScore = currentComparisonFigure.scores[f] ?? 50;
-      const figColor = getTypeTemperament(currentComparisonFigure.mbti).color;
+    // Historical Figures List (Image 2 style)
+    const figuresListHtml = displayedFigures.map((fig, idx) => {
+      const numStr = String(idx + 1).padStart(2, "0");
+      const isSelected = fig.id === currentComparisonFigure.id;
+      const temp = getTypeTemperament(fig.mbti);
+      const scoreToShow = this.figuresTab === 'similar' ? fig.similarity : fig.oppositeScore;
 
       return `
-        <div class="comp-row">
-          <span class="comp-func" style="color: ${fn.color};">${fn.code}</span>
-          <div class="comp-tracks">
-            <div class="comp-track-item" title="You: ${uScore}%">
-              <div class="comp-fill-user" style="width: ${uScore}%;"></div>
+        <div class="fig-list-item ${isSelected ? 'selected' : ''}" data-id="${fig.id}">
+          <span class="fig-num">${numStr}</span>
+          ${fig.photo ? `
+            <img class="fig-avatar-img" src="${fig.photo}" alt="${fig.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+            <div class="fig-avatar-fallback" style="display:none; background:${temp.color};">${fig.avatar || fig.name.charAt(0)}</div>
+          ` : `
+            <div class="fig-avatar-fallback" style="background:${temp.color};">${fig.avatar || fig.name.charAt(0)}</div>
+          `}
+          <div class="fig-info">
+            <div class="fig-info-top">
+              <h4 class="fig-name">${fig.name}</h4>
+              <span class="fig-pct" style="color: ${temp.color};">${scoreToShow}%</span>
             </div>
-            <div class="comp-track-item" title="${currentComparisonFigure.name}: ${figScore}%">
-              <div class="comp-fill-fig" style="width: ${figScore}%; background: ${figColor};"></div>
+            <div class="fig-role-text">${fig.role} · <b style="color: ${temp.color};">${fig.mbti}</b></div>
+            <div class="fig-bar-track">
+              <div class="fig-bar-fill" style="width: ${scoreToShow}%; background: ${temp.color};"></div>
             </div>
           </div>
-          <span class="comp-nums">
-            <b>${uScore}%</b> / ${figScore}%
-          </span>
+        </div>
+      `;
+    }).join("");
+
+    // Comparative Analysis Sliders (Image 3 style)
+    const currentFigTemp = getTypeTemperament(currentComparisonFigure.mbti);
+    const figSim = calculateFigureSimilarity(percentages, currentComparisonFigure.scores);
+    const figCompatText = figSim >= 85 ? "Very high compatibility" : (figSim >= 70 ? "High compatibility" : (figSim >= 50 ? "Moderate compatibility" : "Low compatibility"));
+
+    const compSliders = [
+      {
+        name: "Intuiție vs Senzorial (N / S)",
+        left: "N (Intuiție)",
+        right: "S (Senzorial)",
+        uPos: axisScores.NS.roundA,
+        fPos: currentComparisonFigure.scores.Ni > currentComparisonFigure.scores.Si ? 75 : 25
+      },
+      {
+        name: "Gândire vs Afectiv (T / F)",
+        left: "T (Gândire)",
+        right: "F (Sentiment)",
+        uPos: axisScores.TF.roundA,
+        fPos: currentComparisonFigure.scores.Te > currentComparisonFigure.scores.Fe ? 75 : 25
+      },
+      {
+        name: "Extraversie vs Introversie (E / I)",
+        left: "E (Extraversie)",
+        right: "I (Introversie)",
+        uPos: axisScores.EI.roundA,
+        fPos: currentComparisonFigure.mbti.startsWith("E") ? 80 : 20
+      },
+      {
+        name: "Stil de viață: Judecată vs Percepție (J / P)",
+        left: "J (Judecată)",
+        right: "P (Percepție)",
+        uPos: axisScores.JP.roundA,
+        fPos: currentComparisonFigure.mbti.endsWith("J") ? 80 : 20
+      }
+    ];
+
+    const compSlidersHtml = compSliders.map(s => {
+      const uClamp = Math.max(6, Math.min(94, s.uPos));
+      const fClamp = Math.max(6, Math.min(94, s.fPos));
+      return `
+        <div class="comp-slider-row">
+          <div class="comp-slider-head">
+            <span>${s.name}</span>
+          </div>
+          <div class="comp-slider-track">
+            <span class="e-amid"></span>
+            <div class="comp-slider-thumb-user" style="left: ${uClamp}%;" title="Tu: ${s.uPos}%">👤</div>
+            <div class="comp-slider-thumb-fig" style="left: ${fClamp}%; border-color: ${currentFigTemp.color};" title="${currentComparisonFigure.name}: ${s.fPos}%">
+              ${currentComparisonFigure.photo ? `<img src="${currentComparisonFigure.photo}" alt="${currentComparisonFigure.name}">` : `<span>${currentComparisonFigure.name.charAt(0)}</span>`}
+            </div>
+          </div>
+          <div class="comp-slider-labels">
+            <span>${s.left}</span>
+            <span>${s.right}</span>
+          </div>
         </div>
       `;
     }).join("");
@@ -1316,29 +1395,13 @@ class App {
         <main class="ed e-res" id="resultados">
           <div class="e-res-container">
             
-            <!-- Analysis Complete Header -->
-            <header class="e-res-head">
-              <p class="e-eyebrow">${t('analysisComplete', {}, lang)}</p>
-              <h1>${t('yourCognitiveProfile', {}, lang)}</h1>
-            </header>
-
-            ${acquiescenceWarning ? `
-              <aside class="notice-box" style="margin-bottom: 1.5rem; background: rgba(229, 199, 39, 0.12); border: 1.5px solid rgba(229, 199, 39, 0.4); border-radius: var(--radius-lg); padding: 1.1rem 1.4rem; display: flex; align-items: flex-start; gap: 0.85rem;">
-                <span style="font-size: 1.35rem; line-height: 1;">⚠️</span>
-                <div>
-                  <strong style="color: var(--text-strong); font-size: 0.95rem; display: block; margin-bottom: 0.25rem;">${acquiescenceWarning.label}</strong>
-                  <p style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.55; margin: 0;">${acquiescenceWarning.message}</p>
-                </div>
-              </aside>
-            ` : ""}
-
-            <!-- 12Axes Top Archetype Hero Panel -->
+            <!-- Top Hero Panel -->
             <article class="e-panel e-top" style="--c: ${topMbti.temperamentColor}; --cb: ${topMbti.temperamentBg};">
               <div class="e-top-head">
                 <div>
                   <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                    <span class="e-tag e-tag-solid" style="background: ${topMbti.temperamentBg}; color: ${topMbti.temperamentColor}; border: 1px solid ${topMbti.temperamentBorder}; font-weight: 800;">
-                      ${topMbti.temperament} · ${topMbti.temperamentName}
+                    <span class="e-tag e-tag-solid" style="background: ${topMbti.temperamentBg}; color: ${topMbti.temperamentColor}; border: 1px solid ${topMbti.temperamentBorder}; font-weight: 800; text-transform: uppercase;">
+                      ${topMbti.temperamentName}
                     </span>
                   </div>
                   <h2>${topMbti.title} <span style="color: ${topMbti.temperamentColor};">(${topMbti.type})</span></h2>
@@ -1359,84 +1422,122 @@ class App {
                 <figure class="e-phrase" style="border-left: 3px solid ${topMbti.temperamentColor};">
                   <span class="e-q" aria-hidden="true" style="color: ${topMbti.temperamentColor};">“</span>
                   <div>
-                    <p class="e-eyebrow" style="color: ${topMbti.temperamentColor};">${t('aSentenceDescribesYou', {}, lang)}</p>
+                    <p class="e-eyebrow" style="color: ${topMbti.temperamentColor}; text-transform: uppercase; font-weight: 800;">About ${topMbti.type}</p>
                     <blockquote>${topMbti.quote}</blockquote>
                   </div>
                 </figure>
-                <details class="e-about">
-                  <summary style="color: ${topMbti.temperamentColor};">${t('aboutArchetype', { title: topMbti.title, type: topMbti.type }, lang)}</summary>
-                  <p>${topMbti.description}</p>
-                </details>
-              </div>
-
-              <!-- Ranked Cognitive Hierarchy Bar (Dom, Aux, Tert, Inf + rest of 8) -->
-              <div class="hierarchy-container">
-                <div class="hierarchy-title">
-                  <span>${t('rankedHierarchyTitle', {}, lang)}</span>
-                  <span style="font-size: 0.72rem; text-transform: none; color: var(--text-muted);">${t('rankedHierarchySub', {}, lang)}</span>
-                </div>
-                <div class="hierarchy-grid">
-                  ${sortedFunctions.map((f, idx) => {
-                    const roleName = hierarchyLabels[idx] || `${idx + 1}th`;
-                    const color = COGNITIVE_FUNCTIONS[f].color;
-                    const isLowData = insufficientData && insufficientData[f];
-                    return `
-                      <div class="hierarchy-item" style="border-top: 3px solid ${color};">
-                        <span class="hierarchy-role">${roleName}</span>
-                        <span class="hierarchy-func" style="color: ${color};">${f}</span>
-                        <span class="hierarchy-pct">${percentages[f]}% ${t('agreementScoreLabel', {}, lang)}</span>
-                        ${isLowData ? `<span style="font-size: 0.65rem; color: var(--critical-deep); font-weight: 700;">${t('lowDataLabel', {}, lang)}</span>` : ''}
-                      </div>
-                    `;
-                  }).join("")}
-                </div>
               </div>
             </article>
 
-            <!-- 12Axes Authentic MBTI Dichotomy Spectrum Axes (I-E, N-S, T-F, P-J) -->
-            <section class="e-panel" id="mbti-axes" data-reveal="true" data-revealed="">
-              <div class="e-sec-head">
-                <h2 class="e-sec-title">${t('mbtiAxesTitle', {}, lang)}</h2>
-                <p class="e-sec-lead">${t('mbtiAxesLead', {}, lang)}</p>
+            <!-- Cognitive Hierarchy (Separated Panel) -->
+            <section class="e-panel" id="cognitive-hierarchy">
+              <div class="e-sec-head" style="margin-bottom: 1rem;">
+                <h2 class="e-sec-title">Cognitive Hierarchy</h2>
               </div>
-              <ul class="e-axes-list">
+              <div class="hierarchy-grid">
+                ${sortedFunctions.map((f, idx) => {
+                  const roleName = hierarchyLabels[idx] || `${idx + 1}th`;
+                  const color = COGNITIVE_FUNCTIONS[f].color;
+                  return `
+                    <div class="hierarchy-item" style="border-top: 3px solid ${color};">
+                      <span class="hierarchy-role">${roleName}</span>
+                      <span class="hierarchy-func" style="color: ${color};">${f}</span>
+                      <span class="hierarchy-pct" style="white-space: nowrap; font-size: 0.72rem;">${percentages[f]}% scor</span>
+                    </div>
+                  `;
+                }).join("")}
+              </div>
+            </section>
+
+            <!-- 4 Axes (2x2 Grid) -->
+            <section class="e-panel" id="mbti-axes">
+              <div class="e-sec-head" style="margin-bottom: 0.75rem;">
+                <h2 class="e-sec-title">4 Axes</h2>
+              </div>
+              <ul class="e-axes-grid-2x2">
                 ${mbtiAxesRowsHtml}
               </ul>
-              <div class="axis-legend-note" style="margin-top: 1.25rem; font-size: 0.8rem; color: var(--text-muted); background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 0.85rem 1.15rem; line-height: 1.5;">
-                <div style="font-weight: 700; color: var(--text-strong); margin-bottom: 0.25rem;">${t('scaleGuideTitle', {}, lang)}</div>
-                ${t('scaleGuideDesc', {}, lang)}
-                <div style="display: flex; gap: 1.25rem; flex-wrap: wrap; margin-top: 0.4rem; font-size: 0.76rem;">
-                  <span><b>${t('tierSlight', {}, lang)}</b></span>
-                  <span><b>${t('tierModerate', {}, lang)}</b></span>
-                  <span><b>${t('tierStrong', {}, lang)}</b></span>
+            </section>
+
+            <!-- 4 Spectrum Compass / Coordinate Map -->
+            <section class="e-panel" id="spectrum-compass">
+              <div class="e-sec-head" style="margin-bottom: 0.75rem;">
+                <h2 class="e-sec-title">4 Spectrum</h2>
+              </div>
+              <div class="spectrum-compass-box">
+                <div class="spectrum-crosshair-x"></div>
+                <div class="spectrum-crosshair-y"></div>
+                <div class="spectrum-grid-circle" style="width: 130px; height: 130px;"></div>
+                <div class="spectrum-grid-circle" style="width: 250px; height: 250px;"></div>
+
+                <!-- Top Left: N -->
+                <div class="spectrum-quadrant-badge spectrum-quadrant-tl">
+                  <span style="font-weight: 800; color: #8A3AA0; font-size: 0.92rem;">N · Intuiție</span>
+                  <span style="color: var(--text-muted); font-size: 0.74rem;">${percentages.Ni ?? 50}% Ni / ${percentages.Ne ?? 50}% Ne</span>
+                </div>
+
+                <!-- Top Right: T -->
+                <div class="spectrum-quadrant-badge spectrum-quadrant-tr">
+                  <span style="font-weight: 800; color: #0284C7; font-size: 0.92rem;">T · Gândire</span>
+                  <span style="color: var(--text-muted); font-size: 0.74rem;">${percentages.Te ?? 50}% Te / ${percentages.Ti ?? 50}% Ti</span>
+                </div>
+
+                <!-- Bottom Left: F -->
+                <div class="spectrum-quadrant-badge spectrum-quadrant-bl">
+                  <span style="font-weight: 800; color: #16A34A; font-size: 0.92rem;">F · Sentiment</span>
+                  <span style="color: var(--text-muted); font-size: 0.74rem;">${percentages.Fi ?? 50}% Fi / ${percentages.Fe ?? 50}% Fe</span>
+                </div>
+
+                <!-- Bottom Right: S -->
+                <div class="spectrum-quadrant-badge spectrum-quadrant-br">
+                  <span style="font-weight: 800; color: #D97706; font-size: 0.92rem;">S · Senzație</span>
+                  <span style="color: var(--text-muted); font-size: 0.74rem;">${percentages.Se ?? 50}% Se / ${percentages.Si ?? 50}% Si</span>
+                </div>
+
+                <!-- User coordinate dot -->
+                <div class="spectrum-user-dot" style="left: ${compassX}%; top: ${compassY}%;" title="Tu (${topMbti.type})">
+                  <span style="font-size: 11px;">✦</span>
+                  <span class="spectrum-user-tag">${topMbti.type} (${topMbti.matchPercentage}%)</span>
                 </div>
               </div>
             </section>
 
-            <!-- What Sets You Apart -->
+            <!-- What Sets You Apart (3 Cards) -->
             <section class="e-panel" id="assinatura">
-              <h2 class="e-sec-title">${t('whatSetsYouApart', {}, lang)}</h2>
-              <p class="e-sec-lead">${t('whatSetsYouApartLead', {}, lang)}</p>
-              <div class="e-dist">
-                <article class="e-dcard">
+              <div class="e-sec-head" style="margin-bottom: 1rem;">
+                <h2 class="e-sec-title">What sets you apart</h2>
+              </div>
+              <div class="e-dist-3">
+                <article class="e-dcard" style="border-top: 3px solid #16A34A;">
                   <div class="e-dcard-head">
-                    <span class="e-tag e-tag-solid" style="color: #16A34A; border-color: rgba(22, 163, 74, 0.3);">${t('highestAgreement', {}, lang)}</span>
-                    <h3>${COGNITIVE_FUNCTIONS[extremeHighFunc].code}</h3>
+                    <span class="e-tag e-tag-solid" style="color: #16A34A; border-color: rgba(22, 163, 74, 0.3); font-weight: 800;">Highest Function</span>
+                    <h3 style="color: ${COGNITIVE_FUNCTIONS[extremeHighFunc].color};">${COGNITIVE_FUNCTIONS[extremeHighFunc].code}</h3>
                   </div>
-                  <p class="e-big">${highPct}%</p>
+                  <p class="e-big" style="color: ${COGNITIVE_FUNCTIONS[extremeHighFunc].color};">${highPct}%</p>
                   <p class="e-cap">
-                    <b>${lang === 'ro' ? (COGNITIVE_FUNCTIONS[extremeHighFunc].nameRo || COGNITIVE_FUNCTIONS[extremeHighFunc].name) : COGNITIVE_FUNCTIONS[extremeHighFunc].name}</b> ${t('highestCap', {}, lang)}
+                    <b>${COGNITIVE_FUNCTIONS[extremeHighFunc].nameRo || COGNITIVE_FUNCTIONS[extremeHighFunc].name}</b> este forța ta cognitivă dominantă pe care te sprijini spontan în luarea deciziilor.
                   </p>
                 </article>
 
-                <article class="e-dcard">
+                <article class="e-dcard" style="border-top: 3px solid #C23A45;">
                   <div class="e-dcard-head">
-                    <span class="e-tag e-tag-solid" style="color: #C23A45; border-color: rgba(194, 58, 69, 0.3);">${t('lowestAgreement', {}, lang)}</span>
-                    <h3>${COGNITIVE_FUNCTIONS[extremeLowFunc].code}</h3>
+                    <span class="e-tag e-tag-solid" style="color: #C23A45; border-color: rgba(194, 58, 69, 0.3); font-weight: 800;">Lowest Function</span>
+                    <h3 style="color: ${COGNITIVE_FUNCTIONS[extremeLowFunc].color};">${COGNITIVE_FUNCTIONS[extremeLowFunc].code}</h3>
                   </div>
                   <p class="e-big low">${lowPct}%</p>
                   <p class="e-cap">
-                    <b>${lang === 'ro' ? (COGNITIVE_FUNCTIONS[extremeLowFunc].nameRo || COGNITIVE_FUNCTIONS[extremeLowFunc].name) : COGNITIVE_FUNCTIONS[extremeLowFunc].name}</b> ${t('lowestCap', {}, lang)}
+                    <b>${COGNITIVE_FUNCTIONS[extremeLowFunc].nameRo || COGNITIVE_FUNCTIONS[extremeLowFunc].name}</b> reprezintă unghiul mort (blind spot), cel mai puțin accesat proces în mod conștient.
+                  </p>
+                </article>
+
+                <article class="e-dcard" style="border-top: 3px solid #0284C7;">
+                  <div class="e-dcard-head">
+                    <span class="e-tag e-tag-solid" style="color: #0284C7; border-color: rgba(2, 132, 199, 0.3); font-weight: 800;">Balanced Function</span>
+                    <h3 style="color: ${COGNITIVE_FUNCTIONS[balancedFunc].color};">${COGNITIVE_FUNCTIONS[balancedFunc].code}</h3>
+                  </div>
+                  <p class="e-big" style="color: #0284C7;">${percentages[balancedFunc]}%</p>
+                  <p class="e-cap">
+                    <b>${COGNITIVE_FUNCTIONS[balancedFunc].nameRo || COGNITIVE_FUNCTIONS[balancedFunc].name}</b> este cea mai neutră și flexibilă funcție, activată contextual fără eforturi extreme.
                   </p>
                 </article>
               </div>
@@ -1444,14 +1545,15 @@ class App {
 
             <!-- Other Personalities You Resemble -->
             <section class="e-panel" id="personalidades">
-              <h2 class="e-sec-title">${t('otherPersonalitiesTitle', {}, lang)}</h2>
-              <p class="e-sec-lead">${t('otherPersonalitiesLead', {}, lang)}</p>
+              <div class="e-sec-head" style="margin-bottom: 1rem;">
+                <h2 class="e-sec-title">Other personalities you resemble</h2>
+              </div>
               <div class="e-others-grid">
                 ${otherMbtis.map(m => `
                   <article class="e-ocard" style="--c: ${m.temperamentColor}; --cb: ${m.temperamentBg}; border-top: 3px solid ${m.temperamentColor};">
                     <div class="e-ocard-top">
-                      <span class="e-tag" style="background: ${m.temperamentBg}; color: ${m.temperamentColor}; border: 1px solid ${m.temperamentBorder}; font-weight: 800;">
-                        ${m.temperament} · ${m.type}
+                      <span class="e-tag" style="background: ${m.temperamentBg}; color: ${m.temperamentColor}; border: 1px solid ${m.temperamentBorder}; font-weight: 800; text-transform: uppercase;">
+                        ${m.temperamentName} · ${m.type}
                       </span>
                       <span class="e-ocard-pct" style="color: ${m.temperamentColor}; font-weight: 800;">${m.matchPercentage}% match</span>
                     </div>
@@ -1465,71 +1567,75 @@ class App {
               </div>
             </section>
 
-            <!-- Historical Figures (10 Similar & 10 Opposite) -->
+            <!-- Historical & Notable Figures (Image 2 style) -->
             <section class="e-panel" id="figuras">
-              <h2 class="e-sec-title">${t('figuresTitle', {}, lang)}</h2>
-              <p class="e-sec-lead">${t('figuresLead', {}, lang)}</p>
+              <div class="e-sec-head" style="margin-bottom: 0.75rem;">
+                <h2 class="e-sec-title">Historical & Notable Figures</h2>
+              </div>
 
               <div class="fig-tabs">
                 <button class="fig-tab ${this.figuresTab === 'similar' ? 'active' : ''}" type="button" id="tab-similar-btn">
-                  ${t('tabSimilarFigures', {}, lang)}
+                  Similar Figures
                 </button>
                 <button class="fig-tab ${this.figuresTab === 'opposite' ? 'active' : ''}" type="button" id="tab-opposite-btn">
-                  ${t('tabOppositeFigures', {}, lang)}
+                  Opposite Figures
                 </button>
               </div>
 
-              <div class="fig-grid">
-                ${displayedFigures.map(fig => {
-                  const figTemp = getTypeTemperament(fig.mbti);
-                  return `
-                  <article class="fig-card">
-                    <span class="fig-avatar">${fig.avatar}</span>
-                    <div class="fig-body">
-                      <div class="fig-top">
-                        <span class="fig-name">${fig.name}</span>
-                        <span class="fig-badge ${this.figuresTab === 'similar' ? 'high' : 'opposite'}">
-                          ${this.figuresTab === 'similar' ? fig.similarity + '% match' : fig.oppositeScore + '% opposite'}
-                        </span>
-                      </div>
-                      <div class="fig-role">${fig.role} • <span class="e-tag" style="background: ${figTemp.colorBg}; color: ${figTemp.color}; border: 1px solid ${figTemp.colorBorder}; font-weight: 800; font-size: 0.72rem; padding: 0.1rem 0.4rem;">${figTemp.code} · ${fig.mbti}</span></div>
-                      <p class="fig-quote">"${fig.quote}"</p>
-                    </div>
-                  </article>
-                `;
-                }).join("")}
+              <div class="fig-list-grid">
+                ${figuresListHtml}
               </div>
             </section>
 
-            <!-- Comparative Analysis -->
+            <!-- Comparative Analysis (Image 3 style) -->
             <section class="e-panel" id="comparar">
-              <h2 class="e-sec-title">${t('compAnalysisTitle', {}, lang)}</h2>
-              <p class="e-sec-lead">${t('compAnalysisLead', {}, lang)}</p>
-
-              <div class="comp-picker">
-                <label for="figure-select">${t('selectFigureLabel', {}, lang)}</label>
-                <select class="comp-select" id="figure-select">
-                  ${allFigures.map(fig => `
-                    <option value="${fig.id}" ${fig.id === currentComparisonFigure.id ? 'selected' : ''}>
-                      ${fig.name} (${fig.mbti} — ${fig.similarity}% similarity)
-                    </option>
-                  `).join("")}
-                </select>
+              <div class="e-sec-head" style="margin-bottom: 1rem;">
+                <h2 class="e-sec-title">Comparative Analysis</h2>
               </div>
 
-              <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.25rem; font-size: 0.85rem; font-weight: 700;">
-                <span style="display: inline-flex; align-items: center; gap: 0.4rem;">
-                  <span style="width: 12px; height: 12px; border-radius: 2px; background: var(--accent);"></span>
-                  <span>${t('youLabel', {}, lang)}</span>
-                </span>
-                <span style="display: inline-flex; align-items: center; gap: 0.4rem;">
-                  <span style="width: 12px; height: 12px; border-radius: 2px; background: ${getTypeTemperament(currentComparisonFigure.mbti).color};"></span>
-                  <span>${currentComparisonFigure.name} (${currentComparisonFigure.mbti})</span>
-                </span>
+              <!-- Search personality bar -->
+              <div style="margin-bottom: 1rem;">
+                <input 
+                  type="text" 
+                  id="figure-search-input" 
+                  class="comp-search-bar" 
+                  placeholder="🔍 Caută o personalitate (ex: Marcus Aurelius, Tesla, Trump, Nietzsche, Foucault)..." 
+                />
               </div>
 
-              <div class="comp-grid">
-                ${compBarsHtml}
+              <!-- Comparison Card (Image 3 style) -->
+              <div class="comp-card-v2">
+                <div class="comp-hero-top">
+                  ${currentComparisonFigure.photo ? `
+                    <img class="comp-avatar-lg" src="${currentComparisonFigure.photo}" alt="${currentComparisonFigure.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                    <div class="fig-avatar-fallback comp-avatar-lg" style="display:none; background:${currentFigTemp.color};">${currentComparisonFigure.avatar || currentComparisonFigure.name.charAt(0)}</div>
+                  ` : `
+                    <div class="fig-avatar-fallback comp-avatar-lg" style="background:${currentFigTemp.color};">${currentComparisonFigure.avatar || currentComparisonFigure.name.charAt(0)}</div>
+                  `}
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                      <span class="e-tag" style="background: ${currentFigTemp.colorBg}; color: ${currentFigTemp.color}; border: 1px solid ${currentFigTemp.colorBorder}; font-weight: 800; font-size: 0.74rem;">Personality · ${currentComparisonFigure.mbti}</span>
+                    </div>
+                    <h3 style="font-family: var(--font-display); font-size: 1.35rem; font-weight: 800; margin: 0 0 0.2rem; color: var(--text-strong);">${currentComparisonFigure.name}</h3>
+                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">${currentComparisonFigure.role}</div>
+                    <div style="font-size: 0.9rem; font-weight: 800; color: ${currentFigTemp.color};">
+                      ${figSim}% match · <span style="color: var(--text-muted); font-weight: 600;">${figCompatText}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <p style="font-size: 0.88rem; line-height: 1.55; color: var(--text-muted); margin: 0 0 1.25rem; font-style: italic; border-left: 2px solid ${currentFigTemp.color}; padding-left: 0.75rem;">
+                  "${currentComparisonFigure.quote}"
+                </p>
+
+                <div style="border-top: 1px solid var(--line); padding-top: 1.25rem;">
+                  <div style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.85rem;">
+                    Balanță Comparativă pe Spectre (Tu vs ${currentComparisonFigure.name})
+                  </div>
+                  <div class="comp-slider-box">
+                    ${compSlidersHtml}
+                  </div>
+                </div>
               </div>
             </section>
 
@@ -1708,12 +1814,48 @@ class App {
       });
     }
 
-    // Figure selector in Comparative Analysis
-    const figSelect = document.getElementById("figure-select");
-    if (figSelect) {
-      figSelect.addEventListener("change", (e) => {
-        this.selectedFigureId = e.target.value;
-        this.renderResults();
+    // Figure item click in Historical Figures list (Image 2 style)
+    document.querySelectorAll(".fig-list-item").forEach(item => {
+      item.addEventListener("click", () => {
+        const id = item.getAttribute("data-id");
+        if (id) {
+          this.selectedFigureId = id;
+          this.renderResults();
+          const compSection = document.getElementById("comparar");
+          if (compSection) compSection.scrollIntoView({ behavior: "smooth" });
+        }
+      });
+    });
+
+    // Figure Search Input (Image 3 style)
+    const searchInput = document.getElementById("figure-search-input");
+    if (searchInput) {
+      searchInput.addEventListener("input", (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        const listItems = document.querySelectorAll(".fig-list-item");
+        listItems.forEach(item => {
+          const nameEl = item.querySelector(".fig-name");
+          const roleEl = item.querySelector(".fig-role-text");
+          const text = ((nameEl?.textContent || "") + " " + (roleEl?.textContent || "")).toLowerCase();
+          if (!query || text.includes(query)) {
+            item.style.display = "flex";
+          } else {
+            item.style.display = "none";
+          }
+        });
+
+        if (query.length >= 3) {
+          const matched = NOTABLE_FIGURES.find(f => f.name.toLowerCase().includes(query) || f.role.toLowerCase().includes(query));
+          if (matched && matched.id !== this.selectedFigureId) {
+            this.selectedFigureId = matched.id;
+            this.renderResults();
+            const restoredInput = document.getElementById("figure-search-input");
+            if (restoredInput) {
+              restoredInput.value = query;
+              restoredInput.focus();
+            }
+          }
+        }
       });
     }
 
