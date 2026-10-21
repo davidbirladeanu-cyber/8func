@@ -3379,46 +3379,37 @@ a {
 /* ==========================================================================
    Minimalist Dual Spectrum Compasses
    ========================================================================== */
+#spectrum-compass {
+  padding: 2.5rem 1.75rem;
+}
+
+@media (max-width: 600px) {
+  #spectrum-compass {
+    padding: 2rem 1rem;
+  }
+}
+
 .spectrum-dual-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 2.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem;
   width: 100%;
   align-items: start;
 }
 
-@media (max-width: 820px) {
+@media (max-width: 900px) {
   .spectrum-dual-grid {
     grid-template-columns: 1fr;
-    gap: 3rem;
+    gap: 3.5rem;
   }
 }
 
 .spectrum-col {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
-}
-
-.spectrum-top-bar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.65rem;
-  margin-bottom: 1.25rem;
-}
-
-.spectrum-quad-badge {
-  font-family: var(--font-display);
-  font-size: 0.85rem;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  padding: 0.28rem 0.85rem;
-  border-radius: 999px;
-  text-transform: uppercase;
-  color: #ffffff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.22);
 }
 
 .spectrum-compass-wrap {
@@ -3426,25 +3417,37 @@ a {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 480px;
+  max-width: 440px;
 }
 
 .spectrum-center-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: center;
-  gap: 0.85rem;
+  justify-items: center;
+  gap: 0.65rem;
   width: 100%;
+  max-width: 440px;
 }
 
 .spectrum-cardinal-lbl {
   font-family: var(--font-display);
-  font-size: 0.88rem;
-  font-weight: 900;
-  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
   color: var(--text-strong);
   user-select: none;
   white-space: nowrap;
+  line-height: 1;
+}
+
+[data-theme="dark"] .spectrum-cardinal-lbl {
+  color: #ffffff;
+}
+
+[data-theme="light"] .spectrum-cardinal-lbl,
+:root:not([data-theme="dark"]) .spectrum-cardinal-lbl {
+  color: #101010;
 }
 
 .spectrum-lbl-top {
@@ -3458,48 +3461,52 @@ a {
 }
 
 .spectrum-lbl-left {
-  flex: 1;
+  justify-self: end;
   text-align: right;
-  min-width: 65px;
+  white-space: nowrap;
 }
 
 .spectrum-lbl-right {
-  flex: 1;
+  justify-self: start;
   text-align: left;
-  min-width: 65px;
-}
-
-@media (max-width: 480px) {
-  .spectrum-cardinal-lbl {
-    font-size: 0.75rem;
-    letter-spacing: 0.04em;
-  }
-  .spectrum-lbl-left,
-  .spectrum-lbl-right {
-    min-width: 50px;
-  }
-  .spectrum-center-row {
-    gap: 0.5rem;
-  }
+  white-space: nowrap;
 }
 
 .spectrum-quadrant-plane {
   position: relative;
   width: 100%;
-  max-width: 320px;
+  max-width: 290px;
   aspect-ratio: 1 / 1;
-  border-radius: 28px;
+  border-radius: 26px;
   overflow: hidden;
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
-  flex-shrink: 0;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.35);
+  justify-self: center;
 }
 
-@media (max-width: 440px) {
+@media (max-width: 900px) {
   .spectrum-quadrant-plane {
-    max-width: 230px;
+    max-width: 340px;
+    border-radius: 30px;
+  }
+
+  .spectrum-cardinal-lbl {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .spectrum-cardinal-lbl {
+    font-size: 0.72rem;
+    letter-spacing: 0.03em;
+  }
+  .spectrum-center-row {
+    gap: 0.4rem;
+  }
+  .spectrum-quadrant-plane {
+    max-width: 240px;
     border-radius: 20px;
   }
 }
@@ -3593,7 +3600,7 @@ a {
 }
 
 .spectrum-bottom-bar {
-  margin-top: 1.25rem;
+  margin-top: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3601,10 +3608,20 @@ a {
 
 .spectrum-coord-lbl {
   font-family: var(--font-display);
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 800;
   color: var(--text-strong);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
+  opacity: 0.9;
+}
+
+[data-theme="dark"] .spectrum-coord-lbl {
+  color: #ffffff;
+}
+
+[data-theme="light"] .spectrum-coord-lbl,
+:root:not([data-theme="dark"]) .spectrum-coord-lbl {
+  color: #101010;
 }
 
 /* What Sets You Apart 3-card layout */

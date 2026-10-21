@@ -1556,10 +1556,6 @@ class App {
               <div class="spectrum-dual-grid">
                 <!-- Spectrum 1: Mind & Nature -->
                 <div class="spectrum-col">
-                  <div class="spectrum-top-bar">
-                    <span class="spectrum-quad-badge" style="background: ${activeS1.color};">${activeS1.code}</span>
-                  </div>
-
                   <div class="spectrum-compass-wrap">
                     <div class="spectrum-cardinal-lbl spectrum-lbl-top">${s1Top}</div>
                     <div class="spectrum-center-row">
@@ -1586,10 +1582,6 @@ class App {
 
                 <!-- Spectrum 2: Energy & Tactics -->
                 <div class="spectrum-col">
-                  <div class="spectrum-top-bar">
-                    <span class="spectrum-quad-badge" style="background: ${activeS2.color};">${activeS2.code}</span>
-                  </div>
-
                   <div class="spectrum-compass-wrap">
                     <div class="spectrum-cardinal-lbl spectrum-lbl-top">${s2Top}</div>
                     <div class="spectrum-center-row">
