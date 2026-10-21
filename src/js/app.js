@@ -1206,7 +1206,7 @@ class App {
     const axesDict = TRANSLATIONS[lang]?.axes || TRANSLATIONS.en.axes;
     const tiersDict = TRANSLATIONS[lang]?.tiers || TRANSLATIONS.en.tiers;
 
-    const mbtiAxesRowsHtml = MBTI_SPECTRUM_AXES.map((axis, index) => {
+    const mbtiAxesRowsHtml = MBTI_SPECTRUM_AXES.map((axis, idx) => {
       let lPct = 50;
       let rPct = 50;
       let axisName = "";
