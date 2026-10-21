@@ -25,81 +25,56 @@ function test(name, fn) {
 // ----------------------------------------------------
 // 1. Test Configurations and Item Counts
 // ----------------------------------------------------
-test("Rapid/Fast test configuration (24 questions = 8 axis + 16 function)", () => {
+// ----------------------------------------------------
+// 1. Test Configurations and Item Counts
+// ----------------------------------------------------
+test("Rapid/Fast test configuration (36 questions = 32 deep + 4 direct)", () => {
   const rapidQs = getQuestionsForMode("rapid");
-  assert.strictEqual(rapidQs.length, 24, "Rapid must have 24 questions");
+  assert.strictEqual(rapidQs.length, 36, "Rapid must have 36 questions");
 
-  const axisQs = rapidQs.filter(q => q.category === "axis");
-  const funcQs = rapidQs.filter(q => q.category === "function");
-  assert.strictEqual(axisQs.length, 8, "Rapid must have 8 axis questions");
-  assert.strictEqual(funcQs.length, 16, "Rapid must have 16 function questions");
+  const deepQs = rapidQs.filter(q => q.format === "deep");
+  const directQs = rapidQs.filter(q => q.format === "direct");
+  assert.strictEqual(deepQs.length, 32, "Rapid must have 32 deep questions");
+  assert.strictEqual(directQs.length, 4, "Rapid must have 4 direct questions");
 
-  // 2 axis questions per dimension
-  ["EI", "NS", "TF", "JP"].forEach(dim => {
-    const dimQs = axisQs.filter(q => q.dimension === dim);
-    assert.strictEqual(dimQs.length, 2, `Rapid dimension ${dim} must have 2 questions`);
-  });
-
-  // 2 function questions per function
-  FUNCTIONS_LIST.forEach(f => {
-    const fQs = funcQs.filter(q => q.target === f);
-    assert.strictEqual(fQs.length, 2, `Rapid function ${f} must have 2 questions`);
-  });
+  // Verify the 4 direct questions are strictly at the end
+  const last4 = rapidQs.slice(-4).map(q => q.id);
+  assert.deepStrictEqual(last4, ["F01", "F02", "F03", "F04"], "Direct questions must be strictly last");
 });
 
-test("Standard test configuration (60 questions = 20 axis + 40 function)", () => {
+test("Standard test configuration (60 questions = 32 deep + 24 simple + 4 direct)", () => {
   const standardQs = getQuestionsForMode("standard");
   assert.strictEqual(standardQs.length, 60, "Standard must have 60 questions");
 
-  const axisQs = standardQs.filter(q => q.category === "axis");
-  const funcQs = standardQs.filter(q => q.category === "function");
-  assert.strictEqual(axisQs.length, 20, "Standard must have 20 axis questions");
-  assert.strictEqual(funcQs.length, 40, "Standard must have 40 function questions");
+  const deepQs = standardQs.filter(q => q.format === "deep");
+  const shortQs = standardQs.filter(q => q.format === "short");
+  const directQs = standardQs.filter(q => q.format === "direct");
+  assert.strictEqual(deepQs.length, 32, "Standard must have 32 deep questions");
+  assert.strictEqual(shortQs.length, 24, "Standard must have 24 simple questions");
+  assert.strictEqual(directQs.length, 4, "Standard must have 4 direct questions");
 
-  // 5 axis questions per dimension
-  ["EI", "NS", "TF", "JP"].forEach(dim => {
-    const dimQs = axisQs.filter(q => q.dimension === dim);
-    assert.strictEqual(dimQs.length, 5, `Standard dimension ${dim} must have 5 questions`);
-  });
-
-  // 10 function evaluations per function (target or opposite pole across 40 function questions)
-  FUNCTIONS_LIST.forEach(f => {
-    const fQs = funcQs.filter(q => q.target === f || q.oppositePole === f);
-    assert.strictEqual(fQs.length, 10, `Standard function ${f} must have 10 evaluations`);
-  });
+  // Verify the 4 direct questions are strictly at the end
+  const last4 = standardQs.slice(-4).map(q => q.id);
+  assert.deepStrictEqual(last4, ["F01", "F02", "F03", "F04"], "Direct questions must be strictly last");
 });
 
-test("Complete test configuration (100 questions = 36 axis + 64 function)", () => {
+test("Complete test configuration (100 questions = 32 deep + 32 simple + 32 WYR + 4 direct)", () => {
   const completeQs = getQuestionsForMode("complete");
   assert.strictEqual(completeQs.length, 100, "Complete must have 100 questions");
 
-  const axisQs = completeQs.filter(q => q.category === "axis");
-  const funcQs = completeQs.filter(q => q.category === "function");
-  assert.strictEqual(axisQs.length, 36, "Complete must have 36 axis questions");
-  assert.strictEqual(funcQs.length, 64, "Complete must have 64 function questions");
-
-  // 9 axis questions per dimension
-  ["EI", "NS", "TF", "JP"].forEach(dim => {
-    const dimQs = axisQs.filter(q => q.dimension === dim);
-    assert.strictEqual(dimQs.length, 9, `Complete dimension ${dim} must have 9 questions`);
-  });
-
-  // 16 function evaluations per function (target or opposite pole across 64 function questions)
-  FUNCTIONS_LIST.forEach(f => {
-    const fQs = funcQs.filter(q => q.target === f || q.oppositePole === f);
-    assert.strictEqual(fQs.length, 16, `Complete function ${f} must have 16 evaluations`);
-  });
-
-  // Formats breakdown
   const deepQs = completeQs.filter(q => q.format === "deep");
   const shortQs = completeQs.filter(q => q.format === "short");
   const wyrQs = completeQs.filter(q => q.format === "wouldYouRather");
   const directQs = completeQs.filter(q => q.format === "direct");
 
-  assert.strictEqual(deepQs.length, 24, "Must have 24 Deep questions");
-  assert.strictEqual(shortQs.length, 36, "Must have 36 Short questions");
-  assert.strictEqual(wyrQs.length, 36, "Must have 36 Would You Rather questions");
+  assert.strictEqual(deepQs.length, 32, "Must have 32 Deep questions");
+  assert.strictEqual(shortQs.length, 32, "Must have 32 Short questions");
+  assert.strictEqual(wyrQs.length, 32, "Must have 32 Would You Rather questions");
   assert.strictEqual(directQs.length, 4, "Must have 4 Direct questions");
+
+  // Verify the 4 direct questions are strictly at the end
+  const last4 = completeQs.slice(-4).map(q => q.id);
+  assert.deepStrictEqual(last4, ["F01", "F02", "F03", "F04"], "Direct questions must be strictly last");
 });
 
 test("Question metadata integrity & distinct texts across all 100 questions", () => {
@@ -117,7 +92,7 @@ test("Question metadata integrity & distinct texts across all 100 questions", ()
     assert.ok(!texts.has(uniqueKey), `Duplicate question text found: "${q.text}"`);
     texts.add(uniqueKey);
 
-    assert.ok(["axis", "function"].includes(q.category), `Invalid category for ${q.id}: ${q.category}`);
+    assert.ok(["axis", "function", "combination"].includes(q.category), `Invalid category for ${q.id}: ${q.category}`);
     assert.ok(["deep", "wouldYouRather", "short", "direct"].includes(q.format), `Invalid format for ${q.id}: ${q.format}`);
     assert.ok(q.target, `Question ${q.id} must define target`);
 
@@ -477,16 +452,16 @@ test("Question Phase Ordering: Deep questions first, then Short, then Would You 
   const completeQs = getQuestionsForMode("complete");
   assert.strictEqual(completeQs.length, 100);
 
-  // First 24 must all be Deep
-  for (let i = 0; i < 24; i++) {
+  // First 32 must all be Deep
+  for (let i = 0; i < 32; i++) {
     assert.strictEqual(completeQs[i].format, "deep", `Question at index ${i} must be deep, got ${completeQs[i].format}`);
   }
-  // Next 36 must all be Short
-  for (let i = 24; i < 60; i++) {
+  // Next 32 must all be Short
+  for (let i = 32; i < 64; i++) {
     assert.strictEqual(completeQs[i].format, "short", `Question at index ${i} must be short, got ${completeQs[i].format}`);
   }
-  // Next 36 must all be Would You Rather
-  for (let i = 60; i < 96; i++) {
+  // Next 32 must all be Would You Rather
+  for (let i = 64; i < 96; i++) {
     assert.strictEqual(completeQs[i].format, "wouldYouRather", `Question at index ${i} must be wouldYouRather, got ${completeQs[i].format}`);
   }
   // Last 4 must all be Direct Final
@@ -494,22 +469,13 @@ test("Question Phase Ordering: Deep questions first, then Short, then Would You 
     assert.strictEqual(completeQs[i].format, "direct", `Question at index ${i} must be direct, got ${completeQs[i].format}`);
   }
 
-  // Verify internal axis and function mixing in each phase
-  const deepAxes = completeQs.slice(0, 24).filter(q => q.category === "axis").length;
-  const deepFuncs = completeQs.slice(0, 24).filter(q => q.category === "function").length;
-  assert.strictEqual(deepAxes, 8, "Deep phase must have 8 axis questions");
-  assert.strictEqual(deepFuncs, 16, "Deep phase must have 16 function questions");
-
   const standardQs = getQuestionsForMode("standard");
   assert.strictEqual(standardQs.length, 60);
-  for (let i = 0; i < 24; i++) {
+  for (let i = 0; i < 32; i++) {
     assert.strictEqual(standardQs[i].format, "deep", `Standard at ${i} must be deep`);
   }
-  for (let i = 24; i < 40; i++) {
+  for (let i = 32; i < 56; i++) {
     assert.strictEqual(standardQs[i].format, "short", `Standard at ${i} must be short`);
-  }
-  for (let i = 40; i < 56; i++) {
-    assert.strictEqual(standardQs[i].format, "wouldYouRather", `Standard at ${i} must be wouldYouRather`);
   }
   for (let i = 56; i < 60; i++) {
     assert.strictEqual(standardQs[i].format, "direct", `Standard at ${i} must be direct`);
@@ -517,79 +483,77 @@ test("Question Phase Ordering: Deep questions first, then Short, then Would You 
 });
 
 // ----------------------------------------------------
-// 12b. Deterministic Target Sorting Order: I, E, N, S, T, F, J, P, Ne, Ni, Se, Si, Te, Ti, Fe, Fi
+// 12b. Deterministic Target Sorting Order & Frontal Questions strictly last
 // ----------------------------------------------------
-test("Target Sorting Order: Questions within each phase sorted by I, E, N, S, T, F, J, P, Ne, Ni, Se, Si, Te, Ti, Fe, Fi", () => {
-  const TARGET_ORDER = [
-    "I", "E",
-    "N", "S",
-    "T", "F",
-    "J", "P",
-    "Ne", "Ni", "Se", "Si", "Te", "Ti", "Fe", "Fi"
-  ];
-  const targetRank = new Map(TARGET_ORDER.map((t, idx) => [t.toUpperCase(), idx]));
-
+test("Frontal questions (F01-F04) are ALWAYS strictly the last 4 questions across all test modes and all order modes", () => {
   ["rapid", "standard", "complete"].forEach(mode => {
-    const qs = getQuestionsForMode(mode);
-    let currentFormat = null;
-    let lastRank = -1;
-
-    qs.forEach((q, idx) => {
-      if (q.format !== currentFormat) {
-        currentFormat = q.format;
-        lastRank = -1;
-      }
-      const rank = targetRank.get((q.target || "").toUpperCase());
-      assert.ok(rank !== undefined, `Target ${q.target} on question ${q.id} must be in TARGET_ORDER`);
-      assert.ok(
-        rank >= lastRank,
-        `Mode ${mode}: Question ${q.id} (target ${q.target}, rank ${rank}) is out of order after rank ${lastRank}`
-      );
-      lastRank = rank;
+    ["format", "random", "function"].forEach(order => {
+      const qs = getQuestionsForMode(mode, order);
+      const last4 = qs.slice(-4).map(q => q.id);
+      assert.deepStrictEqual(last4, ["F01", "F02", "F03", "F04"], `Mode ${mode} + Order ${order} must end with F01, F02, F03, F04`);
+      
+      // Verify no direct questions appear before the last 4
+      const preceding = qs.slice(0, -4);
+      assert.strictEqual(preceding.some(q => q.format === "direct"), false, `No direct questions should appear prior to last 4 in ${mode} + ${order}`);
     });
   });
 });
 
-// ----------------------------------------------------
-// 12c. Order Modes (format / function / random)
-// ----------------------------------------------------
-test("Order Modes: 'function' groups by target across test, 'format' groups by phase, 'random' shuffles", () => {
+test("Target Sorting Order: Questions sorted by TARGET_ORDER", () => {
   const TARGET_ORDER = [
     "I", "E",
     "N", "S",
     "T", "F",
     "J", "P",
-    "Ne", "Ni", "Se", "Si", "Te", "Ti", "Fe", "Fi"
+    "Ne", "Si", "Ni", "Se", "Te", "Fi", "Ti", "Fe",
+    "NT", "NF", "ST", "SF", "IJ", "IP", "EP", "EJ"
   ];
   const targetRank = new Map(TARGET_ORDER.map((t, idx) => [t.toUpperCase(), idx]));
 
-  // Function mode: Target rank is monotonic across the ENTIRE test
+  // Function mode: Non-direct questions are monotonic across test by target
   const funcQs = getQuestionsForMode("complete", "function");
   assert.strictEqual(funcQs.length, 100);
+  const nonDirect = funcQs.slice(0, 96);
   let prevRank = -1;
-  funcQs.forEach(q => {
+  nonDirect.forEach(q => {
     const rank = targetRank.get((q.target || "").toUpperCase());
     assert.ok(rank !== undefined, `Target ${q.target} on question ${q.id} must be in TARGET_ORDER`);
     assert.ok(rank >= prevRank, `Function mode: question ${q.id} (target ${q.target}, rank ${rank}) must be >= ${prevRank}`);
     prevRank = rank;
   });
 
-  // Format mode: Format rank is monotonic across test (Deep -> Short -> WYR -> Direct)
-  const formatQs = getQuestionsForMode("complete", "format");
-  assert.strictEqual(formatQs.length, 100);
-  const formatRank = { deep: 1, short: 2, wouldYouRather: 3, direct: 4 };
-  let prevFormatRank = 1;
-  formatQs.forEach(q => {
-    const r = formatRank[q.format];
-    assert.ok(r >= prevFormatRank, `Format mode: ${q.id} format ${q.format} must be >= ${prevFormatRank}`);
-    prevFormatRank = r;
-  });
-
-  // Random mode: Contains all 100 items
+  // Random mode: Contains all 100 items with F01-F04 at the end
   const randQs = getQuestionsForMode("complete", "random");
   assert.strictEqual(randQs.length, 100);
   const ids = new Set(randQs.map(q => q.id));
   assert.strictEqual(ids.size, 100);
+});
+
+// ----------------------------------------------------
+// 12d. Combination & Cross-Synthesis Scoring Rules
+// ----------------------------------------------------
+test("Combination scoring: NT strong agree adds to N and T, IJ adds to I and J, cross-synthesis boosts Ni and Te", () => {
+  const mockQuestions = [
+    { id: "q_nt", format: "deep", category: "combination", target: "NT", oppositePole: "SF", agreementPole: "NT" },
+    { id: "q_ij", format: "deep", category: "combination", target: "IJ", oppositePole: "EP", agreementPole: "IJ" }
+  ];
+
+  const answers = {
+    q_nt: "STRONGLY_AGREE",
+    q_ij: "STRONGLY_AGREE"
+  };
+
+  const res = calculateScores(mockQuestions, answers);
+
+  // Directly boosts N, T, I, J points
+  assert.ok(res.axisScores.NS.directPointsA > 0, "N should receive direct points");
+  assert.ok(res.axisScores.TF.directPointsA > 0, "T should receive direct points");
+  assert.ok(res.axisScores.EI.directPointsB > 0, "I should receive direct points");
+  assert.ok(res.axisScores.JP.directPointsA > 0, "J should receive direct points");
+
+  // Cross-synthesis NT + IJ -> INTJ -> boosts Ni and Te
+  assert.ok(res.percentages.Ni > 50, "Ni should be boosted above baseline by NT+IJ cross-synthesis");
+  assert.ok(res.percentages.Te > 50, "Te should be boosted above baseline by NT+IJ cross-synthesis");
 });
 
 // ----------------------------------------------------

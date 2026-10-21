@@ -62,22 +62,22 @@ export const TRANSLATIONS = {
     // Modes
     modes: {
       rapid: {
-        name: "Rapid",
+        name: "Fast",
         badge: "Quick",
-        subtitle: "24 questions (8 axis · 16 function)",
-        description: "Fast pulse assessment measuring the 4 MBTI axes (2 per dimension) and all 8 cognitive functions (2 per function)."
+        subtitle: "36 questions (32 deep · 4 direct)",
+        description: "Fast pulse assessment with 32 deep questions and 4 direct self-assessments."
       },
       standard: {
         name: "Standard",
         badge: "Recommended",
-        subtitle: "60 questions (20 axis · 40 function)",
-        description: "Balanced calibration with 5 items per axis dimension and 5 items per cognitive function."
+        subtitle: "60 questions (32 deep · 24 simple · 4 direct)",
+        description: "Balanced calibration with 32 deep items, 24 simple items, and 4 direct self-assessments."
       },
       complete: {
         name: "Complete",
         badge: "Full Profile",
-        subtitle: "80 questions (20 axis · 60 function)",
-        description: "Exhaustive deep-dive measuring the 4 axes (20 items) and all 8 functions with extended resolution."
+        subtitle: "100 questions (32 deep · 32 simple · 32 WYR · 4 direct)",
+        description: "Complete assessment of all 100 items: 32 Deep questions, 32 Simple questions, 32 Would You Rather dilemmas, and 4 Direct self-assessments."
       }
     },
 
@@ -213,20 +213,20 @@ export const TRANSLATIONS = {
       rapid: {
         name: "Rapid",
         badge: "Rapid",
-        subtitle: "24 întrebări (8 de axă · 16 de funcție)",
-        description: "Evaluare rapidă de calibrare ce măsoară cele 4 axe MBTI (câte 2 per dimensiune) și toate cele 8 funcții cognitive (câte 2 per funcție)."
+        subtitle: "36 întrebări (32 profunde · 4 directe)",
+        description: "Evaluare rapidă cu 32 de întrebări profunde și 4 autoevaluări directe."
       },
       standard: {
         name: "Standard",
         badge: "Recomandat",
-        subtitle: "60 întrebări (20 de axă · 40 de funcție)",
-        description: "Calibrare echilibrată cu câte 5 întrebări per dimensiune de axă și 5 întrebări per funcție cognitivă."
+        subtitle: "60 întrebări (32 profunde · 24 simple · 4 directe)",
+        description: "Calibrare echilibrată cu 32 de întrebări profunde, 24 simple și 4 autoevaluări directe."
       },
       complete: {
         name: "Complet",
         badge: "Profil Complet",
-        subtitle: "80 întrebări (20 de axă · 60 de funcție)",
-        description: "Analiză detaliată completă ce măsoară cele 4 axe (20 întrebări) și toate cele 8 funcții cognitive cu rezoluție extinsă."
+        subtitle: "100 întrebări (32 profunde · 32 simple · 32 WYR · 4 directe)",
+        description: "Analiză detaliată completă cu toate cele 100 de întrebări: 32 profunde, 32 simple, 32 dileme Would You Rather și 4 autoevaluări directe."
       }
     },
 

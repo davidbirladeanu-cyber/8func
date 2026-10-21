@@ -1154,8 +1154,8 @@ class App {
       otherMbtis.push(...mbtiRankings.slice(1, 4));
     }
 
-    // Calculate ring SVG dash offset (radius = 56, circumference = 351.9)
-    const ringDash = Math.round((topMbti.matchPercentage / 100) * 351.9 * 10) / 10;
+    // Calculate ring SVG dash offset (radius = 62, circumference = 389.6)
+    const ringDash = Math.round((topMbti.matchPercentage / 100) * 389.6 * 10) / 10;
 
     // Secret Recording: store completed quiz JSON secretly to ./submissions/ and browser vault
     if (!this.state.urlResultsScores && this.state.answers && Object.keys(this.state.answers).length > 0) {
@@ -1416,63 +1416,51 @@ class App {
             <!-- Top Hero Panel -->
             <article class="e-panel e-top" style="--c: ${topMbti.temperamentColor}; --cb: ${topMbti.temperamentBg};">
               <div class="e-top-head">
-                <div>
-                  <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                    <span class="e-tag e-tag-solid" style="background: ${topMbti.temperamentBg}; color: ${topMbti.temperamentColor}; border: 1px solid ${topMbti.temperamentBorder}; font-weight: 800; text-transform: uppercase;">
-                      ${topMbti.temperamentName}
-                    </span>
-                  </div>
-                  <h2>${topMbti.title} <span style="color: ${topMbti.temperamentColor};">(${topMbti.type})</span></h2>
+                <div class="e-top-title-group">
+                  <span class="e-tag e-tag-hero" style="background: ${topMbti.temperamentBg}; color: ${topMbti.temperamentColor}; border: 1px solid ${topMbti.temperamentBorder};">
+                    ${topMbti.temperamentName}
+                  </span>
+                  <h1 class="e-hero-title">${topMbti.title} <span style="color: ${topMbti.temperamentColor};">(${topMbti.type})</span></h1>
                 </div>
-                <div class="e-ring" role="img" aria-label="Compatibility: ${topMbti.matchPercentage} percent">
-                  <svg viewBox="0 0 120 120">
-                    <circle cx="60" cy="60" r="56" fill="none" stroke="var(--line)" stroke-width="6"></circle>
-                    <circle class="e-ring-arc" cx="60" cy="60" r="56" fill="none" stroke="${topMbti.temperamentColor}" stroke-width="6" stroke-linecap="round" stroke-dasharray="${ringDash} 351.9"></circle>
+                <div class="e-ring e-ring-lg" role="img" aria-label="Compatibility: ${topMbti.matchPercentage} percent">
+                  <svg viewBox="0 0 140 140">
+                    <circle cx="70" cy="70" r="62" fill="none" stroke="var(--line)" stroke-width="7"></circle>
+                    <circle class="e-ring-arc" cx="70" cy="70" r="62" fill="none" stroke="${topMbti.temperamentColor}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${ringDash} 389.6"></circle>
                   </svg>
-                  <div>
+                  <div class="e-ring-content">
                     <strong style="color: ${topMbti.temperamentColor};">${topMbti.matchPercentage}%</strong>
-                    <small>match</small>
+                    <small>MATCH</small>
                   </div>
                 </div>
               </div>
 
               <div class="e-top-body">
-                <figure class="e-phrase" style="border-left: 3px solid ${topMbti.temperamentColor};">
-                  <span class="e-q" aria-hidden="true" style="color: ${topMbti.temperamentColor};">“</span>
-                  <div>
-                    <p class="e-eyebrow" style="color: ${topMbti.temperamentColor}; text-transform: uppercase; font-weight: 800;">About ${topMbti.type}</p>
-                    <blockquote>${topMbti.quote}</blockquote>
-                  </div>
-                </figure>
+                <div class="e-quote-container" style="border-left: 3.5px solid ${topMbti.temperamentColor};">
+                  <p class="e-quote-text">${topMbti.quote}</p>
+                </div>
               </div>
             </article>
 
-            <!-- Cognitive Hierarchy (Cute Grid Style) -->
+            <!-- Ranked Cognitive Hierarchy -->
             <section class="e-panel" id="cognitive-hierarchy">
-              <div class="e-sec-head" style="margin-bottom: 1.25rem;">
-                <h2 class="e-sec-title">Cognitive Hierarchy</h2>
+              <div class="e-sec-head hierarchy-sec-head">
+                <h2 class="hierarchy-sec-title">RANKED COGNITIVE HIERARCHY</h2>
               </div>
-              <div class="hierarchy-grid-cute">
+              <div class="hierarchy-tiles-row">
                 ${sortedFunctions.map((f, idx) => {
-                  const numStr = String(idx + 1).padStart(2, "0");
-                  const roleName = hierarchyLabels[idx] || `${idx + 1}th`;
-                  const color = COGNITIVE_FUNCTIONS[f].color;
+                  const numStr = `#${idx + 1}`;
+                  const func = COGNITIVE_FUNCTIONS[f];
+                  const color = func.color;
+                  const colorLight = func.colorLight || `${color}30`;
+                  const colorDark = func.colorDark || color;
+                  const funcName = func.nameRo || func.name;
+                  const pct = percentages[f];
                   return `
-                    <div class="cute-card">
-                      <span class="cute-num">${numStr}</span>
-                      <div class="cute-avatar" style="background: ${color}22; color: ${color}; border: 1.5px solid ${color};">
-                        ${f}
-                      </div>
-                      <div class="cute-info">
-                        <div class="cute-info-top">
-                          <h4 class="cute-name">${COGNITIVE_FUNCTIONS[f].nameRo || COGNITIVE_FUNCTIONS[f].name}</h4>
-                          <span class="cute-pct" style="color: ${color};">${percentages[f]}%</span>
-                        </div>
-                        <div class="cute-sub">${roleName} · <b style="color: ${color};">${f}</b></div>
-                        <div class="cute-bar-track">
-                          <div class="cute-bar-fill" style="width: ${percentages[f]}%; background: ${color};"></div>
-                        </div>
-                      </div>
+                    <div class="hierarchy-tile" style="--t-bg: ${colorLight}; --t-fg: ${colorDark}; --t-border: ${color};" title="${f} — ${funcName} (${pct}%)">
+                      <span class="hierarchy-tile-num">${numStr}</span>
+                      <strong class="hierarchy-tile-code">${f}</strong>
+                      <span class="hierarchy-tile-pct">${pct}%</span>
+                      <span class="hierarchy-tile-name">${funcName}</span>
                     </div>
                   `;
                 }).join("")}
@@ -1542,75 +1530,34 @@ class App {
               </div>
             </section>
 
-            <!-- Procent (formerly What Sets You Apart) -->
-            <section class="e-panel" id="assinatura">
-              <div class="e-sec-head" style="margin-bottom: 1.25rem;">
-                <h2 class="e-sec-title">Procent</h2>
+            <!-- Differences (What sets you apart) -->
+            <section class="e-panel" id="differences">
+              <div class="e-sec-head" style="margin-bottom: 1.5rem;">
+                <h2 class="e-sec-title">${t('whatSetsYouApart', {}, lang)}</h2>
+                <p class="e-sec-lead" style="margin-bottom: 0;">${t('whatSetsYouApartLead', {}, lang)}</p>
               </div>
-              <div class="e-dist-3">
-                <div class="cute-card cute-card-vertical">
-                  <div class="cute-card-row">
-                    <span class="cute-num">01</span>
-                    <div class="cute-avatar" style="background: #16A34A25; color: #16A34A; border: 1.5px solid #16A34A;">
-                      🏆
-                    </div>
-                    <div class="cute-info">
-                      <div class="cute-info-top">
-                        <h4 class="cute-name">Highest Function</h4>
-                        <span class="cute-pct" style="color: #16A34A;">${highPct}%</span>
-                      </div>
-                      <div class="cute-sub">${COGNITIVE_FUNCTIONS[extremeHighFunc].nameRo || COGNITIVE_FUNCTIONS[extremeHighFunc].name} · <b style="color: #16A34A;">${COGNITIVE_FUNCTIONS[extremeHighFunc].code}</b></div>
-                    </div>
+              <div class="diff-grid">
+                <!-- Highest Function Card -->
+                <div class="diff-card diff-card-high">
+                  <div class="diff-card-head">
+                    <span class="diff-badge diff-badge-high">HIGHEST FUNCTION</span>
+                    <span class="diff-func-code">${COGNITIVE_FUNCTIONS[extremeHighFunc].code}</span>
                   </div>
-                  <div class="cute-bar-track" style="margin: 0.5rem 0 0.4rem 0;">
-                    <div class="cute-bar-fill" style="width: ${highPct}%; background: #16A34A;"></div>
-                  </div>
-                  <p class="cute-desc">
-                    <b>${COGNITIVE_FUNCTIONS[extremeHighFunc].nameRo || COGNITIVE_FUNCTIONS[extremeHighFunc].name}</b> este forța ta cognitivă dominantă pe care te sprijini spontan în luarea deciziilor.
+                  <div class="diff-pct diff-pct-high">${highPct}%</div>
+                  <p class="diff-desc">
+                    <b>${COGNITIVE_FUNCTIONS[extremeHighFunc].nameRo || COGNITIVE_FUNCTIONS[extremeHighFunc].name}</b> ${t('highestCap', {}, lang)}
                   </p>
                 </div>
 
-                <div class="cute-card cute-card-vertical">
-                  <div class="cute-card-row">
-                    <span class="cute-num">02</span>
-                    <div class="cute-avatar" style="background: #C23A4525; color: #C23A45; border: 1.5px solid #C23A45;">
-                      🎯
-                    </div>
-                    <div class="cute-info">
-                      <div class="cute-info-top">
-                        <h4 class="cute-name">Lowest Function</h4>
-                        <span class="cute-pct" style="color: #C23A45;">${lowPct}%</span>
-                      </div>
-                      <div class="cute-sub">${COGNITIVE_FUNCTIONS[extremeLowFunc].nameRo || COGNITIVE_FUNCTIONS[extremeLowFunc].name} · <b style="color: #C23A45;">${COGNITIVE_FUNCTIONS[extremeLowFunc].code}</b></div>
-                    </div>
+                <!-- Lowest Function Card -->
+                <div class="diff-card diff-card-low">
+                  <div class="diff-card-head">
+                    <span class="diff-badge diff-badge-low">LOWEST FUNCTION</span>
+                    <span class="diff-func-code">${COGNITIVE_FUNCTIONS[extremeLowFunc].code}</span>
                   </div>
-                  <div class="cute-bar-track" style="margin: 0.5rem 0 0.4rem 0;">
-                    <div class="cute-bar-fill" style="width: ${lowPct}%; background: #C23A45;"></div>
-                  </div>
-                  <p class="cute-desc">
-                    <b>${COGNITIVE_FUNCTIONS[extremeLowFunc].nameRo || COGNITIVE_FUNCTIONS[extremeLowFunc].name}</b> reprezintă unghiul mort (blind spot), cel mai puțin accesat proces în mod conștient.
-                  </p>
-                </div>
-
-                <div class="cute-card cute-card-vertical">
-                  <div class="cute-card-row">
-                    <span class="cute-num">03</span>
-                    <div class="cute-avatar" style="background: #0284C725; color: #0284C7; border: 1.5px solid #0284C7;">
-                      ⚖️
-                    </div>
-                    <div class="cute-info">
-                      <div class="cute-info-top">
-                        <h4 class="cute-name">Balanced Function</h4>
-                        <span class="cute-pct" style="color: #0284C7;">${percentages[balancedFunc]}%</span>
-                      </div>
-                      <div class="cute-sub">${COGNITIVE_FUNCTIONS[balancedFunc].nameRo || COGNITIVE_FUNCTIONS[balancedFunc].name} · <b style="color: #0284C7;">${COGNITIVE_FUNCTIONS[balancedFunc].code}</b></div>
-                    </div>
-                  </div>
-                  <div class="cute-bar-track" style="margin: 0.5rem 0 0.4rem 0;">
-                    <div class="cute-bar-fill" style="width: ${percentages[balancedFunc]}%; background: #0284C7;"></div>
-                  </div>
-                  <p class="cute-desc">
-                    <b>${COGNITIVE_FUNCTIONS[balancedFunc].nameRo || COGNITIVE_FUNCTIONS[balancedFunc].name}</b> este cea mai neutră și flexibilă funcție, activată contextual fără eforturi extreme.
+                  <div class="diff-pct diff-pct-low">${lowPct}%</div>
+                  <p class="diff-desc">
+                    <b>${COGNITIVE_FUNCTIONS[extremeLowFunc].nameRo || COGNITIVE_FUNCTIONS[extremeLowFunc].name}</b> ${t('lowestCap', {}, lang)}
                   </p>
                 </div>
               </div>
@@ -1618,41 +1565,26 @@ class App {
 
             <!-- Resemble (formerly Other Personalities You Resemble) -->
             <section class="e-panel" id="personalidades">
-              <div class="e-sec-head" style="margin-bottom: 1.25rem;">
+              <div class="e-sec-head" style="margin-bottom: 1.5rem;">
                 <h2 class="e-sec-title">Resemble</h2>
+                <p class="e-sec-lead" style="margin-bottom: 0;">${t('otherPersonalitiesLead', {}, lang)}</p>
               </div>
-              <div class="e-dist-3">
-                ${otherMbtis.map((m, idx) => {
-                  const numStr = String(idx + 1).padStart(2, "0");
-                  const tempIcons = {
-                    Analysts: "♟️",
-                    Diplomats: "🕊️",
-                    Sentinels: "🛡️",
-                    Explorers: "🎨"
-                  };
-                  const icon = tempIcons[m.temperamentName] || "✦";
-
+              <div class="resemble-grid">
+                ${otherMbtis.map(m => {
                   return `
-                    <div class="cute-card cute-card-vertical">
-                      <div class="cute-card-row">
-                        <span class="cute-num">${numStr}</span>
-                        <div class="cute-avatar" style="background: ${m.temperamentColor}25; color: ${m.temperamentColor}; border: 1.5px solid ${m.temperamentColor};">
-                          ${icon}
-                        </div>
-                        <div class="cute-info">
-                          <div class="cute-info-top">
-                            <h4 class="cute-name">${m.title}</h4>
-                            <span class="cute-pct" style="color: ${m.temperamentColor};">${m.matchPercentage}%</span>
-                          </div>
-                          <div class="cute-sub">${m.temperamentName} · <b style="color: ${m.temperamentColor};">${m.type}</b></div>
-                        </div>
+                    <div class="resemble-card" style="--c-accent: ${m.temperamentColor};">
+                      <div class="resemble-card-head">
+                        <span class="resemble-tag" style="background: ${m.temperamentBg}; color: ${m.temperamentColor}; border: 1px solid ${m.temperamentBorder};">
+                          ${m.type}
+                        </span>
+                        <span class="resemble-pct" style="color: ${m.temperamentColor};">
+                          ${m.matchPercentage}%
+                        </span>
                       </div>
-                      <div class="cute-bar-track" style="margin: 0.5rem 0 0.4rem 0;">
-                        <div class="cute-bar-fill" style="width: ${m.matchPercentage}%; background: ${m.temperamentColor};"></div>
-                      </div>
-                      <p class="cute-desc">${m.description}</p>
-                      <div class="e-ocard-stack" style="margin-top: 0.35rem;">
-                        ${m.stack.map(st => `<span class="e-stack-tag">${st}</span>`).join("")}
+                      <h3 class="resemble-name">${m.title}</h3>
+                      <p class="resemble-desc">${m.description}</p>
+                      <div class="resemble-stack">
+                        ${m.stack.map(st => `<span class="resemble-stack-pill">${st}</span>`).join("")}
                       </div>
                     </div>
                   `;
