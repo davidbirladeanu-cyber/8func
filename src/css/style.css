@@ -1891,7 +1891,7 @@ a {
 /* Minimalist Square 1:1 Cognitive Hierarchy Tiles (Image 1) */
 .hierarchy-tile-sq {
   background: var(--sq-bg);
-  color: var(--sq-text);
+  color: #ffffff !important;
   border-radius: 14px;
   aspect-ratio: 1 / 1;
   padding: 0.75rem 0.45rem 0.7rem;
@@ -1914,8 +1914,10 @@ a {
   font-family: var(--font-display);
   font-size: 0.74rem;
   font-weight: 700;
-  opacity: 0.82;
+  color: #ffffff !important;
+  opacity: 0.88;
   letter-spacing: 0.04em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
 }
 
 .hierarchy-sq-code {
@@ -1924,13 +1926,17 @@ a {
   font-weight: 900;
   line-height: 1;
   letter-spacing: -0.02em;
+  color: #ffffff !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .hierarchy-sq-score {
   font-size: 0.72rem;
   font-weight: 700;
-  opacity: 0.85;
+  color: #ffffff !important;
+  opacity: 0.9;
   white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
 }
 
 @media (max-width: 480px) {
@@ -1962,16 +1968,17 @@ a {
   }
 }
 
-.diff-card {
+.diff-card, .resemble-card {
   border-radius: 14px;
   padding: 1.85rem 1.75rem;
   display: flex;
   flex-direction: column;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  min-height: 230px;
   box-sizing: border-box;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-.diff-card:hover {
+.diff-card:hover, .resemble-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
@@ -3859,6 +3866,32 @@ a {
 
 .comp-search-bar:focus {
   border-color: var(--accent);
+}
+
+/* Autocomplete Dropdown for Personality Search */
+.figure-search-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.figure-autocomplete-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  border-radius: 16px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55);
+  max-height: 310px;
+  overflow-y: auto;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+.autocomplete-item:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
 }
 
 .comp-card-v2 {
