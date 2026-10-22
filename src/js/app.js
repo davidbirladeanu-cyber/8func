@@ -2385,11 +2385,11 @@ class App {
             if (v === "BUSINESS") {
               return prof === "entrepreneur" || role.includes("business") || role.includes("afaceri");
             }
-            if (v === "HISTORICAL") {
-              return prof === "politician" || role.includes("historical") || role.includes("istoric");
-            }
             if (v === "RELIGION") {
               return prof === "religious" || role.includes("religio") || role.includes("religie");
+            }
+            if (v === "MYTHOLOGY") {
+              return prof === "mythology" || role.includes("mytholog") || role.includes("mitolog");
             }
             return false;
           }
@@ -2578,7 +2578,7 @@ class App {
                   <div class="figures-qf-chips">
                     ${[
                       "ARTIST", "POLITICS", "PHILOSOPHY", "SCIENCE", 
-                      "SPORTS", "BUSINESS", "HISTORICAL", "RELIGION"
+                      "SPORTS", "BUSINESS", "RELIGION", "MYTHOLOGY"
                     ].map(cat => {
                       const isChipActive = this.figuresSelectedFilters && this.figuresSelectedFilters.has(`category:${cat}`);
                       return `

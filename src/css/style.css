@@ -4159,23 +4159,24 @@ a {
 }
 
 .comp-card-v2 {
-  background: var(--card-bg);
-  border: 1.5px solid var(--line);
-  border-radius: 20px;
-  padding: 2rem 2.25rem;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 1rem 0;
   margin-top: 1.25rem;
   box-sizing: border-box;
-  box-shadow: var(--shadow-sm);
+  box-shadow: none;
 }
 
 [data-theme="dark"] .comp-card-v2 {
-  background: #181818;
-  border-color: rgba(255, 255, 255, 0.08);
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 @media (max-width: 768px) {
   .comp-card-v2 {
-    padding: 1.5rem 1.25rem;
+    padding: 1rem 0;
   }
 }
 

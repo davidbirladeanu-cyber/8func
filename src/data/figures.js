@@ -8,7 +8,7 @@ export const NOTABLE_FIGURES = [
     "id": "hasan_piker_hasanabi",
     "name": "Hasan Piker (Hasanabi)",
     "profession": "politician",
-    "role": "Historical · ENFP",
+    "role": "Politics · ENFP",
     "mbti": "ENFP",
     "avatar": "👑",
     "axes": {
@@ -68,7 +68,7 @@ export const NOTABLE_FIGURES = [
     "id": "malcolm_x",
     "name": "Malcolm X",
     "profession": "politician",
-    "role": "Historical · ENTJ",
+    "role": "Politics · ENTJ",
     "mbti": "ENTJ",
     "avatar": "👑",
     "axes": {
@@ -98,7 +98,7 @@ export const NOTABLE_FIGURES = [
     "id": "greta_thunberg",
     "name": "Greta Thunberg",
     "profession": "politician",
-    "role": "Historical · INTJ",
+    "role": "Politics · INTJ",
     "mbti": "INTJ",
     "avatar": "👑",
     "axes": {
@@ -637,8 +637,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "miguel_de_cervantes",
     "name": "Miguel de Cervantes",
-    "profession": "politician",
-    "role": "Historical · ENTP",
+    "profession": "artist",
+    "role": "Artist · ENTP",
     "mbti": "ENTP",
     "avatar": "👑",
     "axes": {
@@ -727,8 +727,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "dante_alighieri",
     "name": "Dante Alighieri",
-    "profession": "politician",
-    "role": "Historical · INFJ",
+    "profession": "artist",
+    "role": "Artist · INFJ",
     "mbti": "INFJ",
     "avatar": "👑",
     "axes": {
@@ -997,8 +997,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "francisco_de_goya",
     "name": "Francisco de Goya",
-    "profession": "politician",
-    "role": "Historical · INFP",
+    "profession": "artist",
+    "role": "Artist · INFP",
     "mbti": "INFP",
     "avatar": "👑",
     "axes": {
@@ -1807,8 +1807,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "george_lucas",
     "name": "George Lucas",
-    "profession": "entrepreneur",
-    "role": "Business · INFP",
+    "profession": "artist",
+    "role": "Artist · INFP",
     "mbti": "INFP",
     "avatar": "💼",
     "axes": {
@@ -2197,8 +2197,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "javier_milei",
     "name": "Javier Milei",
-    "profession": "scientist",
-    "role": "Science · ENTJ",
+    "profession": "politician",
+    "role": "Politics · ENTJ",
     "mbti": "ENTJ",
     "avatar": "⚛️",
     "axes": {
@@ -2618,7 +2618,7 @@ export const NOTABLE_FIGURES = [
     "id": "vlad_iii_the_impaler_of_wallachia",
     "name": "Vlad III \"the Impaler\" of Wallachia",
     "profession": "politician",
-    "role": "Historical · ENTJ",
+    "role": "Politics · ENTJ",
     "mbti": "ENTJ",
     "avatar": "👑",
     "axes": {
@@ -2678,7 +2678,7 @@ export const NOTABLE_FIGURES = [
     "id": "cleopatra",
     "name": "Cleopatra",
     "profession": "politician",
-    "role": "Historical · ENTJ",
+    "role": "Politics · ENTJ",
     "mbti": "ENTJ",
     "avatar": "👑",
     "axes": {
@@ -2708,7 +2708,7 @@ export const NOTABLE_FIGURES = [
     "id": "trajan",
     "name": "Trajan",
     "profession": "politician",
-    "role": "Historical · INTJ",
+    "role": "Politics · INTJ",
     "mbti": "INTJ",
     "avatar": "👑",
     "axes": {
@@ -2768,7 +2768,7 @@ export const NOTABLE_FIGURES = [
     "id": "queen_victoria",
     "name": "Queen Victoria",
     "profession": "politician",
-    "role": "Historical · ISTJ",
+    "role": "Politics · ISTJ",
     "mbti": "ISTJ",
     "avatar": "👑",
     "axes": {
@@ -2797,8 +2797,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "dionysus",
     "name": "Dionysus",
-    "profession": "religious",
-    "role": "Religion · ESFP",
+    "profession": "mythology",
+    "role": "Mythology · ESFP",
     "mbti": "ESFP",
     "avatar": "🕊️",
     "axes": {
@@ -2827,8 +2827,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "hera",
     "name": "Hera",
-    "profession": "religious",
-    "role": "Religion · ESTJ",
+    "profession": "mythology",
+    "role": "Mythology · ESTJ",
     "mbti": "ESTJ",
     "avatar": "🕊️",
     "axes": {
@@ -2857,8 +2857,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "ares",
     "name": "Ares",
-    "profession": "religious",
-    "role": "Religion · ESTP",
+    "profession": "mythology",
+    "role": "Mythology · ESTP",
     "mbti": "ESTP",
     "avatar": "🕊️",
     "axes": {
@@ -2887,8 +2887,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "prometheus",
     "name": "Prometheus",
-    "profession": "religious",
-    "role": "Religion · ENTP",
+    "profession": "mythology",
+    "role": "Mythology · ENTP",
     "mbti": "ENTP",
     "avatar": "🕊️",
     "axes": {
@@ -2917,8 +2917,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "penelope",
     "name": "Penelope",
-    "profession": "religious",
-    "role": "Religion · INFJ",
+    "profession": "mythology",
+    "role": "Mythology · INFJ",
     "mbti": "INFJ",
     "avatar": "🕊️",
     "axes": {
@@ -2947,8 +2947,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "odysseus",
     "name": "Odysseus",
-    "profession": "religious",
-    "role": "Religion · ENTP",
+    "profession": "mythology",
+    "role": "Mythology · ENTP",
     "mbti": "ENTP",
     "avatar": "🕊️",
     "axes": {
@@ -2977,8 +2977,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "hermes",
     "name": "Hermes",
-    "profession": "religious",
-    "role": "Religion · ENTP",
+    "profession": "mythology",
+    "role": "Mythology · ENTP",
     "mbti": "ENTP",
     "avatar": "🕊️",
     "axes": {
@@ -3007,8 +3007,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "athena",
     "name": "Athena",
-    "profession": "religious",
-    "role": "Religion · INTJ",
+    "profession": "mythology",
+    "role": "Mythology · INTJ",
     "mbti": "INTJ",
     "avatar": "🕊️",
     "axes": {
@@ -3037,8 +3037,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "zeus",
     "name": "Zeus",
-    "profession": "religious",
-    "role": "Religion · ESTP",
+    "profession": "mythology",
+    "role": "Mythology · ESTP",
     "mbti": "ESTP",
     "avatar": "🕊️",
     "axes": {
@@ -3067,8 +3067,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "martin_luther",
     "name": "Martin Luther",
-    "profession": "politician",
-    "role": "Historical · INTJ",
+    "profession": "religious",
+    "role": "Religion · INTJ",
     "mbti": "INTJ",
     "avatar": "👑",
     "axes": {
@@ -3097,8 +3097,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "confucius",
     "name": "Confucius",
-    "profession": "politician",
-    "role": "Historical · ISFJ",
+    "profession": "religious",
+    "role": "Religion · ISFJ",
     "mbti": "ISFJ",
     "avatar": "👑",
     "axes": {
@@ -3217,8 +3217,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "jesus",
     "name": "Jesus",
-    "profession": "politician",
-    "role": "Historical · INFJ",
+    "profession": "religious",
+    "role": "Religion · INFJ",
     "mbti": "INFJ",
     "avatar": "👑",
     "axes": {
@@ -3277,8 +3277,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "tlazolteotl",
     "name": "Tlazolteotl",
-    "profession": "religious",
-    "role": "Religion · ENTP",
+    "profession": "mythology",
+    "role": "Mythology · ENTP",
     "mbti": "ENTP",
     "avatar": "🕊️",
     "axes": {
@@ -3307,8 +3307,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "tezcatlipoca",
     "name": "Tezcatlipoca",
-    "profession": "religious",
-    "role": "Religion · ENTP",
+    "profession": "mythology",
+    "role": "Mythology · ENTP",
     "mbti": "ENTP",
     "avatar": "🕊️",
     "axes": {
@@ -3337,8 +3337,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "yacatecuhtli",
     "name": "Yacatecuhtli",
-    "profession": "religious",
-    "role": "Religion · ENTP",
+    "profession": "mythology",
+    "role": "Mythology · ENTP",
     "mbti": "ENTP",
     "avatar": "🕊️",
     "axes": {
@@ -3367,8 +3367,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "quetzalcoatl",
     "name": "Quetzalcoatl",
-    "profession": "religious",
-    "role": "Religion · INFJ",
+    "profession": "mythology",
+    "role": "Mythology · INFJ",
     "mbti": "INFJ",
     "avatar": "🕊️",
     "axes": {
@@ -3397,8 +3397,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "set_seth",
     "name": "Set/Seth",
-    "profession": "religious",
-    "role": "Religion · ENTP",
+    "profession": "mythology",
+    "role": "Mythology · ENTP",
     "mbti": "ENTP",
     "avatar": "🕊️",
     "axes": {
@@ -3427,8 +3427,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "anubit_anubis",
     "name": "Anubit (Anubis)",
-    "profession": "religious",
-    "role": "Religion · ISTJ",
+    "profession": "mythology",
+    "role": "Mythology · ISTJ",
     "mbti": "ISTJ",
     "avatar": "🕊️",
     "axes": {
@@ -3457,8 +3457,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "thoth_logos",
     "name": "Thoth (Logos)",
-    "profession": "religious",
-    "role": "Religion · INTP",
+    "profession": "mythology",
+    "role": "Mythology · INTP",
     "mbti": "INTP",
     "avatar": "🕊️",
     "axes": {
@@ -3487,8 +3487,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "horus_title",
     "name": "Horus (Title)",
-    "profession": "religious",
-    "role": "Religion · ENFJ",
+    "profession": "mythology",
+    "role": "Mythology · ENFJ",
     "mbti": "ENFJ",
     "avatar": "🕊️",
     "axes": {
@@ -3517,8 +3517,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "ra",
     "name": "Ra",
-    "profession": "religious",
-    "role": "Religion · ENTJ",
+    "profession": "mythology",
+    "role": "Mythology · ENTJ",
     "mbti": "ENTJ",
     "avatar": "🕊️",
     "axes": {
@@ -3547,8 +3547,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "isis_asset",
     "name": "Isis (Asset)",
-    "profession": "religious",
-    "role": "Religion · INFJ",
+    "profession": "mythology",
+    "role": "Mythology · INFJ",
     "mbti": "INFJ",
     "avatar": "🕊️",
     "axes": {
@@ -3608,7 +3608,7 @@ export const NOTABLE_FIGURES = [
     "id": "paul_kagame",
     "name": "Paul Kagame",
     "profession": "politician",
-    "role": "Historical · ENTJ",
+    "role": "Politics · ENTJ",
     "mbti": "ENTJ",
     "avatar": "👑",
     "axes": {
@@ -3638,7 +3638,7 @@ export const NOTABLE_FIGURES = [
     "id": "robert_mugabe",
     "name": "Robert Mugabe",
     "profession": "politician",
-    "role": "Historical · INTJ",
+    "role": "Politics · INTJ",
     "mbti": "INTJ",
     "avatar": "👑",
     "axes": {
@@ -3668,7 +3668,7 @@ export const NOTABLE_FIGURES = [
     "id": "dilma_rousseff",
     "name": "Dilma Rousseff",
     "profession": "politician",
-    "role": "Historical · INTJ",
+    "role": "Politics · INTJ",
     "mbti": "INTJ",
     "avatar": "👑",
     "axes": {
@@ -3698,7 +3698,7 @@ export const NOTABLE_FIGURES = [
     "id": "nicolas_maduro",
     "name": "Nicolás Maduro",
     "profession": "politician",
-    "role": "Historical · ESFP",
+    "role": "Politics · ESFP",
     "mbti": "ESFP",
     "avatar": "👑",
     "axes": {
@@ -3728,7 +3728,7 @@ export const NOTABLE_FIGURES = [
     "id": "jair_bolsonaro",
     "name": "Jair Bolsonaro",
     "profession": "politician",
-    "role": "Historical · ESTP",
+    "role": "Politics · ESTP",
     "mbti": "ESTP",
     "avatar": "👑",
     "axes": {
@@ -3758,7 +3758,7 @@ export const NOTABLE_FIGURES = [
     "id": "franklin_d_roosevelt",
     "name": "Franklin D. Roosevelt",
     "profession": "politician",
-    "role": "Historical · ENTJ",
+    "role": "Politics · ENTJ",
     "mbti": "ENTJ",
     "avatar": "👑",
     "axes": {
@@ -3788,7 +3788,7 @@ export const NOTABLE_FIGURES = [
     "id": "j_d_vance",
     "name": "J. D. Vance",
     "profession": "politician",
-    "role": "Historical · ESTJ",
+    "role": "Politics · ESTJ",
     "mbti": "ESTJ",
     "avatar": "👑",
     "axes": {
@@ -3848,7 +3848,7 @@ export const NOTABLE_FIGURES = [
     "id": "kim_jong_il",
     "name": "Kim Jong-il (김정일)",
     "profession": "politician",
-    "role": "Historical · ISTJ",
+    "role": "Politics · ISTJ",
     "mbti": "ISTJ",
     "avatar": "👑",
     "axes": {
@@ -3878,7 +3878,7 @@ export const NOTABLE_FIGURES = [
     "id": "deng_xiaoping",
     "name": "Deng Xiaoping (邓小平)",
     "profession": "politician",
-    "role": "Historical · INTP",
+    "role": "Politics · INTP",
     "mbti": "INTP",
     "avatar": "👑",
     "axes": {
@@ -3908,7 +3908,7 @@ export const NOTABLE_FIGURES = [
     "id": "narendra_modi",
     "name": "Narendra Modi (नरेंद्र मोदी)",
     "profession": "politician",
-    "role": "Historical · INTJ",
+    "role": "Politics · INTJ",
     "mbti": "INTJ",
     "avatar": "👑",
     "axes": {
@@ -3938,7 +3938,7 @@ export const NOTABLE_FIGURES = [
     "id": "rishi_sunak",
     "name": "Rishi Sunak",
     "profession": "politician",
-    "role": "Historical · ENTJ",
+    "role": "Politics · ENTJ",
     "mbti": "ENTJ",
     "avatar": "👑",
     "axes": {
@@ -3968,7 +3968,7 @@ export const NOTABLE_FIGURES = [
     "id": "adolf_hitler",
     "name": "Adolf Hitler",
     "profession": "politician",
-    "role": "Historical · INFJ",
+    "role": "Politics · INFJ",
     "mbti": "INFJ",
     "avatar": "👑",
     "axes": {
@@ -3998,7 +3998,7 @@ export const NOTABLE_FIGURES = [
     "id": "leon_trotsky",
     "name": "Leon Trotsky",
     "profession": "politician",
-    "role": "Historical · INFJ",
+    "role": "Politics · INFJ",
     "mbti": "INFJ",
     "avatar": "👑",
     "axes": {
@@ -4028,7 +4028,7 @@ export const NOTABLE_FIGURES = [
     "id": "benito_mussolini",
     "name": "Benito Mussolini",
     "profession": "politician",
-    "role": "Historical · ESTP",
+    "role": "Politics · ESTP",
     "mbti": "ESTP",
     "avatar": "👑",
     "axes": {
@@ -4058,7 +4058,7 @@ export const NOTABLE_FIGURES = [
     "id": "volodymyr_zelensky",
     "name": "Volodymyr Zelensky",
     "profession": "politician",
-    "role": "Historical · ENFP",
+    "role": "Politics · ENFP",
     "mbti": "ENFP",
     "avatar": "👑",
     "axes": {
@@ -4088,7 +4088,7 @@ export const NOTABLE_FIGURES = [
     "id": "giorgia_meloni",
     "name": "Giorgia Meloni",
     "profession": "politician",
-    "role": "Historical · ESTJ",
+    "role": "Politics · ESTJ",
     "mbti": "ESTJ",
     "avatar": "👑",
     "axes": {
@@ -4118,7 +4118,7 @@ export const NOTABLE_FIGURES = [
     "id": "viktor_orban",
     "name": "Viktor Orbán",
     "profession": "politician",
-    "role": "Historical · ENTJ",
+    "role": "Politics · ENTJ",
     "mbti": "ENTJ",
     "avatar": "👑",
     "axes": {
@@ -4148,7 +4148,7 @@ export const NOTABLE_FIGURES = [
     "id": "melania_trump",
     "name": "Melania Trump",
     "profession": "politician",
-    "role": "Historical · ISTP",
+    "role": "Politics · ISTP",
     "mbti": "ISTP",
     "avatar": "👑",
     "axes": {
@@ -4178,7 +4178,7 @@ export const NOTABLE_FIGURES = [
     "id": "thomas_jefferson",
     "name": "Thomas Jefferson",
     "profession": "politician",
-    "role": "Historical · INFJ",
+    "role": "Politics · INFJ",
     "mbti": "INFJ",
     "avatar": "👑",
     "axes": {
@@ -4208,7 +4208,7 @@ export const NOTABLE_FIGURES = [
     "id": "ali_khamenei",
     "name": "Ali Khamenei",
     "profession": "politician",
-    "role": "Historical · ESTJ",
+    "role": "Politics · ESTJ",
     "mbti": "ESTJ",
     "avatar": "👑",
     "axes": {
@@ -4238,7 +4238,7 @@ export const NOTABLE_FIGURES = [
     "id": "emmanuel_macron",
     "name": "Emmanuel Macron",
     "profession": "politician",
-    "role": "Historical · ENTJ",
+    "role": "Politics · ENTJ",
     "mbti": "ENTJ",
     "avatar": "👑",
     "axes": {
@@ -4268,7 +4268,7 @@ export const NOTABLE_FIGURES = [
     "id": "bernie_sanders",
     "name": "Bernie Sanders",
     "profession": "politician",
-    "role": "Historical · INTJ",
+    "role": "Politics · INTJ",
     "mbti": "INTJ",
     "avatar": "👑",
     "axes": {
@@ -4387,8 +4387,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "ishowspeed",
     "name": "IShowSpeed",
-    "profession": "sportiv",
-    "role": "Sports · ESFP",
+    "profession": "artist",
+    "role": "Artist · ESFP",
     "mbti": "ESFP",
     "avatar": "⚽",
     "axes": {
@@ -4478,7 +4478,7 @@ export const NOTABLE_FIGURES = [
     "id": "barack_obama",
     "name": "Barack Obama",
     "profession": "politician",
-    "role": "Historical · ENTJ",
+    "role": "Politics · ENTJ",
     "mbti": "ENTJ",
     "avatar": "👑",
     "axes": {
@@ -7177,8 +7177,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "andrew_tate",
     "name": "Andrew Tate",
-    "profession": "artist",
-    "role": "Artist · ESTP",
+    "profession": "politician",
+    "role": "Politics · ESTP",
     "mbti": "ESTP",
     "avatar": "🎨",
     "axes": {
@@ -7478,7 +7478,7 @@ export const NOTABLE_FIGURES = [
     "id": "erwin_rommel",
     "name": "Erwin Rommel",
     "profession": "politician",
-    "role": "Historical · ISTP",
+    "role": "Politics · ISTP",
     "mbti": "ISTP",
     "avatar": "👑",
     "axes": {
@@ -7508,7 +7508,7 @@ export const NOTABLE_FIGURES = [
     "id": "margaret_thatcher",
     "name": "Margaret Thatcher",
     "profession": "politician",
-    "role": "Historical · ENTJ",
+    "role": "Politics · ENTJ",
     "mbti": "ENTJ",
     "avatar": "👑",
     "axes": {
@@ -7538,7 +7538,7 @@ export const NOTABLE_FIGURES = [
     "id": "mohandas_mahatma_gandhi",
     "name": "Mohandas Mahatma Gandhi",
     "profession": "politician",
-    "role": "Historical · INFJ",
+    "role": "Politics · INFJ",
     "mbti": "INFJ",
     "avatar": "👑",
     "axes": {
@@ -7568,7 +7568,7 @@ export const NOTABLE_FIGURES = [
     "id": "winston_churchill",
     "name": "Winston Churchill",
     "profession": "politician",
-    "role": "Historical · ESTP",
+    "role": "Politics · ESTP",
     "mbti": "ESTP",
     "avatar": "👑",
     "axes": {
@@ -7598,7 +7598,7 @@ export const NOTABLE_FIGURES = [
     "id": "heinrich_himmler",
     "name": "Heinrich Himmler",
     "profession": "politician",
-    "role": "Historical · ISTJ",
+    "role": "Politics · ISTJ",
     "mbti": "ISTJ",
     "avatar": "👑",
     "axes": {
@@ -7658,7 +7658,7 @@ export const NOTABLE_FIGURES = [
     "id": "vladimir_lenin",
     "name": "Vladimir Lenin",
     "profession": "politician",
-    "role": "Historical · INTJ",
+    "role": "Politics · INTJ",
     "mbti": "INTJ",
     "avatar": "👑",
     "axes": {
@@ -7688,7 +7688,7 @@ export const NOTABLE_FIGURES = [
     "id": "saddam_hussein",
     "name": "Saddam Hussein",
     "profession": "politician",
-    "role": "Historical · ESTJ",
+    "role": "Politics · ESTJ",
     "mbti": "ESTJ",
     "avatar": "👑",
     "axes": {
@@ -7718,7 +7718,7 @@ export const NOTABLE_FIGURES = [
     "id": "genghis_khan",
     "name": "Genghis Khan",
     "profession": "politician",
-    "role": "Historical · ENTJ",
+    "role": "Politics · ENTJ",
     "mbti": "ENTJ",
     "avatar": "👑",
     "axes": {
@@ -7748,7 +7748,7 @@ export const NOTABLE_FIGURES = [
     "id": "charles_de_gaulle",
     "name": "Charles de Gaulle",
     "profession": "politician",
-    "role": "Historical · INTJ",
+    "role": "Politics · INTJ",
     "mbti": "INTJ",
     "avatar": "👑",
     "axes": {
@@ -7778,7 +7778,7 @@ export const NOTABLE_FIGURES = [
     "id": "julius_caesar",
     "name": "Julius Caesar",
     "profession": "politician",
-    "role": "Historical · ENTJ",
+    "role": "Politics · ENTJ",
     "mbti": "ENTJ",
     "avatar": "👑",
     "axes": {
@@ -7808,7 +7808,7 @@ export const NOTABLE_FIGURES = [
     "id": "nero",
     "name": "Nero",
     "profession": "politician",
-    "role": "Historical · ESFP",
+    "role": "Politics · ESFP",
     "mbti": "ESFP",
     "avatar": "👑",
     "axes": {
@@ -7838,7 +7838,7 @@ export const NOTABLE_FIGURES = [
     "id": "cicero",
     "name": "Cicero",
     "profession": "politician",
-    "role": "Historical · ENTJ",
+    "role": "Politics · ENTJ",
     "mbti": "ENTJ",
     "avatar": "👑",
     "axes": {
@@ -7868,7 +7868,7 @@ export const NOTABLE_FIGURES = [
     "id": "mehmed_the_conqueror",
     "name": "Mehmed the Conqueror",
     "profession": "politician",
-    "role": "Historical · INTJ",
+    "role": "Politics · INTJ",
     "mbti": "INTJ",
     "avatar": "👑",
     "axes": {
@@ -7898,7 +7898,7 @@ export const NOTABLE_FIGURES = [
     "id": "nelson_mandela",
     "name": "Nelson Mandela",
     "profession": "politician",
-    "role": "Historical · INFJ",
+    "role": "Politics · INFJ",
     "mbti": "INFJ",
     "avatar": "👑",
     "axes": {
@@ -7928,7 +7928,7 @@ export const NOTABLE_FIGURES = [
     "id": "alexander_hamilton",
     "name": "Alexander Hamilton",
     "profession": "politician",
-    "role": "Historical · ENTJ",
+    "role": "Politics · ENTJ",
     "mbti": "ENTJ",
     "avatar": "👑",
     "axes": {
@@ -7958,7 +7958,7 @@ export const NOTABLE_FIGURES = [
     "id": "ernesto_che_guevara",
     "name": "Ernesto Che Guevara",
     "profession": "politician",
-    "role": "Historical · ENFP",
+    "role": "Politics · ENFP",
     "mbti": "ENFP",
     "avatar": "👑",
     "axes": {
@@ -8018,7 +8018,7 @@ export const NOTABLE_FIGURES = [
     "id": "augustus_octavian",
     "name": "Augustus Octavian",
     "profession": "politician",
-    "role": "Historical · INTJ",
+    "role": "Politics · INTJ",
     "mbti": "INTJ",
     "avatar": "👑",
     "axes": {
@@ -8048,7 +8048,7 @@ export const NOTABLE_FIGURES = [
     "id": "martin_luther_king_jr",
     "name": "Martin Luther King Jr.",
     "profession": "politician",
-    "role": "Historical · ENFJ",
+    "role": "Politics · ENFJ",
     "mbti": "ENFJ",
     "avatar": "👑",
     "axes": {
@@ -8078,7 +8078,7 @@ export const NOTABLE_FIGURES = [
     "id": "alexander_the_great",
     "name": "Alexander the Great",
     "profession": "politician",
-    "role": "Historical · ESTP",
+    "role": "Politics · ESTP",
     "mbti": "ESTP",
     "avatar": "👑",
     "axes": {
@@ -8108,7 +8108,7 @@ export const NOTABLE_FIGURES = [
     "id": "napol_on_bonaparte",
     "name": "Napoléon Bonaparte",
     "profession": "politician",
-    "role": "Historical · ENTJ",
+    "role": "Politics · ENTJ",
     "mbti": "ENTJ",
     "avatar": "👑",
     "axes": {
@@ -8138,7 +8138,7 @@ export const NOTABLE_FIGURES = [
     "id": "joseph_stalin",
     "name": "Joseph Stalin",
     "profession": "politician",
-    "role": "Historical · ENTJ",
+    "role": "Politics · ENTJ",
     "mbti": "ENTJ",
     "avatar": "👑",
     "axes": {
@@ -8167,8 +8167,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "solomon",
     "name": "Solomon",
-    "profession": "politician",
-    "role": "Historical · INTJ",
+    "profession": "religious",
+    "role": "Religion · INTJ",
     "mbti": "INTJ",
     "avatar": "👑",
     "axes": {
@@ -8197,8 +8197,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "david",
     "name": "David",
-    "profession": "politician",
-    "role": "Historical · ENFJ",
+    "profession": "religious",
+    "role": "Religion · ENFJ",
     "mbti": "ENFJ",
     "avatar": "👑",
     "axes": {
@@ -8287,8 +8287,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "cain",
     "name": "Cain",
-    "profession": "sportiv",
-    "role": "Sports · ESTP",
+    "profession": "religious",
+    "role": "Religion · ESTP",
     "mbti": "ESTP",
     "avatar": "⚽",
     "axes": {
@@ -8377,8 +8377,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "odin",
     "name": "Odin",
-    "profession": "politician",
-    "role": "Historical · INTJ",
+    "profession": "mythology",
+    "role": "Mythology · INTJ",
     "mbti": "INTJ",
     "avatar": "👑",
     "axes": {
@@ -8407,8 +8407,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "thor",
     "name": "Thor",
-    "profession": "sportiv",
-    "role": "Sports · ESTP",
+    "profession": "mythology",
+    "role": "Mythology · ESTP",
     "mbti": "ESTP",
     "avatar": "⚽",
     "axes": {
@@ -8467,8 +8467,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "medusa",
     "name": "Medusa",
-    "profession": "religious",
-    "role": "Religion · INFJ",
+    "profession": "mythology",
+    "role": "Mythology · INFJ",
     "mbti": "INFJ",
     "avatar": "🕊️",
     "axes": {
@@ -8497,8 +8497,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "medea",
     "name": "Medea",
-    "profession": "politician",
-    "role": "Historical · ENFJ",
+    "profession": "mythology",
+    "role": "Mythology · ENFJ",
     "mbti": "ENFJ",
     "avatar": "👑",
     "axes": {
@@ -8527,8 +8527,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "cerberus",
     "name": "Cerberus",
-    "profession": "politician",
-    "role": "Historical · ESTJ",
+    "profession": "mythology",
+    "role": "Mythology · ESTJ",
     "mbti": "ESTJ",
     "avatar": "👑",
     "axes": {
@@ -8587,8 +8587,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "poseidon",
     "name": "Poseidon",
-    "profession": "politician",
-    "role": "Historical · ESTJ",
+    "profession": "mythology",
+    "role": "Mythology · ESTJ",
     "mbti": "ESTJ",
     "avatar": "👑",
     "axes": {
@@ -8677,8 +8677,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "artemis",
     "name": "Artemis",
-    "profession": "sportiv",
-    "role": "Sports · ISTP",
+    "profession": "mythology",
+    "role": "Mythology · ISTP",
     "mbti": "ISTP",
     "avatar": "⚽",
     "axes": {
@@ -8827,8 +8827,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "achilles",
     "name": "Achilles",
-    "profession": "sportiv",
-    "role": "Sports · ISFP",
+    "profession": "mythology",
+    "role": "Mythology · ISFP",
     "mbti": "ISFP",
     "avatar": "⚽",
     "axes": {
@@ -8917,8 +8917,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "hades",
     "name": "Hades",
-    "profession": "politician",
-    "role": "Historical · INTJ",
+    "profession": "mythology",
+    "role": "Mythology · INTJ",
     "mbti": "INTJ",
     "avatar": "👑",
     "axes": {
@@ -8948,7 +8948,7 @@ export const NOTABLE_FIGURES = [
     "id": "pedro_s_nchez",
     "name": "Pedro Sánchez",
     "profession": "politician",
-    "role": "Historical · ESFJ",
+    "role": "Politics · ESFJ",
     "mbti": "ESFJ",
     "avatar": "👑",
     "axes": {
@@ -8978,7 +8978,7 @@ export const NOTABLE_FIGURES = [
     "id": "richard_nixon",
     "name": "Richard Nixon",
     "profession": "politician",
-    "role": "Historical · ISTJ",
+    "role": "Politics · ISTJ",
     "mbti": "ISTJ",
     "avatar": "👑",
     "axes": {
@@ -9008,7 +9008,7 @@ export const NOTABLE_FIGURES = [
     "id": "ronald_reagan",
     "name": "Ronald Reagan",
     "profession": "politician",
-    "role": "Historical · ESFP",
+    "role": "Politics · ESFP",
     "mbti": "ESFP",
     "avatar": "👑",
     "axes": {
@@ -9038,7 +9038,7 @@ export const NOTABLE_FIGURES = [
     "id": "theodore_roosevelt",
     "name": "Theodore Roosevelt",
     "profession": "politician",
-    "role": "Historical · ESTP",
+    "role": "Politics · ESTP",
     "mbti": "ESTP",
     "avatar": "👑",
     "axes": {
@@ -9068,7 +9068,7 @@ export const NOTABLE_FIGURES = [
     "id": "benjamin_netanyahu",
     "name": "Benjamin Netanyahu",
     "profession": "politician",
-    "role": "Historical · ENTJ",
+    "role": "Politics · ENTJ",
     "mbti": "ENTJ",
     "avatar": "👑",
     "axes": {
@@ -9098,7 +9098,7 @@ export const NOTABLE_FIGURES = [
     "id": "bill_clinton",
     "name": "Bill Clinton",
     "profession": "politician",
-    "role": "Historical · ESFP",
+    "role": "Politics · ESFP",
     "mbti": "ESFP",
     "avatar": "👑",
     "axes": {
@@ -9128,7 +9128,7 @@ export const NOTABLE_FIGURES = [
     "id": "george_w_bush",
     "name": "George W. Bush",
     "profession": "politician",
-    "role": "Historical · ESTP",
+    "role": "Politics · ESTP",
     "mbti": "ESTP",
     "avatar": "👑",
     "axes": {
@@ -9158,7 +9158,7 @@ export const NOTABLE_FIGURES = [
     "id": "hillary_clinton",
     "name": "Hillary Clinton",
     "profession": "politician",
-    "role": "Historical · ESTJ",
+    "role": "Politics · ESTJ",
     "mbti": "ESTJ",
     "avatar": "👑",
     "axes": {
@@ -9188,7 +9188,7 @@ export const NOTABLE_FIGURES = [
     "id": "john_f_kennedy",
     "name": "John F. Kennedy",
     "profession": "politician",
-    "role": "Historical · ESFP",
+    "role": "Politics · ESFP",
     "mbti": "ESFP",
     "avatar": "👑",
     "axes": {
@@ -9218,7 +9218,7 @@ export const NOTABLE_FIGURES = [
     "id": "alexandria_ocasio_cortez",
     "name": "Alexandria Ocasio-Cortez",
     "profession": "politician",
-    "role": "Historical · ENFJ",
+    "role": "Politics · ENFJ",
     "mbti": "ENFJ",
     "avatar": "👑",
     "axes": {
@@ -9248,7 +9248,7 @@ export const NOTABLE_FIGURES = [
     "id": "kamala_harris",
     "name": "Kamala Harris",
     "profession": "politician",
-    "role": "Historical · ESTJ",
+    "role": "Politics · ESTJ",
     "mbti": "ESTJ",
     "avatar": "👑",
     "axes": {
@@ -9278,7 +9278,7 @@ export const NOTABLE_FIGURES = [
     "id": "abraham_lincoln",
     "name": "Abraham Lincoln",
     "profession": "politician",
-    "role": "Historical · INTP",
+    "role": "Politics · INTP",
     "mbti": "INTP",
     "avatar": "👑",
     "axes": {
@@ -9308,7 +9308,7 @@ export const NOTABLE_FIGURES = [
     "id": "kim_jong_un",
     "name": "Kim Jong-un",
     "profession": "politician",
-    "role": "Historical · ESTJ",
+    "role": "Politics · ESTJ",
     "mbti": "ESTJ",
     "avatar": "👑",
     "axes": {
@@ -9338,7 +9338,7 @@ export const NOTABLE_FIGURES = [
     "id": "recep_tayyip_erdo_an",
     "name": "Recep Tayyip Erdoğan",
     "profession": "politician",
-    "role": "Historical · ESTJ",
+    "role": "Politics · ESTJ",
     "mbti": "ESTJ",
     "avatar": "👑",
     "axes": {
@@ -9368,7 +9368,7 @@ export const NOTABLE_FIGURES = [
     "id": "joe_biden",
     "name": "Joe Biden",
     "profession": "politician",
-    "role": "Historical · ESFJ",
+    "role": "Politics · ESFJ",
     "mbti": "ESFJ",
     "avatar": "👑",
     "axes": {
@@ -9398,7 +9398,7 @@ export const NOTABLE_FIGURES = [
     "id": "zohran_mamdani",
     "name": "Zohran Mamdani",
     "profession": "politician",
-    "role": "Historical · ENFJ",
+    "role": "Politics · ENFJ",
     "mbti": "ENFJ",
     "avatar": "👑",
     "axes": {
@@ -9428,7 +9428,7 @@ export const NOTABLE_FIGURES = [
     "id": "boris_johnson",
     "name": "Boris Johnson",
     "profession": "politician",
-    "role": "Historical · ENTP",
+    "role": "Politics · ENTP",
     "mbti": "ENTP",
     "avatar": "👑",
     "axes": {
@@ -9458,7 +9458,7 @@ export const NOTABLE_FIGURES = [
     "id": "vladimir_putin",
     "name": "Vladimir Putin",
     "profession": "politician",
-    "role": "Historical · ISTP",
+    "role": "Politics · ISTP",
     "mbti": "ISTP",
     "avatar": "👑",
     "axes": {
@@ -9488,7 +9488,7 @@ export const NOTABLE_FIGURES = [
     "id": "ben_shapiro",
     "name": "Ben Shapiro",
     "profession": "politician",
-    "role": "Historical · ESTJ",
+    "role": "Politics · ESTJ",
     "mbti": "ESTJ",
     "avatar": "👑",
     "axes": {
@@ -9518,7 +9518,7 @@ export const NOTABLE_FIGURES = [
     "id": "donald_trump",
     "name": "Donald Trump",
     "profession": "politician",
-    "role": "Historical · ESTP",
+    "role": "Politics · ESTP",
     "mbti": "ESTP",
     "avatar": "👑",
     "axes": {
@@ -9848,7 +9848,7 @@ export const NOTABLE_FIGURES = [
     "id": "luigi_mangione",
     "name": "Luigi Mangione",
     "profession": "politician",
-    "role": "Historical · ENTJ",
+    "role": "Politics · ENTJ",
     "mbti": "ENTJ",
     "avatar": "👑",
     "axes": {
@@ -10058,7 +10058,7 @@ export const NOTABLE_FIGURES = [
     "id": "friedrich_merz",
     "name": "Friedrich Merz",
     "profession": "politician",
-    "role": "Historical · ISTJ",
+    "role": "Politics · ISTJ",
     "mbti": "ISTJ",
     "avatar": "👑",
     "axes": {
@@ -10088,7 +10088,7 @@ export const NOTABLE_FIGURES = [
     "id": "george_h_w_bush",
     "name": "George H. W. Bush",
     "profession": "politician",
-    "role": "Historical · ISTJ",
+    "role": "Politics · ISTJ",
     "mbti": "ISTJ",
     "avatar": "👑",
     "axes": {
@@ -10178,7 +10178,7 @@ export const NOTABLE_FIGURES = [
     "id": "angela_merkel",
     "name": "Angela Merkel",
     "profession": "politician",
-    "role": "Historical · ISTJ",
+    "role": "Politics · ISTJ",
     "mbti": "ISTJ",
     "avatar": "👑",
     "axes": {
@@ -10416,6 +10416,7 @@ export const NOTABLE_FIGURES = [
   }
 ];
 
+
 export const FUNCTIONS = ["Ne", "Ni", "Te", "Ti", "Fe", "Fi", "Se", "Si"];
 
 /**
@@ -10513,13 +10514,14 @@ export const FIGURE_CATEGORIES = {
   scientist: "Science",
   sportiv: "Sports",
   entrepreneur: "Business",
-  politician: "Historical",
-  religious: "Religion"
+  politician: "Politics",
+  religious: "Religion",
+  mythology: "Mythology"
 };
 
 /**
- * 7-Category helper for figure roles/professions:
- * Artist, Philosophy, Science, Sports, Business, Historical, Religion
+ * 8-Category helper for figure roles/professions:
+ * Artist, Politics, Philosophy, Science, Sports, Business, Religion, Mythology
  *
  * @param {Object} fig
  * @param {string} lang - 'ro' | 'en'
@@ -10527,7 +10529,7 @@ export const FIGURE_CATEGORIES = {
  */
 export function getFigureRole(fig, lang = "ro") {
   if (!fig) return "";
-  const cat = FIGURE_CATEGORIES[fig.profession] || "Historical";
+  const cat = FIGURE_CATEGORIES[fig.profession] || "Politics";
   if (lang === "ro") {
     const catRo = {
       "Artist": "Artist",
@@ -10535,8 +10537,9 @@ export function getFigureRole(fig, lang = "ro") {
       "Science": "Știință",
       "Sports": "Sport",
       "Business": "Afaceri",
-      "Historical": "Istoric",
-      "Religion": "Religie"
+      "Politics": "Politică",
+      "Religion": "Religie",
+      "Mythology": "Mitologie"
     };
     return catRo[cat] || cat;
   }
