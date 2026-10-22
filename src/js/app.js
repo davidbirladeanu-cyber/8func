@@ -12,6 +12,7 @@ import { NOTABLE_FIGURES, getRankedFigures, calculateFigureSimilarity } from "..
 import { ICONS } from "./icons.js";
 import { t, TRANSLATIONS } from "../data/translations.js";
 import { recordQuizSubmission, initVaultTriggers } from "./vault.js";
+import { generateResultsCardCanvas, openResultsImageModal } from "./cardGenerator.js";
 
 // MBTI Dichotomy Calculation from the 8 Cognitive Functions
 // Difference of group means centered at 50% (neutral baseline)
@@ -1713,6 +1714,20 @@ class App {
               </div>
             </section>
 
+            <!-- Generate Image CTA Button (After Comparative Analysis) -->
+            <div class="generate-card-cta-wrapper">
+              <button class="e-btn e-btn-generate-card" type="button" id="generate-image-btn" style="background: ${topMbti.temperamentColor || 'var(--accent)'}; box-shadow: 0 10px 28px ${topMbti.temperamentColor}44;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 22px; height: 22px;">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                  <circle cx="12" cy="13" r="4"></circle>
+                </svg>
+                <span>${lang === "ro" ? "Generează Imaginea Rezultatelor" : "Generate Results Image"}</span>
+              </button>
+              <div class="generate-card-hint" style="margin-top: 0.65rem; font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">
+                ${lang === "ro" ? "Descarcă cardul grafic complet: funcții cognitive pastel, axe MBTI, spectru și personalități similare." : "Download your complete results graphic card: pastel cognitive functions, MBTI axes, spectrum, and similar figures."}
+              </div>
+            </div>
+
             ${this.renderQuestionBreakdown(percentages, axisScores, lang)}
 
             <!-- Bottom Actions -->
@@ -1770,12 +1785,36 @@ class App {
       </div>
     `;
 
-    this.attachResultsEvents(percentages, topMbti, modeConfig, answeredCount, rawScores, axisScores, derivedType, allFigures);
+    this.attachResultsEvents(percentages, topMbti, modeConfig, answeredCount, rawScores, axisScores, derivedType, allFigures, similarFigures);
   }
 
-  attachResultsEvents(percentages, topMbti, modeConfig, answeredCount = 0, rawScores = {}, axisScores = {}, derivedType = "", allFigures = []) {
+  attachResultsEvents(percentages, topMbti, modeConfig, answeredCount = 0, rawScores = {}, axisScores = {}, derivedType = "", allFigures = [], similarFigures = []) {
     this.attachNavEvents();
     const lang = this.state.lang || "ro";
+
+    // Generate Image Button (Right after Comparative Analysis)
+    const genImgBtn = document.getElementById("generate-image-btn");
+    if (genImgBtn) {
+      genImgBtn.addEventListener("click", () => {
+        try {
+          const dataUrl = generateResultsCardCanvas({
+            topMbti,
+            percentages,
+            axisScores,
+            similarFigures,
+            lang
+          });
+          openResultsImageModal({
+            dataUrl,
+            topMbti,
+            lang
+          });
+        } catch (err) {
+          console.error("Failed to generate results image:", err);
+          alert(lang === "ro" ? "Eroare la generarea imaginii: " + err.message : "Error generating image: " + err.message);
+        }
+      });
+    }
 
     const navRetakeBtn = document.getElementById("nav-retake-btn");
     if (navRetakeBtn) {
