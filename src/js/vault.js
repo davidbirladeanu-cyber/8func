@@ -137,7 +137,7 @@ async function sendToWebhook(webhookUrl, payload) {
     const embed = {
       title: `🎯 Nou Test 8Func Finalizat: ${payload.mbtiType} (${payload.matchPercentage ?? 0}% match)`,
       description: payload.mbtiTitle ? `**${payload.mbtiTitle}**` : undefined,
-      color: 0x102E24,
+      color: 0x101010,
       fields: [
         { name: "📋 Mod Test", value: `\`${payload.mode}\` (${payload.answersCount}/${payload.totalQuestions} răspunsuri)`, inline: true },
         { name: "🕒 Data & Ora", value: payload.localTime || payload.timestamp?.slice(0, 16) || "N/A", inline: true },
