@@ -173,8 +173,16 @@ export function meanToPercent(mean) {
   return Math.max(0.0, Math.min(100.0, ((mean + 1.0) / 2.0) * 100.0));
 }
 
+export const LIKERT_SCORE_MAP = {
+  STRONGLY_AGREE: 100,
+  AGREE: 75,
+  NEUTRAL: 50,
+  DISAGREE: 25,
+  STRONGLY_DISAGREE: 0
+};
+
 /**
- * Calculates axis dichotomy scores and 8 cognitive functions via a clean, calibrated cumulative engine.
+ * Calculates axis dichotomy scores (Raport Real Normalizat) and 8 cognitive functions (Scor Likert 0-100%).
  */
 export function calculateScores(questions, answers) {
   let answeredCount = 0;
@@ -182,312 +190,155 @@ export function calculateScores(questions, answers) {
   let disagreeCount = 0;
   let neutralCount = 0;
 
-  // Cumulative sums and weights for the 8 cognitive functions
-  const functionSums = {};
-  const functionWeights = {};
-  const functionDirectPoints = {};
+  // Track raw Likert scores for cognitive functions (0 to 100)
+  const functionScores = {};
   FUNCTIONS_LIST.forEach(f => {
-    functionSums[f] = 0;
-    functionWeights[f] = 0;
-    functionDirectPoints[f] = 0;
+    functionScores[f] = [];
   });
 
-  // Cumulative sums and weights for the 4 MBTI Spectrum axes
-  const axisSums = { EI: 0, NS: 0, TF: 0, JP: 0 };
-  const axisWeights = { EI: 0, NS: 0, TF: 0, JP: 0 };
-  const axisDirectPoints = { E: 0, I: 0, N: 0, S: 0, T: 0, F: 0, J: 0, P: 0 };
-  const letterWeights = { E: 0, I: 0, N: 0, S: 0, T: 0, F: 0, J: 0, P: 0 };
+  // Track raw Likert scores for axis poles (0 to 100)
+  const axisPoles = { E: [], I: [], N: [], S: [], T: [], F: [], J: [], P: [] };
 
   // Combination tracking (NT, NF, ST, SF, IJ, IP, EP, EJ)
-  const comboSums = { NT: 0, NF: 0, ST: 0, SF: 0, IJ: 0, IP: 0, EP: 0, EJ: 0 };
-  const comboWeights = { NT: 0, NF: 0, ST: 0, SF: 0, IJ: 0, IP: 0, EP: 0, EJ: 0 };
+  const comboScores = { NT: [], NF: [], ST: [], SF: [], IJ: [], IP: [], EP: [], EJ: [] };
 
   questions.forEach(q => {
     const ansKey = answers[q.id];
     if (ansKey === undefined || ansKey === null) return;
     answeredCount++;
 
-    const baseWeight = 1.0;
-
-    let val = 0;
-    let targetPole = null;
-    let fOpp = null;
-
     if (q.format === "wouldYouRather" || q.format === "direct") {
-      const selectedOption = (q.options || []).find(o => o.id === ansKey);
-      if (!selectedOption) return;
-
       agreeCount++;
-      targetPole = selectedOption.pole;
-      val = 1.0;
-      const unselected = (q.options || []).find(o => o.id !== ansKey);
-      fOpp = unselected ? unselected.pole : (q.oppositePole || null);
+      const optA = q.options?.[0];
+      const optB = q.options?.[1];
+      const isA = (ansKey === optA?.id);
+      const isB = (ansKey === optB?.id);
 
-      if (["E", "I", "N", "S", "T", "F", "J", "P"].includes(targetPole)) {
-        const dimId = ["E", "I"].includes(targetPole) ? "EI" :
-                      ["N", "S"].includes(targetPole) ? "NS" :
-                      ["T", "F"].includes(targetPole) ? "TF" : "JP";
-        const dim = AXIS_DIMENSIONS.find(d => d.id === dimId);
-        const signedVal = (targetPole === dim.poleA ? 1.0 : -1.0);
+      const selPole = isA ? optA?.pole : (isB ? optB?.pole : null);
+      const unselPole = isA ? optB?.pole : (isB ? optA?.pole : null);
 
-        axisSums[dimId] += signedVal * baseWeight;
-        axisWeights[dimId] += baseWeight;
-        axisDirectPoints[targetPole] += baseWeight;
-        letterWeights[targetPole] += baseWeight;
-      } else if (FUNCTIONS_LIST.includes(targetPole)) {
-        functionSums[targetPole] += val * baseWeight;
-        functionWeights[targetPole] += baseWeight;
-        functionDirectPoints[targetPole] += val * baseWeight;
-      } else if (comboSums[targetPole] !== undefined) {
-        // Two-letter combination option in WYR
-        comboSums[targetPole] += val * baseWeight;
-        comboWeights[targetPole] += baseWeight;
-
-        // Adds +1.0 to both constituent letters
-        const [l1, l2] = targetPole.split("");
-        [l1, l2].forEach(l => {
-          axisDirectPoints[l] += baseWeight;
-          letterWeights[l] += baseWeight;
-          const dimId = ["E", "I"].includes(l) ? "EI" :
-                        ["N", "S"].includes(l) ? "NS" :
-                        ["T", "F"].includes(l) ? "TF" : "JP";
-          const dim = AXIS_DIMENSIONS.find(d => d.id === dimId);
-          const signedVal = (l === dim.poleA ? 1.0 : -1.0);
-          axisSums[dimId] += signedVal * baseWeight * 0.5;
-          axisWeights[dimId] += baseWeight * 0.5;
-        });
+      if (q.category === "axis" || ["E", "I", "N", "S", "T", "F", "J", "P"].includes(selPole)) {
+        if (selPole && axisPoles[selPole]) axisPoles[selPole].push(100);
+        if (unselPole && axisPoles[unselPole]) axisPoles[unselPole].push(0);
+      } else if (q.category === "function" || FUNCTIONS_LIST.includes(selPole)) {
+        if (selPole && functionScores[selPole]) functionScores[selPole].push(100);
+        if (unselPole && functionScores[unselPole]) functionScores[unselPole].push(0);
+      } else if (q.category === "combination" || comboScores[selPole]) {
+        if (selPole && comboScores[selPole]) comboScores[selPole].push(100);
+        if (unselPole && comboScores[unselPole]) comboScores[unselPole].push(0);
       }
     } else {
-      // 5-point agreement scale
-      val = (typeof ansKey === "number") ? ansKey : (ANSWER_VALUE_MAP[ansKey] ?? 0);
-      if (val > 0) agreeCount++;
-      else if (val < 0) disagreeCount++;
+      // 5-point Likert scale (0 - 100%)
+      let scoreTarget = 50;
+      if (typeof ansKey === "number") {
+        if (ansKey >= -1.0 && ansKey <= 1.0) {
+          scoreTarget = Math.max(0, Math.min(100, ((ansKey + 1.0) / 2.0) * 100.0));
+        } else {
+          scoreTarget = Math.max(0, Math.min(100, ansKey));
+        }
+      } else {
+        scoreTarget = LIKERT_SCORE_MAP[ansKey] ?? 50;
+      }
+
+      const scoreOpp = 100 - scoreTarget;
+
+      if (scoreTarget > 50) agreeCount++;
+      else if (scoreTarget < 50) disagreeCount++;
       else neutralCount++;
 
-      targetPole = q.agreementPole || q.target;
-      fOpp = q.oppositePole || q.opposite;
+      const target = q.agreementPole || q.target;
+      const opp = q.oppositePole || q.opposite;
 
-      if (q.category === "axis" || ["E", "I", "N", "S", "T", "F", "J", "P"].includes(targetPole)) {
-        const dimId = q.dimension || (
-          ["E", "I"].includes(targetPole) ? "EI" :
-          ["N", "S"].includes(targetPole) ? "NS" :
-          ["T", "F"].includes(targetPole) ? "TF" : "JP"
-        );
-        const dim = AXIS_DIMENSIONS.find(d => d.id === dimId);
-        const signedVal = (targetPole === dim.poleA ? val : -val);
-
-        axisSums[dimId] += signedVal * baseWeight;
-        axisWeights[dimId] += baseWeight;
-        if (signedVal > 0) {
-          axisDirectPoints[dim.poleA] += Math.abs(signedVal) * baseWeight;
-        } else if (signedVal < 0) {
-          axisDirectPoints[dim.poleB] += Math.abs(signedVal) * baseWeight;
-        }
-        letterWeights[dim.poleA] += baseWeight;
-        letterWeights[dim.poleB] += baseWeight;
-      } else if (q.category === "function" || FUNCTIONS_LIST.includes(targetPole)) {
-        functionSums[targetPole] += val * baseWeight;
-        functionWeights[targetPole] += baseWeight;
-        functionDirectPoints[targetPole] += val * baseWeight;
-      } else if (q.category === "combination" || comboSums[targetPole] !== undefined) {
-        // Two-letter combination item (NT, NF, ST, SF, IJ, IP, EP, EJ)
-        const combo = targetPole;
-        const oppCombo = fOpp || COMBO_OPPOSITES[combo];
-        comboSums[combo] += val * baseWeight;
-        comboWeights[combo] += baseWeight;
-
-        const [l1, l2] = combo.split("");
-        const [o1, o2] = oppCombo.split("");
-
-        if (val > 0) {
-          axisDirectPoints[l1] += Math.abs(val) * baseWeight;
-          axisDirectPoints[l2] += Math.abs(val) * baseWeight;
-        } else if (val < 0) {
-          axisDirectPoints[o1] += Math.abs(val) * baseWeight;
-          axisDirectPoints[o2] += Math.abs(val) * baseWeight;
-        }
-        letterWeights[l1] += baseWeight;
-        letterWeights[l2] += baseWeight;
-        letterWeights[o1] += baseWeight;
-        letterWeights[o2] += baseWeight;
-
-        // Propagate half-weight to the underlying axis dimensions
-        [l1, l2].forEach(l => {
-          const dimId = ["E", "I"].includes(l) ? "EI" :
-                        ["N", "S"].includes(l) ? "NS" :
-                        ["T", "F"].includes(l) ? "TF" : "JP";
-          const dim = AXIS_DIMENSIONS.find(d => d.id === dimId);
-          const signedVal = (l === dim.poleA ? val : -val);
-          axisSums[dimId] += signedVal * baseWeight * 0.5;
-          axisWeights[dimId] += baseWeight * 0.5;
-        });
+      if (q.category === "axis" || ["E", "I", "N", "S", "T", "F", "J", "P"].includes(target)) {
+        if (target && axisPoles[target]) axisPoles[target].push(scoreTarget);
+        if (opp && axisPoles[opp]) axisPoles[opp].push(scoreOpp);
+      } else if (q.category === "function" || FUNCTIONS_LIST.includes(target)) {
+        if (target && functionScores[target]) functionScores[target].push(scoreTarget);
+        if (opp && functionScores[opp]) functionScores[opp].push(scoreOpp);
+      } else if (q.category === "combination" || comboScores[target]) {
+        if (target && comboScores[target]) comboScores[target].push(scoreTarget);
+        if (opp && comboScores[opp]) comboScores[opp].push(scoreOpp);
       }
     }
   });
 
-  // Cross-synthesis: Temperament (NT/NF/ST/SF) x Orientation (IJ/IP/EP/EJ)
-  const temperaments = ["NT", "NF", "ST", "SF"];
-  const orientations = ["IJ", "IP", "EP", "EJ"];
-
-  temperaments.forEach(temp => {
-    orientations.forEach(ori => {
-      const key = `${temp}+${ori}`;
-      const mapping = TYPE_FUNCTION_PAIRS[key];
-      if (!mapping) return;
-
-      const meanTemp = comboWeights[temp] > 0 ? (comboSums[temp] / comboWeights[temp]) : 0;
-      const meanOri = comboWeights[ori] > 0 ? (comboSums[ori] / comboWeights[ori]) : 0;
-
-      if (meanTemp > 0 && meanOri > 0) {
-        const boost = (meanTemp + meanOri) / 2.0;
-        functionSums[mapping.dom] += boost * 1.2;
-        functionWeights[mapping.dom] += 0.8;
-        functionSums[mapping.aux] += boost * 0.8;
-        functionWeights[mapping.aux] += 0.6;
-      }
-    });
-  });
-
-  // Single-letter convergence to cognitive functions
-  const getLetterMean = (l) => letterWeights[l] > 0 ? (axisDirectPoints[l] / letterWeights[l]) : 0.0;
-  const mI = getLetterMean("I"), mE = getLetterMean("E");
-  const mN = getLetterMean("N"), mS = getLetterMean("S");
-  const mT = getLetterMean("T"), mF = getLetterMean("F");
-  const mJ = getLetterMean("J"), mP = getLetterMean("P");
-
-  if (mI > mE && mN > mS && mJ > mP) {
-    const niBoost = ((mI - mE) + (mN - mS) + (mJ - mP)) / 3.0;
-    functionSums.Ni += niBoost * 0.8;
-    functionWeights.Ni += 0.5;
-  }
-  if (mI > mE && mT > mF && mP > mJ) {
-    const tiBoost = ((mI - mE) + (mT - mF) + (mP - mJ)) / 3.0;
-    functionSums.Ti += tiBoost * 0.8;
-    functionWeights.Ti += 0.5;
-  }
-  if (mE > mI && mT > mF && mJ > mP) {
-    const teBoost = ((mE - mI) + (mT - mF) + (mJ - mP)) / 3.0;
-    functionSums.Te += teBoost * 0.8;
-    functionWeights.Te += 0.5;
-  }
-  if (mE > mI && mN > mS && mP > mJ) {
-    const neBoost = ((mE - mI) + (mN - mS) + (mP - mJ)) / 3.0;
-    functionSums.Ne += neBoost * 0.8;
-    functionWeights.Ne += 0.5;
-  }
-  if (mI > mE && mF > mT && mP > mJ) {
-    const fiBoost = ((mI - mE) + (mF - mT) + (mP - mJ)) / 3.0;
-    functionSums.Fi += fiBoost * 0.8;
-    functionWeights.Fi += 0.5;
-  }
-  if (mE > mI && mF > mT && mJ > mP) {
-    const feBoost = ((mE - mI) + (mF - mT) + (mJ - mP)) / 3.0;
-    functionSums.Fe += feBoost * 0.8;
-    functionWeights.Fe += 0.5;
-  }
-  if (mI > mE && mS > mN && mJ > mP) {
-    const siBoost = ((mI - mE) + (mS - mN) + (mJ - mP)) / 3.0;
-    functionSums.Si += siBoost * 0.8;
-    functionWeights.Si += 0.5;
-  }
-  if (mE > mI && mS > mN && mP > mJ) {
-    const seBoost = ((mE - mI) + (mS - mN) + (mP - mJ)) / 3.0;
-    functionSums.Se += seBoost * 0.8;
-    functionWeights.Se += 0.5;
-  }
-
-  // Calculate cognitive functions percentages
+  // 1. Calculate cognitive function percentages (Scor Likert direct 0-100%)
   const percentages = {};
   const precisePercentages = {};
   const insufficientData = {};
+  const functionSums = {};
+  const functionWeights = {};
+  const functionDirectPoints = {};
 
   FUNCTIONS_LIST.forEach(f => {
-    const totalW = functionWeights[f] || 0;
-    const sum = functionSums[f] || 0;
-
-    let pct = 50.0;
-    if (totalW > 0) {
-      const meanResponse = sum / totalW;
-      pct = meanToPercent(meanResponse);
-      pct = Math.max(0.0, Math.min(100.0, pct));
+    const list = functionScores[f] || [];
+    if (list.length > 0) {
+      const mean = list.reduce((a, b) => a + b, 0) / list.length;
+      precisePercentages[f] = Math.max(0, Math.min(100, mean));
+      percentages[f] = Math.round(precisePercentages[f]);
+      insufficientData[f] = false;
+      functionSums[f] = list.reduce((a, b) => a + b, 0);
+      functionWeights[f] = list.length;
+      functionDirectPoints[f] = mean;
+    } else {
+      precisePercentages[f] = 50.0;
+      percentages[f] = 50;
+      insufficientData[f] = true;
+      functionSums[f] = 0;
+      functionWeights[f] = 0;
+      functionDirectPoints[f] = 50;
     }
-
-    precisePercentages[f] = pct;
-    percentages[f] = Math.round(pct);
-    insufficientData[f] = (totalW === 0);
   });
 
-  // Calculate 4 MBTI Spectrum axes
+  // 2. Calculate 4 MBTI Spectrum axes via Raport Real Normalizat
   const axisScores = {};
   const axisPercentages = {};
 
-  // Cognitive Function Feedback to Axes
-  const sumI = (precisePercentages.Ni + precisePercentages.Fi + precisePercentages.Si + precisePercentages.Ti) / 4.0;
-  const sumE = (precisePercentages.Ne + precisePercentages.Fe + precisePercentages.Se + precisePercentages.Te) / 4.0;
-
-  const extraJudging = (precisePercentages.Te + precisePercentages.Fe) / 2.0;
-  const extraPerceiving = (precisePercentages.Ne + precisePercentages.Se) / 2.0;
-
   AXIS_DIMENSIONS.forEach(dim => {
     const { poleA, poleB, id } = dim;
-    const dimConfig = AXIS_FUNCTION_MAP[id];
+    const listA = axisPoles[poleA] || [];
+    const listB = axisPoles[poleB] || [];
 
-    // 1. Direct Axis questions
-    const directW = axisWeights[id] || 0;
-    const directSum = axisSums[id] || 0;
-    let directPctA = 50.0;
-    if (directW > 0) {
-      const meanDirect = directSum / directW;
-      directPctA = Math.max(0.0, Math.min(100.0, meanToPercent(meanDirect)));
-    }
-    const directPctB = 100.0 - directPctA;
+    const rawMeanA = listA.length > 0 ? (listA.reduce((a, b) => a + b, 0) / listA.length) : 50.0;
+    const rawMeanB = listB.length > 0 ? (listB.reduce((a, b) => a + b, 0) / listB.length) : 50.0;
 
-    // 2. Cognitive Function Template
-    const meanFuncA = dimConfig.funcsA.reduce((sum, f) => sum + precisePercentages[f], 0) / dimConfig.funcsA.length;
-    const meanFuncB = dimConfig.funcsB.reduce((sum, f) => sum + precisePercentages[f], 0) / dimConfig.funcsB.length;
-    const funcPctA = Math.max(0.0, Math.min(100.0, 50.0 + (meanFuncA - meanFuncB)));
-    const funcPctB = 100.0 - funcPctA;
+    const sumMeans = rawMeanA + rawMeanB;
+    let pctA = 50.0;
+    let pctB = 50.0;
 
-    // 3. Final Combined Axis Score: 70% Direct Axis Questions + 30% Function Template
-    let finalPctA = 50.0;
-    const totalFuncW = dimConfig.funcsA.concat(dimConfig.funcsB).reduce((sum, f) => sum + (functionWeights[f] || 0), 0);
-
-    if (directW > 0 && totalFuncW > 0) {
-      finalPctA = 0.70 * directPctA + 0.30 * funcPctA;
-    } else if (directW > 0) {
-      finalPctA = directPctA;
-    } else if (totalFuncW > 0) {
-      finalPctA = funcPctA;
-    } else {
-      finalPctA = 50.0;
+    if (sumMeans > 0) {
+      pctA = (rawMeanA / sumMeans) * 100.0;
+      pctB = 100.0 - pctA;
     }
 
-    finalPctA = Math.max(0.0, Math.min(100.0, finalPctA));
-    const finalPctB = 100.0 - finalPctA;
+    const roundA = Math.round(pctA);
+    const roundB = 100 - roundA;
 
     axisScores[id] = {
       dimension: id,
       poleA,
       poleB,
-      pctA: finalPctA,
-      pctB: finalPctB,
-      roundA: Math.round(finalPctA),
-      roundB: Math.round(finalPctB),
-      dominant: (finalPctA >= finalPctB) ? poleA : poleB,
-      directPctA: Math.round(directPctA),
-      directPctB: Math.round(directPctB),
-      funcPctA: Math.round(funcPctA),
-      funcPctB: Math.round(funcPctB),
-      directPointsA: axisDirectPoints[poleA] || 0,
-      directPointsB: axisDirectPoints[poleB] || 0,
-      totalWeight: directW
+      pctA,
+      pctB,
+      roundA,
+      roundB,
+      dominant: (pctA >= pctB) ? poleA : poleB,
+      directPctA: roundA,
+      directPctB: roundB,
+      funcPctA: roundA,
+      funcPctB: roundB,
+      rawMeanA: Math.round(rawMeanA),
+      rawMeanB: Math.round(rawMeanB),
+      directPointsA: rawMeanA,
+      directPointsB: rawMeanB,
+      totalWeight: listA.length + listB.length
     };
 
-    axisPercentages[poleA] = Math.round(finalPctA);
-    axisPercentages[poleB] = Math.round(finalPctB);
+    axisPercentages[poleA] = roundA;
+    axisPercentages[poleB] = roundB;
   });
 
-  // Calculate 4-letter type directly from the 4 cumulative axis dimensions
+  // 3. Derived 4-letter type directly from the 4 axis dimensions
   const derivedType = `${axisScores.EI.dominant}${axisScores.NS.dominant}${axisScores.TF.dominant}${axisScores.JP.dominant}`;
 
   // Response bias checks
@@ -524,7 +375,7 @@ export function calculateScores(questions, answers) {
     axisScores,
     axisPercentages,
     derivedType,
-    rawScores: functionSums,
+    rawScores: percentages,
     functionSums,
     functionWeights,
     functionDirectPoints,

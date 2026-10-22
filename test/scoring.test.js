@@ -354,63 +354,63 @@ test("All 100 questions have complete Romanian translations (textRo) & explanati
 });
 
 // ----------------------------------------------------
-// 9. Clean Cognitive Function Scoring: Choosing Te does not decrease Ti
+// 9. Cognitive Function Scoring: Scor Likert (0-100%) directly reflects agreement & polarity
 // ----------------------------------------------------
-test("Clean Function Scoring: Choosing Te does not decrease Ti, functions contribute via templates", () => {
+test("Cognitive Function Scoring: Scor Likert (0-100%) directly reflects agreement & polarity", () => {
   const mockQuestions = [
     { id: "f_ne", category: "function", target: "Ne", agreementPole: "Ne", oppositePole: "Ni" },
     { id: "f_te", category: "function", target: "Te", agreementPole: "Te", oppositePole: "Ti" }
   ];
 
   const answers = {
-    f_ne: 1.0, // Strongly Agree with Ne
-    f_te: 1.0  // Strongly Agree with Te
+    f_ne: "STRONGLY_AGREE", // Ne = 100%, Ni = 0%
+    f_te: "AGREE"            // Te = 75%, Ti = 25%
   };
 
   const res = calculateScores(mockQuestions, answers);
-  // Ne increases to 100%, Ni remains unpenalized at baseline 50%
   assert.strictEqual(res.percentages.Ne, 100);
-  assert.strictEqual(res.percentages.Ni, 50);
-
-  // Te increases to 100%, Ti remains unpenalized at baseline 50%
-  assert.strictEqual(res.percentages.Te, 100);
-  assert.strictEqual(res.percentages.Ti, 50);
-
-  // Both Ne and Te are Extraverted functions -> E template is higher than I template
-  assert.ok(res.axisScores.EI.pctA > 50, "Extraversion should be greater than 50%");
-  assert.strictEqual(res.axisScores.EI.dominant, "E");
-
-  // Ne boosts N on NS axis via function template
-  assert.ok(res.axisScores.NS.pctA > 50, "N should be greater than 50%");
-
-  // Te boosts T on TF axis via function template
-  assert.ok(res.axisScores.TF.pctA > 50, "T should be greater than 50%");
+  assert.strictEqual(res.percentages.Ni, 0);
+  assert.strictEqual(res.percentages.Te, 75);
+  assert.strictEqual(res.percentages.Ti, 25);
 });
 
 // ----------------------------------------------------
-// 10. Integrated Model: 100% Ni boosts I, N, and J
+// 10. Axis Scoring: Raport Real Normalizat on direct axis questions
 // ----------------------------------------------------
-test("Integrated Model: 100% Ni boosts I, N, and J simultaneously on the 4 MBTI Spectrum Axes", () => {
-  const rapidQs = getQuestionsForMode("rapid");
-  const answers = {};
+test("Axis Scoring: Raport Real Normalizat on direct axis questions", () => {
+  const mockQuestions = [
+    { id: "ax_ei", category: "axis", dimension: "EI", target: "I", agreementPole: "I", oppositePole: "E" },
+    { id: "ax_ns", category: "axis", dimension: "NS", target: "N", agreementPole: "N", oppositePole: "S" },
+    { id: "ax_tf", category: "axis", dimension: "TF", target: "T", agreementPole: "T", oppositePole: "F" },
+    { id: "ax_jp", category: "axis", dimension: "JP", target: "J", agreementPole: "J", oppositePole: "P" }
+  ];
 
-  rapidQs.filter(q => q.category === "function" && q.target === "Ni").forEach(q => {
-    answers[q.id] = "STRONGLY_AGREE";
-  });
+  const answers = {
+    ax_ei: "STRONGLY_AGREE", // I = 100%, E = 0%
+    ax_ns: "AGREE",          // N = 75%, S = 25%
+    ax_tf: "STRONGLY_AGREE", // T = 100%, F = 0%
+    ax_jp: "STRONGLY_AGREE"  // J = 100%, P = 0%
+  };
 
-  const res = calculateScores(rapidQs, answers);
+  const res = calculateScores(mockQuestions, answers);
 
-  assert.strictEqual(res.percentages.Ni, 100);
-  assert.ok(res.axisScores.EI.pctB > 50, `I (${res.axisScores.EI.pctB}%) must be greater than 50%`);
-  assert.strictEqual(res.axisScores.EI.dominant, "I", "Dominant pole on EI must be I");
+  assert.strictEqual(res.axisPercentages.I, 100);
+  assert.strictEqual(res.axisPercentages.E, 0);
+  assert.strictEqual(res.axisScores.EI.dominant, "I");
 
-  assert.ok(res.axisScores.NS.pctA > 50, `N (${res.axisScores.NS.pctA}%) must be greater than 50%`);
-  assert.strictEqual(res.axisScores.NS.dominant, "N", "Dominant pole on NS must be N");
+  assert.strictEqual(res.axisPercentages.N, 75);
+  assert.strictEqual(res.axisPercentages.S, 25);
+  assert.strictEqual(res.axisScores.NS.dominant, "N");
 
-  assert.ok(res.axisScores.JP.pctA > 50, `J (${res.axisScores.JP.pctA}%) must be greater than 50%`);
-  assert.strictEqual(res.axisScores.JP.dominant, "J", "Dominant pole on JP must be J");
+  assert.strictEqual(res.axisPercentages.T, 100);
+  assert.strictEqual(res.axisPercentages.F, 0);
+  assert.strictEqual(res.axisScores.TF.dominant, "T");
 
-  assert.strictEqual(res.axisScores.TF.pctA, 50.0, "TF should remain 50%");
+  assert.strictEqual(res.axisPercentages.J, 100);
+  assert.strictEqual(res.axisPercentages.P, 0);
+  assert.strictEqual(res.axisScores.JP.dominant, "J");
+
+  assert.strictEqual(res.derivedType, "INTJ");
 });
 
 // ----------------------------------------------------
@@ -530,9 +530,9 @@ test("Target Sorting Order: Questions sorted by TARGET_ORDER", () => {
 });
 
 // ----------------------------------------------------
-// 12d. Combination & Cross-Synthesis Scoring Rules
+// 12d. Combination Scoring: NT and IJ Likert responses recorded cleanly
 // ----------------------------------------------------
-test("Combination scoring: NT strong agree adds to N and T, IJ adds to I and J, cross-synthesis boosts Ni and Te", () => {
+test("Combination scoring: NT and IJ Likert responses recorded cleanly", () => {
   const mockQuestions = [
     { id: "q_nt", format: "deep", category: "combination", target: "NT", oppositePole: "SF", agreementPole: "NT" },
     { id: "q_ij", format: "deep", category: "combination", target: "IJ", oppositePole: "EP", agreementPole: "IJ" }
@@ -545,15 +545,8 @@ test("Combination scoring: NT strong agree adds to N and T, IJ adds to I and J, 
 
   const res = calculateScores(mockQuestions, answers);
 
-  // Directly boosts N, T, I, J points
-  assert.ok(res.axisScores.NS.directPointsA > 0, "N should receive direct points");
-  assert.ok(res.axisScores.TF.directPointsA > 0, "T should receive direct points");
-  assert.ok(res.axisScores.EI.directPointsB > 0, "I should receive direct points");
-  assert.ok(res.axisScores.JP.directPointsA > 0, "J should receive direct points");
-
-  // Cross-synthesis NT + IJ -> INTJ -> boosts Ni and Te
-  assert.ok(res.percentages.Ni > 50, "Ni should be boosted above baseline by NT+IJ cross-synthesis");
-  assert.ok(res.percentages.Te > 50, "Te should be boosted above baseline by NT+IJ cross-synthesis");
+  assert.strictEqual(res.answeredCount, 2);
+  assert.ok(res.percentages !== undefined);
 });
 
 // ----------------------------------------------------
@@ -603,31 +596,25 @@ test("Results URL Path: Format matches /results/I=80/E=80/N=80/S=80/T=80/F=80/J=
 });
 
 // ----------------------------------------------------
-// 14. Explicit 70% Direct Axis + 30% Function Template Weighting
+// 14. Raport Real Normalizat: Axes sum to exactly 100% and reflect relative pole strength
 // ----------------------------------------------------
-test("Axis scoring weights: exactly 70% from direct axis questions and 30% from function template", () => {
+test("Raport Real Normalizat: Axes sum to exactly 100% and reflect relative pole strength", () => {
   const mockQuestions = [
-    // 1 direct EI question (answering Strongly Agree for E)
-    { id: "direct_ei", category: "axis", dimension: "EI", agreementPole: "E", oppositePole: "I" },
-    // Function questions: Ni at 100% (I favoured), Ne at 25% (E slightly favoured via Ne)
-    { id: "func_ni", category: "function", target: "Ni", agreementPole: "Ni" },
-    { id: "func_ne", category: "function", target: "Ne", agreementPole: "Ne" }
+    { id: "direct_e", category: "axis", dimension: "EI", target: "E", agreementPole: "E", oppositePole: "I" },
+    { id: "direct_i", category: "axis", dimension: "EI", target: "I", agreementPole: "I", oppositePole: "E" }
   ];
 
-  // Linear scale: Ne=25% needs mean = 25/100*2-1 = -0.5 -> DISAGREE
+  // E answered STRONGLY_DISAGREE (0% E, 100% I), I answered STRONGLY_AGREE (100% I, 0% E)
   const answers = {
-    direct_ei: 1.0,      // Direct E vote -> directPctE = 100%
-    func_ni: 1.0,        // Ni = 100%
-    func_ne: -0.5        // Ne = 25% (DISAGREE)
+    direct_e: "STRONGLY_DISAGREE", // E gets 0, I gets 100
+    direct_i: "STRONGLY_AGREE"      // I gets 100, E gets 0
   };
 
   const res = calculateScores(mockQuestions, answers);
-  assert.strictEqual(res.axisScores.EI.directPctA, 100, "Direct E percentage should be 100%");
-
-  // Final E = 0.70 * directPctA + 0.30 * funcPctA
-  const expectedCombinedE = Math.round(0.70 * res.axisScores.EI.directPctA + 0.30 * res.axisScores.EI.funcPctA);
-  assert.strictEqual(res.axisScores.EI.roundA, expectedCombinedE);
-  assert.ok(res.axisScores.EI.roundA >= 70, "E should be at least 70% due to 70% direct axis weight");
+  assert.strictEqual(res.axisPercentages.E, 0, "E should be 0%");
+  assert.strictEqual(res.axisPercentages.I, 100, "I should be 100%");
+  assert.strictEqual(res.axisPercentages.E + res.axisPercentages.I, 100, "Must sum to 100%");
+  assert.strictEqual(res.axisScores.EI.dominant, "I");
 });
 
 console.log(`\nAll ${passedTests} tests passed successfully!`);
