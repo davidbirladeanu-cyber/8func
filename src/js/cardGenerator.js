@@ -238,9 +238,9 @@ export async function generateResultsCardCanvas({
 
   // Function Stack Pills (squarish, solidly colored with function colors)
   const stack = topMbti?.stack || ["Ni", "Te", "Fi", "Se"];
-  const pillW = 38;
-  const pillH = 24;
-  const pillGap = 7;
+  const pillW = 32;
+  const pillH = 30;
+  const pillGap = 6;
 
   stack.forEach((st, idx) => {
     const pillX = marginX + idx * (pillW + pillGap);
@@ -256,7 +256,7 @@ export async function generateResultsCardCanvas({
     ctx.fillText(st, pillX + pillW / 2, curY + pillH / 2 + 0.5);
   });
 
-  curY += 38; // Spacing before main 2-column grid
+  curY += 42; // Spacing before main 2-column grid
 
   // ----------------------------------------------------
   // MAIN GRID: BALANCED 2 COLUMNS (370px each)

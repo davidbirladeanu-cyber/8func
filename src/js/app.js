@@ -1531,7 +1531,7 @@ class App {
                     ${(topMbti.stack || []).map(st => {
                       const fInfo = COGNITIVE_FUNCTIONS[st];
                       const fTitle = lang === "ro" ? (fInfo?.nameRo || fInfo?.name || st) : (fInfo?.name || st);
-                      const fColor = fInfo?.color || "#3B49DF";
+                      const fColor = getFuncTileColors(st).bg;
                       return `<span class="resemble-stack-pill" style="background: ${fColor}; color: #ffffff;" title="${fTitle}">${st}</span>`;
                     }).join("")}
                   </div>
@@ -1699,7 +1699,7 @@ class App {
                       <p class="resemble-desc">${m.description}</p>
                       <div class="resemble-stack">
                         ${m.stack.map(st => {
-                          const fColor = COGNITIVE_FUNCTIONS[st]?.color || "#3B49DF";
+                          const fColor = getFuncTileColors(st).bg;
                           return `<span class="resemble-stack-pill" style="background: ${fColor}; color: #ffffff;">${st}</span>`;
                         }).join("")}
                       </div>
