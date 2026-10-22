@@ -5968,9 +5968,21 @@ export function getRankedFigures(userScores, userAxisScores) {
   return { similar, opposite, all: list };
 }
 
+export const FIGURE_CATEGORIES = {
+  musician: "Artist",
+  artist: "Artist",
+  writer: "Artist",
+  philosopher: "Philosophy",
+  scientist: "Science",
+  sportiv: "Sports",
+  entrepreneur: "Business",
+  politician: "Historical",
+  religious: "Religion"
+};
+
 /**
- * Bilingual helper for figure roles/professions
- * Translates Romanian database roles to clean English when lang === 'en'
+ * 7-Category helper for figure roles/professions:
+ * Artist, Philosophy, Science, Sports, Business, Historical, Religion
  *
  * @param {Object} fig
  * @param {string} lang - 'ro' | 'en'
@@ -5978,50 +5990,18 @@ export function getRankedFigures(userScores, userAxisScores) {
  */
 export function getFigureRole(fig, lang = "ro") {
   if (!fig) return "";
-  let role = fig.role ? fig.role.replace(/\s*·\s*[A-Z]{4}\s*$/i, "").trim() : (fig.profession || "");
-  if (lang === "en") {
-    const roToEn = {
-      "muzician": "Musician",
-      "artist & actor": "Artist & Actor",
-      "artist": "Artist",
-      "actor": "Actor",
-      "actriță": "Actress",
-      "actrita": "Actress",
-      "scriitor": "Writer",
-      "antreprenor & lider": "Entrepreneur & Leader",
-      "antreprenor": "Entrepreneur",
-      "filosof": "Philosopher",
-      "om de știință": "Scientist",
-      "om de stiinta": "Scientist",
-      "fizician": "Physicist",
-      "psiholog": "Psychologist",
-      "politician": "Politician",
-      "inventator": "Inventor",
-      "regizor": "Film Director",
-      "sportiv": "Athlete",
-      "lider & politician": "Leader & Politician",
-      "lider": "Leader",
-      "figură spirituală": "Spiritual Figure",
-      "figura spirituala": "Spiritual Figure",
-      "lider spiritual": "Spiritual Leader",
-      "lider_spiritual": "Spiritual Leader",
-      "istoric": "Historian",
-      "cântăreț": "Singer",
-      "cantaret": "Singer",
-      "pictor": "Painter",
-      "om politic": "Statesman",
-      "om_politic": "Statesman",
-      "general": "Military General",
-      "matematician": "Mathematician",
-      "economist": "Economist",
-      "jurnalist": "Journalist"
+  const cat = FIGURE_CATEGORIES[fig.profession] || "Historical";
+  if (lang === "ro") {
+    const catRo = {
+      "Artist": "Artist",
+      "Philosophy": "Filosofie",
+      "Science": "Știință",
+      "Sports": "Sport",
+      "Business": "Afaceri",
+      "Historical": "Istoric",
+      "Religion": "Religie"
     };
-    const lower = role.toLowerCase().trim();
-    if (roToEn[lower]) return roToEn[lower];
-    for (const [ro, en] of Object.entries(roToEn)) {
-      if (lower.includes(ro)) return en;
-    }
-    return role ? (role.charAt(0).toUpperCase() + role.slice(1)) : "";
+    return catRo[cat] || cat;
   }
-  return role ? (role.charAt(0).toUpperCase() + role.slice(1)) : "";
+  return cat;
 }
