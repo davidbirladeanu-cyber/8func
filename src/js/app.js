@@ -2817,10 +2817,14 @@ class App {
     }
 
     // Axes values & dynamic colors matching Mind & Nature
+    const figE = fig.axes?.E ?? (fig.mbti.startsWith("E") ? 75 : 25);
+    const figI = fig.axes?.I ?? (fig.mbti.startsWith("I") ? 75 : 25);
     const figN = fig.axes?.N ?? (fig.mbti.includes("N") ? 75 : 25);
     const figS = fig.axes?.S ?? (fig.mbti.includes("S") ? 75 : 25);
     const figT = fig.axes?.T ?? (fig.mbti.includes("T") ? 75 : 25);
     const figF = fig.axes?.F ?? (fig.mbti.includes("F") ? 75 : 25);
+    const figJ = fig.axes?.J ?? (fig.mbti.endsWith("J") ? 75 : 25);
+    const figP = fig.axes?.P ?? (fig.mbti.endsWith("P") ? 75 : 25);
 
     const figMindColor = figN >= figS ? "#95637e" : "#e5c727";
     const figNatureColor = figT >= figF ? "#72cccd" : "#9ac262";
@@ -2832,8 +2836,9 @@ class App {
         name: lang === "ro" ? "ENERGIE" : "ENERGY",
         leftName: lang === "ro" ? "Extraversie" : "Extraversion",
         rightName: lang === "ro" ? "Introversie" : "Introversion",
-        leftVal: fig.axes?.E ?? 50,
-        rightVal: fig.axes?.I ?? 50,
+        leftVal: figE,
+        rightVal: figI,
+        pos: Math.max(7, Math.min(93, figI)),
         color: sharedBlue
       },
       {
@@ -2841,8 +2846,9 @@ class App {
         name: lang === "ro" ? "MINTE" : "MIND",
         leftName: lang === "ro" ? "Intuiție" : "Intuition",
         rightName: lang === "ro" ? "Senzorial" : "Sensing",
-        leftVal: fig.axes?.N ?? 50,
-        rightVal: fig.axes?.S ?? 50,
+        leftVal: figN,
+        rightVal: figS,
+        pos: Math.max(7, Math.min(93, figS)),
         color: figMindColor
       },
       {
@@ -2850,8 +2856,9 @@ class App {
         name: lang === "ro" ? "NATURĂ" : "NATURE",
         leftName: lang === "ro" ? "Gândire" : "Thinking",
         rightName: lang === "ro" ? "Sentiment" : "Feeling",
-        leftVal: fig.axes?.T ?? 50,
-        rightVal: fig.axes?.F ?? 50,
+        leftVal: figT,
+        rightVal: figF,
+        pos: Math.max(7, Math.min(93, figF)),
         color: figNatureColor
       },
       {
@@ -2859,8 +2866,9 @@ class App {
         name: lang === "ro" ? "TACTICĂ" : "TACTICS",
         leftName: lang === "ro" ? "Judecată" : "Judging",
         rightName: lang === "ro" ? "Percepție" : "Perceiving",
-        leftVal: fig.axes?.J ?? 50,
-        rightVal: fig.axes?.P ?? 50,
+        leftVal: figJ,
+        rightVal: figP,
+        pos: Math.max(7, Math.min(93, figP)),
         color: sharedBlue
       }
     ];
@@ -2899,14 +2907,13 @@ class App {
                 <div class="fig-modal-axis-head">
                   <span class="fig-modal-axis-name">${ax.name}</span>
                 </div>
-                <div class="fig-modal-axis-bar-wrap">
-                  <div class="fig-modal-axis-bar-track">
-                    <div class="fig-modal-axis-bar-fill" style="width: ${ax.leftVal}%; background: ${ax.color};"></div>
-                  </div>
+                <div class="fig-modal-axis-track">
+                  <div class="fig-modal-axis-midpoint"></div>
+                  <div class="fig-modal-axis-dot" style="left: ${ax.pos}%; background: ${ax.color};" title="${ax.rightVal >= ax.leftVal ? ax.rightName + ' ' + ax.rightVal + '%' : ax.leftName + ' ' + ax.leftVal + '%'}"></div>
                 </div>
                 <div class="fig-modal-axis-labels">
-                  <span>${ax.leftName} <b>${ax.leftVal}%</b></span>
-                  <span><b>${ax.rightVal}%</b> ${ax.rightName}</span>
+                  <span class="fig-modal-axis-lbl ${ax.leftVal >= ax.rightVal ? 'active-pole' : ''}">${ax.leftName} <b>${ax.leftVal}%</b></span>
+                  <span class="fig-modal-axis-lbl ${ax.rightVal > ax.leftVal ? 'active-pole' : ''}"><b>${ax.rightVal}%</b> ${ax.rightName}</span>
                 </div>
               </div>
             `).join("")}

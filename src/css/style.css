@@ -5165,40 +5165,83 @@ a {
 .fig-modal-axis-card {
   background: var(--paper);
   border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 0.75rem;
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  box-sizing: border-box;
 }
 
 .fig-modal-axis-head {
   display: flex;
   justify-content: space-between;
-  font-size: 0.74rem;
+  align-items: center;
+  font-family: var(--font-display);
+  font-size: 0.76rem;
   font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--text-muted);
   margin-bottom: 0.45rem;
 }
 
-.fig-modal-axis-bar-wrap {
-  margin-bottom: 0.45rem;
-}
-
-.fig-modal-axis-bar-track {
-  height: 8px;
+.fig-modal-axis-track {
+  position: relative;
+  width: 100%;
+  height: 6px;
   background: var(--line);
-  border-radius: var(--radius-pill);
-  overflow: hidden;
+  border-radius: 999px;
+  margin: 0.75rem 0 0.65rem 0;
 }
 
-.fig-modal-axis-bar-fill {
-  height: 100%;
-  border-radius: var(--radius-pill);
+[data-theme="dark"] .fig-modal-axis-track {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.fig-modal-axis-midpoint {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 2px;
+  height: 10px;
+  background: var(--text-muted);
+  opacity: 0.35;
+  border-radius: 1px;
+}
+
+.fig-modal-axis-dot {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2.5px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  box-sizing: border-box;
+  z-index: 2;
+  transition: left 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .fig-modal-axis-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 0.72rem;
+  align-items: center;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.fig-modal-axis-lbl {
+  transition: color var(--transition-fast);
+}
+
+.fig-modal-axis-lbl.active-pole {
   color: var(--text-strong);
+  font-weight: 800;
+}
+
+.fig-modal-axis-lbl b {
+  font-weight: 900;
 }
 
 .fig-modal-funcs-grid {
