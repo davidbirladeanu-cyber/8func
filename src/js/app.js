@@ -2312,8 +2312,8 @@ class App {
       }
     }
 
-    // Default sort: if scores exist and no manual sort selected, default to similarity (Match)
-    const activeSort = this.figuresDirSort || (hasUserScores ? "similarity" : "name");
+    // Default sort: if scores exist and no manual sort selected, default to similarity (Match), else name_asc (A-Z)
+    const activeSort = this.figuresDirSort || (hasUserScores ? "similarity" : "name_asc");
 
     // Map all figures with original 1-based index and similarity if scores exist
     let allFigs = NOTABLE_FIGURES.map((fig, idx) => {
@@ -2338,7 +2338,7 @@ class App {
       });
     }
 
-    // 2. Multi-Select Quick filters (Functions, Axes, Temperaments, Types) - Union (OR) logic
+    // 2. Multi-Select Quick filters (Types, Functions, Axes, Temperaments, Category) - Union (OR) logic
     if (this.figuresSelectedFilters && this.figuresSelectedFilters.size > 0) {
       const activeFilters = Array.from(this.figuresSelectedFilters).map(key => {
         const idx = key.indexOf(":");
@@ -2348,8 +2348,13 @@ class App {
       filtered = filtered.filter(f => {
         const upperMbti = (f.mbti || "").toUpperCase();
         const stack = (MBTI_TYPES[f.mbti]?.stack || []).map(s => s.toLowerCase());
+        const prof = (f.profession || "").toLowerCase();
+        const role = (f.role || "").toLowerCase();
 
         return activeFilters.some(({ cat, val }) => {
+          if (cat === "type") {
+            return upperMbti === val.toUpperCase();
+          }
           if (cat === "function") {
             return stack.slice(0, 2).includes(val.toLowerCase());
           }
@@ -2360,20 +2365,46 @@ class App {
             const v = val.toUpperCase();
             return upperMbti.includes(v.charAt(0)) && upperMbti.includes(v.charAt(1));
           }
-          if (cat === "type") {
-            return upperMbti === val.toUpperCase();
+          if (cat === "category") {
+            const v = val.toUpperCase();
+            if (v === "ARTIST") {
+              return prof === "artist" || prof === "musician" || prof === "writer" || role.includes("artist");
+            }
+            if (v === "POLITICS") {
+              return prof === "politician" || role.includes("polit");
+            }
+            if (v === "PHILOSOPHY") {
+              return prof === "philosopher" || role.includes("philosoph") || role.includes("filosof");
+            }
+            if (v === "SCIENCE") {
+              return prof === "scientist" || role.includes("scien") || role.includes("științ") || role.includes("stiint");
+            }
+            if (v === "SPORTS") {
+              return prof === "sportiv" || role.includes("sport");
+            }
+            if (v === "BUSINESS") {
+              return prof === "entrepreneur" || role.includes("business") || role.includes("afaceri");
+            }
+            if (v === "HISTORICAL") {
+              return prof === "politician" || role.includes("historical") || role.includes("istoric");
+            }
+            if (v === "RELIGION") {
+              return prof === "religious" || role.includes("religio") || role.includes("religie");
+            }
+            return false;
           }
           return false;
         });
       });
     }
 
-    // 4. Sorting
+    // 4. Sorting: A-Z, Z-A, Match
     if (activeSort === "similarity" && hasUserScores) {
       filtered.sort((a, b) => (b.similarity ?? 0) - (a.similarity ?? 0));
-    } else if (activeSort === "mbti") {
-      filtered.sort((a, b) => a.mbti.localeCompare(b.mbti));
-    } else if (activeSort === "name") {
+    } else if (activeSort === "name_desc") {
+      filtered.sort((a, b) => b.name.localeCompare(a.name));
+    } else {
+      // default A-Z (name_asc, name)
       filtered.sort((a, b) => a.name.localeCompare(b.name));
     }
 
@@ -2445,7 +2476,7 @@ class App {
                 ` : ''}
               </div>
 
-              <!-- Quick Filter Section (All Caps, Multi-Select) -->
+              <!-- Quick Filter Section (All Caps, Multi-Select: TYPES, FUNCTIONS, AXES, TEMPERAMENTS, CATEGORY) -->
               <div class="figures-quick-filters">
                 <div class="figures-qf-header">
                   <span class="figures-qf-title">${lang === 'ro' ? 'FILTRE RAPIDE' : 'QUICK FILTER'}</span>
@@ -2456,67 +2487,7 @@ class App {
                   ` : ''}
                 </div>
 
-                <!-- Row 1: Functions (8) -->
-                <div class="figures-qf-row">
-                  <span class="figures-qf-label">FUNCTIONS:</span>
-                  <div class="figures-qf-chips">
-                    ${["NE", "NI", "SE", "SI", "TE", "TI", "FE", "FI"].map(fn => {
-                      const isChipActive = this.figuresSelectedFilters && this.figuresSelectedFilters.has(`function:${fn}`);
-                      return `
-                        <button 
-                          class="figures-qf-chip ${isChipActive ? 'active' : ''}" 
-                          type="button" 
-                          data-category="function" 
-                          data-value="${fn}"
-                        >
-                          ${fn}
-                        </button>
-                      `;
-                    }).join("")}
-                  </div>
-                </div>
-
-                <!-- Row 2: Axes (8) -->
-                <div class="figures-qf-row">
-                  <span class="figures-qf-label">AXES:</span>
-                  <div class="figures-qf-chips">
-                    ${["E", "I", "N", "S", "T", "F", "P", "J"].map(ax => {
-                      const isChipActive = this.figuresSelectedFilters && this.figuresSelectedFilters.has(`axis:${ax}`);
-                      return `
-                        <button 
-                          class="figures-qf-chip ${isChipActive ? 'active' : ''}" 
-                          type="button" 
-                          data-category="axis" 
-                          data-value="${ax}"
-                        >
-                          ${ax}
-                        </button>
-                      `;
-                    }).join("")}
-                  </div>
-                </div>
-
-                <!-- Row 3: Temperaments (8) -->
-                <div class="figures-qf-row">
-                  <span class="figures-qf-label">TEMPERAMENTS:</span>
-                  <div class="figures-qf-chips">
-                    ${["NT", "NF", "ST", "SF", "EJ", "EP", "IJ", "IP"].map(temp => {
-                      const isChipActive = this.figuresSelectedFilters && this.figuresSelectedFilters.has(`temperament:${temp}`);
-                      return `
-                        <button 
-                          class="figures-qf-chip ${isChipActive ? 'active' : ''}" 
-                          type="button" 
-                          data-category="temperament" 
-                          data-value="${temp}"
-                        >
-                          ${temp}
-                        </button>
-                      `;
-                    }).join("")}
-                  </div>
-                </div>
-
-                <!-- Row 4: Types (16) -->
+                <!-- Row 1: Types (16) -->
                 <div class="figures-qf-row">
                   <span class="figures-qf-label">TYPES:</span>
                   <div class="figures-qf-chips">
@@ -2540,26 +2511,113 @@ class App {
                     }).join("")}
                   </div>
                 </div>
+
+                <!-- Row 2: Functions (8) -->
+                <div class="figures-qf-row">
+                  <span class="figures-qf-label">FUNCTIONS:</span>
+                  <div class="figures-qf-chips">
+                    ${["NE", "NI", "SE", "SI", "TE", "TI", "FE", "FI"].map(fn => {
+                      const isChipActive = this.figuresSelectedFilters && this.figuresSelectedFilters.has(`function:${fn}`);
+                      return `
+                        <button 
+                          class="figures-qf-chip ${isChipActive ? 'active' : ''}" 
+                          type="button" 
+                          data-category="function" 
+                          data-value="${fn}"
+                        >
+                          ${fn}
+                        </button>
+                      `;
+                    }).join("")}
+                  </div>
+                </div>
+
+                <!-- Row 3: Axes (8) -->
+                <div class="figures-qf-row">
+                  <span class="figures-qf-label">AXES:</span>
+                  <div class="figures-qf-chips">
+                    ${["E", "I", "N", "S", "T", "F", "P", "J"].map(ax => {
+                      const isChipActive = this.figuresSelectedFilters && this.figuresSelectedFilters.has(`axis:${ax}`);
+                      return `
+                        <button 
+                          class="figures-qf-chip ${isChipActive ? 'active' : ''}" 
+                          type="button" 
+                          data-category="axis" 
+                          data-value="${ax}"
+                        >
+                          ${ax}
+                        </button>
+                      `;
+                    }).join("")}
+                  </div>
+                </div>
+
+                <!-- Row 4: Temperaments (8) -->
+                <div class="figures-qf-row">
+                  <span class="figures-qf-label">TEMPERAMENTS:</span>
+                  <div class="figures-qf-chips">
+                    ${["NT", "NF", "ST", "SF", "EJ", "EP", "IJ", "IP"].map(temp => {
+                      const isChipActive = this.figuresSelectedFilters && this.figuresSelectedFilters.has(`temperament:${temp}`);
+                      return `
+                        <button 
+                          class="figures-qf-chip ${isChipActive ? 'active' : ''}" 
+                          type="button" 
+                          data-category="temperament" 
+                          data-value="${temp}"
+                        >
+                          ${temp}
+                        </button>
+                      `;
+                    }).join("")}
+                  </div>
+                </div>
+
+                <!-- Row 5: Category (8) -->
+                <div class="figures-qf-row">
+                  <span class="figures-qf-label">CATEGORY:</span>
+                  <div class="figures-qf-chips">
+                    ${[
+                      "ARTIST", "POLITICS", "PHILOSOPHY", "SCIENCE", 
+                      "SPORTS", "BUSINESS", "HISTORICAL", "RELIGION"
+                    ].map(cat => {
+                      const isChipActive = this.figuresSelectedFilters && this.figuresSelectedFilters.has(`category:${cat}`);
+                      return `
+                        <button 
+                          class="figures-qf-chip ${isChipActive ? 'active' : ''}" 
+                          type="button" 
+                          data-category="category" 
+                          data-value="${cat}"
+                        >
+                          ${cat}
+                        </button>
+                      `;
+                    }).join("")}
+                  </div>
+                </div>
               </div>
 
-              <!-- Count & Sort Row -->
+              <!-- Count & Sort Row: A-Z, Z-A, Match -->
               <div class="figures-dir-status-row">
                 <span class="figures-dir-count">
                   ${t('showingFiguresCount', { count: filtered.length, total: NOTABLE_FIGURES.length }, lang)}
                 </span>
                 <div class="figures-dir-sort-wrap">
                   <span class="figures-sort-label">${lang === 'ro' ? 'Sortează:' : 'Sort by:'}</span>
+                  <button class="figures-sort-btn ${activeSort === 'name_asc' || activeSort === 'name' ? 'active' : ''}" type="button" data-sort="name_asc">
+                    A-Z
+                  </button>
+                  <button class="figures-sort-btn ${activeSort === 'name_desc' ? 'active' : ''}" type="button" data-sort="name_desc">
+                    Z-A
+                  </button>
                   ${hasUserScores ? `
                     <button class="figures-sort-btn ${activeSort === 'similarity' ? 'active' : ''}" type="button" data-sort="similarity">
-                      ${lang === 'ro' ? 'Compatibilitate' : 'Match'}
+                      Match
                     </button>
-                  ` : ''}
-                  <button class="figures-sort-btn ${activeSort === 'name' ? 'active' : ''}" type="button" data-sort="name">
-                    ${lang === 'ro' ? 'Nume (A-Z)' : 'Name (A-Z)'}
-                  </button>
-                  <button class="figures-sort-btn ${activeSort === 'mbti' ? 'active' : ''}" type="button" data-sort="mbti">
-                    MBTI
-                  </button>
+                  ` : `
+                    <button class="figures-sort-btn disabled" type="button" title="${lang === 'ro' ? 'Fă testul pentru a sorta după Match' : 'Take test to sort by Match'}" style="opacity: 0.5; cursor: not-allowed;" disabled>
+                      Match
+                    </button>
+                  `}
                 </div>
               </div>
             </section>
@@ -2631,7 +2689,7 @@ class App {
       resetBtn.addEventListener("click", () => {
         this.figuresDirSearch = "";
         if (this.figuresSelectedFilters) this.figuresSelectedFilters.clear();
-        this.figuresDirSort = hasUserScores ? "similarity" : "name";
+        this.figuresDirSort = hasUserScores ? "similarity" : "name_asc";
         this.renderFiguresDirectory();
       });
     }
@@ -2662,9 +2720,10 @@ class App {
       });
     });
 
-    // Sort buttons
+    // Sort buttons: A-Z, Z-A, Match
     document.querySelectorAll(".figures-sort-btn").forEach(btn => {
       btn.addEventListener("click", () => {
+        if (btn.disabled || btn.classList.contains("disabled")) return;
         this.figuresDirSort = btn.getAttribute("data-sort");
         this.renderFiguresDirectory();
       });

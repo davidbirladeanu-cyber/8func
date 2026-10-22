@@ -218,7 +218,7 @@ export const TRANSLATIONS = {
 
     // Welcome Screen
     welcomeEyebrow: "Evaluare Psihometrică Cognitivă",
-    welcomeTitle: "Funcțiile Cognitive Jungiene & Arhetipuri",
+    welcomeTitle: "Funcțiile Cognitive & Arhetipuri Jungiene",
     welcomeLead: "Descoperă-ți mecanismul psihologic prin polaritatea autentică a celor 8 funcții cognitive și a celor 4 axe spectrale MBTI.",
     selectDepth: "Alege Profunzimea Evaluării",
     questionsCount: "întrebări",
