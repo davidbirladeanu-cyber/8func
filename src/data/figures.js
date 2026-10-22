@@ -32,7 +32,7 @@ export const NOTABLE_FIGURES = [
       "Si": 35
     },
     "quote": "John Lennon este asociat(ă) arhetipului ENFP cu profilul spectral E 59%, N 98%, F 92%, P 95%.",
-    "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/John_Lennon_1969_%28cropped%29.jpg/220px-John_Lennon_1969_%28cropped%29.jpg"
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/85/John_Lennon_%22Walls_and_Bridges%22_1974_press_photo_2_%28color%29_%28cropped%29.jpg/330px-John_Lennon_%22Walls_and_Bridges%22_1974_press_photo_2_%28color%29_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
   },
   {
     "id": "david_bowie",
@@ -62,7 +62,7 @@ export const NOTABLE_FIGURES = [
       "Si": 65
     },
     "quote": "David Bowie este asociat(ă) arhetipului INFP cu profilul spectral I 81%, N 75%, F 92%, P 91%.",
-    "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/David-Bowie_Chicago_2002-08-08_photoby_Adam-Bielawski-cropped.jpg/220px-David-Bowie_Chicago_2002-08-08_photoby_Adam-Bielawski-cropped.jpg"
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e8/David-Bowie_Chicago_2002-08-08_photoby_Adam-Bielawski-cropped.jpg/330px-David-Bowie_Chicago_2002-08-08_photoby_Adam-Bielawski-cropped.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
   },
   {
     "id": "bad_bunny",
@@ -242,7 +242,7 @@ export const NOTABLE_FIGURES = [
       "Si": 45
     },
     "quote": "Freddie Mercury este asociat(ă) arhetipului ESFP cu profilul spectral E 86%, S 65%, F 98%, P 92%.",
-    "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Freddie_Mercury_performing_in_New_Haven%2C_CT%2C_November_1977.jpg/220px-Freddie_Mercury_performing_in_New_Haven%2C_CT%2C_November_1977.jpg"
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ef/Freddie_Mercury_performing_in_New_Haven%2C_CT%2C_November_1977.jpg/330px-Freddie_Mercury_performing_in_New_Haven%2C_CT%2C_November_1977.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
   },
   {
     "id": "adele",
@@ -302,7 +302,7 @@ export const NOTABLE_FIGURES = [
       "Si": 45
     },
     "quote": "Wolfgang Amadeus Mozart este asociat(ă) arhetipului ESFP cu profilul spectral E 94%, S 72%, F 95%, P 95%.",
-    "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Wolfgang-amadeus-mozart_1.jpg/220px-Wolfgang-amadeus-mozart_1.jpg"
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ad/The_Mozart_Family_-_Wolfgang_Amadeus_Mozart_headshot.jpg/330px-The_Mozart_Family_-_Wolfgang_Amadeus_Mozart_headshot.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
   },
   {
     "id": "michael_jackson",
@@ -392,7 +392,7 @@ export const NOTABLE_FIGURES = [
       "Si": 65
     },
     "quote": "Kurt Cobain este asociat(ă) arhetipului INFP cu profilul spectral I 98%, N 93%, F 95%, P 91%.",
-    "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Kurt_Cobain_1993.jpg/220px-Kurt_Cobain_1993.jpg"
+    "photo": "https://upload.wikimedia.org/wikipedia/commons/3/37/Nirvana_around_1992_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
   },
   {
     "id": "scarlett_johansson",
@@ -1832,7 +1832,7 @@ export const NOTABLE_FIGURES = [
       "Si": 65
     },
     "quote": "Vincent van Gogh este asociat(ă) arhetipului INFP cu profilul spectral I 98%, N 92%, F 97%, P 96%.",
-    "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Vincent_van_Gogh_-_Self-Portrait_-_Google_Art_Project.jpg/220px-Vincent_van_Gogh_-_Self-Portrait_-_Google_Art_Project.jpg"
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4c/Vincent_van_Gogh_-_Self-Portrait_-_Google_Art_Project_%28454045%29.jpg/330px-Vincent_van_Gogh_-_Self-Portrait_-_Google_Art_Project_%28454045%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
   },
   {
     "id": "osamu_dazai",
@@ -2042,7 +2042,7 @@ export const NOTABLE_FIGURES = [
       "Si": 45
     },
     "quote": "Aristotle este asociat(ă) arhetipului ENTJ cu profilul spectral E 87%, N 86%, T 98%, J 93%.",
-    "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Aristotle_Altemps_Inv8575.jpg/220px-Aristotle_Altemps_Inv8575.jpg"
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ae/Aristotle_Altemps_Inv8575.jpg/330px-Aristotle_Altemps_Inv8575.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
   },
   {
     "id": "plato",
@@ -2222,7 +2222,7 @@ export const NOTABLE_FIGURES = [
       "Si": 45
     },
     "quote": "Friedrich Nietzsche este asociat(ă) arhetipului INTJ cu profilul spectral I 97%, N 97%, T 84%, J 91%.",
-    "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Nietzsche187a.jpg/220px-Nietzsche187a.jpg"
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1b/Nietzsche187a.jpg/330px-Nietzsche187a.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
   },
   {
     "id": "thomas_edison",
@@ -2282,7 +2282,7 @@ export const NOTABLE_FIGURES = [
       "Si": 65
     },
     "quote": "Alan Turing este asociat(ă) arhetipului INTP cu profilul spectral I 99%, N 97%, T 99%, P 84%.",
-    "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Alan_Turing_Aged_16_%28cropped%29.jpg/220px-Alan_Turing_Aged_16_%28cropped%29.jpg"
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/ce/Alan_turing_header.jpg/330px-Alan_turing_header.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
   },
   {
     "id": "neil_degrasse_tyson",
@@ -2342,7 +2342,7 @@ export const NOTABLE_FIGURES = [
       "Si": 95
     },
     "quote": "Sigmund Freud este asociat(ă) arhetipului ISTJ cu profilul spectral I 93%, S 51%, T 85%, J 84%.",
-    "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Sigmund_Freud%2C_by_Max_Halberstadt_%28cropped%29.jpg/220px-Sigmund_Freud%2C_by_Max_Halberstadt_%28cropped%29.jpg"
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/36/Sigmund_Freud%2C_by_Max_Halberstadt_%28cropped%29.jpg/330px-Sigmund_Freud%2C_by_Max_Halberstadt_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
   },
   {
     "id": "nikola_tesla",
@@ -2372,7 +2372,7 @@ export const NOTABLE_FIGURES = [
       "Si": 45
     },
     "quote": "Nikola Tesla este asociat(ă) arhetipului INTJ cu profilul spectral I 94%, N 98%, T 97%, J 86%.",
-    "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/N.Tesla.JPG/220px-N.Tesla.JPG"
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/79/Tesla_circa_1890.jpeg/330px-Tesla_circa_1890.jpeg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
   },
   {
     "id": "albert_einstein",
@@ -2402,7 +2402,7 @@ export const NOTABLE_FIGURES = [
       "Si": 65
     },
     "quote": "Albert Einstein este asociat(ă) arhetipului INTP cu profilul spectral I 89%, N 97%, T 94%, P 95%.",
-    "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Albert_Einstein_Head.jpg/220px-Albert_Einstein_Head.jpg"
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/28/Albert_Einstein_Head_cleaned.jpg/330px-Albert_Einstein_Head_cleaned.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
   },
   {
     "id": "blaise_pascal",
@@ -2882,7 +2882,7 @@ export const NOTABLE_FIGURES = [
       "Si": 45
     },
     "quote": "Steve Jobs este asociat(ă) arhetipului ENTJ cu profilul spectral E 60%, N 66%, T 97%, J 56%.",
-    "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Steve_Jobs_Headshot_2010-CROP_%28cropped_2%29.jpg/220px-Steve_Jobs_Headshot_2010-CROP_%28cropped_2%29.jpg"
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/51/Steve_Jobs_Headshot_2010_%28cropped_4%29.jpg/330px-Steve_Jobs_Headshot_2010_%28cropped_4%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
   },
   {
     "id": "bill_gates",
@@ -2912,7 +2912,7 @@ export const NOTABLE_FIGURES = [
       "Si": 65
     },
     "quote": "Bill Gates este asociat(ă) arhetipului INTP cu profilul spectral I 54%, N 98%, T 99%, P 48%.",
-    "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Bill_Gates_2017_%28cropped%29.jpg/220px-Bill_Gates_2017_%28cropped%29.jpg"
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d9/Bill_Gates_at_the_European_Commission_-_P067383-987995_%28cropped%29_5.jpg/330px-Bill_Gates_at_the_European_Commission_-_P067383-987995_%28cropped%29_5.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
   },
   {
     "id": "mark_zuckerberg",
@@ -3392,7 +3392,7 @@ export const NOTABLE_FIGURES = [
       "Si": 45
     },
     "quote": "Nelson Mandela este asociat(ă) arhetipului INFJ cu profilul spectral I 69%, N 96%, F 97%, J 98%.",
-    "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/Nelson_Mandela_1994.jpg/220px-Nelson_Mandela_1994.jpg"
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/02/Nelson_Mandela_1994.jpg/330px-Nelson_Mandela_1994.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
   },
   {
     "id": "alexander_hamilton",
@@ -3542,7 +3542,7 @@ export const NOTABLE_FIGURES = [
       "Si": 45
     },
     "quote": "Martin Luther King Jr. este asociat(ă) arhetipului ENFJ cu profilul spectral E 80%, N 99%, F 99%, J 98%.",
-    "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Martin_Luther_King%2C_Jr..jpg/220px-Martin_Luther_King%2C_Jr..jpg"
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/ce/Martin_Luther_King%2C_Jr._and_Lyndon_Johnson_%28cropped%29.jpg/330px-Martin_Luther_King%2C_Jr._and_Lyndon_Johnson_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
   },
   {
     "id": "alexander_the_great",
@@ -3602,7 +3602,7 @@ export const NOTABLE_FIGURES = [
       "Si": 45
     },
     "quote": "Napoléon Bonaparte este asociat(ă) arhetipului ENTJ cu profilul spectral E 93%, N 87%, T 88%, J 87%.",
-    "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Jacques-Louis_David_-_The_Emperor_Napoleon_in_His_Study_at_the_Tuileries_-_Google_Art_Project.jpg/220px-Jacques-Louis_David_-_The_Emperor_Napoleon_in_His_Study_at_the_Tuileries_-_Google_Art_Project.jpg"
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/50/Jacques-Louis_David_-_The_Emperor_Napoleon_in_His_Study_at_the_Tuileries_-_Google_Art_Project.jpg/330px-Jacques-Louis_David_-_The_Emperor_Napoleon_in_His_Study_at_the_Tuileries_-_Google_Art_Project.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
   },
   {
     "id": "joseph_stalin",
@@ -4772,7 +4772,7 @@ export const NOTABLE_FIGURES = [
       "Si": 65
     },
     "quote": "Abraham Lincoln este asociat(ă) arhetipului INTP cu profilul spectral I 91%, N 96%, T 87%, P 85%.",
-    "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Abraham_Lincoln_O-77_matte_collodion_print.jpg/220px-Abraham_Lincoln_O-77_matte_collodion_print.jpg"
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ab/Abraham_Lincoln_O-77_matte_collodion_print.jpg/330px-Abraham_Lincoln_O-77_matte_collodion_print.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
   },
   {
     "id": "kim_jong_un",
@@ -5012,7 +5012,7 @@ export const NOTABLE_FIGURES = [
       "Si": 45
     },
     "quote": "Donald Trump este asociat(ă) arhetipului ESTP cu profilul spectral E 95%, S 76%, T 88%, P 75%.",
-    "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Donald_Trump_official_portrait.jpg/220px-Donald_Trump_official_portrait.jpg"
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/16/Official_Presidential_Portrait_of_President_Donald_J._Trump_%282025%29.jpg/330px-Official_Presidential_Portrait_of_President_Donald_J._Trump_%282025%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
   },
   {
     "id": "pitbull",
@@ -5886,17 +5886,6 @@ export const NOTABLE_FIGURES = [
   }
 ];
 
-const FUNCTIONS = ["Ne", "Ni", "Te", "Ti", "Fe", "Fi", "Se", "Si"];
-
-/**
- * Calculates similarity percentage between user and a figure
- * Combines 4-Axis Spectrum Distance (70%) and Cognitive Functions Alignment (30%)
- *
- * @param {Object} userScores - User's 8 cognitive function percentages { Ne, Ni, ... }
- * @param {Object} userAxisScores - User's 4 MBTI axis scores { EI, NS, TF, JP }
- * @param {Object} figure - Personality object from NOTABLE_FIGURES
- * @returns {number} Compatibility percentage [0 - 100]
- */
 export function calculateFigureSimilarity(userScores, userAxisScores, figure) {
   if (!figure) return 50;
 
@@ -5973,4 +5962,62 @@ export function getRankedFigures(userScores, userAxisScores) {
   const opposite = [...list].sort((a, b) => a.similarity - b.similarity).slice(0, 10);
 
   return { similar, opposite, all: list };
+}
+
+/**
+ * Bilingual helper for figure roles/professions
+ * Translates Romanian database roles to clean English when lang === 'en'
+ *
+ * @param {Object} fig
+ * @param {string} lang - 'ro' | 'en'
+ * @returns {string}
+ */
+export function getFigureRole(fig, lang = "ro") {
+  if (!fig) return "";
+  let role = fig.role ? fig.role.replace(/\s*·\s*[A-Z]{4}\s*$/i, "").trim() : (fig.profession || "");
+  if (lang === "en") {
+    const roToEn = {
+      "muzician": "Musician",
+      "artist & actor": "Artist & Actor",
+      "artist": "Artist",
+      "actor": "Actor",
+      "actriță": "Actress",
+      "actrita": "Actress",
+      "scriitor": "Writer",
+      "antreprenor & lider": "Entrepreneur & Leader",
+      "antreprenor": "Entrepreneur",
+      "filosof": "Philosopher",
+      "om de știință": "Scientist",
+      "om de stiinta": "Scientist",
+      "fizician": "Physicist",
+      "psiholog": "Psychologist",
+      "politician": "Politician",
+      "inventator": "Inventor",
+      "regizor": "Film Director",
+      "sportiv": "Athlete",
+      "lider & politician": "Leader & Politician",
+      "lider": "Leader",
+      "figură spirituală": "Spiritual Figure",
+      "figura spirituala": "Spiritual Figure",
+      "lider spiritual": "Spiritual Leader",
+      "lider_spiritual": "Spiritual Leader",
+      "istoric": "Historian",
+      "cântăreț": "Singer",
+      "cantaret": "Singer",
+      "pictor": "Painter",
+      "om politic": "Statesman",
+      "om_politic": "Statesman",
+      "general": "Military General",
+      "matematician": "Mathematician",
+      "economist": "Economist",
+      "jurnalist": "Journalist"
+    };
+    const lower = role.toLowerCase().trim();
+    if (roToEn[lower]) return roToEn[lower];
+    for (const [ro, en] of Object.entries(roToEn)) {
+      if (lower.includes(ro)) return en;
+    }
+    return role ? (role.charAt(0).toUpperCase() + role.slice(1)) : "";
+  }
+  return role ? (role.charAt(0).toUpperCase() + role.slice(1)) : "";
 }

@@ -4336,3 +4336,761 @@ a {
   }
 }
 
+/* ==========================================================================
+   Figures Directory & Gallery Page (196 Personalities Spec)
+   ========================================================================== */
+
+.e-nav-figures-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.42rem 0.95rem;
+  border-radius: var(--radius-pill);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  color: var(--text-strong);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.e-nav-figures-btn:hover {
+  background: var(--card-bg);
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.e-nav-figures-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(16, 46, 36, 0.25);
+}
+
+.figures-dir-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 4rem;
+}
+
+.figures-dir-hero {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.figures-dir-eyebrow {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-pill);
+  margin-bottom: 0.75rem;
+}
+
+.figures-dir-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.85rem, 4vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text-strong);
+  margin-bottom: 0.65rem;
+  line-height: 1.15;
+}
+
+.figures-dir-lead {
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+  max-width: 680px;
+  margin: 0 auto 1.25rem;
+}
+
+.figures-dir-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-strong);
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  padding: 0.4rem 1.1rem;
+  border-radius: var(--radius-pill);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Directory Controls Panel */
+.figures-dir-controls {
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 1.25rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.figures-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.figures-search-icon {
+  position: absolute;
+  left: 1rem;
+  width: 18px;
+  height: 18px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.figures-dir-search-input {
+  width: 100%;
+  padding: 0.85rem 2.8rem 0.85rem 2.8rem;
+  border-radius: 12px;
+  background: var(--paper);
+  border: 1.5px solid var(--line);
+  color: var(--text-strong);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.figures-dir-search-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--card-bg);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.figures-search-clear {
+  position: absolute;
+  right: 0.75rem;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--line);
+  border: none;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: all 0.15s ease;
+}
+
+.figures-search-clear:hover {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+/* Temperament Tabs */
+.figures-temp-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.figures-temp-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-pill);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  color: var(--text-strong);
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.figures-temp-tab:hover {
+  background: var(--card-bg);
+  border-color: var(--accent);
+}
+
+.figures-temp-tab.active {
+  background: var(--text-strong);
+  border-color: var(--text-strong);
+  color: var(--card-bg);
+}
+
+.figures-temp-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* 16 MBTI Chips */
+.figures-mbti-chips-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid var(--line);
+}
+
+.figures-mbti-chip {
+  padding: 0.35rem 0.65rem;
+  border-radius: 8px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.figures-mbti-chip:hover {
+  color: var(--text-strong);
+  border-color: var(--accent);
+}
+
+.figures-mbti-chip.active {
+  background: var(--text-strong);
+  border-color: var(--text-strong);
+  color: var(--card-bg);
+  font-weight: 800;
+}
+
+/* Status & Sort Row */
+.figures-dir-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.figures-dir-count {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.figures-dir-sort-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.figures-sort-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-right: 0.2rem;
+}
+
+.figures-sort-btn {
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-pill);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.figures-sort-btn:hover {
+  color: var(--text-strong);
+}
+
+.figures-sort-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+}
+
+/* Figures Grid */
+.figures-dir-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.25rem;
+}
+
+@media (max-width: 600px) {
+  .figures-dir-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Figure Box Card - Matches Results Page Pastel Box */
+.figure-dir-card {
+  border-radius: 18px;
+  padding: 1.25rem 1.15rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease;
+  position: relative;
+  overflow: hidden;
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  box-sizing: border-box;
+}
+
+.figure-dir-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28);
+}
+
+.figure-dir-card:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.figure-dir-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 0.85rem;
+}
+
+.figure-dir-num {
+  font-family: var(--font-display);
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-pill);
+}
+
+.figure-dir-badge {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--radius-pill);
+  letter-spacing: 0.04em;
+}
+
+.figure-dir-match {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.22);
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--radius-pill);
+  backdrop-filter: blur(4px);
+}
+
+.figure-dir-temp {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(0, 0, 0, 0.18);
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-pill);
+}
+
+.figure-dir-photo-wrap {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  margin-bottom: 0.85rem;
+  overflow: hidden;
+  border: 3px solid rgba(255, 255, 255, 0.45);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.figure-dir-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.figure-dir-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.figure-dir-content {
+  width: 100%;
+  margin-bottom: 0.85rem;
+}
+
+.figure-dir-name {
+  font-family: var(--font-display);
+  font-size: 1.12rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 0.25rem 0;
+  line-height: 1.25;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.figure-dir-role {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.92);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.figure-dir-stack {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.figure-dir-footer {
+  width: 100%;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.figure-dir-inspect-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.22);
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-pill);
+  transition: all 0.15s ease;
+}
+
+.figure-dir-card:hover .figure-dir-inspect-btn {
+  background: rgba(255, 255, 255, 0.28);
+  transform: translateX(2px);
+}
+
+/* Empty State */
+.figures-empty-state {
+  text-align: center;
+  padding: 4rem 1.5rem;
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+}
+
+.figures-empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.figures-empty-state h3 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-strong);
+  margin-bottom: 0.5rem;
+}
+
+.figures-empty-state p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 1.25rem;
+}
+
+/* ==========================================================================
+   Figure Detail Inspector Modal
+   ========================================================================== */
+
+.fig-modal-content {
+  max-width: 620px;
+  width: 95%;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 20px;
+  padding: 0;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--line);
+}
+
+.fig-modal-header {
+  padding: 1.75rem 1.5rem 1.5rem;
+  position: relative;
+}
+
+.fig-modal-profile {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.fig-modal-photo-wrap {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  flex-shrink: 0;
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fig-modal-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.fig-modal-avatar-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+.fig-modal-profile-text {
+  min-width: 0;
+}
+
+.fig-modal-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.4rem;
+}
+
+.fig-modal-mbti-tag {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 0.15rem 0.6rem;
+  border-radius: var(--radius-pill);
+}
+
+.fig-modal-temp-tag {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--radius-pill);
+}
+
+.fig-modal-sim-tag {
+  font-family: var(--font-display);
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.25);
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--radius-pill);
+  backdrop-filter: blur(4px);
+}
+
+.fig-modal-name {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 0.2rem 0;
+  line-height: 1.2;
+}
+
+.fig-modal-role {
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 600;
+}
+
+.fig-modal-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  background: var(--card-bg);
+}
+
+.fig-modal-quote-box {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1rem 1.15rem;
+}
+
+.fig-modal-quote {
+  font-style: italic;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--text-strong);
+  margin: 0 0 0.65rem 0;
+}
+
+.fig-modal-mbti-summary {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.fig-modal-sec-title {
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin: 0 0 0.75rem 0;
+}
+
+.fig-modal-axes-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+@media (max-width: 520px) {
+  .fig-modal-axes-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.fig-modal-axis-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.75rem;
+}
+
+.fig-modal-axis-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  margin-bottom: 0.45rem;
+}
+
+.fig-modal-axis-bar-wrap {
+  margin-bottom: 0.45rem;
+}
+
+.fig-modal-axis-bar-track {
+  height: 8px;
+  background: var(--line);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.fig-modal-axis-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+}
+
+.fig-modal-axis-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--text-strong);
+}
+
+.fig-modal-funcs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+@media (max-width: 520px) {
+  .fig-modal-funcs-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.fig-modal-func-item {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.6rem 0.75rem;
+}
+
+.fig-modal-func-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  margin-bottom: 0.4rem;
+}
+
+.fig-modal-func-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  padding: 0.1rem 0.45rem;
+  border-radius: var(--radius-pill);
+}
+
+.fig-modal-func-pct {
+  font-size: 0.78rem;
+  color: var(--text-strong);
+  margin-left: auto;
+}
+
+.fig-modal-func-track {
+  height: 6px;
+  background: var(--line);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.fig-modal-func-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+}
+
+.fig-modal-footer {
+  padding: 1.15rem 1.5rem;
+  border-top: 1px solid var(--line);
+  background: var(--paper);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+

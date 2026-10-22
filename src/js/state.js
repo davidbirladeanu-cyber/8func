@@ -61,16 +61,22 @@ export class AppState {
     }
 
     // Screen state & URL results check
+    const isFiguresPath = window.location.pathname.includes("/figures") || window.location.hash === "#figures" || window.location.pathname.includes("/personalitati");
     const parsedUrlScores = parseResultsUrlPath(window.location.pathname) || parseResultsUrlPath(window.location.hash);
     if (parsedUrlScores) {
       this.screen = "results";
       this.urlResultsScores = parsedUrlScores;
+    } else if (isFiguresPath) {
+      this.screen = "figures";
+      this.urlResultsScores = null;
     } else {
       this.urlResultsScores = null;
       const savedScreen = localStorage.getItem(STORAGE_KEYS.SCREEN);
       const { isComplete } = calculateScores(this.questions, this.answers);
 
-      if (savedScreen === "results" || (isComplete && Object.keys(this.answers).length >= this.questions.length)) {
+      if (savedScreen === "figures") {
+        this.screen = "figures";
+      } else if (savedScreen === "results" || (isComplete && Object.keys(this.answers).length >= this.questions.length)) {
         this.screen = "results";
       } else if (savedScreen === "quiz" && Object.keys(this.answers).length > 0) {
         this.screen = "quiz";
@@ -258,6 +264,11 @@ export class AppState {
 
   showResults() {
     this.screen = "results";
+    this.notify();
+  }
+
+  showFigures() {
+    this.screen = "figures";
     this.notify();
   }
 

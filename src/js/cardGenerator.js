@@ -4,6 +4,7 @@
  */
 
 import { FUNCTIONS_LIST } from "../data/functions.js";
+import { getFigureRole } from "../data/figures.js";
 
 // Specific pastel/vibrant colors for each of the 8 cognitive functions matching the exact website spec
 export function getFunctionCardColor(f) {
@@ -662,8 +663,7 @@ export async function generateResultsCardCanvas({
     ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
     ctx.font = `500 12px ${FONT_FAMILY}`;
 
-    let roleText = fig.role || fig.profession || "Notable figure";
-    if (roleText.includes("·")) roleText = roleText.split("·")[0].trim();
+    let roleText = getFigureRole(fig, lang) || fig.profession || (lang === "en" ? "Notable figure" : "Personalitate notabilă");
     if (ctx.measureText(roleText).width > 165) {
       roleText = roleText.slice(0, 16) + "…";
     }

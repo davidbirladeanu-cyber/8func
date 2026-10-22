@@ -8,7 +8,7 @@ import { COGNITIVE_FUNCTIONS, FUNCTIONS_LIST } from "../data/functions.js";
 import { TEST_MODES, getQuestionText, ALL_QUESTIONS, getQuestionsForMode } from "../data/questions.js";
 import { ANSWER_OPTIONS, ANSWER_VALUE_MAP, getAnswerOptions, calculateScores, buildResultsUrlPath } from "./scoring.js";
 import { MBTI_TYPES, calculateBestMbtiType, getTypeTemperament } from "../data/mbtiTypes.js";
-import { NOTABLE_FIGURES, getRankedFigures, calculateFigureSimilarity } from "../data/figures.js";
+import { NOTABLE_FIGURES, getRankedFigures, calculateFigureSimilarity, getFigureRole } from "../data/figures.js";
 import { ICONS } from "./icons.js";
 import { t, TRANSLATIONS } from "../data/translations.js";
 import { recordQuizSubmission, initVaultTriggers } from "./vault.js";
@@ -136,6 +136,26 @@ const MBTI_SPECTRUM_AXES = [
   }
 ];
 
+// Color helpers for cognitive functions & MBTI types
+export function getFuncTileColors(f) {
+  if (f === "Ne" || f === "Ni") return { bg: "#95637e", text: "#ffffff" };
+  if (f === "Te" || f === "Ti") return { bg: "#72cccd", text: "#0d2b2c" };
+  if (f === "Se" || f === "Si") return { bg: "#e5c727", text: "#2a2100" };
+  if (f === "Fe" || f === "Fi") return { bg: "#9ac262", text: "#142b08" };
+  return { bg: "#95637e", text: "#ffffff" };
+}
+
+export function getMbtiTileColors(type = "") {
+  const upper = (type || "").toUpperCase();
+  if (upper.includes("N") && upper.includes("T")) return { bg: "#95637e", text: "#ffffff", border: "#7b4f65", name: "NT" };
+  if (upper.includes("N") && upper.includes("F")) return { bg: "#9ac262", text: "#142b08", border: "#7ea349", name: "NF" };
+  if (upper.includes("S") && upper.includes("J")) return { bg: "#72cccd", text: "#0d2b2c", border: "#58abac", name: "SJ" };
+  if (upper.includes("S") && upper.includes("P")) return { bg: "#e5c727", text: "#2a2100", border: "#c2a61a", name: "SP" };
+  if (upper.includes("S") && upper.includes("T")) return { bg: "#72cccd", text: "#0d2b2c", border: "#58abac", name: "ST" };
+  if (upper.includes("S") && upper.includes("F")) return { bg: "#e5c727", text: "#2a2100", border: "#c2a61a", name: "SF" };
+  return { bg: "#95637e", text: "#ffffff", border: "#7b4f65", name: "NT" };
+}
+
 class App {
   constructor() {
     this.state = new AppState();
@@ -145,6 +165,12 @@ class App {
     this.figuresTab = "similar"; // 'similar' | 'opposite'
     this.selectedFigureId = null;
     this.lastRecordedSignature = null;
+
+    // Figures directory state
+    this.figuresDirSearch = "";
+    this.figuresDirTemp = "all"; // 'all' | 'NT' | 'NF' | 'SJ' | 'SP'
+    this.figuresDirMbti = "all"; // 'all' | 'INTJ' | ...
+    this.figuresDirSort = "name"; // 'similarity' | 'name' | 'mbti'
 
     // Apply saved theme
     document.documentElement.setAttribute("data-theme", this.state.theme);
@@ -407,6 +433,8 @@ class App {
       this.renderWelcome();
     } else if (this.state.screen === "results") {
       this.renderResults();
+    } else if (this.state.screen === "figures") {
+      this.renderFiguresDirectory();
     } else {
       this.renderQuiz();
     }
@@ -417,6 +445,11 @@ class App {
     const lang = this.state.lang || "ro";
     const langLabel = lang === "ro" ? "RO" : "EN";
     const langTitle = lang === "ro" ? "Switch to English" : "Comută în Română";
+
+    const hasCompletedResults = Boolean(
+      this.state.urlResultsScores || 
+      (this.state.answers && Object.keys(this.state.answers).length >= this.state.questions.length)
+    );
 
     const orderMode = this.state.orderMode || "format";
     let orderIcon = ICONS.layers;
@@ -437,6 +470,10 @@ class App {
             <b>8</b><span>func</span>
           </button>
           <div class="e-nav-actions">
+            <button class="e-nav-figures-btn ${this.state.screen === 'figures' ? 'active' : ''}" type="button" id="nav-figures-btn" title="${t('figuresNav', {}, lang)}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              <span>${t('figuresNav', {}, lang)}</span>
+            </button>
             <button class="theme-toggle" type="button" aria-label="${isDark ? (lang === 'ro' ? 'Mod luminos' : 'Switch to light mode') : (lang === 'ro' ? 'Mod întunecat' : 'Switch to dark mode')}" title="${isDark ? (lang === 'ro' ? 'Mod luminos' : 'Switch to light mode') : (lang === 'ro' ? 'Mod întunecat' : 'Switch to dark mode')}" id="theme-toggle-btn">
               ${isDark ? ICONS.sun : ICONS.moon}
             </button>
@@ -460,6 +497,17 @@ class App {
                 <span class="e-arr">${ICONS.restart}</span>
               </button>
             ` : ""}
+            ${this.state.screen === "figures" ? (hasCompletedResults ? `
+              <button class="e-btn e-btn-primary e-btn-sm" type="button" id="nav-results-btn">
+                <span>${lang === 'ro' ? 'Rezultate' : 'Results'}</span>
+                <svg class="e-arr" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2;"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
+              </button>
+            ` : `
+              <button class="e-btn e-btn-primary e-btn-sm" type="button" id="nav-start-quiz-btn">
+                <span>${lang === 'ro' ? 'Fă Testul' : 'Take Test'}</span>
+                <svg class="e-arr" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2;"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
+              </button>
+            `) : ""}
           </div>
         </div>
       </header>
@@ -478,6 +526,15 @@ class App {
 
     const logoBtn = document.getElementById("nav-logo-btn");
     if (logoBtn) logoBtn.addEventListener("click", () => this.state.showWelcome());
+
+    const figuresBtn = document.getElementById("nav-figures-btn");
+    if (figuresBtn) figuresBtn.addEventListener("click", () => this.state.showFigures());
+
+    const navResultsBtn = document.getElementById("nav-results-btn");
+    if (navResultsBtn) navResultsBtn.addEventListener("click", () => this.state.showResults());
+
+    const navStartQuizBtn = document.getElementById("nav-start-quiz-btn");
+    if (navStartQuizBtn) navStartQuizBtn.addEventListener("click", () => this.state.showWelcome());
 
     const retakeBtn = document.getElementById("nav-retake-btn");
     if (retakeBtn) retakeBtn.addEventListener("click", () => this.state.showWelcome());
@@ -1215,23 +1272,6 @@ class App {
     const lowPct = percentages[extremeLowFunc];
     const balancedFunc = [...sortedFunctions].sort((a, b) => Math.abs((percentages[a] ?? 50) - 50) - Math.abs((percentages[b] ?? 50) - 50))[0];
 
-    // Color helpers matching Cognitive Hierarchy palette
-    const getFuncTileColors = (f) => {
-      if (f === "Ne" || f === "Ni") return { bg: "#95637e", text: "#ffffff" };
-      if (f === "Te" || f === "Ti") return { bg: "#72cccd", text: "#0d2b2c" };
-      if (f === "Se" || f === "Si") return { bg: "#e5c727", text: "#2a2100" };
-      if (f === "Fe" || f === "Fi") return { bg: "#9ac262", text: "#142b08" };
-      return { bg: "#95637e", text: "#ffffff" };
-    };
-
-    const getMbtiTileColors = (type) => {
-      if (type.includes("N") && type.includes("T")) return { bg: "#95637e", text: "#ffffff" };
-      if (type.includes("N") && type.includes("F")) return { bg: "#9ac262", text: "#142b08" };
-      if (type.includes("S") && type.includes("T")) return { bg: "#72cccd", text: "#0d2b2c" };
-      if (type.includes("S") && type.includes("F")) return { bg: "#e5c727", text: "#2a2100" };
-      return { bg: "#95637e", text: "#ffffff" };
-    };
-
     const highColors = getFuncTileColors(extremeHighFunc);
     const balColors = getFuncTileColors(balancedFunc);
     const lowColors = getFuncTileColors(extremeLowFunc);
@@ -1246,40 +1286,6 @@ class App {
       currentComparisonFigure = similarFigures[0] || allFigures[0];
       this.selectedFigureId = currentComparisonFigure.id;
     }
-
-    // Role / Profession bilingual helper
-    const getFigureRole = (fig, l) => {
-      let role = fig.role ? fig.role.replace(/\s*·\s*[A-Z]{4}\s*$/i, "").trim() : (fig.profession || "");
-      if (l === "en") {
-        const roToEn = {
-          muzician: "Musician",
-          actor: "Actor",
-          "actriță": "Actress",
-          filosof: "Philosopher",
-          fizician: "Physicist",
-          antreprenor: "Entrepreneur",
-          scriitor: "Writer",
-          psiholog: "Psychologist",
-          politician: "Politician",
-          inventator: "Inventor",
-          regizor: "Film Director",
-          sportiv: "Athlete",
-          om_de_stiinta: "Scientist",
-          istoric: "Historian",
-          cântăreț: "Singer",
-          pictor: "Painter",
-          om_politic: "Statesman",
-          general: "Military General",
-          lider_spiritual: "Spiritual Leader",
-          matematician: "Mathematician",
-          economist: "Economist",
-          jurnalist: "Journalist"
-        };
-        const lower = role.toLowerCase().trim();
-        return roToEn[lower] || (role ? role.charAt(0).toUpperCase() + role.slice(1) : "");
-      }
-      return role ? (role.charAt(0).toUpperCase() + role.slice(1)) : "";
-    };
 
     // 4 Spectrum Coordinates
     // Spectrum 1: Mind & Nature (N sus, S jos, F stanga, T dreapta)
@@ -2058,13 +2064,18 @@ class App {
 
         dropdown.innerHTML = matches.map(fig => {
           const temp = getTypeTemperament(fig.mbti);
-          const itemCleanRole = fig.role ? fig.role.replace(/\s*·\s*[A-Z]{4}\s*$/i, "").trim() : (fig.profession || "");
+          const itemCleanRole = getFigureRole(fig, lang);
           const matchLabel = lang === "ro" ? `${fig.similarity}% compatibilitate` : `${fig.similarity}% match`;
           return `
             <div class="autocomplete-item" data-id="${fig.id}" style="display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 1rem; border-bottom: 1px solid var(--line); cursor: pointer; transition: background 0.15s ease;">
               <div style="display: flex; align-items: center; gap: 0.75rem; min-width: 0;">
-                <div style="width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; background: ${temp.colorBg}; color: ${temp.color}; border: 1px solid ${temp.colorBorder}; flex-shrink: 0;">
-                  ${fig.avatar || fig.name.charAt(0)}
+                <div style="width: 36px; height: 36px; border-radius: 50%; overflow: hidden; background: ${temp.colorBg}; border: 1.5px solid ${temp.colorBorder}; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                  ${fig.photo ? `
+                    <img src="${fig.photo}" alt="${fig.name}" referrerpolicy="no-referrer" style="width: 100%; height: 100%; object-fit: cover; display: block;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                    <span style="display:none; font-size: 0.95rem; color: ${temp.color}; font-weight: 700;">${fig.avatar || fig.name.charAt(0)}</span>
+                  ` : `
+                    <span style="font-size: 0.95rem; color: ${temp.color}; font-weight: 700;">${fig.avatar || fig.name.charAt(0)}</span>
+                  `}
                 </div>
                 <div style="min-width: 0;">
                   <div style="font-weight: 700; font-size: 0.92rem; color: var(--text-strong); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${fig.name}</div>
@@ -2273,6 +2284,569 @@ class App {
     if (modalOverlay) {
       modalOverlay.addEventListener("click", (e) => {
         if (e.target === modalOverlay) this.closeModal();
+      });
+    }
+  }
+
+  // ==========================================================================
+  // Dedicated Figures Directory (196 Personalities Gallery)
+  // ==========================================================================
+
+  renderFiguresDirectory() {
+    const lang = this.state.lang || "ro";
+
+    // Check if user has test scores available
+    let userPercentages = null;
+    let userAxisScores = null;
+    let hasUserScores = false;
+
+    if (this.state.urlResultsScores) {
+      userPercentages = this.state.urlResultsScores.percentages;
+      userAxisScores = this.state.urlResultsScores.axisScores;
+      hasUserScores = true;
+    } else {
+      const { percentages, axisScores, isComplete } = calculateScores(this.state.questions, this.state.answers);
+      if (isComplete && Object.keys(this.state.answers).length >= this.state.questions.length) {
+        userPercentages = percentages;
+        userAxisScores = axisScores;
+        hasUserScores = true;
+      }
+    }
+
+    // Default sort
+    const activeSort = this.figuresDirSort || (hasUserScores ? "similarity" : "name");
+
+    // Map all figures with original 1-based index and similarity if scores exist
+    let allFigs = NOTABLE_FIGURES.map((fig, idx) => {
+      const sim = hasUserScores ? calculateFigureSimilarity(userPercentages, userAxisScores, fig) : null;
+      return {
+        ...fig,
+        originalIndex: idx + 1,
+        similarity: sim
+      };
+    });
+
+    // 1. Search filter
+    const query = (this.figuresDirSearch || "").toLowerCase().trim();
+    let filtered = allFigs;
+    if (query) {
+      filtered = filtered.filter(f => {
+        const name = (f.name || "").toLowerCase();
+        const role = (f.role || f.profession || "").toLowerCase();
+        const cleanRole = getFigureRole(f, lang).toLowerCase();
+        const mbti = (f.mbti || "").toLowerCase();
+        return name.includes(query) || role.includes(query) || cleanRole.includes(query) || mbti.includes(query);
+      });
+    }
+
+    // 2. Temperament filter (all, NT, NF, SJ, SP)
+    const activeTemp = this.figuresDirTemp || "all";
+    if (activeTemp !== "all") {
+      filtered = filtered.filter(f => {
+        const upper = (f.mbti || "").toUpperCase();
+        if (activeTemp === "NT") return upper.includes("N") && upper.includes("T");
+        if (activeTemp === "NF") return upper.includes("N") && upper.includes("F");
+        if (activeTemp === "SJ") return upper.includes("S") && upper.includes("J");
+        if (activeTemp === "SP") return upper.includes("S") && upper.includes("P");
+        return true;
+      });
+    }
+
+    // 3. MBTI chip filter
+    const activeMbti = this.figuresDirMbti || "all";
+    if (activeMbti !== "all") {
+      filtered = filtered.filter(f => (f.mbti || "").toUpperCase() === activeMbti.toUpperCase());
+    }
+
+    // 4. Sorting
+    if (activeSort === "similarity" && hasUserScores) {
+      filtered.sort((a, b) => (b.similarity ?? 0) - (a.similarity ?? 0));
+    } else if (activeSort === "mbti") {
+      filtered.sort((a, b) => a.mbti.localeCompare(b.mbti));
+    } else if (activeSort === "name") {
+      filtered.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    // Generate Cards HTML
+    const cardsHtml = filtered.map(fig => {
+      const numStr = String(fig.originalIndex).padStart(2, "0");
+      const figColors = getMbtiTileColors(fig.mbti);
+      const temp = getTypeTemperament(fig.mbti);
+      const cleanRole = getFigureRole(fig, lang);
+      const stack = MBTI_TYPES[fig.mbti]?.stack || [];
+
+      return `
+        <div class="figure-dir-card" data-id="${fig.id}" style="background: ${figColors.bg}; color: #ffffff;" role="button" tabindex="0" aria-label="${fig.name} · ${fig.mbti}">
+          <div class="figure-dir-card-top">
+            <span class="figure-dir-num">#${numStr}</span>
+            <span class="figure-dir-badge">${fig.mbti}</span>
+            ${fig.similarity !== null ? `
+              <span class="figure-dir-match">${fig.similarity}% ${lang === 'ro' ? 'compatibilitate' : 'match'}</span>
+            ` : `
+              <span class="figure-dir-temp">${temp.name}</span>
+            `}
+          </div>
+
+          <div class="figure-dir-photo-wrap">
+            ${fig.photo ? `
+              <img class="figure-dir-photo" src="${fig.photo}" alt="${fig.name}" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+              <div class="figure-dir-fallback" style="display:none; background: rgba(0,0,0,0.22); color: #ffffff;">${fig.avatar || fig.name.charAt(0)}</div>
+            ` : `
+              <div class="figure-dir-fallback" style="background: rgba(0,0,0,0.22); color: #ffffff;">${fig.avatar || fig.name.charAt(0)}</div>
+            `}
+          </div>
+
+          <div class="figure-dir-content">
+            <h3 class="figure-dir-name">${fig.name}</h3>
+            <div class="figure-dir-role">${cleanRole}</div>
+          </div>
+
+          <div class="figure-dir-stack">
+            ${stack.map(st => {
+              const fColor = getFuncTileColors(st).bg;
+              return `<span class="resemble-stack-pill" style="background: ${fColor}; color: #ffffff;">${st}</span>`;
+            }).join("")}
+          </div>
+
+          <div class="figure-dir-footer">
+            <span class="figure-dir-inspect-btn">
+              <span>${lang === 'ro' ? 'Vezi spectrul' : 'Inspect spectrum'}</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 13px; height: 13px;"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            </span>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    this.root.innerHTML = `
+      <div class="e-app">
+        ${this.renderNavbar()}
+        <main class="e-main">
+          <div class="figures-dir-container">
+            <!-- Hero / Header -->
+            <section class="figures-dir-hero">
+              <span class="figures-dir-eyebrow">${t('figuresDirectoryEyebrow', {}, lang)}</span>
+              <h1 class="figures-dir-title">${t('figuresDirectoryTitle', {}, lang)}</h1>
+              <p class="figures-dir-lead">${t('figuresDirectoryLead', {}, lang)}</p>
+              <div class="figures-dir-badge-pill">
+                ${t('figuresDirectoryBadge', {}, lang)}
+              </div>
+            </section>
+
+            <!-- Sticky Controls Box -->
+            <section class="figures-dir-controls">
+              <!-- Search Bar -->
+              <div class="figures-search-box">
+                <svg class="figures-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input 
+                  type="text" 
+                  id="figures-dir-search-input" 
+                  class="figures-dir-search-input" 
+                  value="${this.figuresDirSearch || ''}" 
+                  placeholder="${t('searchFiguresPlaceholder', {}, lang)}" 
+                  autocomplete="off" 
+                />
+                ${this.figuresDirSearch ? `
+                  <button class="figures-search-clear" type="button" id="figures-search-clear-btn" aria-label="Clear search">✕</button>
+                ` : ''}
+              </div>
+
+              <!-- Temperament Filter Tabs -->
+              <div class="figures-temp-tabs">
+                <button class="figures-temp-tab ${activeTemp === 'all' ? 'active' : ''}" type="button" data-temp="all">
+                  <span>${t('filterAllFigures', {}, lang)}</span>
+                </button>
+                <button class="figures-temp-tab temp-nt ${activeTemp === 'NT' ? 'active' : ''}" type="button" data-temp="NT">
+                  <span class="figures-temp-dot" style="background:#95637e;"></span>
+                  <span>${t('filterNT', {}, lang)}</span>
+                </button>
+                <button class="figures-temp-tab temp-nf ${activeTemp === 'NF' ? 'active' : ''}" type="button" data-temp="NF">
+                  <span class="figures-temp-dot" style="background:#9ac262;"></span>
+                  <span>${t('filterNF', {}, lang)}</span>
+                </button>
+                <button class="figures-temp-tab temp-sj ${activeTemp === 'SJ' ? 'active' : ''}" type="button" data-temp="SJ">
+                  <span class="figures-temp-dot" style="background:#72cccd;"></span>
+                  <span>${t('filterSJ', {}, lang)}</span>
+                </button>
+                <button class="figures-temp-tab temp-sp ${activeTemp === 'SP' ? 'active' : ''}" type="button" data-temp="SP">
+                  <span class="figures-temp-dot" style="background:#e5c727;"></span>
+                  <span>${t('filterSP', {}, lang)}</span>
+                </button>
+              </div>
+
+              <!-- 16 MBTI Chips Filter -->
+              <div class="figures-mbti-chips-wrap">
+                <button class="figures-mbti-chip ${activeMbti === 'all' ? 'active' : ''}" type="button" data-mbti="all">
+                  ${lang === 'ro' ? 'Toate (16)' : 'All 16'}
+                </button>
+                ${[
+                  "INTJ", "INTP", "ENTJ", "ENTP",
+                  "INFJ", "INFP", "ENFJ", "ENFP",
+                  "ISTJ", "ISFJ", "ESTJ", "ESFJ",
+                  "ISTP", "ISFP", "ESTP", "ESFP"
+                ].map(mbti => {
+                  const mbtiColors = getMbtiTileColors(mbti);
+                  const isChipActive = activeMbti === mbti;
+                  return `
+                    <button 
+                      class="figures-mbti-chip ${isChipActive ? 'active' : ''}" 
+                      type="button" 
+                      data-mbti="${mbti}"
+                      style="${isChipActive ? `background: ${mbtiColors.bg}; color: #ffffff; border-color: ${mbtiColors.bg}; font-weight: 800;` : ''}"
+                    >
+                      ${mbti}
+                    </button>
+                  `;
+                }).join("")}
+              </div>
+
+              <!-- Count & Sort Row -->
+              <div class="figures-dir-status-row">
+                <span class="figures-dir-count">
+                  ${t('showingFiguresCount', { count: filtered.length, total: NOTABLE_FIGURES.length }, lang)}
+                </span>
+                <div class="figures-dir-sort-wrap">
+                  <span class="figures-sort-label">${lang === 'ro' ? 'Sortează:' : 'Sort by:'}</span>
+                  ${hasUserScores ? `
+                    <button class="figures-sort-btn ${activeSort === 'similarity' ? 'active' : ''}" type="button" data-sort="similarity">
+                      ${lang === 'ro' ? 'Compatibilitate' : 'Match'}
+                    </button>
+                  ` : ''}
+                  <button class="figures-sort-btn ${activeSort === 'name' ? 'active' : ''}" type="button" data-sort="name">
+                    ${lang === 'ro' ? 'Nume (A-Z)' : 'Name (A-Z)'}
+                  </button>
+                  <button class="figures-sort-btn ${activeSort === 'mbti' ? 'active' : ''}" type="button" data-sort="mbti">
+                    MBTI
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <!-- Cards Grid or Empty State -->
+            ${filtered.length > 0 ? `
+              <div class="figures-dir-grid">
+                ${cardsHtml}
+              </div>
+            ` : `
+              <div class="figures-empty-state">
+                <div class="figures-empty-icon">🔍</div>
+                <h3>${t('noFiguresFound', { query: this.figuresDirSearch || '' }, lang)}</h3>
+                <p>${lang === 'ro' ? 'Încearcă să cauți alt nume sau resetează filtrele de căutare.' : 'Try searching for another name or reset the search filters.'}</p>
+                <button class="e-btn e-btn-outline" type="button" id="figures-reset-filters-btn">
+                  ${t('resetFilters', {}, lang)}
+                </button>
+              </div>
+            `}
+          </div>
+        </main>
+      </div>
+
+      <!-- Figure Detail Inspector Modal -->
+      <div class="modal-overlay" id="figure-detail-modal" role="dialog" aria-modal="true" aria-labelledby="fig-modal-title">
+        <div class="modal-content fig-modal-content">
+          <!-- Filled dynamically when clicked -->
+        </div>
+      </div>
+    `;
+
+    this.attachNavEvents();
+    this.attachFiguresDirectoryEvents(hasUserScores);
+  }
+
+  attachFiguresDirectoryEvents(hasUserScores) {
+    const searchInput = document.getElementById("figures-dir-search-input");
+    const clearBtn = document.getElementById("figures-search-clear-btn");
+    const resetBtn = document.getElementById("figures-reset-filters-btn");
+
+    if (searchInput) {
+      if (this.figuresDirSearch) {
+        searchInput.focus();
+        const len = searchInput.value.length;
+        searchInput.setSelectionRange(len, len);
+      }
+
+      searchInput.addEventListener("input", (e) => {
+        this.figuresDirSearch = e.target.value;
+        this.renderFiguresDirectory();
+      });
+
+      searchInput.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          this.figuresDirSearch = "";
+          this.renderFiguresDirectory();
+        }
+      });
+    }
+
+    if (clearBtn) {
+      clearBtn.addEventListener("click", () => {
+        this.figuresDirSearch = "";
+        this.renderFiguresDirectory();
+      });
+    }
+
+    if (resetBtn) {
+      resetBtn.addEventListener("click", () => {
+        this.figuresDirSearch = "";
+        this.figuresDirTemp = "all";
+        this.figuresDirMbti = "all";
+        this.figuresDirSort = hasUserScores ? "similarity" : "name";
+        this.renderFiguresDirectory();
+      });
+    }
+
+    // Temperament filter tabs
+    document.querySelectorAll(".figures-temp-tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        this.figuresDirTemp = tab.getAttribute("data-temp");
+        this.figuresDirMbti = "all";
+        this.renderFiguresDirectory();
+      });
+    });
+
+    // 16 MBTI chips
+    document.querySelectorAll(".figures-mbti-chip").forEach(chip => {
+      chip.addEventListener("click", () => {
+        this.figuresDirMbti = chip.getAttribute("data-mbti");
+        this.renderFiguresDirectory();
+      });
+    });
+
+    // Sort buttons
+    document.querySelectorAll(".figures-sort-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        this.figuresDirSort = btn.getAttribute("data-sort");
+        this.renderFiguresDirectory();
+      });
+    });
+
+    // Click card to open Figure Detail Modal
+    document.querySelectorAll(".figure-dir-card").forEach(card => {
+      const handleOpen = () => {
+        const id = card.getAttribute("data-id");
+        this.openFigureDetailModal(id, hasUserScores);
+      };
+      card.addEventListener("click", handleOpen);
+      card.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleOpen();
+        }
+      });
+    });
+
+    // Modal click outside to close
+    const modal = document.getElementById("figure-detail-modal");
+    if (modal) {
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) modal.classList.remove("active");
+      });
+    }
+  }
+
+  openFigureDetailModal(figureId, hasUserScores) {
+    const fig = NOTABLE_FIGURES.find(f => f.id === figureId);
+    if (!fig) return;
+
+    const lang = this.state.lang || "ro";
+    const modal = document.getElementById("figure-detail-modal");
+    if (!modal) return;
+
+    const modalContent = modal.querySelector(".modal-content");
+    if (!modalContent) return;
+
+    const temp = getTypeTemperament(fig.mbti);
+    const figColors = getMbtiTileColors(fig.mbti);
+    const cleanRole = getFigureRole(fig, lang);
+    const mbtiData = MBTI_TYPES[fig.mbti] || {};
+    const stack = mbtiData.stack || [];
+
+    // Calculate similarity if user has scores
+    let userPercentages = null;
+    let userAxisScores = null;
+    let simPct = null;
+    if (this.state.urlResultsScores) {
+      userPercentages = this.state.urlResultsScores.percentages;
+      userAxisScores = this.state.urlResultsScores.axisScores;
+      simPct = calculateFigureSimilarity(userPercentages, userAxisScores, fig);
+    } else {
+      const { percentages, axisScores, isComplete } = calculateScores(this.state.questions, this.state.answers);
+      if (isComplete && Object.keys(this.state.answers).length >= this.state.questions.length) {
+        userPercentages = percentages;
+        userAxisScores = axisScores;
+        simPct = calculateFigureSimilarity(userPercentages, userAxisScores, fig);
+      }
+    }
+
+    // Axes values
+    const axesList = [
+      {
+        id: "EI",
+        name: lang === "ro" ? "ENERGIE" : "ENERGY",
+        leftName: lang === "ro" ? "Extraversie" : "Extraversion",
+        rightName: lang === "ro" ? "Introversie" : "Introversion",
+        leftVal: fig.axes?.E ?? 50,
+        rightVal: fig.axes?.I ?? 50,
+        color: "#394e8b"
+      },
+      {
+        id: "NS",
+        name: lang === "ro" ? "PERCEPȚIE" : "PERCEPTION",
+        leftName: lang === "ro" ? "Intuiție" : "Intuition",
+        rightName: lang === "ro" ? "Senzație" : "Sensing",
+        leftVal: fig.axes?.N ?? 50,
+        rightVal: fig.axes?.S ?? 50,
+        color: "#8e5f78"
+      },
+      {
+        id: "TF",
+        name: lang === "ro" ? "DECIZIE" : "DECISION",
+        leftName: lang === "ro" ? "Gândire" : "Thinking",
+        rightName: lang === "ro" ? "Sentiment" : "Feeling",
+        leftVal: fig.axes?.T ?? 50,
+        rightVal: fig.axes?.F ?? 50,
+        color: "#72cccd"
+      },
+      {
+        id: "JP",
+        name: lang === "ro" ? "TACTICĂ" : "TACTICS",
+        leftName: lang === "ro" ? "Judecată" : "Judging",
+        rightName: lang === "ro" ? "Percepție" : "Perception",
+        leftVal: fig.axes?.J ?? 50,
+        rightVal: fig.axes?.P ?? 50,
+        color: "#395296"
+      }
+    ];
+
+    modalContent.innerHTML = `
+      <div class="fig-modal-header" style="background: ${figColors.bg}; color: #ffffff;">
+        <button class="modal-close" type="button" id="fig-modal-close-btn" aria-label="Close" style="color: #ffffff; background: rgba(0,0,0,0.25);">✕</button>
+        <div class="fig-modal-profile">
+          <div class="fig-modal-photo-wrap">
+            ${fig.photo ? `
+              <img class="fig-modal-photo" src="${fig.photo}" alt="${fig.name}" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+              <div class="fig-modal-avatar-fallback" style="display:none; background: rgba(0,0,0,0.3); color: #ffffff;">${fig.avatar || fig.name.charAt(0)}</div>
+            ` : `
+              <div class="fig-modal-avatar-fallback" style="background: rgba(0,0,0,0.3); color: #ffffff;">${fig.avatar || fig.name.charAt(0)}</div>
+            `}
+          </div>
+          <div class="fig-modal-profile-text">
+            <div class="fig-modal-tags">
+              <span class="fig-modal-mbti-tag">${fig.mbti}</span>
+              <span class="fig-modal-temp-tag">${temp.name}</span>
+              ${simPct !== null ? `<span class="fig-modal-sim-tag">${simPct}% ${lang === 'ro' ? 'compatibilitate' : 'match'}</span>` : ''}
+            </div>
+            <h2 class="fig-modal-name" id="fig-modal-title">${fig.name}</h2>
+            <div class="fig-modal-role">${cleanRole}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fig-modal-body">
+        <!-- Quote / Description -->
+        <div class="fig-modal-quote-box">
+          <p class="fig-modal-quote">"${fig.quote || mbtiData.quote || mbtiData.description || ''}"</p>
+          <div class="fig-modal-mbti-summary">
+            <b>${mbtiData.title || fig.mbti}</b> — ${mbtiData.description || ''}
+          </div>
+        </div>
+
+        <!-- 4 Spectrum Axes -->
+        <div class="fig-modal-sec">
+          <h4 class="fig-modal-sec-title">${lang === 'ro' ? 'Spectrul celor 4 Axe MBTI' : '4-Axis MBTI Spectrum'}</h4>
+          <div class="fig-modal-axes-grid">
+            ${axesList.map(ax => `
+              <div class="fig-modal-axis-card">
+                <div class="fig-modal-axis-head">
+                  <span class="fig-modal-axis-name">${ax.name}</span>
+                </div>
+                <div class="fig-modal-axis-bar-wrap">
+                  <div class="fig-modal-axis-bar-track">
+                    <div class="fig-modal-axis-bar-fill" style="width: ${ax.leftVal}%; background: ${ax.color};"></div>
+                  </div>
+                </div>
+                <div class="fig-modal-axis-labels">
+                  <span>${ax.leftName} <b>${ax.leftVal}%</b></span>
+                  <span><b>${ax.rightVal}%</b> ${ax.rightName}</span>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+
+        <!-- 8 Cognitive Functions Breakdown -->
+        <div class="fig-modal-sec">
+          <h4 class="fig-modal-sec-title">${lang === 'ro' ? 'Ierarhia celor 8 Funcții Cognitive' : '8 Cognitive Functions Breakdown'}</h4>
+          <div class="fig-modal-funcs-grid">
+            ${FUNCTIONS_LIST.map(f => {
+              const fPct = fig.scores?.[f] ?? 50;
+              const fColor = getFuncTileColors(f).bg;
+              const isDominant = stack[0] === f;
+              const isAuxiliary = stack[1] === f;
+              const badgeLabel = isDominant ? (lang === 'ro' ? 'Dominantă' : 'Dominant') : (isAuxiliary ? (lang === 'ro' ? 'Auxiliară' : 'Auxiliary') : '');
+              return `
+                <div class="fig-modal-func-item">
+                  <div class="fig-modal-func-top">
+                    <span class="resemble-stack-pill" style="background: ${fColor}; color: #ffffff;">${f}</span>
+                    ${badgeLabel ? `<span class="fig-modal-func-badge">${badgeLabel}</span>` : ''}
+                    <span class="fig-modal-func-pct"><b>${fPct}%</b></span>
+                  </div>
+                  <div class="fig-modal-func-track">
+                    <div class="fig-modal-func-fill" style="width: ${fPct}%; background: ${fColor};"></div>
+                  </div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+        </div>
+      </div>
+
+      <div class="fig-modal-footer">
+        ${simPct !== null ? `
+          <button class="e-btn e-btn-primary" type="button" id="fig-modal-compare-btn">
+            <span>${t('compareWithYourScores', {}, lang)}</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+          </button>
+        ` : `
+          <button class="e-btn e-btn-primary" type="button" id="fig-modal-take-test-btn">
+            <span>${t('takeTestToCompare', {}, lang)}</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+          </button>
+        `}
+        <button class="e-btn e-btn-outline" type="button" id="fig-modal-close-footer-btn">
+          <span>${lang === 'ro' ? 'Închide' : 'Close'}</span>
+        </button>
+      </div>
+    `;
+
+    modal.classList.add("active");
+
+    const closeHeaderBtn = document.getElementById("fig-modal-close-btn");
+    const closeFooterBtn = document.getElementById("fig-modal-close-footer-btn");
+    if (closeHeaderBtn) closeHeaderBtn.addEventListener("click", () => modal.classList.remove("active"));
+    if (closeFooterBtn) closeFooterBtn.addEventListener("click", () => modal.classList.remove("active"));
+
+    const compareBtn = document.getElementById("fig-modal-compare-btn");
+    if (compareBtn) {
+      compareBtn.addEventListener("click", () => {
+        modal.classList.remove("active");
+        this.selectedFigureId = fig.id;
+        this.state.showResults();
+        setTimeout(() => {
+          const compSec = document.getElementById("comparar");
+          if (compSec) compSec.scrollIntoView({ behavior: "smooth" });
+        }, 150);
+      });
+    }
+
+    const takeTestBtn = document.getElementById("fig-modal-take-test-btn");
+    if (takeTestBtn) {
+      takeTestBtn.addEventListener("click", () => {
+        modal.classList.remove("active");
+        this.state.showWelcome();
       });
     }
   }
