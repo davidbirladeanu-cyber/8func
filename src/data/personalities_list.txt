@@ -1,0 +1,347 @@
+Hasan Piker (Hasanabi) Personality E 98%, N 65%, F 73%, P 79% — Historical
+Robert Pattinson Personality I 92%, N 76%, F 92%, P 95% — Artist
+Malcolm X Personality E 95%, N 75%, T 93%, J 70% — Historical
+Greta Thunberg Personality I 95%, N 54%, T 85%, J 94% — Historical
+Zendaya Personality I 52%, N 96%, F 97%, J 97% — Artist
+J. Cole Personality I 62%, N 94%, F 97%, J 87% — Artist
+Frank Ocean Personality I 99%, S 71%, F 97%, P 94% — Artist
+Tyler, the Creator Personality E 94%, N 83%, F 87%, P 96% — Artist
+Kendrick Lamar Personality I 94%, N 89%, F 93%, J 78% — Artist
+Elliott Smith Personality I 100%, N 95%, F 99%, P 94% — Artist
+Stevie Wonder Personality E 99%, N 84%, F 99%, J 89% — Artist
+Luther Vandross Personality E 83%, N 89%, F 100%, J 94% — Artist
+Aretha Franklin Personality I 81%, S 84%, F 84%, J 82% — Artist
+Nina Simone Personality I 94%, N 69%, F 87%, P 81% — Artist
+Johnny Depp Personality I 93%, N 89%, F 91%, P 97% — Artist
+Prince Personality I 91%, S 83%, F 94%, P 85% — Artist
+Sade Personality I 99%, S 89%, F 97%, J 78% — Artist
+Mariah Carey Personality E 93%, S 98%, T 46%, J 91% — Artist
+Madonna Personality E 95%, S 90%, T 81%, P 89% — Artist
+Frank Sinatra Personality E 97%, S 94%, T 91%, P 69% — Artist
+Catherine "Kate" Bush Personality I 95%, N 72%, F 99%, P 93% — Artist
+Miguel de Cervantes Personality E 93%, N 96%, T 89%, P 99% — Historical
+Haruki Murakami Personality I 99%, N 91%, F 92%, P 77% — Artist
+Alexandre Dumas Personality E 67%, N 63%, F 93%, P 73% — Artist
+Dante Alighieri Personality I 94%, N 98%, F 89%, J 94% — Historical
+Victor Hugo Personality E 90%, N 94%, F 99%, P 62% — Artist
+Marcel Proust Personality I 100%, N 96%, F 99%, P 80% — Artist
+Charles Baudelaire Personality I 93%, N 83%, F 83%, P 80% — Artist
+Hermann Hesse Personality I 99%, N 99%, F 96%, J 74% — Artist
+Bob Dylan Personality I 97%, S 64%, F 95%, P 97% — Artist
+T. S. Eliot Personality I 81%, N 87%, T 89%, P 72% — Artist
+George Orwell Personality I 99%, N 97%, F 78%, P 90% — Artist
+Egon Schiele Personality I 99%, N 90%, T 76%, P 91% — Artist
+Francisco de Goya Personality I 97%, N 94%, F 91%, P 82% — Historical
+Robin Williams Personality E 96%, N 98%, F 98%, P 97% — Artist
+Ricky Gervais Personality E 97%, N 98%, T 53%, P 97% — Artist
+Jim Carrey Personality E 97%, N 98%, F 56%, P 85% — Artist
+Marcello Hernandez Personality E 100%, N 88%, T 52%, P 95% — Artist
+Bo Burnham Personality I 66%, N 99%, T 74%, P 98% — Artist
+George Carlin Personality E 96%, N 98%, F 49%, P 98% — Artist
+Nathan Fielder Personality I 86%, N 97%, T 98%, P 95% — Artist
+Ralph Lauren Personality E 47%, S 68%, F 89%, J 68% — Artist
+Vivienne Westwood Personality E 94%, N 94%, F 97%, P 90% — Artist
+Giorgio Armani Personality E 83%, N 100%, T 86%, J 93% — Artist
+Christian Dior Personality I 100%, N 89%, F 86%, J 94% — Artist
+Tom Ford Personality I 76%, N 89%, F 71%, J 91% — Artist
+Gabrielle Bonheur “Coco” Chanel Personality E 98%, N 79%, T 96%, J 95% — Artist
+Yves Saint Laurent Personality I 99%, N 87%, F 87%, P 97% — Artist
+Karl Lagerfeld Personality E 87%, N 98%, T 95%, P 82% — Artist
+James Cameron Personality E 61%, N 93%, T 97%, J 95% — Artist
+Francis Ford Coppola Personality I 61%, N 95%, T 91%, J 67% — Artist
+Steven Spielberg Personality I 57%, S 58%, F 91%, P 92% — Artist
+Ingmar Bergman Personality I 100%, N 96%, F 79%, J 81% — Artist
+Denis Villeneuve Personality I 94%, N 92%, F 93%, J 51% — Artist
+Keanu Reeves Personality I 97%, N 74%, F 94%, P 88% — Artist
+Jean-Michel Basquiat Personality I 97%, S 87%, T 57%, P 94% — Artist
+Claude Monet Personality I 97%, N 62%, T 56%, J 61% — Artist
+Andy Warhol Personality I 95%, N 79%, F 70%, P 92% — Artist
+Michelangelo Buonarroti Personality I 90%, S 62%, F 66%, P 71% — Artist
+Leonardo da Vinci Personality E 83%, N 98%, T 95%, P 95% — Artist
+George Lucas Personality I 95%, N 84%, F 69%, P 87% — Business
+Quentin Tarantino Personality E 98%, N 66%, T 48%, P 97% — Artist
+Georg Wilhelm Friedrich Hegel Personality I 95%, N 98%, T 93%, J 90% — Philosophy
+Ayn Rand Personality I 73%, N 91%, T 98%, J 94% — Philosophy
+Søren Kierkegaard Personality I 97%, N 97%, F 96%, P 91% — Philosophy
+Jean-Paul Sartre Personality I 94%, N 97%, T 92%, J 84% — Philosophy
+Slavoj Žižek Personality E 90%, N 98%, T 95%, P 96% — Philosophy
+Albert Camus Personality I 96%, N 67%, F 88%, P 93% — Philosophy
+Max Planck Personality I 100%, N 69%, T 98%, J 96% — Science
+Marie Skłodowska-Curie Personality I 99%, N 98%, T 99%, P 90% — Science
+Charles Darwin Personality I 70%, N 74%, T 97%, P 66% — Science
+Stephen Hawking Personality I 91%, N 98%, T 99%, J 69% — Science
+Isaac Newton Personality I 98%, N 97%, T 98%, J 76% — Science
+Javier Milei Personality E 98%, N 81%, T 95%, J 81% — Science
+Jordan Peterson Personality I 66%, N 95%, F 54%, J 67% — Science
+Lewis Hamilton Personality I 63%, S 78%, F 93%, P 80% — Sports
+Hikaru Nakamura Personality E 81%, N 87%, T 95%, P 91% — Sports
+Zlatan Ibrahimovic Personality E 95%, S 79%, T 93%, P 81% — Sports
+Max Verstappen Personality I 71%, S 87%, T 98%, P 87% — Sports
+Michael Jordan Personality I 76%, S 93%, T 96%, P 92% — Sports
+Kobe Bryant Personality I 83%, S 77%, T 89%, P 67% — Sports
+John Cena Personality E 90%, S 85%, F 81%, J 90% — Sports
+LeBron James Personality E 93%, S 92%, F 81%, J 75% — Sports
+Lionel Messi Personality I 96%, S 89%, F 70%, P 88% — Sports
+Kevin O'Leary Personality E 88%, S 64%, T 89%, J 89% — Business
+Henry Ford Personality E 92%, S 60%, T 100%, J 95% — Business
+Pavel Durov Personality I 53%, N 98%, T 98%, J 95% — Business
+Vlad III "the Impaler" of Wallachia Personality E 88%, N 91%, T 96%, J 92% — Historical
+Sun Tzu Personality I 93%, N 92%, T 99%, J 97% — Philosophy
+Cleopatra Personality E 98%, N 91%, T 62%, J 89% — Historical
+Trajan Personality I 67%, N 90%, T 93%, J 92% — Historical
+Marcus Aurelius Personality I 98%, N 54%, F 94%, J 96% — Philosophy
+Queen Victoria Personality I 90%, S 89%, T 61%, J 71% — Historical
+Dionysus Personality E 98%, S 66%, F 80%, P 98% — Religion
+Hera Personality E 96%, S 94%, T 68%, J 98% — Religion
+Ares Personality E 97%, S 93%, T 80%, P 92% — Religion
+Prometheus Personality E 77%, N 97%, T 78%, P 74% — Religion
+Penelope Personality I 99%, N 55%, F 59%, J 98% — Religion
+Odysseus Personality E 95%, N 97%, T 98%, P 86% — Religion
+Hermes Personality E 98%, N 95%, T 96%, P 99% — Religion
+Athena Personality I 80%, N 95%, T 98%, J 96% — Religion
+Zeus Personality E 99%, S 57%, T 97%, P 53% — Religion
+Martin Luther Personality I 75%, N 90%, T 93%, J 89% — Historical
+Confucius Personality I 84%, S 63%, F 63%, J 89% — Historical
+Noah Personality I 100%, S 53%, T 97%, J 98% — Religion
+Moses Personality I 97%, S 51%, F 55%, P 51% — Religion
+Eve Personality E 93%, S 57%, F 94%, P 94% — Religion
+Jesus Personality I 78%, N 95%, F 93%, J 92% — Historical
+Satan Personality E 82%, N 77%, T 72%, P 78% — Religion
+Tlazolteotl Personality E 100%, N 67%, T 100%, P 100% — Religion
+Tezcatlipoca Personality E 82%, N 64%, T 100%, P 73% — Religion
+Yacatecuhtli Personality E 100%, N 100%, T 100%, P 100% — Religion
+Quetzalcoatl Personality I 69%, N 94%, F 100%, J 57% — Religion
+Set/Seth Personality E 98%, N 96%, T 98%, P 64% — Religion
+Anubit (Anubis) Personality I 95%, S 82%, T 99%, J 92% — Religion
+Thoth (Logos) Personality I 89%, N 100%, T 97%, P 87% — Religion
+Horus (Title) Personality E 95%, N 96%, F 89%, J 91% — Religion
+Ra Personality E 87%, N 96%, T 96%, J 96% — Religion
+Isis (Asset) Personality I 86%, N 91%, F 94%, J 93% — Religion
+Giordano Bruno Personality I 81%, N 99%, F 47%, J 44% — Philosophy
+Paul Kagame Personality E 78%, N 97%, T 94%, J 94% — Historical
+Robert Mugabe Personality I 71%, S 40%, T 66%, J 95% — Historical
+Dilma Rousseff Personality I 92%, N 58%, T 91%, J 88% — Historical
+Nicolás Maduro Personality E 95%, S 89%, F 81%, P 82% — Historical
+Jair Bolsonaro Personality E 95%, S 95%, T 56%, P 89% — Historical
+Franklin D. Roosevelt Personality E 98%, N 70%, T 94%, J 70% — Historical
+J. D. Vance Personality E 59%, S 56%, T 88%, J 93% — Historical
+Elon Musk Personality I 89%, N 98%, T 99%, J 48% — Business
+Kim Jong-il (김정일) Personality I 85%, S 64%, T 50%, J 63% — Historical
+Deng Xiaoping (邓小平) Personality I 89%, N 92%, T 97%, P 53% — Historical
+Narendra Modi (नरेंद्र मोदी) Personality E 49%, N 52%, F 41%, J 76% — Historical
+Rishi Sunak Personality I 44%, N 75%, T 76%, J 67% — Historical
+Adolf Hitler Personality I 81%, N 93%, F 75%, J 93% — Historical
+Leon Trotsky Personality I 92%, N 98%, F 75%, J 95% — Historical
+Benito Mussolini Personality E 98%, S 95%, T 52%, P 95% — Historical
+Volodymyr Zelensky Personality E 98%, N 92%, F 55%, P 91% — Historical
+Giorgia Meloni Personality E 70%, S 91%, T 95%, J 97% — Historical
+Viktor Orbán Personality E 96%, S 50%, T 98%, J 96% — Historical
+Melania Trump Personality I 93%, S 93%, T 68%, P 67% — Historical
+Thomas Jefferson Personality I 96%, N 98%, F 59%, J 89% — Historical
+Ali Khamenei Personality E 57%, S 57%, T 72%, J 97% — Historical
+Emmanuel Macron Personality E 87%, N 85%, T 84%, J 92% — Historical
+Bernie Sanders Personality I 79%, N 95%, T 70%, J 85% — Historical
+Cristiano Ronaldo Personality E 95%, S 65%, F 46%, P 51% — Sports
+Billie Eilish Personality I 91%, S 89%, F 81%, P 96% — Artist
+Lana Del Rey Personality I 95%, S 70%, F 98%, P 91% — Artist
+IShowSpeed Personality E 96%, S 95%, F 51%, P 96% — Sports
+Felix Kjellberg (PewDiePie) Personality I 66%, N 88%, T 90%, P 85% — Artist
+Carl Jung Personality I 99%, N 95%, F 48%, J 53% — Philosophy
+Barack Obama Personality E 97%, N 97%, T 51%, P 49% — Historical
+J. K. Rowling Personality I 98%, N 97%, F 97%, J 51% — Artist
+H. P. Lovecraft Personality I 99%, N 98%, T 81%, P 90% — Artist
+John Lennon Personality E 59%, N 98%, F 92%, P 95% — Artist
+David Bowie Personality I 81%, N 75%, F 92%, P 91% — Artist
+Bad Bunny Personality E 96%, N 54%, F 96%, P 96% — Artist
+Britney Spears Personality I 72%, S 91%, F 98%, P 89% — Artist
+Björk Personality I 86%, N 93%, F 98%, P 96% — Artist
+Alex Turner Personality I 98%, N 54%, T 54%, P 56% — Artist
+Drake Personality E 96%, S 58%, F 91%, J 85% — Artist
+Freddie Mercury Personality E 86%, S 65%, F 98%, P 92% — Artist
+Adele Personality E 96%, N 68%, T 61%, J 71% — Artist
+Wolfgang Amadeus Mozart Personality E 94%, S 72%, F 95%, P 95% — Artist
+Michael Jackson Personality I 94%, S 69%, F 97%, P 91% — Artist
+Kanye West Personality E 83%, N 82%, F 76%, P 90% — Artist
+Kurt Cobain Personality I 98%, N 93%, F 95%, P 91% — Artist
+Scarlett Johansson Personality I 80%, S 90%, T 87%, P 86% — Artist
+Heath Ledger Personality I 93%, N 79%, F 95%, P 97% — Artist
+Brad Pitt Personality I 79%, S 93%, F 74%, P 88% — Artist
+Ryan Gosling Personality I 66%, S 87%, F 54%, P 88% — Artist
+Taylor Swift Personality E 88%, S 71%, F 91%, J 85% — Artist
+Jacob Elordi Personality I 93%, N 64%, F 92%, P 93% — Artist
+Henry Cavill Personality I 80%, S 75%, F 73%, J 77% — Artist
+Doja Cat Personality E 97%, N 58%, F 94%, P 98% — Artist
+Eminem Personality I 93%, S 88%, T 75%, P 94% — Artist
+Pedro Pascal Personality E 96%, N 92%, F 71%, P 93% — Artist
+Thom Yorke Personality I 99%, N 98%, F 93%, P 88% — Artist
+Tupac Shakur Personality E 97%, N 91%, F 91%, J 79% — Artist
+Nicki Minaj Personality E 99%, S 54%, T 52%, P 53% — Artist
+Ariana Grande Personality E 90%, S 84%, F 95%, J 78% — Artist
+Lady Gaga Personality I 92%, N 51%, F 98%, P 51% — Artist
+Emily Brontë Personality I 99%, N 98%, T 61%, J 65% — Artist
+David Fincher Personality I 98%, N 97%, T 83%, J 94% — Artist
+Charles Bukowski Personality I 95%, S 88%, F 67%, P 96% — Artist
+Anton Chekhov Personality I 91%, N 97%, T 51%, P 85% — Artist
+Virginia Woolf Personality I 97%, N 98%, F 96%, P 91% — Artist
+Martin Scorsese Personality E 93%, N 97%, T 68%, P 96% — Artist
+Leo Tolstoy Personality I 92%, N 90%, F 94%, J 74% — Artist
+Jane Austen Personality I 97%, N 95%, T 89%, J 75% — Artist
+Frida Kahlo Personality I 95%, S 91%, F 96%, P 98% — Artist
+Stan Lee Personality E 97%, N 97%, T 84%, P 94% — Artist
+J. R. R. Tolkien Personality I 98%, N 87%, F 83%, P 82% — Artist
+Agatha Christie Personality I 98%, N 91%, F 86%, J 95% — Artist
+Walt Disney Personality E 97%, N 95%, F 81%, P 90% — Artist
+Oscar Wilde Personality E 95%, N 95%, F 87%, P 94% — Artist
+Clarice Lispector Personality I 100%, N 98%, F 56%, P 52% — Artist
+Christopher Nolan Personality I 95%, N 97%, T 97%, J 87% — Artist
+Sylvia Plath Personality I 98%, N 98%, F 98%, P 79% — Artist
+Salvador Dalí Personality E 95%, N 98%, F 78%, P 96% — Artist
+David Lynch Personality I 95%, N 94%, F 93%, P 72% — Artist
+Bob Ross Personality I 96%, S 92%, F 98%, J 80% — Artist
+Tim Burton Personality I 95%, N 98%, F 92%, P 97% — Artist
+Stephen King Personality I 95%, N 94%, T 93%, P 80% — Artist
+Edgar Allan Poe Personality I 99%, N 98%, F 92%, P 96% — Artist
+William Shakespeare Personality I 82%, N 98%, F 95%, P 92% — Artist
+Anne Frank Personality E 93%, N 99%, F 97%, P 97% — Artist
+Stanley Kubrick Personality I 98%, N 71%, T 99%, J 54% — Artist
+Hayao Miyazaki Personality I 96%, N 95%, F 89%, P 73% — Artist
+George R. R. Martin Personality I 97%, N 99%, T 55%, P 97% — Artist
+Franz Kafka Personality I 99%, N 96%, F 82%, P 90% — Artist
+Pablo Picasso Personality E 95%, S 61%, F 69%, P 98% — Artist
+Alfred Hitchcock Personality I 50%, S 63%, T 99%, P 67% — Artist
+Vincent van Gogh Personality I 98%, N 92%, F 97%, P 96% — Artist
+Osamu Dazai Personality I 98%, N 99%, F 64%, P 53% — Artist
+Fyodor Dostoevsky Personality I 98%, N 98%, F 89%, J 83% — Artist
+Gordon Ramsay Personality E 98%, S 61%, T 97%, J 97% — Business
+Arthur Schopenhauer Personality I 99%, N 94%, F 55%, J 67% — Philosophy
+René Descartes Personality I 98%, N 97%, T 98%, P 95% — Philosophy
+Diogenes Personality I 78%, S 83%, T 98%, P 98% — Philosophy
+Aristotle Personality E 87%, N 86%, T 98%, J 93% — Philosophy
+Plato Personality I 97%, N 93%, F 81%, J 89% — Philosophy
+Niccolò Machiavelli Personality E 90%, N 92%, T 98%, P 57% — Philosophy
+Immanuel Kant Personality I 99%, N 92%, T 96%, P 77% — Philosophy
+Karl Marx Personality I 78%, N 89%, T 87%, J 79% — Philosophy
+Socrates Personality E 92%, N 98%, T 97%, P 96% — Philosophy
+Friedrich Nietzsche Personality I 97%, N 97%, T 84%, J 91% — Philosophy
+Thomas Edison Personality E 98%, N 50%, T 99%, P 90% — Science
+Alan Turing Personality I 99%, N 97%, T 99%, P 84% — Science
+Neil deGrasse Tyson Personality E 97%, N 97%, T 55%, P 53% — Science
+Sigmund Freud Personality I 93%, S 51%, T 85%, J 84% — Science
+Nikola Tesla Personality I 94%, N 98%, T 97%, J 86% — Science
+Albert Einstein Personality I 89%, N 97%, T 94%, P 95% — Science
+Blaise Pascal Personality I 79%, N 98%, T 79%, P 82% — Science
+J. Robert Oppenheimer Personality I 92%, N 98%, T 92%, J 80% — Science
+Neil Armstrong Personality I 98%, N 76%, T 98%, J 81% — Science
+Erling Haaland Personality I 71%, S 91%, T 92%, P 93% — Sports
+Bobby Fischer Personality I 96%, N 87%, T 98%, J 82% — Sports
+Neymar Jr Personality E 94%, S 95%, F 87%, P 93% — Sports
+Kylian Mbappé Personality E 92%, S 90%, T 54%, P 51% — Sports
+Magnus Carlsen Personality I 97%, S 69%, T 97%, P 76% — Sports
+Andrew Tate Personality E 96%, N 50%, T 94%, P 51% — Artist
+Robert Kiyosaki Personality E 79%, S 65%, T 96%, P 65% — Artist
+Larry Page Personality I 96%, N 97%, T 85%, P 85% — Business
+Tim Cook Personality I 85%, S 77%, T 96%, J 95% — Business
+George Soros Personality E 74%, N 97%, T 99%, J 89% — Business
+Sam Altman Personality I 83%, N 97%, T 92%, J 64% — Business
+Jeff Bezos Personality I 72%, S 73%, T 97%, J 92% — Business
+Steve Jobs Personality E 60%, N 66%, T 97%, J 56% — Business
+Bill Gates Personality I 54%, N 98%, T 99%, J 52% — Business
+Mark Zuckerberg Personality I 97%, N 94%, T 98%, J 62% — Business
+Erwin Rommel Personality I 96%, S 88%, T 99%, P 87% — Historical
+Margaret Thatcher Personality E 97%, N 60%, T 98%, J 99% — Historical
+Mohandas Mahatma Gandhi Personality I 94%, N 94%, F 92%, J 89% — Historical
+Winston Churchill Personality E 98%, S 84%, T 95%, P 87% — Historical
+Heinrich Himmler Personality I 97%, S 79%, F 58%, J 96% — Historical
+Grigori Rasputin Personality E 61%, N 94%, T 62%, P 60% — Religion
+Vladimir Lenin Personality I 74%, N 95%, T 92%, J 97% — Historical
+Saddam Hussein Personality E 94%, S 84%, T 98%, J 88% — Historical
+Genghis Khan Personality E 95%, N 69%, T 86%, J 73% — Historical
+Charles de Gaulle Personality I 71%, N 90%, T 95%, J 96% — Historical
+Julius Caesar Personality E 97%, N 88%, T 89%, J 85% — Historical
+Nero Personality E 76%, S 77%, F 81%, P 96% — Historical
+Cicero Personality E 98%, N 82%, F 62%, J 93% — Historical
+Mehmed the Conqueror Personality I 87%, N 98%, T 98%, J 95% — Historical
+Nelson Mandela Personality I 69%, N 96%, F 97%, J 98% — Historical
+Alexander Hamilton Personality E 96%, N 97%, T 98%, J 86% — Historical
+Ernesto Che Guevara Personality E 96%, N 83%, F 91%, P 91% — Historical
+Christopher Columbus Personality E 98%, N 60%, T 98%, P 96% — Science
+Augustus Octavian Personality I 88%, N 81%, T 97%, J 99% — Historical
+Martin Luther King Jr. Personality E 80%, N 99%, F 99%, J 98% — Historical
+Alexander the Great Personality E 99%, S 53%, T 90%, P 83% — Historical
+Napoléon Bonaparte Personality E 93%, N 87%, T 88%, J 87% — Historical
+Joseph Stalin Personality E 86%, N 63%, T 96%, J 88% — Historical
+Solomon Personality I 78%, N 96%, T 89%, J 76% — Historical
+David Personality E 74%, N 87%, F 92%, J 68% — Historical
+Adam Personality I 90%, S 95%, F 52%, J 55% — Religion
+John the Apostle Personality I 93%, N 97%, F 96%, P 82% — Religion
+Cain Personality E 60%, S 95%, T 58%, P 95% — Sports
+Mary Mother of Jesus Personality I 98%, N 54%, F 99%, P 53% — Religion
+Lucifer Personality E 92%, N 92%, T 57%, P 57% — Artist
+Odin Personality I 83%, N 99%, T 98%, J 83% — Historical
+Thor Personality E 97%, S 96%, T 78%, P 93% — Sports
+Loki Personality E 97%, N 98%, T 96%, P 98% — Artist
+Medusa Personality I 98%, N 88%, F 61%, J 93% — Religion
+Medea Personality E 81%, N 85%, F 53%, J 85% — Historical
+Cerberus Personality E 63%, S 89%, T 97%, J 64% — Historical
+Pandora Personality I 61%, N 84%, T 56%, P 99% — Artist
+Poseidon Personality E 95%, S 90%, T 76%, J 64% — Historical
+14th Dalai Lama Personality I 95%, N 53%, F 53%, P 93% — Religion
+Pope Francis Personality E 95%, S 55%, F 97%, J 91% — Religion
+Artemis Personality I 96%, S 82%, T 78%, P 81% — Sports
+Saint Mother Teresa Personality I 97%, S 59%, F 96%, J 95% — Religion
+Lilith Personality I 66%, N 77%, T 71%, J 73% — Artist
+Apollo Personality E 94%, N 94%, F 91%, P 71% — Artist
+Persephone Personality I 96%, N 86%, F 99%, P 94% — Artist
+Achilles Personality I 70%, S 95%, F 90%, P 96% — Sports
+Aphrodite Personality E 98%, S 72%, F 97%, P 63% — Artist
+Siddhartha Gautama Buddha Personality I 96%, N 92%, F 67%, J 79% — Religion
+Hades Personality I 99%, N 83%, T 98%, J 66% — Historical
+Pedro Sánchez Personality E 100%, S 70%, F 54%, J 62% — Historical
+Richard Nixon Personality I 92%, S 71%, T 97%, J 96% — Historical
+Ronald Reagan Personality E 97%, S 82%, F 92%, P 77% — Historical
+Theodore Roosevelt Personality E 98%, S 84%, T 95%, P 92% — Historical
+Benjamin Netanyahu Personality E 93%, N 75%, T 94%, J 91% — Historical
+Bill Clinton Personality E 97%, S 76%, F 91%, P 86% — Historical
+George W. Bush Personality E 91%, S 96%, T 74%, P 59% — Historical
+Hillary Clinton Personality E 73%, S 71%, T 93%, J 98% — Historical
+John F. Kennedy Personality E 85%, S 70%, F 51%, P 78% — Historical
+Alexandria Ocasio-Cortez Personality E 95%, N 85%, F 94%, J 89% — Historical
+Kamala Harris Personality E 98%, S 53%, T 55%, J 97% — Historical
+Abraham Lincoln Personality I 91%, N 96%, T 87%, P 85% — Historical
+Kim Jong-un Personality E 68%, S 73%, T 67%, J 57% — Historical
+Recep Tayyip Erdoğan Personality E 91%, S 73%, T 87%, J 89% — Historical
+Joe Biden Personality E 91%, S 84%, F 89%, J 90% — Historical
+Zohran Mamdani Personality E 97%, N 97%, F 60%, J 58% — Historical
+Boris Johnson Personality E 99%, N 76%, T 96%, P 98% — Historical
+Vladimir Putin Personality I 96%, S 64%, T 98%, J 55% — Historical
+Ben Shapiro Personality E 75%, S 61%, T 97%, J 88% — Historical
+Donald Trump Personality E 95%, S 76%, T 88%, P 75% — Historical
+Pitbull Personality E 94%, S 93%, T 92%, J 71% — Artist
+Emma Watson Personality I 53%, S 76%, F 55%, J 92% — Artist
+Mike Tyson Personality I 77%, S 95%, F 75%, P 97% — Sports
+Lorde Personality I 97%, S 59%, F 77%, P 74% — Artist
+Rihanna Personality I 80%, S 94%, F 66%, P 88% — Artist
+Marilyn Monroe Personality I 68%, S 82%, F 97%, P 87% — Artist
+Megan Fox Personality I 74%, S 93%, T 75%, P 95% — Artist
+Denzel Washington Personality E 58%, S 51%, F 54%, J 85% — Artist
+Matthew McConaughey Personality E 96%, N 70%, F 73%, J 68% — Artist
+Johann Wolfgang von Goethe Personality E 73%, N 98%, F 96%, J 92% — Artist
+Luigi Mangione Personality E 84%, N 94%, F 60%, J 77% — Historical
+Harry Styles Personality E 93%, N 56%, F 96%, J 52% — Artist
+Joseph Haydn Personality E 76%, N 51%, F 62%, J 54% — Artist
+Steve Harvey Personality E 98%, S 82%, F 85%, J 70% — Artist
+Chris Evans Personality E 71%, S 88%, F 98%, J 87% — Artist
+Paul McCartney Personality E 72%, S 81%, F 97%, J 70% — Artist
+Pope Benedict XVI Personality I 99%, S 73%, T 96%, J 94% — Religion
+Friedrich Merz Personality I 87%, S 56%, T 99%, J 99% — Historical
+George H. W. Bush Personality I 94%, S 96%, T 59%, J 99% — Historical
+Warren Buffett Personality I 90%, S 62%, T 98%, J 70% — Business
+Robert de Niro Personality I 93%, S 90%, T 93%, J 85% — Artist
+Angela Merkel Personality I 96%, S 88%, T 96%, J 95% — Historical
+Natalie Portman Personality I 86%, S 77%, T 77%, J 93% — Artist
+Chuck Norris Personality I 95%, S 98%, F 63%, J 60% — Sports
+Bruce Willis Personality I 75%, S 96%, F 54%, J 54% — Artist
+Mark Ruffalo Personality I 93%, S 64%, F 96%, J 85% — Artist
+Shawn Mendes Personality I 92%, S 83%, F 98%, J 95% — Artist
+Ed Sheeran Personality I 87%, S 78%, F 95%, J 67% — Artist
+Snoop Dogg Personality I 78%, S 94%, T 75%, P 91% — Artist

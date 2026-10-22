@@ -1,14 +1,4574 @@
 /**
  * 8Func - Historical & Notable Personalities Database
- * 196 Curated personalities with exact 4-axis spectrum profiles & MBTI archetypes
+ * 347 Curated personalities with exact 4-axis spectrum profiles & MBTI archetypes
  */
 
 export const NOTABLE_FIGURES = [
   {
+    "id": "hasan_piker_hasanabi",
+    "name": "Hasan Piker (Hasanabi)",
+    "profession": "politician",
+    "role": "Historical · ENFP",
+    "mbti": "ENFP",
+    "avatar": "👑",
+    "axes": {
+      "E": 98,
+      "I": 2,
+      "N": 65,
+      "S": 35,
+      "T": 27,
+      "F": 73,
+      "J": 21,
+      "P": 79
+    },
+    "scores": {
+      "Ne": 95,
+      "Fi": 85,
+      "Te": 65,
+      "Si": 35,
+      "Ni": 60,
+      "Fe": 75,
+      "Ti": 30,
+      "Se": 45
+    },
+    "quote": "Hasan Piker (Hasanabi) este asociat(ă) arhetipului ENFP cu profilul spectral E 98%, N 65%, F 73%, P 79%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4f/HasanStLouis-20260501-234558761_%28cropped%29.jpg/330px-HasanStLouis-20260501-234558761_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "robert_pattinson",
+    "name": "Robert Pattinson",
+    "profession": "artist",
+    "role": "Artist · INFP",
+    "mbti": "INFP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 8,
+      "I": 92,
+      "N": 76,
+      "S": 24,
+      "T": 8,
+      "F": 92,
+      "J": 5,
+      "P": 95
+    },
+    "scores": {
+      "Fi": 95,
+      "Ne": 85,
+      "Si": 65,
+      "Te": 35,
+      "Fe": 75,
+      "Ni": 60,
+      "Se": 45,
+      "Ti": 30
+    },
+    "quote": "Robert Pattinson este asociat(ă) arhetipului INFP cu profilul spectral I 92%, N 76%, F 92%, P 95%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d6/Robert_Pattinson_Venice_Film_Festival_%28cropped%29.jpg/330px-Robert_Pattinson_Venice_Film_Festival_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "malcolm_x",
+    "name": "Malcolm X",
+    "profession": "politician",
+    "role": "Historical · ENTJ",
+    "mbti": "ENTJ",
+    "avatar": "👑",
+    "axes": {
+      "E": 95,
+      "I": 5,
+      "N": 75,
+      "S": 25,
+      "T": 93,
+      "F": 7,
+      "J": 70,
+      "P": 30
+    },
+    "scores": {
+      "Te": 95,
+      "Ni": 85,
+      "Se": 65,
+      "Fi": 35,
+      "Ti": 75,
+      "Ne": 60,
+      "Si": 45,
+      "Fe": 30
+    },
+    "quote": "Malcolm X este asociat(ă) arhetipului ENTJ cu profilul spectral E 95%, N 75%, T 93%, J 70%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/33/Malcolm_X_1964_press_photo_%28cropped%29_%28lighting_diff%29.jpg/330px-Malcolm_X_1964_press_photo_%28cropped%29_%28lighting_diff%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "greta_thunberg",
+    "name": "Greta Thunberg",
+    "profession": "politician",
+    "role": "Historical · INTJ",
+    "mbti": "INTJ",
+    "avatar": "👑",
+    "axes": {
+      "E": 5,
+      "I": 95,
+      "N": 54,
+      "S": 46,
+      "T": 85,
+      "F": 15,
+      "J": 94,
+      "P": 6
+    },
+    "scores": {
+      "Ni": 95,
+      "Te": 85,
+      "Fi": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Ti": 75,
+      "Fe": 30,
+      "Si": 45
+    },
+    "quote": "Greta Thunberg este asociat(ă) arhetipului INTJ cu profilul spectral I 95%, N 54%, T 85%, J 94%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f8/Greta_Thunberg_in_May_2026_%28cropped_3x4%29.jpg/330px-Greta_Thunberg_in_May_2026_%28cropped_3x4%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "zendaya",
+    "name": "Zendaya",
+    "profession": "artist",
+    "role": "Artist · INFJ",
+    "mbti": "INFJ",
+    "avatar": "🎨",
+    "axes": {
+      "E": 48,
+      "I": 52,
+      "N": 96,
+      "S": 4,
+      "T": 3,
+      "F": 97,
+      "J": 97,
+      "P": 3
+    },
+    "scores": {
+      "Ni": 95,
+      "Fe": 85,
+      "Ti": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Fi": 30,
+      "Te": 45,
+      "Si": 45
+    },
+    "quote": "Zendaya este asociat(ă) arhetipului INFJ cu profilul spectral I 52%, N 96%, F 97%, J 97%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5a/Zendaya-byPhilipRomano.jpg/330px-Zendaya-byPhilipRomano.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "j_cole",
+    "name": "J. Cole",
+    "profession": "artist",
+    "role": "Artist · INFJ",
+    "mbti": "INFJ",
+    "avatar": "🎨",
+    "axes": {
+      "E": 38,
+      "I": 62,
+      "N": 94,
+      "S": 6,
+      "T": 3,
+      "F": 97,
+      "J": 87,
+      "P": 13
+    },
+    "scores": {
+      "Ni": 95,
+      "Fe": 85,
+      "Ti": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Fi": 30,
+      "Te": 45,
+      "Si": 45
+    },
+    "quote": "J. Cole este asociat(ă) arhetipului INFJ cu profilul spectral I 62%, N 94%, F 97%, J 87%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/69/HOTSPOTATL_-_21_Savage_%26_J.Cole_Light_Birthday_Bash_ATL_2023_On_FIRE_%28xu6HKf40MX0_-_2m38s%29_%28cropped%29.jpg/330px-HOTSPOTATL_-_21_Savage_%26_J.Cole_Light_Birthday_Bash_ATL_2023_On_FIRE_%28xu6HKf40MX0_-_2m38s%29_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "frank_ocean",
+    "name": "Frank Ocean",
+    "profession": "artist",
+    "role": "Artist · ISFP",
+    "mbti": "ISFP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 1,
+      "I": 99,
+      "N": 29,
+      "S": 71,
+      "T": 3,
+      "F": 97,
+      "J": 6,
+      "P": 94
+    },
+    "scores": {
+      "Fi": 95,
+      "Se": 85,
+      "Ni": 65,
+      "Te": 35,
+      "Fe": 75,
+      "Si": 45,
+      "Ne": 45,
+      "Ti": 30
+    },
+    "quote": "Frank Ocean este asociat(ă) arhetipului ISFP cu profilul spectral I 99%, S 71%, F 97%, P 94%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e3/Frank_Ocean_2022_Blonded.jpg/330px-Frank_Ocean_2022_Blonded.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "tyler_the_creator",
+    "name": "Tyler, the Creator",
+    "profession": "artist",
+    "role": "Artist · ENFP",
+    "mbti": "ENFP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 94,
+      "I": 6,
+      "N": 83,
+      "S": 17,
+      "T": 13,
+      "F": 87,
+      "J": 4,
+      "P": 96
+    },
+    "scores": {
+      "Ne": 95,
+      "Fi": 85,
+      "Te": 65,
+      "Si": 35,
+      "Ni": 60,
+      "Fe": 75,
+      "Ti": 30,
+      "Se": 45
+    },
+    "quote": "Tyler, the Creator este asociat(ă) arhetipului ENFP cu profilul spectral E 94%, N 83%, F 87%, P 96%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fe/Tyler_The_Creator_Toronto_2025_%28cropped%29.jpg/330px-Tyler_The_Creator_Toronto_2025_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "kendrick_lamar",
+    "name": "Kendrick Lamar",
+    "profession": "artist",
+    "role": "Artist · INFJ",
+    "mbti": "INFJ",
+    "avatar": "🎨",
+    "axes": {
+      "E": 6,
+      "I": 94,
+      "N": 89,
+      "S": 11,
+      "T": 7,
+      "F": 93,
+      "J": 78,
+      "P": 22
+    },
+    "scores": {
+      "Ni": 95,
+      "Fe": 85,
+      "Ti": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Fi": 30,
+      "Te": 45,
+      "Si": 45
+    },
+    "quote": "Kendrick Lamar este asociat(ă) arhetipului INFJ cu profilul spectral I 94%, N 89%, F 93%, J 78%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/18/KendrickSZASPurs230725-144_%28cropped%29_desaturated.jpg/330px-KendrickSZASPurs230725-144_%28cropped%29_desaturated.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "elliott_smith",
+    "name": "Elliott Smith",
+    "profession": "artist",
+    "role": "Artist · INFP",
+    "mbti": "INFP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 0,
+      "I": 100,
+      "N": 95,
+      "S": 5,
+      "T": 1,
+      "F": 99,
+      "J": 6,
+      "P": 94
+    },
+    "scores": {
+      "Fi": 95,
+      "Ne": 85,
+      "Si": 65,
+      "Te": 35,
+      "Fe": 75,
+      "Ni": 60,
+      "Se": 45,
+      "Ti": 30
+    },
+    "quote": "Elliott Smith este asociat(ă) arhetipului INFP cu profilul spectral I 100%, N 95%, F 99%, P 94%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8c/Elliott_Smith.jpg/330px-Elliott_Smith.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "stevie_wonder",
+    "name": "Stevie Wonder",
+    "profession": "artist",
+    "role": "Artist · ENFJ",
+    "mbti": "ENFJ",
+    "avatar": "🎨",
+    "axes": {
+      "E": 99,
+      "I": 1,
+      "N": 84,
+      "S": 16,
+      "T": 1,
+      "F": 99,
+      "J": 89,
+      "P": 11
+    },
+    "scores": {
+      "Fe": 95,
+      "Ni": 85,
+      "Se": 65,
+      "Ti": 35,
+      "Fi": 75,
+      "Ne": 60,
+      "Si": 45,
+      "Te": 30
+    },
+    "quote": "Stevie Wonder este asociat(ă) arhetipului ENFJ cu profilul spectral E 99%, N 84%, F 99%, J 89%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b2/SWonderBSTHyde060719-72_%28cropped%29.jpg/330px-SWonderBSTHyde060719-72_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "luther_vandross",
+    "name": "Luther Vandross",
+    "profession": "artist",
+    "role": "Artist · ENFJ",
+    "mbti": "ENFJ",
+    "avatar": "🎨",
+    "axes": {
+      "E": 83,
+      "I": 17,
+      "N": 89,
+      "S": 11,
+      "T": 0,
+      "F": 100,
+      "J": 94,
+      "P": 6
+    },
+    "scores": {
+      "Fe": 95,
+      "Ni": 85,
+      "Se": 65,
+      "Ti": 35,
+      "Fi": 75,
+      "Ne": 60,
+      "Si": 45,
+      "Te": 30
+    },
+    "quote": "Luther Vandross este asociat(ă) arhetipului ENFJ cu profilul spectral E 83%, N 89%, F 100%, J 94%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/Luther_Vandross_1985b.jpg/330px-Luther_Vandross_1985b.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "aretha_franklin",
+    "name": "Aretha Franklin",
+    "profession": "artist",
+    "role": "Artist · ISFJ",
+    "mbti": "ISFJ",
+    "avatar": "🎨",
+    "axes": {
+      "E": 19,
+      "I": 81,
+      "N": 16,
+      "S": 84,
+      "T": 16,
+      "F": 84,
+      "J": 82,
+      "P": 18
+    },
+    "scores": {
+      "Si": 95,
+      "Fe": 85,
+      "Ti": 65,
+      "Ne": 35,
+      "Se": 45,
+      "Fi": 30,
+      "Te": 45,
+      "Ni": 45
+    },
+    "quote": "Aretha Franklin este asociat(ă) arhetipului ISFJ cu profilul spectral I 81%, S 84%, F 84%, J 82%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c6/Aretha_Franklin_1968.jpg/330px-Aretha_Franklin_1968.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "nina_simone",
+    "name": "Nina Simone",
+    "profession": "artist",
+    "role": "Artist · INFP",
+    "mbti": "INFP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 6,
+      "I": 94,
+      "N": 69,
+      "S": 31,
+      "T": 13,
+      "F": 87,
+      "J": 19,
+      "P": 81
+    },
+    "scores": {
+      "Fi": 95,
+      "Ne": 85,
+      "Si": 65,
+      "Te": 35,
+      "Fe": 75,
+      "Ni": 60,
+      "Se": 45,
+      "Ti": 30
+    },
+    "quote": "Nina Simone este asociat(ă) arhetipului INFP cu profilul spectral I 94%, N 69%, F 87%, P 81%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/89/Nina_Simone_-1969.jpg/330px-Nina_Simone_-1969.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "johnny_depp",
+    "name": "Johnny Depp",
+    "profession": "artist",
+    "role": "Artist · INFP",
+    "mbti": "INFP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 7,
+      "I": 93,
+      "N": 89,
+      "S": 11,
+      "T": 9,
+      "F": 91,
+      "J": 3,
+      "P": 97
+    },
+    "scores": {
+      "Fi": 95,
+      "Ne": 85,
+      "Si": 65,
+      "Te": 35,
+      "Fe": 75,
+      "Ni": 60,
+      "Se": 45,
+      "Ti": 30
+    },
+    "quote": "Johnny Depp este asociat(ă) arhetipului INFP cu profilul spectral I 93%, N 89%, F 91%, P 97%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/21/Johnny_Depp_2020.jpg/330px-Johnny_Depp_2020.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "prince",
+    "name": "Prince",
+    "profession": "artist",
+    "role": "Artist · ISFP",
+    "mbti": "ISFP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 9,
+      "I": 91,
+      "N": 17,
+      "S": 83,
+      "T": 6,
+      "F": 94,
+      "J": 15,
+      "P": 85
+    },
+    "scores": {
+      "Fi": 95,
+      "Se": 85,
+      "Ni": 65,
+      "Te": 35,
+      "Fe": 75,
+      "Si": 45,
+      "Ne": 45,
+      "Ti": 30
+    },
+    "quote": "Prince este asociat(ă) arhetipului ISFP cu profilul spectral I 91%, S 83%, F 94%, P 85%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1c/Prince_promo_picture_%281988%3B_cropped_and_retouched%29.png/330px-Prince_promo_picture_%281988%3B_cropped_and_retouched%29.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "sade",
+    "name": "Sade",
+    "profession": "artist",
+    "role": "Artist · ISFJ",
+    "mbti": "ISFJ",
+    "avatar": "🎨",
+    "axes": {
+      "E": 1,
+      "I": 99,
+      "N": 11,
+      "S": 89,
+      "T": 3,
+      "F": 97,
+      "J": 78,
+      "P": 22
+    },
+    "scores": {
+      "Si": 95,
+      "Fe": 85,
+      "Ti": 65,
+      "Ne": 35,
+      "Se": 45,
+      "Fi": 30,
+      "Te": 45,
+      "Ni": 45
+    },
+    "quote": "Sade este asociat(ă) arhetipului ISFJ cu profilul spectral I 99%, S 89%, F 97%, J 78%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dc/Sade_Adu_1_%28cropped%29.jpg/330px-Sade_Adu_1_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "mariah_carey",
+    "name": "Mariah Carey",
+    "profession": "artist",
+    "role": "Artist · ESFJ",
+    "mbti": "ESFJ",
+    "avatar": "🎨",
+    "axes": {
+      "E": 93,
+      "I": 7,
+      "N": 2,
+      "S": 98,
+      "T": 46,
+      "F": 54,
+      "J": 91,
+      "P": 9
+    },
+    "scores": {
+      "Fe": 95,
+      "Si": 85,
+      "Ne": 65,
+      "Ti": 35,
+      "Fi": 75,
+      "Se": 45,
+      "Ni": 45,
+      "Te": 30
+    },
+    "quote": "Mariah Carey este asociat(ă) arhetipului ESFJ cu profilul spectral E 93%, S 98%, T 46%, J 91%.",
+    "photo": "https://upload.wikimedia.org/wikipedia/commons/2/22/Mariah_Carey_Library_of_Congress_2023_1_Cropped_3.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "madonna",
+    "name": "Madonna",
+    "profession": "artist",
+    "role": "Artist · ESTP",
+    "mbti": "ESTP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 95,
+      "I": 5,
+      "N": 10,
+      "S": 90,
+      "T": 81,
+      "F": 19,
+      "J": 11,
+      "P": 89
+    },
+    "scores": {
+      "Se": 95,
+      "Ti": 85,
+      "Fe": 65,
+      "Ni": 35,
+      "Si": 45,
+      "Te": 75,
+      "Fi": 30,
+      "Ne": 45
+    },
+    "quote": "Madonna este asociat(ă) arhetipului ESTP cu profilul spectral E 95%, S 90%, T 81%, P 89%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/78/MadonnaO2171023_%2897_of_133%29_%2853269593787%29_%28cropped%29.jpg/330px-MadonnaO2171023_%2897_of_133%29_%2853269593787%29_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "frank_sinatra",
+    "name": "Frank Sinatra",
+    "profession": "artist",
+    "role": "Artist · ESTP",
+    "mbti": "ESTP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 97,
+      "I": 3,
+      "N": 6,
+      "S": 94,
+      "T": 91,
+      "F": 9,
+      "J": 31,
+      "P": 69
+    },
+    "scores": {
+      "Se": 95,
+      "Ti": 85,
+      "Fe": 65,
+      "Ni": 35,
+      "Si": 45,
+      "Te": 75,
+      "Fi": 30,
+      "Ne": 45
+    },
+    "quote": "Frank Sinatra este asociat(ă) arhetipului ESTP cu profilul spectral E 97%, S 94%, T 91%, P 69%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e3/Frank_Sinatra_%281957_studio_portrait_close-up%29.jpg/330px-Frank_Sinatra_%281957_studio_portrait_close-up%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "catherine_kate_bush",
+    "name": "Catherine \"Kate\" Bush",
+    "profession": "artist",
+    "role": "Artist · INFP",
+    "mbti": "INFP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 5,
+      "I": 95,
+      "N": 72,
+      "S": 28,
+      "T": 1,
+      "F": 99,
+      "J": 7,
+      "P": 93
+    },
+    "scores": {
+      "Fi": 95,
+      "Ne": 85,
+      "Si": 65,
+      "Te": 35,
+      "Fe": 75,
+      "Ni": 60,
+      "Se": 45,
+      "Ti": 30
+    },
+    "quote": "Catherine \"Kate\" Bush este asociat(ă) arhetipului INFP cu profilul spectral I 95%, N 72%, F 99%, P 93%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f5/Kate_Bush_Hounds_of_Love_%281985_EMI_publicity_photo%29_02_%28cropped%29.jpg/330px-Kate_Bush_Hounds_of_Love_%281985_EMI_publicity_photo%29_02_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "miguel_de_cervantes",
+    "name": "Miguel de Cervantes",
+    "profession": "politician",
+    "role": "Historical · ENTP",
+    "mbti": "ENTP",
+    "avatar": "👑",
+    "axes": {
+      "E": 93,
+      "I": 7,
+      "N": 96,
+      "S": 4,
+      "T": 89,
+      "F": 11,
+      "J": 1,
+      "P": 99
+    },
+    "scores": {
+      "Ne": 95,
+      "Ti": 85,
+      "Fe": 65,
+      "Si": 35,
+      "Ni": 60,
+      "Te": 75,
+      "Fi": 30,
+      "Se": 45
+    },
+    "quote": "Miguel de Cervantes este asociat(ă) arhetipului ENTP cu profilul spectral E 93%, N 96%, T 89%, P 99%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/09/Cervantes_J%C3%A1uregui.jpg/330px-Cervantes_J%C3%A1uregui.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "haruki_murakami",
+    "name": "Haruki Murakami",
+    "profession": "artist",
+    "role": "Artist · INFP",
+    "mbti": "INFP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 1,
+      "I": 99,
+      "N": 91,
+      "S": 9,
+      "T": 8,
+      "F": 92,
+      "J": 23,
+      "P": 77
+    },
+    "scores": {
+      "Fi": 95,
+      "Ne": 85,
+      "Si": 65,
+      "Te": 35,
+      "Fe": 75,
+      "Ni": 60,
+      "Se": 45,
+      "Ti": 30
+    },
+    "quote": "Haruki Murakami este asociat(ă) arhetipului INFP cu profilul spectral I 99%, N 91%, F 92%, P 77%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/51/Conversatorio_Haruki_Murakami_%2812_de_12%29_%2845747009452%29_%28cropped%29.jpg/330px-Conversatorio_Haruki_Murakami_%2812_de_12%29_%2845747009452%29_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "alexandre_dumas",
+    "name": "Alexandre Dumas",
+    "profession": "artist",
+    "role": "Artist · ENFP",
+    "mbti": "ENFP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 67,
+      "I": 33,
+      "N": 63,
+      "S": 37,
+      "T": 7,
+      "F": 93,
+      "J": 27,
+      "P": 73
+    },
+    "scores": {
+      "Ne": 95,
+      "Fi": 85,
+      "Te": 65,
+      "Si": 35,
+      "Ni": 60,
+      "Fe": 75,
+      "Ti": 30,
+      "Se": 45
+    },
+    "quote": "Alexandre Dumas este asociat(ă) arhetipului ENFP cu profilul spectral E 67%, N 63%, F 93%, P 73%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f1/Nadar_-_Alexander_Dumas_p%C3%A8re_%281802-1870%29_-_Google_Art_Project_2.jpg/330px-Nadar_-_Alexander_Dumas_p%C3%A8re_%281802-1870%29_-_Google_Art_Project_2.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "dante_alighieri",
+    "name": "Dante Alighieri",
+    "profession": "politician",
+    "role": "Historical · INFJ",
+    "mbti": "INFJ",
+    "avatar": "👑",
+    "axes": {
+      "E": 6,
+      "I": 94,
+      "N": 98,
+      "S": 2,
+      "T": 11,
+      "F": 89,
+      "J": 94,
+      "P": 6
+    },
+    "scores": {
+      "Ni": 95,
+      "Fe": 85,
+      "Ti": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Fi": 30,
+      "Te": 45,
+      "Si": 45
+    },
+    "quote": "Dante Alighieri este asociat(ă) arhetipului INFJ cu profilul spectral I 94%, N 98%, F 89%, J 94%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ea/Bargello_-_Kapelle_Fresko_2a.jpg/330px-Bargello_-_Kapelle_Fresko_2a.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "victor_hugo",
+    "name": "Victor Hugo",
+    "profession": "artist",
+    "role": "Artist · ENFP",
+    "mbti": "ENFP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 90,
+      "I": 10,
+      "N": 94,
+      "S": 6,
+      "T": 1,
+      "F": 99,
+      "J": 38,
+      "P": 62
+    },
+    "scores": {
+      "Ne": 95,
+      "Fi": 85,
+      "Te": 65,
+      "Si": 35,
+      "Ni": 60,
+      "Fe": 75,
+      "Ti": 30,
+      "Se": 45
+    },
+    "quote": "Victor Hugo este asociat(ă) arhetipului ENFP cu profilul spectral E 90%, N 94%, F 99%, P 62%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e6/Victor_Hugo_by_%C3%89tienne_Carjat_1876_-_full.jpg/330px-Victor_Hugo_by_%C3%89tienne_Carjat_1876_-_full.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "marcel_proust",
+    "name": "Marcel Proust",
+    "profession": "artist",
+    "role": "Artist · INFP",
+    "mbti": "INFP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 0,
+      "I": 100,
+      "N": 96,
+      "S": 4,
+      "T": 1,
+      "F": 99,
+      "J": 20,
+      "P": 80
+    },
+    "scores": {
+      "Fi": 95,
+      "Ne": 85,
+      "Si": 65,
+      "Te": 35,
+      "Fe": 75,
+      "Ni": 60,
+      "Se": 45,
+      "Ti": 30
+    },
+    "quote": "Marcel Proust este asociat(ă) arhetipului INFP cu profilul spectral I 100%, N 96%, F 99%, P 80%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ed/Otto_Wegener_Proust_vers_1895_bis.jpg/330px-Otto_Wegener_Proust_vers_1895_bis.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "charles_baudelaire",
+    "name": "Charles Baudelaire",
+    "profession": "artist",
+    "role": "Artist · INFP",
+    "mbti": "INFP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 7,
+      "I": 93,
+      "N": 83,
+      "S": 17,
+      "T": 17,
+      "F": 83,
+      "J": 20,
+      "P": 80
+    },
+    "scores": {
+      "Fi": 95,
+      "Ne": 85,
+      "Si": 65,
+      "Te": 35,
+      "Fe": 75,
+      "Ni": 60,
+      "Se": 45,
+      "Ti": 30
+    },
+    "quote": "Charles Baudelaire este asociat(ă) arhetipului INFP cu profilul spectral I 93%, N 83%, F 83%, P 80%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/16/%C3%89tienne_Carjat%2C_Portrait_of_Charles_Baudelaire%2C_circa_1862.jpg/330px-%C3%89tienne_Carjat%2C_Portrait_of_Charles_Baudelaire%2C_circa_1862.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "hermann_hesse",
+    "name": "Hermann Hesse",
+    "profession": "artist",
+    "role": "Artist · INFJ",
+    "mbti": "INFJ",
+    "avatar": "🎨",
+    "axes": {
+      "E": 1,
+      "I": 99,
+      "N": 99,
+      "S": 1,
+      "T": 4,
+      "F": 96,
+      "J": 74,
+      "P": 26
+    },
+    "scores": {
+      "Ni": 95,
+      "Fe": 85,
+      "Ti": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Fi": 30,
+      "Te": 45,
+      "Si": 45
+    },
+    "quote": "Hermann Hesse este asociat(ă) arhetipului INFJ cu profilul spectral I 99%, N 99%, F 96%, J 74%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/da/Hermann_Hesse_2.jpg/330px-Hermann_Hesse_2.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "bob_dylan",
+    "name": "Bob Dylan",
+    "profession": "artist",
+    "role": "Artist · ISFP",
+    "mbti": "ISFP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 3,
+      "I": 97,
+      "N": 36,
+      "S": 64,
+      "T": 5,
+      "F": 95,
+      "J": 3,
+      "P": 97
+    },
+    "scores": {
+      "Fi": 95,
+      "Se": 85,
+      "Ni": 65,
+      "Te": 35,
+      "Fe": 75,
+      "Si": 45,
+      "Ne": 45,
+      "Ti": 30
+    },
+    "quote": "Bob Dylan este asociat(ă) arhetipului ISFP cu profilul spectral I 97%, S 64%, F 95%, P 97%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2a/DylanYoungKilkenny140719v2_%2850_of_52%29_%2852246124397%29_%28cropped%29.jpg/330px-DylanYoungKilkenny140719v2_%2850_of_52%29_%2852246124397%29_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "t_s_eliot",
+    "name": "T. S. Eliot",
+    "profession": "artist",
+    "role": "Artist · INTP",
+    "mbti": "INTP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 19,
+      "I": 81,
+      "N": 87,
+      "S": 13,
+      "T": 89,
+      "F": 11,
+      "J": 28,
+      "P": 72
+    },
+    "scores": {
+      "Ti": 95,
+      "Ne": 85,
+      "Si": 65,
+      "Fe": 35,
+      "Te": 75,
+      "Ni": 60,
+      "Se": 45,
+      "Fi": 30
+    },
+    "quote": "T. S. Eliot este asociat(ă) arhetipului INTP cu profilul spectral I 81%, N 87%, T 89%, P 72%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/Thomas_Stearns_Eliot_by_Lady_Ottoline_Morrell_%281934%29.jpg/330px-Thomas_Stearns_Eliot_by_Lady_Ottoline_Morrell_%281934%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "george_orwell",
+    "name": "George Orwell",
+    "profession": "artist",
+    "role": "Artist · INFP",
+    "mbti": "INFP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 1,
+      "I": 99,
+      "N": 97,
+      "S": 3,
+      "T": 22,
+      "F": 78,
+      "J": 10,
+      "P": 90
+    },
+    "scores": {
+      "Fi": 95,
+      "Ne": 85,
+      "Si": 65,
+      "Te": 35,
+      "Fe": 75,
+      "Ni": 60,
+      "Se": 45,
+      "Ti": 30
+    },
+    "quote": "George Orwell este asociat(ă) arhetipului INFP cu profilul spectral I 99%, N 97%, F 78%, P 90%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/George_Orwell_press_photo.jpg/330px-George_Orwell_press_photo.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "egon_schiele",
+    "name": "Egon Schiele",
+    "profession": "artist",
+    "role": "Artist · INTP",
+    "mbti": "INTP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 1,
+      "I": 99,
+      "N": 90,
+      "S": 10,
+      "T": 76,
+      "F": 24,
+      "J": 9,
+      "P": 91
+    },
+    "scores": {
+      "Ti": 95,
+      "Ne": 85,
+      "Si": 65,
+      "Fe": 35,
+      "Te": 75,
+      "Ni": 60,
+      "Se": 45,
+      "Fi": 30
+    },
+    "quote": "Egon Schiele este asociat(ă) arhetipului INTP cu profilul spectral I 99%, N 90%, T 76%, P 91%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b8/Egon_Schiele_-_Self-Portrait_with_Physalis_-_Google_Art_Project.jpg/330px-Egon_Schiele_-_Self-Portrait_with_Physalis_-_Google_Art_Project.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "francisco_de_goya",
+    "name": "Francisco de Goya",
+    "profession": "politician",
+    "role": "Historical · INFP",
+    "mbti": "INFP",
+    "avatar": "👑",
+    "axes": {
+      "E": 3,
+      "I": 97,
+      "N": 94,
+      "S": 6,
+      "T": 9,
+      "F": 91,
+      "J": 18,
+      "P": 82
+    },
+    "scores": {
+      "Fi": 95,
+      "Ne": 85,
+      "Si": 65,
+      "Te": 35,
+      "Fe": 75,
+      "Ni": 60,
+      "Se": 45,
+      "Ti": 30
+    },
+    "quote": "Francisco de Goya este asociat(ă) arhetipului INFP cu profilul spectral I 97%, N 94%, F 91%, P 82%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bf/Vicente_L%C3%B3pez_Porta%C3%B1a_-_el_pintor_Francisco_de_Goya.jpg/330px-Vicente_L%C3%B3pez_Porta%C3%B1a_-_el_pintor_Francisco_de_Goya.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "robin_williams",
+    "name": "Robin Williams",
+    "profession": "artist",
+    "role": "Artist · ENFP",
+    "mbti": "ENFP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 96,
+      "I": 4,
+      "N": 98,
+      "S": 2,
+      "T": 2,
+      "F": 98,
+      "J": 3,
+      "P": 97
+    },
+    "scores": {
+      "Ne": 95,
+      "Fi": 85,
+      "Te": 65,
+      "Si": 35,
+      "Ni": 60,
+      "Fe": 75,
+      "Ti": 30,
+      "Se": 45
+    },
+    "quote": "Robin Williams este asociat(ă) arhetipului ENFP cu profilul spectral E 96%, N 98%, F 98%, P 97%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b7/Robin_Williams_1996_%28cropped%29_2.jpg/330px-Robin_Williams_1996_%28cropped%29_2.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "ricky_gervais",
+    "name": "Ricky Gervais",
+    "profession": "artist",
+    "role": "Artist · ENTP",
+    "mbti": "ENTP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 97,
+      "I": 3,
+      "N": 98,
+      "S": 2,
+      "T": 53,
+      "F": 47,
+      "J": 3,
+      "P": 97
+    },
+    "scores": {
+      "Ne": 95,
+      "Ti": 85,
+      "Fe": 65,
+      "Si": 35,
+      "Ni": 60,
+      "Te": 75,
+      "Fi": 30,
+      "Se": 45
+    },
+    "quote": "Ricky Gervais este asociat(ă) arhetipului ENTP cu profilul spectral E 97%, N 98%, T 53%, P 97%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9a/GervaisPall230921_%2815_of_17%29_%2851527411486%29_%28cropped_2%29.jpg/330px-GervaisPall230921_%2815_of_17%29_%2851527411486%29_%28cropped_2%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "jim_carrey",
+    "name": "Jim Carrey",
+    "profession": "artist",
+    "role": "Artist · ENFP",
+    "mbti": "ENFP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 97,
+      "I": 3,
+      "N": 98,
+      "S": 2,
+      "T": 44,
+      "F": 56,
+      "J": 15,
+      "P": 85
+    },
+    "scores": {
+      "Ne": 95,
+      "Fi": 85,
+      "Te": 65,
+      "Si": 35,
+      "Ni": 60,
+      "Fe": 75,
+      "Ti": 30,
+      "Se": 45
+    },
+    "quote": "Jim Carrey este asociat(ă) arhetipului ENFP cu profilul spectral E 97%, N 98%, F 56%, P 85%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8b/Jim_Carrey_2008.jpg/330px-Jim_Carrey_2008.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "marcello_hernandez",
+    "name": "Marcello Hernandez",
+    "profession": "artist",
+    "role": "Artist · ENTP",
+    "mbti": "ENTP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 100,
+      "I": 0,
+      "N": 88,
+      "S": 12,
+      "T": 52,
+      "F": 48,
+      "J": 5,
+      "P": 95
+    },
+    "scores": {
+      "Ne": 95,
+      "Ti": 85,
+      "Fe": 65,
+      "Si": 35,
+      "Ni": 60,
+      "Te": 75,
+      "Fi": 30,
+      "Se": 45
+    },
+    "quote": "Marcello Hernandez este asociat(ă) arhetipului ENTP cu profilul spectral E 100%, N 88%, T 52%, P 95%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/Marcello_Hernandez_in_October_2024_%28cropped%29.jpg/330px-Marcello_Hernandez_in_October_2024_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "bo_burnham",
+    "name": "Bo Burnham",
+    "profession": "artist",
+    "role": "Artist · INTP",
+    "mbti": "INTP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 34,
+      "I": 66,
+      "N": 99,
+      "S": 1,
+      "T": 74,
+      "F": 26,
+      "J": 2,
+      "P": 98
+    },
+    "scores": {
+      "Ti": 95,
+      "Ne": 85,
+      "Si": 65,
+      "Fe": 35,
+      "Te": 75,
+      "Ni": 60,
+      "Se": 45,
+      "Fi": 30
+    },
+    "quote": "Bo Burnham este asociat(ă) arhetipului INTP cu profilul spectral I 66%, N 99%, T 74%, P 98%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/ba/Bo_Burnham_Montaclair_Film_Festival_%28cropped%29.jpg/330px-Bo_Burnham_Montaclair_Film_Festival_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "george_carlin",
+    "name": "George Carlin",
+    "profession": "artist",
+    "role": "Artist · ENTP",
+    "mbti": "ENTP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 96,
+      "I": 4,
+      "N": 98,
+      "S": 2,
+      "T": 51,
+      "F": 49,
+      "J": 2,
+      "P": 98
+    },
+    "scores": {
+      "Ne": 95,
+      "Ti": 85,
+      "Fe": 65,
+      "Si": 35,
+      "Ni": 60,
+      "Te": 75,
+      "Fi": 30,
+      "Se": 45
+    },
+    "quote": "George Carlin este asociat(ă) arhetipului ENTP cu profilul spectral E 96%, N 98%, F 49%, P 98%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4c/George_Carlin_1975_%28Little_David_Records%29_Publicity_%28cropped%29.jpg/330px-George_Carlin_1975_%28Little_David_Records%29_Publicity_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "nathan_fielder",
+    "name": "Nathan Fielder",
+    "profession": "artist",
+    "role": "Artist · INTP",
+    "mbti": "INTP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 14,
+      "I": 86,
+      "N": 97,
+      "S": 3,
+      "T": 98,
+      "F": 2,
+      "J": 5,
+      "P": 95
+    },
+    "scores": {
+      "Ti": 95,
+      "Ne": 85,
+      "Si": 65,
+      "Fe": 35,
+      "Te": 75,
+      "Ni": 60,
+      "Se": 45,
+      "Fi": 30
+    },
+    "quote": "Nathan Fielder este asociat(ă) arhetipului INTP cu profilul spectral I 86%, N 97%, T 98%, P 95%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/be/Nathan_Fielder.jpg/330px-Nathan_Fielder.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "ralph_lauren",
+    "name": "Ralph Lauren",
+    "profession": "artist",
+    "role": "Artist · ISFJ",
+    "mbti": "ISFJ",
+    "avatar": "🎨",
+    "axes": {
+      "E": 47,
+      "I": 53,
+      "N": 32,
+      "S": 68,
+      "T": 11,
+      "F": 89,
+      "J": 68,
+      "P": 32
+    },
+    "scores": {
+      "Si": 95,
+      "Fe": 85,
+      "Ti": 65,
+      "Ne": 35,
+      "Se": 45,
+      "Fi": 30,
+      "Te": 45,
+      "Ni": 45
+    },
+    "quote": "Ralph Lauren este asociat(ă) arhetipului ISFJ cu profilul spectral E 47%, S 68%, F 89%, J 68%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/da/Ralph_Lauren_2013.jpg/330px-Ralph_Lauren_2013.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "vivienne_westwood",
+    "name": "Vivienne Westwood",
+    "profession": "artist",
+    "role": "Artist · ENFP",
+    "mbti": "ENFP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 94,
+      "I": 6,
+      "N": 94,
+      "S": 6,
+      "T": 3,
+      "F": 97,
+      "J": 10,
+      "P": 90
+    },
+    "scores": {
+      "Ne": 95,
+      "Fi": 85,
+      "Te": 65,
+      "Si": 35,
+      "Ni": 60,
+      "Fe": 75,
+      "Ti": 30,
+      "Se": 45
+    },
+    "quote": "Vivienne Westwood este asociat(ă) arhetipului ENFP cu profilul spectral E 94%, N 94%, F 97%, P 90%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1c/Vivienne_Westwood_by_Mattia_Passeri.jpg/330px-Vivienne_Westwood_by_Mattia_Passeri.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "giorgio_armani",
+    "name": "Giorgio Armani",
+    "profession": "artist",
+    "role": "Artist · ENTJ",
+    "mbti": "ENTJ",
+    "avatar": "🎨",
+    "axes": {
+      "E": 83,
+      "I": 17,
+      "N": 100,
+      "S": 0,
+      "T": 86,
+      "F": 14,
+      "J": 93,
+      "P": 7
+    },
+    "scores": {
+      "Te": 95,
+      "Ni": 85,
+      "Se": 65,
+      "Fi": 35,
+      "Ti": 75,
+      "Ne": 60,
+      "Si": 45,
+      "Fe": 30
+    },
+    "quote": "Giorgio Armani este asociat(ă) arhetipului ENTJ cu profilul spectral E 83%, N 100%, T 86%, J 93%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/06/Giorgio_Armani_1997.jpg/330px-Giorgio_Armani_1997.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "christian_dior",
+    "name": "Christian Dior",
+    "profession": "artist",
+    "role": "Artist · INFJ",
+    "mbti": "INFJ",
+    "avatar": "🎨",
+    "axes": {
+      "E": 0,
+      "I": 100,
+      "N": 89,
+      "S": 11,
+      "T": 14,
+      "F": 86,
+      "J": 94,
+      "P": 6
+    },
+    "scores": {
+      "Ni": 95,
+      "Fe": 85,
+      "Ti": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Fi": 30,
+      "Te": 45,
+      "Si": 45
+    },
+    "quote": "Christian Dior este asociat(ă) arhetipului INFJ cu profilul spectral I 100%, N 89%, F 86%, J 94%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/41/Dior_r%C3%A9volutionne_la_haute-couture._Paris_Mus%C3%A9es_20230526160357.jpg/330px-Dior_r%C3%A9volutionne_la_haute-couture._Paris_Mus%C3%A9es_20230526160357.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "tom_ford",
+    "name": "Tom Ford",
+    "profession": "artist",
+    "role": "Artist · INFJ",
+    "mbti": "INFJ",
+    "avatar": "🎨",
+    "axes": {
+      "E": 24,
+      "I": 76,
+      "N": 89,
+      "S": 11,
+      "T": 29,
+      "F": 71,
+      "J": 91,
+      "P": 9
+    },
+    "scores": {
+      "Ni": 95,
+      "Fe": 85,
+      "Ti": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Fi": 30,
+      "Te": 45,
+      "Si": 45
+    },
+    "quote": "Tom Ford este asociat(ă) arhetipului INFJ cu profilul spectral I 76%, N 89%, F 71%, J 91%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/98/Tom_Ford_cropped_2009.jpg/330px-Tom_Ford_cropped_2009.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "gabrielle_bonheur_coco_chanel",
+    "name": "Gabrielle Bonheur “Coco” Chanel",
+    "profession": "artist",
+    "role": "Artist · ENTJ",
+    "mbti": "ENTJ",
+    "avatar": "🎨",
+    "axes": {
+      "E": 98,
+      "I": 2,
+      "N": 79,
+      "S": 21,
+      "T": 96,
+      "F": 4,
+      "J": 95,
+      "P": 5
+    },
+    "scores": {
+      "Te": 95,
+      "Ni": 85,
+      "Se": 65,
+      "Fi": 35,
+      "Ti": 75,
+      "Ne": 60,
+      "Si": 45,
+      "Fe": 30
+    },
+    "quote": "Gabrielle Bonheur “Coco” Chanel este asociat(ă) arhetipului ENTJ cu profilul spectral E 98%, N 79%, T 96%, J 95%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/22/Coco_Chanel_in_Los_Angeles%2C_1931_%28cropped%29.jpg/330px-Coco_Chanel_in_Los_Angeles%2C_1931_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "yves_saint_laurent",
+    "name": "Yves Saint Laurent",
+    "profession": "artist",
+    "role": "Artist · INFP",
+    "mbti": "INFP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 1,
+      "I": 99,
+      "N": 87,
+      "S": 13,
+      "T": 13,
+      "F": 87,
+      "J": 3,
+      "P": 97
+    },
+    "scores": {
+      "Fi": 95,
+      "Ne": 85,
+      "Si": 65,
+      "Te": 35,
+      "Fe": 75,
+      "Ni": 60,
+      "Se": 45,
+      "Ti": 30
+    },
+    "quote": "Yves Saint Laurent este asociat(ă) arhetipului INFP cu profilul spectral I 99%, N 87%, F 87%, P 97%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/ba/Yves_Saint-Laurent_at_his_old_studio_of_the_same_name%2C_1961_%28cropped%29.jpg/330px-Yves_Saint-Laurent_at_his_old_studio_of_the_same_name%2C_1961_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "karl_lagerfeld",
+    "name": "Karl Lagerfeld",
+    "profession": "artist",
+    "role": "Artist · ENTP",
+    "mbti": "ENTP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 87,
+      "I": 13,
+      "N": 98,
+      "S": 2,
+      "T": 95,
+      "F": 5,
+      "J": 18,
+      "P": 82
+    },
+    "scores": {
+      "Ne": 95,
+      "Ti": 85,
+      "Fe": 65,
+      "Si": 35,
+      "Ni": 60,
+      "Te": 75,
+      "Fi": 30,
+      "Se": 45
+    },
+    "quote": "Karl Lagerfeld este asociat(ă) arhetipului ENTP cu profilul spectral E 87%, N 98%, T 95%, P 82%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b9/Fendi_store_opening_-_Karl_Lagerfeld_%2814091153382%29_crop.jpg/330px-Fendi_store_opening_-_Karl_Lagerfeld_%2814091153382%29_crop.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "james_cameron",
+    "name": "James Cameron",
+    "profession": "artist",
+    "role": "Artist · ENTJ",
+    "mbti": "ENTJ",
+    "avatar": "🎨",
+    "axes": {
+      "E": 61,
+      "I": 39,
+      "N": 93,
+      "S": 7,
+      "T": 97,
+      "F": 3,
+      "J": 95,
+      "P": 5
+    },
+    "scores": {
+      "Te": 95,
+      "Ni": 85,
+      "Se": 65,
+      "Fi": 35,
+      "Ti": 75,
+      "Ne": 60,
+      "Si": 45,
+      "Fe": 30
+    },
+    "quote": "James Cameron este asociat(ă) arhetipului ENTJ cu profilul spectral E 61%, N 93%, T 97%, J 95%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4f/James_Cameron_at_53rd_Saturn_Awards_2026-01_%28cropped%29.jpg/330px-James_Cameron_at_53rd_Saturn_Awards_2026-01_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "francis_ford_coppola",
+    "name": "Francis Ford Coppola",
+    "profession": "artist",
+    "role": "Artist · INTJ",
+    "mbti": "INTJ",
+    "avatar": "🎨",
+    "axes": {
+      "E": 39,
+      "I": 61,
+      "N": 95,
+      "S": 5,
+      "T": 91,
+      "F": 9,
+      "J": 67,
+      "P": 33
+    },
+    "scores": {
+      "Ni": 95,
+      "Te": 85,
+      "Fi": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Ti": 75,
+      "Fe": 30,
+      "Si": 45
+    },
+    "quote": "Francis Ford Coppola este asociat(ă) arhetipului INTJ cu profilul spectral I 61%, N 95%, T 91%, J 67%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/Lena_Herzog_Francis_Ford_Coppola_Wernder_Herzog_Venice_Film_Festival_%28cropped%29.jpg/330px-Lena_Herzog_Francis_Ford_Coppola_Wernder_Herzog_Venice_Film_Festival_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "steven_spielberg",
+    "name": "Steven Spielberg",
+    "profession": "artist",
+    "role": "Artist · ISFP",
+    "mbti": "ISFP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 43,
+      "I": 57,
+      "N": 42,
+      "S": 58,
+      "T": 9,
+      "F": 91,
+      "J": 8,
+      "P": 92
+    },
+    "scores": {
+      "Fi": 95,
+      "Se": 85,
+      "Ni": 65,
+      "Te": 35,
+      "Fe": 75,
+      "Si": 45,
+      "Ne": 45,
+      "Ti": 30
+    },
+    "quote": "Steven Spielberg este asociat(ă) arhetipului ISFP cu profilul spectral I 57%, S 58%, F 91%, P 92%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c5/MKr25402_Steven_Spielberg_%28Berlinale_2023%29_%283x4_cropped%29.jpg/330px-MKr25402_Steven_Spielberg_%28Berlinale_2023%29_%283x4_cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "ingmar_bergman",
+    "name": "Ingmar Bergman",
+    "profession": "artist",
+    "role": "Artist · INFJ",
+    "mbti": "INFJ",
+    "avatar": "🎨",
+    "axes": {
+      "E": 0,
+      "I": 100,
+      "N": 96,
+      "S": 4,
+      "T": 21,
+      "F": 79,
+      "J": 81,
+      "P": 19
+    },
+    "scores": {
+      "Ni": 95,
+      "Fe": 85,
+      "Ti": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Fi": 30,
+      "Te": 45,
+      "Si": 45
+    },
+    "quote": "Ingmar Bergman este asociat(ă) arhetipului INFJ cu profilul spectral I 100%, N 96%, F 79%, J 81%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f2/Ingmar_Bergman_%281966%29.jpg/330px-Ingmar_Bergman_%281966%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "denis_villeneuve",
+    "name": "Denis Villeneuve",
+    "profession": "artist",
+    "role": "Artist · INFJ",
+    "mbti": "INFJ",
+    "avatar": "🎨",
+    "axes": {
+      "E": 6,
+      "I": 94,
+      "N": 92,
+      "S": 8,
+      "T": 7,
+      "F": 93,
+      "J": 51,
+      "P": 49
+    },
+    "scores": {
+      "Ni": 95,
+      "Fe": 85,
+      "Ti": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Fi": 30,
+      "Te": 45,
+      "Si": 45
+    },
+    "quote": "Denis Villeneuve este asociat(ă) arhetipului INFJ cu profilul spectral I 94%, N 92%, F 93%, J 51%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5a/DVilleneuveRFH121024_%2812_of_23%29_%2854061976489%29_%28cropped%29.jpg/330px-DVilleneuveRFH121024_%2812_of_23%29_%2854061976489%29_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "keanu_reeves",
+    "name": "Keanu Reeves",
+    "profession": "artist",
+    "role": "Artist · INFP",
+    "mbti": "INFP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 3,
+      "I": 97,
+      "N": 74,
+      "S": 26,
+      "T": 6,
+      "F": 94,
+      "J": 12,
+      "P": 88
+    },
+    "scores": {
+      "Fi": 95,
+      "Ne": 85,
+      "Si": 65,
+      "Te": 35,
+      "Fe": 75,
+      "Ni": 60,
+      "Se": 45,
+      "Ti": 30
+    },
+    "quote": "Keanu Reeves este asociat(ă) arhetipului INFP cu profilul spectral I 97%, N 74%, F 94%, P 88%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/Keanu_Reeves_at_TIFF_2025_02_%28Cropped%29.jpg/330px-Keanu_Reeves_at_TIFF_2025_02_%28Cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "jean_michel_basquiat",
+    "name": "Jean-Michel Basquiat",
+    "profession": "artist",
+    "role": "Artist · ISTP",
+    "mbti": "ISTP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 3,
+      "I": 97,
+      "N": 13,
+      "S": 87,
+      "T": 57,
+      "F": 43,
+      "J": 6,
+      "P": 94
+    },
+    "scores": {
+      "Ti": 95,
+      "Se": 85,
+      "Ni": 65,
+      "Fe": 35,
+      "Te": 75,
+      "Si": 45,
+      "Ne": 45,
+      "Fi": 30
+    },
+    "quote": "Jean-Michel Basquiat este asociat(ă) arhetipului ISTP cu profilul spectral I 97%, S 87%, T 57%, P 94%.",
+    "photo": "https://upload.wikimedia.org/wikipedia/commons/a/aa/Jean-Michel_Basquiat_passport_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "claude_monet",
+    "name": "Claude Monet",
+    "profession": "artist",
+    "role": "Artist · INTJ",
+    "mbti": "INTJ",
+    "avatar": "🎨",
+    "axes": {
+      "E": 3,
+      "I": 97,
+      "N": 62,
+      "S": 38,
+      "T": 56,
+      "F": 44,
+      "J": 61,
+      "P": 39
+    },
+    "scores": {
+      "Ni": 95,
+      "Te": 85,
+      "Fi": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Ti": 75,
+      "Fe": 30,
+      "Si": 45
+    },
+    "quote": "Claude Monet este asociat(ă) arhetipului INTJ cu profilul spectral I 97%, N 62%, T 56%, J 61%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a4/Claude_Monet_1899_Nadar_crop.jpg/330px-Claude_Monet_1899_Nadar_crop.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "andy_warhol",
+    "name": "Andy Warhol",
+    "profession": "artist",
+    "role": "Artist · INFP",
+    "mbti": "INFP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 5,
+      "I": 95,
+      "N": 79,
+      "S": 21,
+      "T": 30,
+      "F": 70,
+      "J": 8,
+      "P": 92
+    },
+    "scores": {
+      "Fi": 95,
+      "Ne": 85,
+      "Si": 65,
+      "Te": 35,
+      "Fe": 75,
+      "Ni": 60,
+      "Se": 45,
+      "Ti": 30
+    },
+    "quote": "Andy Warhol este asociat(ă) arhetipului INFP cu profilul spectral I 95%, N 79%, F 70%, P 92%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6c/Andy_Warhol_by_Bernard_Gotfryd_1980.png/330px-Andy_Warhol_by_Bernard_Gotfryd_1980.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "michelangelo_buonarroti",
+    "name": "Michelangelo Buonarroti",
+    "profession": "artist",
+    "role": "Artist · ISFP",
+    "mbti": "ISFP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 10,
+      "I": 90,
+      "N": 38,
+      "S": 62,
+      "T": 34,
+      "F": 66,
+      "J": 29,
+      "P": 71
+    },
+    "scores": {
+      "Fi": 95,
+      "Se": 85,
+      "Ni": 65,
+      "Te": 35,
+      "Fe": 75,
+      "Si": 45,
+      "Ne": 45,
+      "Ti": 30
+    },
+    "quote": "Michelangelo Buonarroti este asociat(ă) arhetipului ISFP cu profilul spectral I 90%, S 62%, F 66%, P 71%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/02/Michelangelo_Daniele_da_Volterra_%28dettaglio%29.jpg/330px-Michelangelo_Daniele_da_Volterra_%28dettaglio%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "leonardo_da_vinci",
+    "name": "Leonardo da Vinci",
+    "profession": "artist",
+    "role": "Artist · ENTP",
+    "mbti": "ENTP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 83,
+      "I": 17,
+      "N": 98,
+      "S": 2,
+      "T": 95,
+      "F": 5,
+      "J": 5,
+      "P": 95
+    },
+    "scores": {
+      "Ne": 95,
+      "Ti": 85,
+      "Fe": 65,
+      "Si": 35,
+      "Ni": 60,
+      "Te": 75,
+      "Fi": 30,
+      "Se": 45
+    },
+    "quote": "Leonardo da Vinci este asociat(ă) arhetipului ENTP cu profilul spectral E 83%, N 98%, T 95%, P 95%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/16/Francesco_Melzi_-_Portrait_of_Leonardo_%28colour_correction%29.png/330px-Francesco_Melzi_-_Portrait_of_Leonardo_%28colour_correction%29.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "george_lucas",
+    "name": "George Lucas",
+    "profession": "entrepreneur",
+    "role": "Business · INFP",
+    "mbti": "INFP",
+    "avatar": "💼",
+    "axes": {
+      "E": 5,
+      "I": 95,
+      "N": 84,
+      "S": 16,
+      "T": 31,
+      "F": 69,
+      "J": 13,
+      "P": 87
+    },
+    "scores": {
+      "Fi": 95,
+      "Ne": 85,
+      "Si": 65,
+      "Te": 35,
+      "Fe": 75,
+      "Ni": 60,
+      "Se": 45,
+      "Ti": 30
+    },
+    "quote": "George Lucas este asociat(ă) arhetipului INFP cu profilul spectral I 95%, N 84%, F 69%, P 87%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c5/George_Lucas_by_Gage_Skidmore.jpg/330px-George_Lucas_by_Gage_Skidmore.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "quentin_tarantino",
+    "name": "Quentin Tarantino",
+    "profession": "artist",
+    "role": "Artist · ENFP",
+    "mbti": "ENFP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 98,
+      "I": 2,
+      "N": 66,
+      "S": 34,
+      "T": 48,
+      "F": 52,
+      "J": 3,
+      "P": 97
+    },
+    "scores": {
+      "Ne": 95,
+      "Fi": 85,
+      "Te": 65,
+      "Si": 35,
+      "Ni": 60,
+      "Fe": 75,
+      "Ti": 30,
+      "Se": 45
+    },
+    "quote": "Quentin Tarantino este asociat(ă) arhetipului ENFP cu profilul spectral E 98%, N 66%, T 48%, P 97%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0b/Quentin_Tarantino_by_Gage_Skidmore.jpg/330px-Quentin_Tarantino_by_Gage_Skidmore.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "georg_wilhelm_friedrich_hegel",
+    "name": "Georg Wilhelm Friedrich Hegel",
+    "profession": "philosopher",
+    "role": "Philosophy · INTJ",
+    "mbti": "INTJ",
+    "avatar": "🏛️",
+    "axes": {
+      "E": 5,
+      "I": 95,
+      "N": 98,
+      "S": 2,
+      "T": 93,
+      "F": 7,
+      "J": 90,
+      "P": 10
+    },
+    "scores": {
+      "Ni": 95,
+      "Te": 85,
+      "Fi": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Ti": 75,
+      "Fe": 30,
+      "Si": 45
+    },
+    "quote": "Georg Wilhelm Friedrich Hegel este asociat(ă) arhetipului INTJ cu profilul spectral I 95%, N 98%, T 93%, J 90%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cc/Jakob_Schlesinger_-_Hegel_1831.jpg/330px-Jakob_Schlesinger_-_Hegel_1831.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "ayn_rand",
+    "name": "Ayn Rand",
+    "profession": "philosopher",
+    "role": "Philosophy · INTJ",
+    "mbti": "INTJ",
+    "avatar": "🏛️",
+    "axes": {
+      "E": 27,
+      "I": 73,
+      "N": 91,
+      "S": 9,
+      "T": 98,
+      "F": 2,
+      "J": 94,
+      "P": 6
+    },
+    "scores": {
+      "Ni": 95,
+      "Te": 85,
+      "Fi": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Ti": 75,
+      "Fe": 30,
+      "Si": 45
+    },
+    "quote": "Ayn Rand este asociat(ă) arhetipului INTJ cu profilul spectral I 73%, N 91%, T 98%, J 94%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b1/Ayn_Rand_%281943_Talbot_portrait%29.jpg/330px-Ayn_Rand_%281943_Talbot_portrait%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "s_ren_kierkegaard",
+    "name": "Søren Kierkegaard",
+    "profession": "philosopher",
+    "role": "Philosophy · INFP",
+    "mbti": "INFP",
+    "avatar": "🏛️",
+    "axes": {
+      "E": 3,
+      "I": 97,
+      "N": 97,
+      "S": 3,
+      "T": 4,
+      "F": 96,
+      "J": 9,
+      "P": 91
+    },
+    "scores": {
+      "Fi": 95,
+      "Ne": 85,
+      "Si": 65,
+      "Te": 35,
+      "Fe": 75,
+      "Ni": 60,
+      "Se": 45,
+      "Ti": 30
+    },
+    "quote": "Søren Kierkegaard este asociat(ă) arhetipului INFP cu profilul spectral I 97%, N 97%, F 96%, P 91%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d4/S%C3%B8ren_Kierkegaard_%281813-1855%29_-_%28cropped%29.jpg/330px-S%C3%B8ren_Kierkegaard_%281813-1855%29_-_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "jean_paul_sartre",
+    "name": "Jean-Paul Sartre",
+    "profession": "philosopher",
+    "role": "Philosophy · INTJ",
+    "mbti": "INTJ",
+    "avatar": "🏛️",
+    "axes": {
+      "E": 6,
+      "I": 94,
+      "N": 97,
+      "S": 3,
+      "T": 92,
+      "F": 8,
+      "J": 84,
+      "P": 16
+    },
+    "scores": {
+      "Ni": 95,
+      "Te": 85,
+      "Fi": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Ti": 75,
+      "Fe": 30,
+      "Si": 45
+    },
+    "quote": "Jean-Paul Sartre este asociat(ă) arhetipului INTJ cu profilul spectral I 94%, N 97%, T 92%, J 84%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e9/Jean_Paul_Sartre_1965.jpg/330px-Jean_Paul_Sartre_1965.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "slavoj_zizek",
+    "name": "Slavoj Žižek",
+    "profession": "philosopher",
+    "role": "Philosophy · ENTP",
+    "mbti": "ENTP",
+    "avatar": "🏛️",
+    "axes": {
+      "E": 90,
+      "I": 10,
+      "N": 98,
+      "S": 2,
+      "T": 95,
+      "F": 5,
+      "J": 4,
+      "P": 96
+    },
+    "scores": {
+      "Ne": 95,
+      "Ti": 85,
+      "Fe": 65,
+      "Si": 35,
+      "Ni": 60,
+      "Te": 75,
+      "Fi": 30,
+      "Se": 45
+    },
+    "quote": "Slavoj Žižek este asociat(ă) arhetipului ENTP cu profilul spectral E 90%, N 98%, T 95%, P 96%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c9/Slavoj_%C5%BDi%C5%BEek-5229.jpg/330px-Slavoj_%C5%BDi%C5%BEek-5229.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "albert_camus",
+    "name": "Albert Camus",
+    "profession": "philosopher",
+    "role": "Philosophy · INFP",
+    "mbti": "INFP",
+    "avatar": "🏛️",
+    "axes": {
+      "E": 4,
+      "I": 96,
+      "N": 67,
+      "S": 33,
+      "T": 12,
+      "F": 88,
+      "J": 7,
+      "P": 93
+    },
+    "scores": {
+      "Fi": 95,
+      "Ne": 85,
+      "Si": 65,
+      "Te": 35,
+      "Fe": 75,
+      "Ni": 60,
+      "Se": 45,
+      "Ti": 30
+    },
+    "quote": "Albert Camus este asociat(ă) arhetipului INFP cu profilul spectral I 96%, N 67%, F 88%, P 93%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/08/Albert_Camus%2C_gagnant_de_prix_Nobel%2C_portrait_en_buste%2C_pos%C3%A9_au_bureau%2C_faisant_face_%C3%A0_gauche%2C_cigarette_de_tabagisme.jpg/330px-Albert_Camus%2C_gagnant_de_prix_Nobel%2C_portrait_en_buste%2C_pos%C3%A9_au_bureau%2C_faisant_face_%C3%A0_gauche%2C_cigarette_de_tabagisme.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "max_planck",
+    "name": "Max Planck",
+    "profession": "scientist",
+    "role": "Science · INTJ",
+    "mbti": "INTJ",
+    "avatar": "⚛️",
+    "axes": {
+      "E": 0,
+      "I": 100,
+      "N": 69,
+      "S": 31,
+      "T": 98,
+      "F": 2,
+      "J": 96,
+      "P": 4
+    },
+    "scores": {
+      "Ni": 95,
+      "Te": 85,
+      "Fi": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Ti": 75,
+      "Fe": 30,
+      "Si": 45
+    },
+    "quote": "Max Planck este asociat(ă) arhetipului INTJ cu profilul spectral I 100%, N 69%, T 98%, J 96%.",
+    "photo": "https://upload.wikimedia.org/wikipedia/commons/d/df/Max_Planck_1901.GIF?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "marie_sk_odowska_curie",
+    "name": "Marie Skłodowska-Curie",
+    "profession": "scientist",
+    "role": "Science · INTP",
+    "mbti": "INTP",
+    "avatar": "⚛️",
+    "axes": {
+      "E": 1,
+      "I": 99,
+      "N": 98,
+      "S": 2,
+      "T": 99,
+      "F": 1,
+      "J": 10,
+      "P": 90
+    },
+    "scores": {
+      "Ti": 95,
+      "Ne": 85,
+      "Si": 65,
+      "Fe": 35,
+      "Te": 75,
+      "Ni": 60,
+      "Se": 45,
+      "Fi": 30
+    },
+    "quote": "Marie Skłodowska-Curie este asociat(ă) arhetipului INTP cu profilul spectral I 99%, N 98%, T 99%, P 90%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c8/Marie_Curie_c._1920s.jpg/330px-Marie_Curie_c._1920s.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "charles_darwin",
+    "name": "Charles Darwin",
+    "profession": "scientist",
+    "role": "Science · INTP",
+    "mbti": "INTP",
+    "avatar": "⚛️",
+    "axes": {
+      "E": 30,
+      "I": 70,
+      "N": 74,
+      "S": 26,
+      "T": 97,
+      "F": 3,
+      "J": 34,
+      "P": 66
+    },
+    "scores": {
+      "Ti": 95,
+      "Ne": 85,
+      "Si": 65,
+      "Fe": 35,
+      "Te": 75,
+      "Ni": 60,
+      "Se": 45,
+      "Fi": 30
+    },
+    "quote": "Charles Darwin este asociat(ă) arhetipului INTP cu profilul spectral I 70%, N 74%, T 97%, P 66%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2e/Charles_Darwin_seated_crop.jpg/330px-Charles_Darwin_seated_crop.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "stephen_hawking",
+    "name": "Stephen Hawking",
+    "profession": "scientist",
+    "role": "Science · INTJ",
+    "mbti": "INTJ",
+    "avatar": "⚛️",
+    "axes": {
+      "E": 9,
+      "I": 91,
+      "N": 98,
+      "S": 2,
+      "T": 99,
+      "F": 1,
+      "J": 69,
+      "P": 31
+    },
+    "scores": {
+      "Ni": 95,
+      "Te": 85,
+      "Fi": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Ti": 75,
+      "Fe": 30,
+      "Si": 45
+    },
+    "quote": "Stephen Hawking este asociat(ă) arhetipului INTJ cu profilul spectral I 91%, N 98%, T 99%, J 69%.",
+    "photo": "https://upload.wikimedia.org/wikipedia/commons/e/eb/Stephen_Hawking.StarChild.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "isaac_newton",
+    "name": "Isaac Newton",
+    "profession": "scientist",
+    "role": "Science · INTJ",
+    "mbti": "INTJ",
+    "avatar": "⚛️",
+    "axes": {
+      "E": 2,
+      "I": 98,
+      "N": 97,
+      "S": 3,
+      "T": 98,
+      "F": 2,
+      "J": 76,
+      "P": 24
+    },
+    "scores": {
+      "Ni": 95,
+      "Te": 85,
+      "Fi": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Ti": 75,
+      "Fe": 30,
+      "Si": 45
+    },
+    "quote": "Isaac Newton este asociat(ă) arhetipului INTJ cu profilul spectral I 98%, N 97%, T 98%, J 76%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f7/Portrait_of_Sir_Isaac_Newton%2C_1689_%28brightened%29.jpg/330px-Portrait_of_Sir_Isaac_Newton%2C_1689_%28brightened%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "javier_milei",
+    "name": "Javier Milei",
+    "profession": "scientist",
+    "role": "Science · ENTJ",
+    "mbti": "ENTJ",
+    "avatar": "⚛️",
+    "axes": {
+      "E": 98,
+      "I": 2,
+      "N": 81,
+      "S": 19,
+      "T": 95,
+      "F": 5,
+      "J": 81,
+      "P": 19
+    },
+    "scores": {
+      "Te": 95,
+      "Ni": 85,
+      "Se": 65,
+      "Fi": 35,
+      "Ti": 75,
+      "Ne": 60,
+      "Si": 45,
+      "Fe": 30
+    },
+    "quote": "Javier Milei este asociat(ă) arhetipului ENTJ cu profilul spectral E 98%, N 81%, T 95%, J 81%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/76/Javier_Milei_in_pull-aside_meeting_at_the_United_Nations_Headquarters_%283x4_cropped%29.jpg/330px-Javier_Milei_in_pull-aside_meeting_at_the_United_Nations_Headquarters_%283x4_cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "jordan_peterson",
+    "name": "Jordan Peterson",
+    "profession": "scientist",
+    "role": "Science · INFJ",
+    "mbti": "INFJ",
+    "avatar": "⚛️",
+    "axes": {
+      "E": 34,
+      "I": 66,
+      "N": 95,
+      "S": 5,
+      "T": 46,
+      "F": 54,
+      "J": 67,
+      "P": 33
+    },
+    "scores": {
+      "Ni": 95,
+      "Fe": 85,
+      "Ti": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Fi": 30,
+      "Te": 45,
+      "Si": 45
+    },
+    "quote": "Jordan Peterson este asociat(ă) arhetipului INFJ cu profilul spectral I 66%, N 95%, F 54%, J 67%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bc/Jordan_Peterson_in_2018_%283x4_cropped%29.jpg/330px-Jordan_Peterson_in_2018_%283x4_cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "lewis_hamilton",
+    "name": "Lewis Hamilton",
+    "profession": "sportiv",
+    "role": "Sports · ISFP",
+    "mbti": "ISFP",
+    "avatar": "⚽",
+    "axes": {
+      "E": 37,
+      "I": 63,
+      "N": 22,
+      "S": 78,
+      "T": 7,
+      "F": 93,
+      "J": 20,
+      "P": 80
+    },
+    "scores": {
+      "Fi": 95,
+      "Se": 85,
+      "Ni": 65,
+      "Te": 35,
+      "Fe": 75,
+      "Si": 45,
+      "Ne": 45,
+      "Ti": 30
+    },
+    "quote": "Lewis Hamilton este asociat(ă) arhetipului ISFP cu profilul spectral I 63%, S 78%, F 93%, P 80%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d3/Prime_Minister_Keir_Starmer_meets_Sir_Lewis_Hamilton_%2854566928382%29_%28cropped%29.jpg/330px-Prime_Minister_Keir_Starmer_meets_Sir_Lewis_Hamilton_%2854566928382%29_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "hikaru_nakamura",
+    "name": "Hikaru Nakamura",
+    "profession": "sportiv",
+    "role": "Sports · ENTP",
+    "mbti": "ENTP",
+    "avatar": "⚽",
+    "axes": {
+      "E": 81,
+      "I": 19,
+      "N": 87,
+      "S": 13,
+      "T": 95,
+      "F": 5,
+      "J": 9,
+      "P": 91
+    },
+    "scores": {
+      "Ne": 95,
+      "Ti": 85,
+      "Fe": 65,
+      "Si": 35,
+      "Ni": 60,
+      "Te": 75,
+      "Fi": 30,
+      "Se": 45
+    },
+    "quote": "Hikaru Nakamura este asociat(ă) arhetipului ENTP cu profilul spectral E 81%, N 87%, T 95%, P 91%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1f/Hikaru_Nakamura_at_the_2026_Naroditsky_Memorial_Rapid_and_Blitz_%28v2%29.jpg/330px-Hikaru_Nakamura_at_the_2026_Naroditsky_Memorial_Rapid_and_Blitz_%28v2%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "zlatan_ibrahimovic",
+    "name": "Zlatan Ibrahimovic",
+    "profession": "sportiv",
+    "role": "Sports · ESTP",
+    "mbti": "ESTP",
+    "avatar": "⚽",
+    "axes": {
+      "E": 95,
+      "I": 5,
+      "N": 21,
+      "S": 79,
+      "T": 93,
+      "F": 7,
+      "J": 19,
+      "P": 81
+    },
+    "scores": {
+      "Se": 95,
+      "Ti": 85,
+      "Fe": 65,
+      "Ni": 35,
+      "Si": 45,
+      "Te": 75,
+      "Fi": 30,
+      "Ne": 45
+    },
+    "quote": "Zlatan Ibrahimovic este asociat(ă) arhetipului ESTP cu profilul spectral E 95%, S 79%, T 93%, P 81%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/ce/Zlatan_Ibrahimovi%C4%87_nyc.jpg/330px-Zlatan_Ibrahimovi%C4%87_nyc.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "max_verstappen",
+    "name": "Max Verstappen",
+    "profession": "sportiv",
+    "role": "Sports · ISTP",
+    "mbti": "ISTP",
+    "avatar": "⚽",
+    "axes": {
+      "E": 29,
+      "I": 71,
+      "N": 13,
+      "S": 87,
+      "T": 98,
+      "F": 2,
+      "J": 13,
+      "P": 87
+    },
+    "scores": {
+      "Ti": 95,
+      "Se": 85,
+      "Ni": 65,
+      "Fe": 35,
+      "Te": 75,
+      "Si": 45,
+      "Ne": 45,
+      "Fi": 30
+    },
+    "quote": "Max Verstappen este asociat(ă) arhetipului ISTP cu profilul spectral I 71%, S 87%, T 98%, P 87%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/52/2024-08-25_Motorsport%2C_Formel_1%2C_Gro%C3%9Fer_Preis_der_Niederlande_2024_STP_3973_by_Stepro_%28medium_crop%29.jpg/330px-2024-08-25_Motorsport%2C_Formel_1%2C_Gro%C3%9Fer_Preis_der_Niederlande_2024_STP_3973_by_Stepro_%28medium_crop%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "michael_jordan",
+    "name": "Michael Jordan",
+    "profession": "sportiv",
+    "role": "Sports · ISTP",
+    "mbti": "ISTP",
+    "avatar": "⚽",
+    "axes": {
+      "E": 24,
+      "I": 76,
+      "N": 7,
+      "S": 93,
+      "T": 96,
+      "F": 4,
+      "J": 8,
+      "P": 92
+    },
+    "scores": {
+      "Ti": 95,
+      "Se": 85,
+      "Ni": 65,
+      "Fe": 35,
+      "Te": 75,
+      "Si": 45,
+      "Ne": 45,
+      "Fi": 30
+    },
+    "quote": "Michael Jordan este asociat(ă) arhetipului ISTP cu profilul spectral I 76%, S 93%, T 96%, P 92%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Michael_jordan_admad_rashad_%2851276390562%29_%28cropped%29.jpg/330px-Michael_jordan_admad_rashad_%2851276390562%29_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "kobe_bryant",
+    "name": "Kobe Bryant",
+    "profession": "sportiv",
+    "role": "Sports · ISTP",
+    "mbti": "ISTP",
+    "avatar": "⚽",
+    "axes": {
+      "E": 17,
+      "I": 83,
+      "N": 23,
+      "S": 77,
+      "T": 89,
+      "F": 11,
+      "J": 33,
+      "P": 67
+    },
+    "scores": {
+      "Ti": 95,
+      "Se": 85,
+      "Ni": 65,
+      "Fe": 35,
+      "Te": 75,
+      "Si": 45,
+      "Ne": 45,
+      "Fi": 30
+    },
+    "quote": "Kobe Bryant este asociat(ă) arhetipului ISTP cu profilul spectral I 83%, S 77%, T 89%, P 67%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/36/Kobe_Bryant_Dec_2014.jpg/330px-Kobe_Bryant_Dec_2014.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "john_cena",
+    "name": "John Cena",
+    "profession": "sportiv",
+    "role": "Sports · ESFJ",
+    "mbti": "ESFJ",
+    "avatar": "⚽",
+    "axes": {
+      "E": 90,
+      "I": 10,
+      "N": 15,
+      "S": 85,
+      "T": 19,
+      "F": 81,
+      "J": 90,
+      "P": 10
+    },
+    "scores": {
+      "Fe": 95,
+      "Si": 85,
+      "Ne": 65,
+      "Ti": 35,
+      "Fi": 75,
+      "Se": 45,
+      "Ni": 45,
+      "Te": 30
+    },
+    "quote": "John Cena este asociat(ă) arhetipului ESFJ cu profilul spectral E 90%, S 85%, F 81%, J 90%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2e/John_Cena_by_Gage_Skidmore.jpg/330px-John_Cena_by_Gage_Skidmore.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "lebron_james",
+    "name": "LeBron James",
+    "profession": "sportiv",
+    "role": "Sports · ESFJ",
+    "mbti": "ESFJ",
+    "avatar": "⚽",
+    "axes": {
+      "E": 93,
+      "I": 7,
+      "N": 8,
+      "S": 92,
+      "T": 19,
+      "F": 81,
+      "J": 75,
+      "P": 25
+    },
+    "scores": {
+      "Fe": 95,
+      "Si": 85,
+      "Ne": 65,
+      "Ti": 35,
+      "Fi": 75,
+      "Se": 45,
+      "Ni": 45,
+      "Te": 30
+    },
+    "quote": "LeBron James este asociat(ă) arhetipului ESFJ cu profilul spectral E 93%, S 92%, F 81%, J 75%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7a/LeBron_James_%2851959977144%29_%28cropped2%29.jpg/330px-LeBron_James_%2851959977144%29_%28cropped2%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "lionel_messi",
+    "name": "Lionel Messi",
+    "profession": "sportiv",
+    "role": "Sports · ISFP",
+    "mbti": "ISFP",
+    "avatar": "⚽",
+    "axes": {
+      "E": 4,
+      "I": 96,
+      "N": 11,
+      "S": 89,
+      "T": 30,
+      "F": 70,
+      "J": 12,
+      "P": 88
+    },
+    "scores": {
+      "Fi": 95,
+      "Se": 85,
+      "Ni": 65,
+      "Te": 35,
+      "Fe": 75,
+      "Si": 45,
+      "Ne": 45,
+      "Ti": 30
+    },
+    "quote": "Lionel Messi este asociat(ă) arhetipului ISFP cu profilul spectral I 96%, S 89%, F 70%, P 88%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c8/Leo_Messi_Argentina_v_Egypt_7_July_2026-1.jpg/330px-Leo_Messi_Argentina_v_Egypt_7_July_2026-1.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "kevin_o_leary",
+    "name": "Kevin O'Leary",
+    "profession": "entrepreneur",
+    "role": "Business · ESTJ",
+    "mbti": "ESTJ",
+    "avatar": "💼",
+    "axes": {
+      "E": 88,
+      "I": 12,
+      "N": 36,
+      "S": 64,
+      "T": 89,
+      "F": 11,
+      "J": 89,
+      "P": 11
+    },
+    "scores": {
+      "Te": 95,
+      "Si": 85,
+      "Ne": 65,
+      "Fi": 35,
+      "Ti": 75,
+      "Se": 45,
+      "Ni": 45,
+      "Fe": 30
+    },
+    "quote": "Kevin O'Leary este asociat(ă) arhetipului ESTJ cu profilul spectral E 88%, S 64%, T 89%, J 89%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dc/KevinOLeary2023_%283x4_cropped%29.jpg/330px-KevinOLeary2023_%283x4_cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "henry_ford",
+    "name": "Henry Ford",
+    "profession": "entrepreneur",
+    "role": "Business · ESTJ",
+    "mbti": "ESTJ",
+    "avatar": "💼",
+    "axes": {
+      "E": 92,
+      "I": 8,
+      "N": 40,
+      "S": 60,
+      "T": 100,
+      "F": 0,
+      "J": 95,
+      "P": 5
+    },
+    "scores": {
+      "Te": 95,
+      "Si": 85,
+      "Ne": 65,
+      "Fi": 35,
+      "Ti": 75,
+      "Se": 45,
+      "Ni": 45,
+      "Fe": 30
+    },
+    "quote": "Henry Ford este asociat(ă) arhetipului ESTJ cu profilul spectral E 92%, S 60%, T 100%, J 95%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/Henry_Ford_portrait_1915_original_%283x4_cropped%29.png/330px-Henry_Ford_portrait_1915_original_%283x4_cropped%29.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "pavel_durov",
+    "name": "Pavel Durov",
+    "profession": "entrepreneur",
+    "role": "Business · INTJ",
+    "mbti": "INTJ",
+    "avatar": "💼",
+    "axes": {
+      "E": 47,
+      "I": 53,
+      "N": 98,
+      "S": 2,
+      "T": 98,
+      "F": 2,
+      "J": 95,
+      "P": 5
+    },
+    "scores": {
+      "Ni": 95,
+      "Te": 85,
+      "Fi": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Ti": 75,
+      "Fe": 30,
+      "Si": 45
+    },
+    "quote": "Pavel Durov este asociat(ă) arhetipului INTJ cu profilul spectral I 53%, N 98%, T 98%, J 95%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/44/Pavel_Durov_sitting_portrait_%28cropped%29.jpg/330px-Pavel_Durov_sitting_portrait_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "vlad_iii_the_impaler_of_wallachia",
+    "name": "Vlad III \"the Impaler\" of Wallachia",
+    "profession": "politician",
+    "role": "Historical · ENTJ",
+    "mbti": "ENTJ",
+    "avatar": "👑",
+    "axes": {
+      "E": 88,
+      "I": 12,
+      "N": 91,
+      "S": 9,
+      "T": 96,
+      "F": 4,
+      "J": 92,
+      "P": 8
+    },
+    "scores": {
+      "Te": 95,
+      "Ni": 85,
+      "Se": 65,
+      "Fi": 35,
+      "Ti": 75,
+      "Ne": 60,
+      "Si": 45,
+      "Fe": 30
+    },
+    "quote": "Vlad III \"the Impaler\" of Wallachia este asociat(ă) arhetipului ENTJ cu profilul spectral E 88%, N 91%, T 96%, J 92%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c0/Vlad_%C5%A2epe%C5%9F%2C_the_Impaler%2C_Prince_of_Wallachia_%281456-1462%29_%28died_1477%29.jpg/330px-Vlad_%C5%A2epe%C5%9F%2C_the_Impaler%2C_Prince_of_Wallachia_%281456-1462%29_%28died_1477%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "sun_tzu",
+    "name": "Sun Tzu",
+    "profession": "philosopher",
+    "role": "Philosophy · INTJ",
+    "mbti": "INTJ",
+    "avatar": "🏛️",
+    "axes": {
+      "E": 7,
+      "I": 93,
+      "N": 92,
+      "S": 8,
+      "T": 99,
+      "F": 1,
+      "J": 97,
+      "P": 3
+    },
+    "scores": {
+      "Ni": 95,
+      "Te": 85,
+      "Fi": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Ti": 75,
+      "Fe": 30,
+      "Si": 45
+    },
+    "quote": "Sun Tzu este asociat(ă) arhetipului INTJ cu profilul spectral I 93%, N 92%, T 99%, J 97%.",
+    "photo": "https://upload.wikimedia.org/wikipedia/commons/c/cf/%E5%90%B4%E5%8F%B8%E9%A9%AC%E5%AD%99%E6%AD%A6.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "cleopatra",
+    "name": "Cleopatra",
+    "profession": "politician",
+    "role": "Historical · ENTJ",
+    "mbti": "ENTJ",
+    "avatar": "👑",
+    "axes": {
+      "E": 98,
+      "I": 2,
+      "N": 91,
+      "S": 9,
+      "T": 62,
+      "F": 38,
+      "J": 89,
+      "P": 11
+    },
+    "scores": {
+      "Te": 95,
+      "Ni": 85,
+      "Se": 65,
+      "Fi": 35,
+      "Ti": 75,
+      "Ne": 60,
+      "Si": 45,
+      "Fe": 30
+    },
+    "quote": "Cleopatra este asociat(ă) arhetipului ENTJ cu profilul spectral E 98%, N 91%, T 62%, J 89%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3e/Kleopatra-VII.-Altes-Museum-Berlin1.jpg/330px-Kleopatra-VII.-Altes-Museum-Berlin1.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "trajan",
+    "name": "Trajan",
+    "profession": "politician",
+    "role": "Historical · INTJ",
+    "mbti": "INTJ",
+    "avatar": "👑",
+    "axes": {
+      "E": 33,
+      "I": 67,
+      "N": 90,
+      "S": 10,
+      "T": 93,
+      "F": 7,
+      "J": 92,
+      "P": 8
+    },
+    "scores": {
+      "Ni": 95,
+      "Te": 85,
+      "Fi": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Ti": 75,
+      "Fe": 30,
+      "Si": 45
+    },
+    "quote": "Trajan este asociat(ă) arhetipului INTJ cu profilul spectral I 67%, N 90%, T 93%, J 92%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b2/Traianus_Glyptothek_Munich_72.jpg/330px-Traianus_Glyptothek_Munich_72.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "marcus_aurelius",
+    "name": "Marcus Aurelius",
+    "profession": "philosopher",
+    "role": "Philosophy · INFJ",
+    "mbti": "INFJ",
+    "avatar": "🏛️",
+    "axes": {
+      "E": 2,
+      "I": 98,
+      "N": 54,
+      "S": 46,
+      "T": 6,
+      "F": 94,
+      "J": 96,
+      "P": 4
+    },
+    "scores": {
+      "Ni": 95,
+      "Fe": 85,
+      "Ti": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Fi": 30,
+      "Te": 45,
+      "Si": 45
+    },
+    "quote": "Marcus Aurelius este asociat(ă) arhetipului INFJ cu profilul spectral I 98%, N 54%, F 94%, J 96%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ec/MSR-ra-61-b-1-DM.jpg/330px-MSR-ra-61-b-1-DM.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "queen_victoria",
+    "name": "Queen Victoria",
+    "profession": "politician",
+    "role": "Historical · ISTJ",
+    "mbti": "ISTJ",
+    "avatar": "👑",
+    "axes": {
+      "E": 10,
+      "I": 90,
+      "N": 11,
+      "S": 89,
+      "T": 61,
+      "F": 39,
+      "J": 71,
+      "P": 29
+    },
+    "scores": {
+      "Si": 95,
+      "Te": 85,
+      "Fi": 65,
+      "Ne": 35,
+      "Se": 45,
+      "Ti": 75,
+      "Fe": 30,
+      "Ni": 45
+    },
+    "quote": "Queen Victoria este asociat(ă) arhetipului ISTJ cu profilul spectral I 90%, S 89%, T 61%, J 71%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e3/Queen_Victoria_by_Bassano.jpg/330px-Queen_Victoria_by_Bassano.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "dionysus",
+    "name": "Dionysus",
+    "profession": "religious",
+    "role": "Religion · ESFP",
+    "mbti": "ESFP",
+    "avatar": "🕊️",
+    "axes": {
+      "E": 98,
+      "I": 2,
+      "N": 34,
+      "S": 66,
+      "T": 20,
+      "F": 80,
+      "J": 2,
+      "P": 98
+    },
+    "scores": {
+      "Se": 95,
+      "Fi": 85,
+      "Te": 65,
+      "Ni": 35,
+      "Si": 45,
+      "Fe": 75,
+      "Ti": 30,
+      "Ne": 45
+    },
+    "quote": "Dionysus este asociat(ă) arhetipului ESFP cu profilul spectral E 98%, S 66%, F 80%, P 98%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/Dionysos_Louvre_Ma87_n2.jpg/330px-Dionysos_Louvre_Ma87_n2.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "hera",
+    "name": "Hera",
+    "profession": "religious",
+    "role": "Religion · ESTJ",
+    "mbti": "ESTJ",
+    "avatar": "🕊️",
+    "axes": {
+      "E": 96,
+      "I": 4,
+      "N": 6,
+      "S": 94,
+      "T": 68,
+      "F": 32,
+      "J": 98,
+      "P": 2
+    },
+    "scores": {
+      "Te": 95,
+      "Si": 85,
+      "Ne": 65,
+      "Fi": 35,
+      "Ti": 75,
+      "Se": 45,
+      "Ni": 45,
+      "Fe": 30
+    },
+    "quote": "Hera este asociat(ă) arhetipului ESTJ cu profilul spectral E 96%, S 94%, T 68%, J 98%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/76/Hera_Campana_Louvre_Ma2283.jpg/330px-Hera_Campana_Louvre_Ma2283.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "ares",
+    "name": "Ares",
+    "profession": "religious",
+    "role": "Religion · ESTP",
+    "mbti": "ESTP",
+    "avatar": "🕊️",
+    "axes": {
+      "E": 97,
+      "I": 3,
+      "N": 7,
+      "S": 93,
+      "T": 80,
+      "F": 20,
+      "J": 8,
+      "P": 92
+    },
+    "scores": {
+      "Se": 95,
+      "Ti": 85,
+      "Fe": 65,
+      "Ni": 35,
+      "Si": 45,
+      "Te": 75,
+      "Fi": 30,
+      "Ne": 45
+    },
+    "quote": "Ares este asociat(ă) arhetipului ESTP cu profilul spectral E 97%, S 93%, T 80%, P 92%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a1/%CE%9F_%CE%86%CF%81%CE%B7%CF%82_%28Borghese-%CE%9B%CE%BF%CF%8D%CE%B2%CF%81%CE%BF%CF%85%29.jpg/330px-%CE%9F_%CE%86%CF%81%CE%B7%CF%82_%28Borghese-%CE%9B%CE%BF%CF%8D%CE%B2%CF%81%CE%BF%CF%85%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "prometheus",
+    "name": "Prometheus",
+    "profession": "religious",
+    "role": "Religion · ENTP",
+    "mbti": "ENTP",
+    "avatar": "🕊️",
+    "axes": {
+      "E": 77,
+      "I": 23,
+      "N": 97,
+      "S": 3,
+      "T": 78,
+      "F": 22,
+      "J": 26,
+      "P": 74
+    },
+    "scores": {
+      "Ne": 95,
+      "Ti": 85,
+      "Fe": 65,
+      "Si": 35,
+      "Ni": 60,
+      "Te": 75,
+      "Fi": 30,
+      "Se": 45
+    },
+    "quote": "Prometheus este asociat(ă) arhetipului ENTP cu profilul spectral E 77%, N 97%, T 78%, P 74%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/72/Prometheus_and_Atlas%2C_Laconian_black-figure_kylix%2C_by_the_Arkesilas_Painter%2C_560-550_BC%2C_inv._16592_-_Museo_Gregoriano_Etrusco_-_Vatican_Museums_-_DSC01069.jpg/330px-Prometheus_and_Atlas%2C_Laconian_black-figure_kylix%2C_by_the_Arkesilas_Painter%2C_560-550_BC%2C_inv._16592_-_Museo_Gregoriano_Etrusco_-_Vatican_Museums_-_DSC01069.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "penelope",
+    "name": "Penelope",
+    "profession": "religious",
+    "role": "Religion · INFJ",
+    "mbti": "INFJ",
+    "avatar": "🕊️",
+    "axes": {
+      "E": 1,
+      "I": 99,
+      "N": 55,
+      "S": 45,
+      "T": 41,
+      "F": 59,
+      "J": 98,
+      "P": 2
+    },
+    "scores": {
+      "Ni": 95,
+      "Fe": 85,
+      "Ti": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Fi": 30,
+      "Te": 45,
+      "Si": 45
+    },
+    "quote": "Penelope este asociat(ă) arhetipului INFJ cu profilul spectral I 99%, N 55%, F 59%, J 98%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b3/Exposition_Paris-Ath%C3%A8nes_au_Mus%C3%A9e_du_Louvre_%C3%A0_Paris_-parisathenes_%2851544789732%29.jpg/330px-Exposition_Paris-Ath%C3%A8nes_au_Mus%C3%A9e_du_Louvre_%C3%A0_Paris_-parisathenes_%2851544789732%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "odysseus",
+    "name": "Odysseus",
+    "profession": "religious",
+    "role": "Religion · ENTP",
+    "mbti": "ENTP",
+    "avatar": "🕊️",
+    "axes": {
+      "E": 95,
+      "I": 5,
+      "N": 97,
+      "S": 3,
+      "T": 98,
+      "F": 2,
+      "J": 14,
+      "P": 86
+    },
+    "scores": {
+      "Ne": 95,
+      "Ti": 85,
+      "Fe": 65,
+      "Si": 35,
+      "Ni": 60,
+      "Te": 75,
+      "Fi": 30,
+      "Se": 45
+    },
+    "quote": "Odysseus este asociat(ă) arhetipului ENTP cu profilul spectral E 95%, N 97%, T 98%, P 86%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/Head_Odysseus_MAR_Sperlonga.jpg/330px-Head_Odysseus_MAR_Sperlonga.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "hermes",
+    "name": "Hermes",
+    "profession": "religious",
+    "role": "Religion · ENTP",
+    "mbti": "ENTP",
+    "avatar": "🕊️",
+    "axes": {
+      "E": 98,
+      "I": 2,
+      "N": 95,
+      "S": 5,
+      "T": 96,
+      "F": 4,
+      "J": 1,
+      "P": 99
+    },
+    "scores": {
+      "Ne": 95,
+      "Ti": 85,
+      "Fe": 65,
+      "Si": 35,
+      "Ni": 60,
+      "Te": 75,
+      "Fi": 30,
+      "Se": 45
+    },
+    "quote": "Hermes este asociat(ă) arhetipului ENTP cu profilul spectral E 98%, N 95%, T 96%, P 99%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d0/Hermes_Ingenui_Pio-Clementino_Inv544.jpg/330px-Hermes_Ingenui_Pio-Clementino_Inv544.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "athena",
+    "name": "Athena",
+    "profession": "religious",
+    "role": "Religion · INTJ",
+    "mbti": "INTJ",
+    "avatar": "🕊️",
+    "axes": {
+      "E": 20,
+      "I": 80,
+      "N": 95,
+      "S": 5,
+      "T": 98,
+      "F": 2,
+      "J": 96,
+      "P": 4
+    },
+    "scores": {
+      "Ni": 95,
+      "Te": 85,
+      "Fi": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Ti": 75,
+      "Fe": 30,
+      "Si": 45
+    },
+    "quote": "Athena este asociat(ă) arhetipului INTJ cu profilul spectral I 80%, N 95%, T 98%, J 96%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/22/Mattei_Athena_Louvre_Ma530_n2.jpg/330px-Mattei_Athena_Louvre_Ma530_n2.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "zeus",
+    "name": "Zeus",
+    "profession": "religious",
+    "role": "Religion · ESTP",
+    "mbti": "ESTP",
+    "avatar": "🕊️",
+    "axes": {
+      "E": 99,
+      "I": 1,
+      "N": 43,
+      "S": 57,
+      "T": 97,
+      "F": 3,
+      "J": 47,
+      "P": 53
+    },
+    "scores": {
+      "Se": 95,
+      "Ti": 85,
+      "Fe": 65,
+      "Ni": 35,
+      "Si": 45,
+      "Te": 75,
+      "Fi": 30,
+      "Ne": 45
+    },
+    "quote": "Zeus este asociat(ă) arhetipului ESTP cu profilul spectral E 99%, S 57%, T 97%, P 53%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/20/Zeus_Otricoli_Pio-Clementino_Inv257.jpg/330px-Zeus_Otricoli_Pio-Clementino_Inv257.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "martin_luther",
+    "name": "Martin Luther",
+    "profession": "politician",
+    "role": "Historical · INTJ",
+    "mbti": "INTJ",
+    "avatar": "👑",
+    "axes": {
+      "E": 25,
+      "I": 75,
+      "N": 90,
+      "S": 10,
+      "T": 93,
+      "F": 7,
+      "J": 89,
+      "P": 11
+    },
+    "scores": {
+      "Ni": 95,
+      "Te": 85,
+      "Fi": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Ti": 75,
+      "Fe": 30,
+      "Si": 45
+    },
+    "quote": "Martin Luther este asociat(ă) arhetipului INTJ cu profilul spectral I 75%, N 90%, T 93%, J 89%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/90/Lucas_Cranach_d.%C3%84._-_Martin_Luther%2C_1528_%28Veste_Coburg%29.jpg/330px-Lucas_Cranach_d.%C3%84._-_Martin_Luther%2C_1528_%28Veste_Coburg%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "confucius",
+    "name": "Confucius",
+    "profession": "politician",
+    "role": "Historical · ISFJ",
+    "mbti": "ISFJ",
+    "avatar": "👑",
+    "axes": {
+      "E": 16,
+      "I": 84,
+      "N": 37,
+      "S": 63,
+      "T": 37,
+      "F": 63,
+      "J": 89,
+      "P": 11
+    },
+    "scores": {
+      "Si": 95,
+      "Fe": 85,
+      "Ti": 65,
+      "Ne": 35,
+      "Se": 45,
+      "Fi": 30,
+      "Te": 45,
+      "Ni": 45
+    },
+    "quote": "Confucius este asociat(ă) arhetipului ISFJ cu profilul spectral I 84%, S 63%, F 63%, J 89%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/Confucius%2C_fresco_from_a_Western_Han_tomb_of_Dongping_County%2C_Shandong_province%2C_China_%28cropped%29.jpg/330px-Confucius%2C_fresco_from_a_Western_Han_tomb_of_Dongping_County%2C_Shandong_province%2C_China_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "noah",
+    "name": "Noah",
+    "profession": "religious",
+    "role": "Religion · ISTJ",
+    "mbti": "ISTJ",
+    "avatar": "🕊️",
+    "axes": {
+      "E": 0,
+      "I": 100,
+      "N": 47,
+      "S": 53,
+      "T": 97,
+      "F": 3,
+      "J": 98,
+      "P": 2
+    },
+    "scores": {
+      "Si": 95,
+      "Te": 85,
+      "Fi": 65,
+      "Ne": 35,
+      "Se": 45,
+      "Ti": 75,
+      "Fe": 30,
+      "Ni": 45
+    },
+    "quote": "Noah este asociat(ă) arhetipului ISTJ cu profilul spectral I 100%, S 53%, T 97%, J 98%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2b/Giovanni_Benedetto_Castiglione_gen._Il_Grecchetto_-_Noah_mit_den_Tieren_vor_der_Arche_-_GG_1645_-_Kunsthistorisches_Museum_%28cropped%29.jpg/330px-Giovanni_Benedetto_Castiglione_gen._Il_Grecchetto_-_Noah_mit_den_Tieren_vor_der_Arche_-_GG_1645_-_Kunsthistorisches_Museum_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "moses",
+    "name": "Moses",
+    "profession": "religious",
+    "role": "Religion · ISFP",
+    "mbti": "ISFP",
+    "avatar": "🕊️",
+    "axes": {
+      "E": 3,
+      "I": 97,
+      "N": 49,
+      "S": 51,
+      "T": 45,
+      "F": 55,
+      "J": 49,
+      "P": 51
+    },
+    "scores": {
+      "Fi": 95,
+      "Se": 85,
+      "Ni": 65,
+      "Te": 35,
+      "Fe": 75,
+      "Si": 45,
+      "Ne": 45,
+      "Ti": 30
+    },
+    "quote": "Moses este asociat(ă) arhetipului ISFP cu profilul spectral I 97%, S 51%, F 55%, P 51%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4a/Rembrandt_Harmensz._van_Rijn_079.jpg/330px-Rembrandt_Harmensz._van_Rijn_079.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "eve",
+    "name": "Eve",
+    "profession": "religious",
+    "role": "Religion · ESFP",
+    "mbti": "ESFP",
+    "avatar": "🕊️",
+    "axes": {
+      "E": 93,
+      "I": 7,
+      "N": 43,
+      "S": 57,
+      "T": 6,
+      "F": 94,
+      "J": 6,
+      "P": 94
+    },
+    "scores": {
+      "Se": 95,
+      "Fi": 85,
+      "Te": 65,
+      "Ni": 35,
+      "Si": 45,
+      "Fe": 75,
+      "Ti": 30,
+      "Ne": 45
+    },
+    "quote": "Eve este asociat(ă) arhetipului ESFP cu profilul spectral E 93%, S 57%, F 94%, P 94%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ab/Albrecht_D%C3%BCrer%2C_Adam_and_Eve%2C_1504%2C_Engraving.jpg/330px-Albrecht_D%C3%BCrer%2C_Adam_and_Eve%2C_1504%2C_Engraving.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "jesus",
+    "name": "Jesus",
+    "profession": "politician",
+    "role": "Historical · INFJ",
+    "mbti": "INFJ",
+    "avatar": "👑",
+    "axes": {
+      "E": 22,
+      "I": 78,
+      "N": 95,
+      "S": 5,
+      "T": 7,
+      "F": 93,
+      "J": 92,
+      "P": 8
+    },
+    "scores": {
+      "Ni": 95,
+      "Fe": 85,
+      "Ti": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Fi": 30,
+      "Te": 45,
+      "Si": 45
+    },
+    "quote": "Jesus este asociat(ă) arhetipului INFJ cu profilul spectral I 78%, N 95%, F 93%, J 92%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3b/Spas_vsederzhitel_sinay_%28cropped1%29.jpg/330px-Spas_vsederzhitel_sinay_%28cropped1%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "satan",
+    "name": "Satan",
+    "profession": "religious",
+    "role": "Religion · ENTP",
+    "mbti": "ENTP",
+    "avatar": "🕊️",
+    "axes": {
+      "E": 82,
+      "I": 18,
+      "N": 77,
+      "S": 23,
+      "T": 72,
+      "F": 28,
+      "J": 22,
+      "P": 78
+    },
+    "scores": {
+      "Ne": 95,
+      "Ti": 85,
+      "Fe": 65,
+      "Si": 35,
+      "Ni": 60,
+      "Te": 75,
+      "Fi": 30,
+      "Se": 45
+    },
+    "quote": "Satan este asociat(ă) arhetipului ENTP cu profilul spectral E 82%, N 77%, T 72%, P 78%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b9/Codex_Gigas_fol_290r_Devil.jpg/330px-Codex_Gigas_fol_290r_Devil.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "tlazolteotl",
+    "name": "Tlazolteotl",
+    "profession": "religious",
+    "role": "Religion · ENTP",
+    "mbti": "ENTP",
+    "avatar": "🕊️",
+    "axes": {
+      "E": 100,
+      "I": 0,
+      "N": 67,
+      "S": 33,
+      "T": 100,
+      "F": 0,
+      "J": 0,
+      "P": 100
+    },
+    "scores": {
+      "Ne": 95,
+      "Ti": 85,
+      "Fe": 65,
+      "Si": 35,
+      "Ni": 60,
+      "Te": 75,
+      "Fi": 30,
+      "Se": 45
+    },
+    "quote": "Tlazolteotl este asociat(ă) arhetipului ENTP cu profilul spectral E 100%, N 67%, T 100%, P 100%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1a/Tlazoteotl_7.jpg/330px-Tlazoteotl_7.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "tezcatlipoca",
+    "name": "Tezcatlipoca",
+    "profession": "religious",
+    "role": "Religion · ENTP",
+    "mbti": "ENTP",
+    "avatar": "🕊️",
+    "axes": {
+      "E": 82,
+      "I": 18,
+      "N": 64,
+      "S": 36,
+      "T": 100,
+      "F": 0,
+      "J": 27,
+      "P": 73
+    },
+    "scores": {
+      "Ne": 95,
+      "Ti": 85,
+      "Fe": 65,
+      "Si": 35,
+      "Ni": 60,
+      "Te": 75,
+      "Fi": 30,
+      "Se": 45
+    },
+    "quote": "Tezcatlipoca este asociat(ă) arhetipului ENTP cu profilul spectral E 82%, N 64%, T 100%, P 73%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4f/Tezcatlipoca.png/330px-Tezcatlipoca.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "yacatecuhtli",
+    "name": "Yacatecuhtli",
+    "profession": "religious",
+    "role": "Religion · ENTP",
+    "mbti": "ENTP",
+    "avatar": "🕊️",
+    "axes": {
+      "E": 100,
+      "I": 0,
+      "N": 100,
+      "S": 0,
+      "T": 100,
+      "F": 0,
+      "J": 0,
+      "P": 100
+    },
+    "scores": {
+      "Ne": 95,
+      "Ti": 85,
+      "Fe": 65,
+      "Si": 35,
+      "Ni": 60,
+      "Te": 75,
+      "Fi": 30,
+      "Se": 45
+    },
+    "quote": "Yacatecuhtli este asociat(ă) arhetipului ENTP cu profilul spectral E 100%, N 100%, T 100%, P 100%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/db/Yacatecuhtli.jpg/330px-Yacatecuhtli.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "quetzalcoatl",
+    "name": "Quetzalcoatl",
+    "profession": "religious",
+    "role": "Religion · INFJ",
+    "mbti": "INFJ",
+    "avatar": "🕊️",
+    "axes": {
+      "E": 31,
+      "I": 69,
+      "N": 94,
+      "S": 6,
+      "T": 0,
+      "F": 100,
+      "J": 57,
+      "P": 43
+    },
+    "scores": {
+      "Ni": 95,
+      "Fe": 85,
+      "Ti": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Fi": 30,
+      "Te": 45,
+      "Si": 45
+    },
+    "quote": "Quetzalcoatl este asociat(ă) arhetipului INFJ cu profilul spectral I 69%, N 94%, F 100%, J 57%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e5/Quetzalc%C3%B3atl_como_la_serpiente_emplumada_y_el_dios_del_viento_Eh%C3%A9catl%2C_en_el_folio_19.jpg/330px-Quetzalc%C3%B3atl_como_la_serpiente_emplumada_y_el_dios_del_viento_Eh%C3%A9catl%2C_en_el_folio_19.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "set_seth",
+    "name": "Set/Seth",
+    "profession": "religious",
+    "role": "Religion · ENTP",
+    "mbti": "ENTP",
+    "avatar": "🕊️",
+    "axes": {
+      "E": 98,
+      "I": 2,
+      "N": 96,
+      "S": 4,
+      "T": 98,
+      "F": 2,
+      "J": 36,
+      "P": 64
+    },
+    "scores": {
+      "Ne": 95,
+      "Ti": 85,
+      "Fe": 65,
+      "Si": 35,
+      "Ni": 60,
+      "Te": 75,
+      "Fi": 30,
+      "Se": 45
+    },
+    "quote": "Set/Seth este asociat(ă) arhetipului ENTP cu profilul spectral E 98%, N 96%, T 98%, P 64%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7a/Set.svg/330px-Set.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "anubit_anubis",
+    "name": "Anubit (Anubis)",
+    "profession": "religious",
+    "role": "Religion · ISTJ",
+    "mbti": "ISTJ",
+    "avatar": "🕊️",
+    "axes": {
+      "E": 5,
+      "I": 95,
+      "N": 18,
+      "S": 82,
+      "T": 99,
+      "F": 1,
+      "J": 92,
+      "P": 8
+    },
+    "scores": {
+      "Si": 95,
+      "Te": 85,
+      "Fi": 65,
+      "Ne": 35,
+      "Se": 45,
+      "Ti": 75,
+      "Fe": 30,
+      "Ni": 45
+    },
+    "quote": "Anubit (Anubis) este asociat(ă) arhetipului ISTJ cu profilul spectral I 95%, S 82%, T 99%, J 92%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6d/Anubis_standing.svg/330px-Anubis_standing.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "thoth_logos",
+    "name": "Thoth (Logos)",
+    "profession": "religious",
+    "role": "Religion · INTP",
+    "mbti": "INTP",
+    "avatar": "🕊️",
+    "axes": {
+      "E": 11,
+      "I": 89,
+      "N": 100,
+      "S": 0,
+      "T": 97,
+      "F": 3,
+      "J": 13,
+      "P": 87
+    },
+    "scores": {
+      "Ti": 95,
+      "Ne": 85,
+      "Si": 65,
+      "Fe": 35,
+      "Te": 75,
+      "Ni": 60,
+      "Se": 45,
+      "Fi": 30
+    },
+    "quote": "Thoth (Logos) este asociat(ă) arhetipului INTP cu profilul spectral I 89%, N 100%, T 97%, P 87%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/Thoth.svg/330px-Thoth.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "horus_title",
+    "name": "Horus (Title)",
+    "profession": "religious",
+    "role": "Religion · ENFJ",
+    "mbti": "ENFJ",
+    "avatar": "🕊️",
+    "axes": {
+      "E": 95,
+      "I": 5,
+      "N": 96,
+      "S": 4,
+      "T": 11,
+      "F": 89,
+      "J": 91,
+      "P": 9
+    },
+    "scores": {
+      "Fe": 95,
+      "Ni": 85,
+      "Se": 65,
+      "Ti": 35,
+      "Fi": 75,
+      "Ne": 60,
+      "Si": 45,
+      "Te": 30
+    },
+    "quote": "Horus (Title) este asociat(ă) arhetipului ENFJ cu profilul spectral E 95%, N 96%, F 89%, J 91%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c2/Horus_standing.svg/330px-Horus_standing.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "ra",
+    "name": "Ra",
+    "profession": "religious",
+    "role": "Religion · ENTJ",
+    "mbti": "ENTJ",
+    "avatar": "🕊️",
+    "axes": {
+      "E": 87,
+      "I": 13,
+      "N": 96,
+      "S": 4,
+      "T": 96,
+      "F": 4,
+      "J": 96,
+      "P": 4
+    },
+    "scores": {
+      "Te": 95,
+      "Ni": 85,
+      "Se": 65,
+      "Fi": 35,
+      "Ti": 75,
+      "Ne": 60,
+      "Si": 45,
+      "Fe": 30
+    },
+    "quote": "Ra este asociat(ă) arhetipului ENTJ cu profilul spectral E 87%, N 96%, T 96%, J 96%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0d/Re-Horakhty.svg/330px-Re-Horakhty.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "isis_asset",
+    "name": "Isis (Asset)",
+    "profession": "religious",
+    "role": "Religion · INFJ",
+    "mbti": "INFJ",
+    "avatar": "🕊️",
+    "axes": {
+      "E": 14,
+      "I": 86,
+      "N": 91,
+      "S": 9,
+      "T": 6,
+      "F": 94,
+      "J": 93,
+      "P": 7
+    },
+    "scores": {
+      "Ni": 95,
+      "Fe": 85,
+      "Ti": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Fi": 30,
+      "Te": 45,
+      "Si": 45
+    },
+    "quote": "Isis (Asset) este asociat(ă) arhetipului INFJ cu profilul spectral I 86%, N 91%, F 94%, J 93%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ec/Isis.svg/330px-Isis.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "giordano_bruno",
+    "name": "Giordano Bruno",
+    "profession": "philosopher",
+    "role": "Philosophy · INTP",
+    "mbti": "INTP",
+    "avatar": "🏛️",
+    "axes": {
+      "E": 19,
+      "I": 81,
+      "N": 99,
+      "S": 1,
+      "T": 53,
+      "F": 47,
+      "J": 44,
+      "P": 56
+    },
+    "scores": {
+      "Ti": 95,
+      "Ne": 85,
+      "Si": 65,
+      "Fe": 35,
+      "Te": 75,
+      "Ni": 60,
+      "Se": 45,
+      "Fi": 30
+    },
+    "quote": "Giordano Bruno este asociat(ă) arhetipului INTP cu profilul spectral I 81%, N 99%, F 47%, J 44%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f3/Portrait_of_Giordano_Bruno_in_%22Opere%22_Wellcome_L0015152_%28cropped%29.jpg/330px-Portrait_of_Giordano_Bruno_in_%22Opere%22_Wellcome_L0015152_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "paul_kagame",
+    "name": "Paul Kagame",
+    "profession": "politician",
+    "role": "Historical · ENTJ",
+    "mbti": "ENTJ",
+    "avatar": "👑",
+    "axes": {
+      "E": 78,
+      "I": 22,
+      "N": 97,
+      "S": 3,
+      "T": 94,
+      "F": 6,
+      "J": 94,
+      "P": 6
+    },
+    "scores": {
+      "Te": 95,
+      "Ni": 85,
+      "Se": 65,
+      "Fi": 35,
+      "Ti": 75,
+      "Ne": 60,
+      "Si": 45,
+      "Fe": 30
+    },
+    "quote": "Paul Kagame este asociat(ă) arhetipului ENTJ cu profilul spectral E 78%, N 97%, T 94%, J 94%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b7/Paul_Kagame_2024_%28cropped%29.jpg/330px-Paul_Kagame_2024_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "robert_mugabe",
+    "name": "Robert Mugabe",
+    "profession": "politician",
+    "role": "Historical · INTJ",
+    "mbti": "INTJ",
+    "avatar": "👑",
+    "axes": {
+      "E": 29,
+      "I": 71,
+      "N": 60,
+      "S": 40,
+      "T": 66,
+      "F": 34,
+      "J": 95,
+      "P": 5
+    },
+    "scores": {
+      "Ni": 95,
+      "Te": 85,
+      "Fi": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Ti": 75,
+      "Fe": 30,
+      "Si": 45
+    },
+    "quote": "Robert Mugabe este asociat(ă) arhetipului INTJ cu profilul spectral I 71%, S 40%, T 66%, J 95%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0c/Robert_Mugabe_Official_Portrait_%284x5_cropped%29.jpg/330px-Robert_Mugabe_Official_Portrait_%284x5_cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "dilma_rousseff",
+    "name": "Dilma Rousseff",
+    "profession": "politician",
+    "role": "Historical · INTJ",
+    "mbti": "INTJ",
+    "avatar": "👑",
+    "axes": {
+      "E": 8,
+      "I": 92,
+      "N": 58,
+      "S": 42,
+      "T": 91,
+      "F": 9,
+      "J": 88,
+      "P": 12
+    },
+    "scores": {
+      "Ni": 95,
+      "Te": 85,
+      "Fi": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Ti": 75,
+      "Fe": 30,
+      "Si": 45
+    },
+    "quote": "Dilma Rousseff este asociat(ă) arhetipului INTJ cu profilul spectral I 92%, N 58%, T 91%, J 88%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/81/Dilma_Rousseff_-_foto_oficial_2011-01-09.jpg/330px-Dilma_Rousseff_-_foto_oficial_2011-01-09.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "nicolas_maduro",
+    "name": "Nicolás Maduro",
+    "profession": "politician",
+    "role": "Historical · ESFP",
+    "mbti": "ESFP",
+    "avatar": "👑",
+    "axes": {
+      "E": 95,
+      "I": 5,
+      "N": 11,
+      "S": 89,
+      "T": 19,
+      "F": 81,
+      "J": 18,
+      "P": 82
+    },
+    "scores": {
+      "Se": 95,
+      "Fi": 85,
+      "Te": 65,
+      "Ni": 35,
+      "Si": 45,
+      "Fe": 75,
+      "Ti": 30,
+      "Ne": 45
+    },
+    "quote": "Nicolás Maduro este asociat(ă) arhetipului ESFP cu profilul spectral E 95%, S 89%, F 81%, P 82%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7f/Nicol%C3%A1s_Maduro_2023_%28cropped2%29.jpg/330px-Nicol%C3%A1s_Maduro_2023_%28cropped2%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "jair_bolsonaro",
+    "name": "Jair Bolsonaro",
+    "profession": "politician",
+    "role": "Historical · ESTP",
+    "mbti": "ESTP",
+    "avatar": "👑",
+    "axes": {
+      "E": 95,
+      "I": 5,
+      "N": 5,
+      "S": 95,
+      "T": 56,
+      "F": 44,
+      "J": 11,
+      "P": 89
+    },
+    "scores": {
+      "Se": 95,
+      "Ti": 85,
+      "Fe": 65,
+      "Ni": 35,
+      "Si": 45,
+      "Te": 75,
+      "Fi": 30,
+      "Ne": 45
+    },
+    "quote": "Jair Bolsonaro este asociat(ă) arhetipului ESTP cu profilul spectral E 95%, S 95%, T 56%, P 89%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e7/Jair_Bolsonaro_em_24_de_abril_de_2019_%281%29_%283x4%29.jpg/330px-Jair_Bolsonaro_em_24_de_abril_de_2019_%281%29_%283x4%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "franklin_d_roosevelt",
+    "name": "Franklin D. Roosevelt",
+    "profession": "politician",
+    "role": "Historical · ENTJ",
+    "mbti": "ENTJ",
+    "avatar": "👑",
+    "axes": {
+      "E": 98,
+      "I": 2,
+      "N": 70,
+      "S": 30,
+      "T": 94,
+      "F": 6,
+      "J": 70,
+      "P": 30
+    },
+    "scores": {
+      "Te": 95,
+      "Ni": 85,
+      "Se": 65,
+      "Fi": 35,
+      "Ti": 75,
+      "Ne": 60,
+      "Si": 45,
+      "Fe": 30
+    },
+    "quote": "Franklin D. Roosevelt este asociat(ă) arhetipului ENTJ cu profilul spectral E 98%, N 70%, T 94%, J 70%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fd/FDR-1944-Campaign-Portrait_%283x4_retouched%2C_cropped%29.jpg/330px-FDR-1944-Campaign-Portrait_%283x4_retouched%2C_cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "j_d_vance",
+    "name": "J. D. Vance",
+    "profession": "politician",
+    "role": "Historical · ESTJ",
+    "mbti": "ESTJ",
+    "avatar": "👑",
+    "axes": {
+      "E": 59,
+      "I": 41,
+      "N": 44,
+      "S": 56,
+      "T": 88,
+      "F": 12,
+      "J": 93,
+      "P": 7
+    },
+    "scores": {
+      "Te": 95,
+      "Si": 85,
+      "Ne": 65,
+      "Fi": 35,
+      "Ti": 75,
+      "Se": 45,
+      "Ni": 45,
+      "Fe": 30
+    },
+    "quote": "J. D. Vance este asociat(ă) arhetipului ESTJ cu profilul spectral E 59%, S 56%, T 88%, J 93%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/March_2026_Official_Vice_Presidential_Portrait_of_JD_Vance_%28medium_crop%29_%282%29.jpg/330px-March_2026_Official_Vice_Presidential_Portrait_of_JD_Vance_%28medium_crop%29_%282%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "elon_musk",
+    "name": "Elon Musk",
+    "profession": "entrepreneur",
+    "role": "Business · INTP",
+    "mbti": "INTP",
+    "avatar": "💼",
+    "axes": {
+      "E": 11,
+      "I": 89,
+      "N": 98,
+      "S": 2,
+      "T": 99,
+      "F": 1,
+      "J": 48,
+      "P": 52
+    },
+    "scores": {
+      "Ti": 95,
+      "Ne": 85,
+      "Si": 65,
+      "Fe": 35,
+      "Te": 75,
+      "Ni": 60,
+      "Se": 45,
+      "Fi": 30
+    },
+    "quote": "Elon Musk este asociat(ă) arhetipului INTP cu profilul spectral I 89%, N 98%, T 99%, J 48%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5e/Elon_Musk_-_54820081119_%28cropped%29.jpg/330px-Elon_Musk_-_54820081119_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "kim_jong_il",
+    "name": "Kim Jong-il (김정일)",
+    "profession": "politician",
+    "role": "Historical · ISTJ",
+    "mbti": "ISTJ",
+    "avatar": "👑",
+    "axes": {
+      "E": 15,
+      "I": 85,
+      "N": 36,
+      "S": 64,
+      "T": 50,
+      "F": 50,
+      "J": 63,
+      "P": 37
+    },
+    "scores": {
+      "Si": 95,
+      "Te": 85,
+      "Fi": 65,
+      "Ne": 35,
+      "Se": 45,
+      "Ti": 75,
+      "Fe": 30,
+      "Ni": 45
+    },
+    "quote": "Kim Jong-il (김정일) este asociat(ă) arhetipului ISTJ cu profilul spectral I 85%, S 64%, T 50%, J 63%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8d/Vladimir_Putin_with_Kim_Jong-Il-2_%28cropped%29_%283%29.jpg/330px-Vladimir_Putin_with_Kim_Jong-Il-2_%28cropped%29_%283%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "deng_xiaoping",
+    "name": "Deng Xiaoping (邓小平)",
+    "profession": "politician",
+    "role": "Historical · INTP",
+    "mbti": "INTP",
+    "avatar": "👑",
+    "axes": {
+      "E": 11,
+      "I": 89,
+      "N": 92,
+      "S": 8,
+      "T": 97,
+      "F": 3,
+      "J": 47,
+      "P": 53
+    },
+    "scores": {
+      "Ti": 95,
+      "Ne": 85,
+      "Si": 65,
+      "Fe": 35,
+      "Te": 75,
+      "Ni": 60,
+      "Se": 45,
+      "Fi": 30
+    },
+    "quote": "Deng Xiaoping (邓小平) este asociat(ă) arhetipului INTP cu profilul spectral I 89%, N 92%, T 97%, P 53%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dd/Deng_Xiaoping_at_the_arrival_ceremony_for_the_Vice_Premier_of_China_%28cropped%29.jpg/330px-Deng_Xiaoping_at_the_arrival_ceremony_for_the_Vice_Premier_of_China_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "narendra_modi",
+    "name": "Narendra Modi (नरेंद्र मोदी)",
+    "profession": "politician",
+    "role": "Historical · INTJ",
+    "mbti": "INTJ",
+    "avatar": "👑",
+    "axes": {
+      "E": 49,
+      "I": 51,
+      "N": 52,
+      "S": 48,
+      "T": 59,
+      "F": 41,
+      "J": 76,
+      "P": 24
+    },
+    "scores": {
+      "Ni": 95,
+      "Te": 85,
+      "Fi": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Ti": 75,
+      "Fe": 30,
+      "Si": 45
+    },
+    "quote": "Narendra Modi (नरेंद्र मोदी) este asociat(ă) arhetipului INTJ cu profilul spectral E 49%, N 52%, F 41%, J 76%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/ba/Narendra_Modi_Portrait_2026.jpg/330px-Narendra_Modi_Portrait_2026.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "rishi_sunak",
+    "name": "Rishi Sunak",
+    "profession": "politician",
+    "role": "Historical · ENTJ",
+    "mbti": "ENTJ",
+    "avatar": "👑",
+    "axes": {
+      "E": 56,
+      "I": 44,
+      "N": 75,
+      "S": 25,
+      "T": 76,
+      "F": 24,
+      "J": 67,
+      "P": 33
+    },
+    "scores": {
+      "Te": 95,
+      "Ni": 85,
+      "Se": 65,
+      "Fi": 35,
+      "Ti": 75,
+      "Ne": 60,
+      "Si": 45,
+      "Fe": 30
+    },
+    "quote": "Rishi Sunak este asociat(ă) arhetipului ENTJ cu profilul spectral I 44%, N 75%, T 76%, J 67%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ab/Portrait_of_Prime_Minister_Rishi_Sunak_%28cropped%29.jpg/330px-Portrait_of_Prime_Minister_Rishi_Sunak_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "adolf_hitler",
+    "name": "Adolf Hitler",
+    "profession": "politician",
+    "role": "Historical · INFJ",
+    "mbti": "INFJ",
+    "avatar": "👑",
+    "axes": {
+      "E": 19,
+      "I": 81,
+      "N": 93,
+      "S": 7,
+      "T": 25,
+      "F": 75,
+      "J": 93,
+      "P": 7
+    },
+    "scores": {
+      "Ni": 95,
+      "Fe": 85,
+      "Ti": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Fi": 30,
+      "Te": 45,
+      "Si": 45
+    },
+    "quote": "Adolf Hitler este asociat(ă) arhetipului INFJ cu profilul spectral I 81%, N 93%, F 75%, J 93%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0c/Hitler_portrait_crop_%28cropped%29%282%29.jpg/330px-Hitler_portrait_crop_%28cropped%29%282%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "leon_trotsky",
+    "name": "Leon Trotsky",
+    "profession": "politician",
+    "role": "Historical · INFJ",
+    "mbti": "INFJ",
+    "avatar": "👑",
+    "axes": {
+      "E": 8,
+      "I": 92,
+      "N": 98,
+      "S": 2,
+      "T": 25,
+      "F": 75,
+      "J": 95,
+      "P": 5
+    },
+    "scores": {
+      "Ni": 95,
+      "Fe": 85,
+      "Ti": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Fi": 30,
+      "Te": 45,
+      "Si": 45
+    },
+    "quote": "Leon Trotsky este asociat(ă) arhetipului INFJ cu profilul spectral I 92%, N 98%, F 75%, J 95%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cf/Leon_Trotsky_1918_%283x4_rotated_cropped_b%29.jpg/330px-Leon_Trotsky_1918_%283x4_rotated_cropped_b%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "benito_mussolini",
+    "name": "Benito Mussolini",
+    "profession": "politician",
+    "role": "Historical · ESTP",
+    "mbti": "ESTP",
+    "avatar": "👑",
+    "axes": {
+      "E": 98,
+      "I": 2,
+      "N": 5,
+      "S": 95,
+      "T": 52,
+      "F": 48,
+      "J": 5,
+      "P": 95
+    },
+    "scores": {
+      "Se": 95,
+      "Ti": 85,
+      "Fe": 65,
+      "Ni": 35,
+      "Si": 45,
+      "Te": 75,
+      "Fi": 30,
+      "Ne": 45
+    },
+    "quote": "Benito Mussolini este asociat(ă) arhetipului ESTP cu profilul spectral E 98%, S 95%, T 52%, P 95%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/Mussolini_mezzobusto.jpg/330px-Mussolini_mezzobusto.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "volodymyr_zelensky",
+    "name": "Volodymyr Zelensky",
+    "profession": "politician",
+    "role": "Historical · ENFP",
+    "mbti": "ENFP",
+    "avatar": "👑",
+    "axes": {
+      "E": 98,
+      "I": 2,
+      "N": 92,
+      "S": 8,
+      "T": 45,
+      "F": 55,
+      "J": 9,
+      "P": 91
+    },
+    "scores": {
+      "Ne": 95,
+      "Fi": 85,
+      "Te": 65,
+      "Si": 35,
+      "Ni": 60,
+      "Fe": 75,
+      "Ti": 30,
+      "Se": 45
+    },
+    "quote": "Volodymyr Zelensky este asociat(ă) arhetipului ENFP cu profilul spectral E 98%, N 92%, F 55%, P 91%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d3/Volodymyr_Zelensky_2022_official_portrait_%28cropped%29.jpg/330px-Volodymyr_Zelensky_2022_official_portrait_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "giorgia_meloni",
+    "name": "Giorgia Meloni",
+    "profession": "politician",
+    "role": "Historical · ESTJ",
+    "mbti": "ESTJ",
+    "avatar": "👑",
+    "axes": {
+      "E": 70,
+      "I": 30,
+      "N": 9,
+      "S": 91,
+      "T": 95,
+      "F": 5,
+      "J": 97,
+      "P": 3
+    },
+    "scores": {
+      "Te": 95,
+      "Si": 85,
+      "Ne": 65,
+      "Fi": 35,
+      "Ti": 75,
+      "Se": 45,
+      "Ni": 45,
+      "Fe": 30
+    },
+    "quote": "Giorgia Meloni este asociat(ă) arhetipului ESTJ cu profilul spectral E 70%, S 91%, T 95%, J 97%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/96/Giorgia_Meloni_Official_2024_%28cropped%29.jpg/330px-Giorgia_Meloni_Official_2024_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "viktor_orban",
+    "name": "Viktor Orbán",
+    "profession": "politician",
+    "role": "Historical · ENTJ",
+    "mbti": "ENTJ",
+    "avatar": "👑",
+    "axes": {
+      "E": 96,
+      "I": 4,
+      "N": 50,
+      "S": 50,
+      "T": 98,
+      "F": 2,
+      "J": 96,
+      "P": 4
+    },
+    "scores": {
+      "Te": 95,
+      "Ni": 85,
+      "Se": 65,
+      "Fi": 35,
+      "Ti": 75,
+      "Ne": 60,
+      "Si": 45,
+      "Fe": 30
+    },
+    "quote": "Viktor Orbán este asociat(ă) arhetipului ENTJ cu profilul spectral E 96%, S 50%, T 98%, J 96%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/Viktor_Orban_2025_%28cropped%29.jpg/330px-Viktor_Orban_2025_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "melania_trump",
+    "name": "Melania Trump",
+    "profession": "politician",
+    "role": "Historical · ISTP",
+    "mbti": "ISTP",
+    "avatar": "👑",
+    "axes": {
+      "E": 7,
+      "I": 93,
+      "N": 7,
+      "S": 93,
+      "T": 68,
+      "F": 32,
+      "J": 33,
+      "P": 67
+    },
+    "scores": {
+      "Ti": 95,
+      "Se": 85,
+      "Ni": 65,
+      "Fe": 35,
+      "Te": 75,
+      "Si": 45,
+      "Ne": 45,
+      "Fi": 30
+    },
+    "quote": "Melania Trump este asociat(ă) arhetipului ISTP cu profilul spectral I 93%, S 93%, T 68%, P 67%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/51/Melania_Trump_at_Fort_Bragg%2C_Friday%2C_February_13%2C_2026.jpg/330px-Melania_Trump_at_Fort_Bragg%2C_Friday%2C_February_13%2C_2026.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "thomas_jefferson",
+    "name": "Thomas Jefferson",
+    "profession": "politician",
+    "role": "Historical · INFJ",
+    "mbti": "INFJ",
+    "avatar": "👑",
+    "axes": {
+      "E": 4,
+      "I": 96,
+      "N": 98,
+      "S": 2,
+      "T": 41,
+      "F": 59,
+      "J": 89,
+      "P": 11
+    },
+    "scores": {
+      "Ni": 95,
+      "Fe": 85,
+      "Ti": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Fi": 30,
+      "Te": 45,
+      "Si": 45
+    },
+    "quote": "Thomas Jefferson este asociat(ă) arhetipului INFJ cu profilul spectral I 96%, N 98%, F 59%, J 89%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/07/Official_Presidential_portrait_of_Thomas_Jefferson_%28by_Rembrandt_Peale%2C_1800%29.jpg/330px-Official_Presidential_portrait_of_Thomas_Jefferson_%28by_Rembrandt_Peale%2C_1800%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "ali_khamenei",
+    "name": "Ali Khamenei",
+    "profession": "politician",
+    "role": "Historical · ESTJ",
+    "mbti": "ESTJ",
+    "avatar": "👑",
+    "axes": {
+      "E": 57,
+      "I": 43,
+      "N": 43,
+      "S": 57,
+      "T": 72,
+      "F": 28,
+      "J": 97,
+      "P": 3
+    },
+    "scores": {
+      "Te": 95,
+      "Si": 85,
+      "Ne": 65,
+      "Fi": 35,
+      "Ti": 75,
+      "Se": 45,
+      "Ni": 45,
+      "Fe": 30
+    },
+    "quote": "Ali Khamenei este asociat(ă) arhetipului ESTJ cu profilul spectral E 57%, S 57%, T 72%, J 97%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/Ali_Khamenei_Nowruz_message_official_portrait_1397_02_%283_x_4_cropped%29.jpg/330px-Ali_Khamenei_Nowruz_message_official_portrait_1397_02_%283_x_4_cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "emmanuel_macron",
+    "name": "Emmanuel Macron",
+    "profession": "politician",
+    "role": "Historical · ENTJ",
+    "mbti": "ENTJ",
+    "avatar": "👑",
+    "axes": {
+      "E": 87,
+      "I": 13,
+      "N": 85,
+      "S": 15,
+      "T": 84,
+      "F": 16,
+      "J": 92,
+      "P": 8
+    },
+    "scores": {
+      "Te": 95,
+      "Ni": 85,
+      "Se": 65,
+      "Fi": 35,
+      "Ti": 75,
+      "Ne": 60,
+      "Si": 45,
+      "Fe": 30
+    },
+    "quote": "Emmanuel Macron este asociat(ă) arhetipului ENTJ cu profilul spectral E 87%, N 85%, T 84%, J 92%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3c/Emmanuel_Macron_2025_%28cropped%29.jpg/330px-Emmanuel_Macron_2025_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "bernie_sanders",
+    "name": "Bernie Sanders",
+    "profession": "politician",
+    "role": "Historical · INTJ",
+    "mbti": "INTJ",
+    "avatar": "👑",
+    "axes": {
+      "E": 21,
+      "I": 79,
+      "N": 95,
+      "S": 5,
+      "T": 70,
+      "F": 30,
+      "J": 85,
+      "P": 15
+    },
+    "scores": {
+      "Ni": 95,
+      "Te": 85,
+      "Fi": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Ti": 75,
+      "Fe": 30,
+      "Si": 45
+    },
+    "quote": "Bernie Sanders este asociat(ă) arhetipului INTJ cu profilul spectral I 79%, N 95%, T 70%, J 85%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c2/Bernie_Sanders_February_2026_%28cropped%29.jpg/330px-Bernie_Sanders_February_2026_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "cristiano_ronaldo",
+    "name": "Cristiano Ronaldo",
+    "profession": "sportiv",
+    "role": "Sports · ESTP",
+    "mbti": "ESTP",
+    "avatar": "⚽",
+    "axes": {
+      "E": 95,
+      "I": 5,
+      "N": 35,
+      "S": 65,
+      "T": 54,
+      "F": 46,
+      "J": 49,
+      "P": 51
+    },
+    "scores": {
+      "Se": 95,
+      "Ti": 85,
+      "Fe": 65,
+      "Ni": 35,
+      "Si": 45,
+      "Te": 75,
+      "Fi": 30,
+      "Ne": 45
+    },
+    "quote": "Cristiano Ronaldo este asociat(ă) arhetipului ESTP cu profilul spectral E 95%, S 65%, F 46%, P 51%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/Cristiano_Ronaldo_Croatia_v_Portugal_2_July_2026-075_%28cropped%29.jpg/330px-Cristiano_Ronaldo_Croatia_v_Portugal_2_July_2026-075_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "billie_eilish",
+    "name": "Billie Eilish",
+    "profession": "artist",
+    "role": "Artist · ISFP",
+    "mbti": "ISFP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 9,
+      "I": 91,
+      "N": 11,
+      "S": 89,
+      "T": 19,
+      "F": 81,
+      "J": 4,
+      "P": 96
+    },
+    "scores": {
+      "Fi": 95,
+      "Se": 85,
+      "Ni": 65,
+      "Te": 35,
+      "Fe": 75,
+      "Si": 45,
+      "Ne": 45,
+      "Ti": 30
+    },
+    "quote": "Billie Eilish este asociat(ă) arhetipului ISFP cu profilul spectral I 91%, S 89%, F 81%, P 96%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c7/BillieEilishO2140725-39_-_54665577407_%28cropped%29.jpg/330px-BillieEilishO2140725-39_-_54665577407_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "lana_del_rey",
+    "name": "Lana Del Rey",
+    "profession": "artist",
+    "role": "Artist · ISFP",
+    "mbti": "ISFP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 5,
+      "I": 95,
+      "N": 30,
+      "S": 70,
+      "T": 2,
+      "F": 98,
+      "J": 9,
+      "P": 91
+    },
+    "scores": {
+      "Fi": 95,
+      "Se": 85,
+      "Ni": 65,
+      "Te": 35,
+      "Fe": 75,
+      "Si": 45,
+      "Ne": 45,
+      "Ti": 30
+    },
+    "quote": "Lana Del Rey este asociat(ă) arhetipului ISFP cu profilul spectral I 95%, S 70%, F 98%, P 91%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d0/LanaDRPrimavera310524_%2832_of_147%29_%2853765476960%29_%28cropped%29.jpg/330px-LanaDRPrimavera310524_%2832_of_147%29_%2853765476960%29_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "ishowspeed",
+    "name": "IShowSpeed",
+    "profession": "sportiv",
+    "role": "Sports · ESFP",
+    "mbti": "ESFP",
+    "avatar": "⚽",
+    "axes": {
+      "E": 96,
+      "I": 4,
+      "N": 5,
+      "S": 95,
+      "T": 49,
+      "F": 51,
+      "J": 4,
+      "P": 96
+    },
+    "scores": {
+      "Se": 95,
+      "Fi": 85,
+      "Te": 65,
+      "Ni": 35,
+      "Si": 45,
+      "Fe": 75,
+      "Ti": 30,
+      "Ne": 45
+    },
+    "quote": "IShowSpeed este asociat(ă) arhetipului ESFP cu profilul spectral E 96%, S 95%, F 51%, P 96%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ea/IShowSpeed_at_Chinatown_%28Portrait%29_04.jpg/330px-IShowSpeed_at_Chinatown_%28Portrait%29_04.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "felix_kjellberg_pewdiepie",
+    "name": "Felix Kjellberg (PewDiePie)",
+    "profession": "artist",
+    "role": "Artist · INTP",
+    "mbti": "INTP",
+    "avatar": "🎨",
+    "axes": {
+      "E": 34,
+      "I": 66,
+      "N": 88,
+      "S": 12,
+      "T": 90,
+      "F": 10,
+      "J": 15,
+      "P": 85
+    },
+    "scores": {
+      "Ti": 95,
+      "Ne": 85,
+      "Si": 65,
+      "Fe": 35,
+      "Te": 75,
+      "Ni": 60,
+      "Se": 45,
+      "Fi": 30
+    },
+    "quote": "Felix Kjellberg (PewDiePie) este asociat(ă) arhetipului INTP cu profilul spectral I 66%, N 88%, T 90%, P 85%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/53/Pewdiepie_head_shot.jpg/330px-Pewdiepie_head_shot.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "carl_jung",
+    "name": "Carl Jung",
+    "profession": "philosopher",
+    "role": "Philosophy · INTJ",
+    "mbti": "INTJ",
+    "avatar": "🏛️",
+    "axes": {
+      "E": 1,
+      "I": 99,
+      "N": 95,
+      "S": 5,
+      "T": 52,
+      "F": 48,
+      "J": 53,
+      "P": 47
+    },
+    "scores": {
+      "Ni": 95,
+      "Te": 85,
+      "Fi": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Ti": 75,
+      "Fe": 30,
+      "Si": 45
+    },
+    "quote": "Carl Jung este asociat(ă) arhetipului INTJ cu profilul spectral I 99%, N 95%, F 48%, J 53%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5b/ETH-BIB-Jung%2C_Carl_Gustav_%281875-1961%29-Portrait-Portr_14163_%28cropped%29.tif/lossy-page1-330px-ETH-BIB-Jung%2C_Carl_Gustav_%281875-1961%29-Portrait-Portr_14163_%28cropped%29.tif.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "barack_obama",
+    "name": "Barack Obama",
+    "profession": "politician",
+    "role": "Historical · ENTJ",
+    "mbti": "ENTJ",
+    "avatar": "👑",
+    "axes": {
+      "E": 97,
+      "I": 3,
+      "N": 97,
+      "S": 3,
+      "T": 51,
+      "F": 49,
+      "J": 51,
+      "P": 49
+    },
+    "scores": {
+      "Te": 95,
+      "Ni": 85,
+      "Se": 65,
+      "Fi": 35,
+      "Ti": 75,
+      "Ne": 60,
+      "Si": 45,
+      "Fe": 30
+    },
+    "quote": "Barack Obama este asociat(ă) arhetipului ENTJ cu profilul spectral E 97%, N 97%, T 51%, P 49%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8d/President_Barack_Obama.jpg/330px-President_Barack_Obama.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "j_k_rowling",
+    "name": "J. K. Rowling",
+    "profession": "artist",
+    "role": "Artist · INFJ",
+    "mbti": "INFJ",
+    "avatar": "🎨",
+    "axes": {
+      "E": 2,
+      "I": 98,
+      "N": 97,
+      "S": 3,
+      "T": 3,
+      "F": 97,
+      "J": 51,
+      "P": 49
+    },
+    "scores": {
+      "Ni": 95,
+      "Fe": 85,
+      "Ti": 65,
+      "Se": 35,
+      "Ne": 60,
+      "Fi": 30,
+      "Te": 45,
+      "Si": 45
+    },
+    "quote": "J. K. Rowling este asociat(ă) arhetipului INFJ cu profilul spectral I 98%, N 97%, F 97%, J 51%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5d/J._K._Rowling_2010.jpg/330px-J._K._Rowling_2010.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "h_p_lovecraft",
+    "name": "H. P. Lovecraft",
+    "profession": "artist",
+    "role": "Artist · INTP",
+    "mbti": "INTP",
+    "avatar": "✍️",
+    "axes": {
+      "E": 1,
+      "I": 99,
+      "N": 98,
+      "S": 2,
+      "T": 81,
+      "F": 19,
+      "J": 10,
+      "P": 90
+    },
+    "scores": {
+      "Ne": 85,
+      "Ni": 60,
+      "Te": 75,
+      "Ti": 95,
+      "Fe": 35,
+      "Fi": 30,
+      "Se": 45,
+      "Si": 65
+    },
+    "quote": "H. P. Lovecraft este asociat(ă) arhetipului INTP cu profilul spectral I 99%, N 98%, T 81%, P 90%.",
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/H._P._Lovecraft%2C_June_1934.jpg/330px-H._P._Lovecraft%2C_June_1934.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
     "id": "john_lennon",
     "name": "John Lennon",
-    "profession": "musician",
-    "role": "Muzician · ENFP",
+    "profession": "artist",
+    "role": "Artist · ENFP",
     "mbti": "ENFP",
     "avatar": "🎵",
     "axes": {
@@ -37,8 +4597,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "david_bowie",
     "name": "David Bowie",
-    "profession": "musician",
-    "role": "Muzician · INFP",
+    "profession": "artist",
+    "role": "Artist · INFP",
     "mbti": "INFP",
     "avatar": "🎵",
     "axes": {
@@ -67,8 +4627,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "bad_bunny",
     "name": "Bad Bunny",
-    "profession": "musician",
-    "role": "Muzician · ENFP",
+    "profession": "artist",
+    "role": "Artist · ENFP",
     "mbti": "ENFP",
     "avatar": "🎵",
     "axes": {
@@ -97,8 +4657,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "britney_spears",
     "name": "Britney Spears",
-    "profession": "musician",
-    "role": "Muzician · ISFP",
+    "profession": "artist",
+    "role": "Artist · ISFP",
     "mbti": "ISFP",
     "avatar": "🎵",
     "axes": {
@@ -127,8 +4687,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "bj_rk",
     "name": "Björk",
-    "profession": "musician",
-    "role": "Muzician · INFP",
+    "profession": "artist",
+    "role": "Artist · INFP",
     "mbti": "INFP",
     "avatar": "🎵",
     "axes": {
@@ -157,8 +4717,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "alex_turner",
     "name": "Alex Turner",
-    "profession": "musician",
-    "role": "Muzician · INTJ",
+    "profession": "artist",
+    "role": "Artist · INTJ",
     "mbti": "INTJ",
     "avatar": "🎵",
     "axes": {
@@ -187,8 +4747,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "drake",
     "name": "Drake",
-    "profession": "musician",
-    "role": "Muzician · ESFJ",
+    "profession": "artist",
+    "role": "Artist · ESFJ",
     "mbti": "ESFJ",
     "avatar": "🎵",
     "axes": {
@@ -217,8 +4777,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "freddie_mercury",
     "name": "Freddie Mercury",
-    "profession": "musician",
-    "role": "Muzician · ESFP",
+    "profession": "artist",
+    "role": "Artist · ESFP",
     "mbti": "ESFP",
     "avatar": "🎵",
     "axes": {
@@ -247,8 +4807,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "adele",
     "name": "Adele",
-    "profession": "musician",
-    "role": "Muzician · ENTJ",
+    "profession": "artist",
+    "role": "Artist · ENTJ",
     "mbti": "ENTJ",
     "avatar": "🎵",
     "axes": {
@@ -277,8 +4837,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "wolfgang_amadeus_mozart",
     "name": "Wolfgang Amadeus Mozart",
-    "profession": "musician",
-    "role": "Muzician · ESFP",
+    "profession": "artist",
+    "role": "Artist · ESFP",
     "mbti": "ESFP",
     "avatar": "🎵",
     "axes": {
@@ -307,8 +4867,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "michael_jackson",
     "name": "Michael Jackson",
-    "profession": "musician",
-    "role": "Muzician · ISFP",
+    "profession": "artist",
+    "role": "Artist · ISFP",
     "mbti": "ISFP",
     "avatar": "🎵",
     "axes": {
@@ -337,8 +4897,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "kanye_west",
     "name": "Kanye West",
-    "profession": "musician",
-    "role": "Muzician · ENFP",
+    "profession": "artist",
+    "role": "Artist · ENFP",
     "mbti": "ENFP",
     "avatar": "🎵",
     "axes": {
@@ -367,8 +4927,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "kurt_cobain",
     "name": "Kurt Cobain",
-    "profession": "musician",
-    "role": "Muzician · INFP",
+    "profession": "artist",
+    "role": "Artist · INFP",
     "mbti": "INFP",
     "avatar": "🎵",
     "axes": {
@@ -398,7 +4958,7 @@ export const NOTABLE_FIGURES = [
     "id": "scarlett_johansson",
     "name": "Scarlett Johansson",
     "profession": "artist",
-    "role": "Artist & Actor · ISTP",
+    "role": "Artist · ISTP",
     "mbti": "ISTP",
     "avatar": "🎨",
     "axes": {
@@ -428,7 +4988,7 @@ export const NOTABLE_FIGURES = [
     "id": "heath_ledger",
     "name": "Heath Ledger",
     "profession": "artist",
-    "role": "Artist & Actor · INFP",
+    "role": "Artist · INFP",
     "mbti": "INFP",
     "avatar": "🎨",
     "axes": {
@@ -458,7 +5018,7 @@ export const NOTABLE_FIGURES = [
     "id": "brad_pitt",
     "name": "Brad Pitt",
     "profession": "artist",
-    "role": "Artist & Actor · ISFP",
+    "role": "Artist · ISFP",
     "mbti": "ISFP",
     "avatar": "🎨",
     "axes": {
@@ -488,7 +5048,7 @@ export const NOTABLE_FIGURES = [
     "id": "ryan_gosling",
     "name": "Ryan Gosling",
     "profession": "artist",
-    "role": "Artist & Actor · ISFP",
+    "role": "Artist · ISFP",
     "mbti": "ISFP",
     "avatar": "🎨",
     "axes": {
@@ -517,8 +5077,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "taylor_swift",
     "name": "Taylor Swift",
-    "profession": "musician",
-    "role": "Muzician · ESFJ",
+    "profession": "artist",
+    "role": "Artist · ESFJ",
     "mbti": "ESFJ",
     "avatar": "🎵",
     "axes": {
@@ -548,7 +5108,7 @@ export const NOTABLE_FIGURES = [
     "id": "jacob_elordi",
     "name": "Jacob Elordi",
     "profession": "artist",
-    "role": "Artist & Actor · INFP",
+    "role": "Artist · INFP",
     "mbti": "INFP",
     "avatar": "🎨",
     "axes": {
@@ -578,7 +5138,7 @@ export const NOTABLE_FIGURES = [
     "id": "henry_cavill",
     "name": "Henry Cavill",
     "profession": "artist",
-    "role": "Artist & Actor · ISFJ",
+    "role": "Artist · ISFJ",
     "mbti": "ISFJ",
     "avatar": "🎨",
     "axes": {
@@ -607,8 +5167,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "doja_cat",
     "name": "Doja Cat",
-    "profession": "musician",
-    "role": "Muzician · ENFP",
+    "profession": "artist",
+    "role": "Artist · ENFP",
     "mbti": "ENFP",
     "avatar": "🎵",
     "axes": {
@@ -637,8 +5197,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "eminem",
     "name": "Eminem",
-    "profession": "musician",
-    "role": "Muzician · ISTP",
+    "profession": "artist",
+    "role": "Artist · ISTP",
     "mbti": "ISTP",
     "avatar": "🎵",
     "axes": {
@@ -668,7 +5228,7 @@ export const NOTABLE_FIGURES = [
     "id": "pedro_pascal",
     "name": "Pedro Pascal",
     "profession": "artist",
-    "role": "Artist & Actor · ENFP",
+    "role": "Artist · ENFP",
     "mbti": "ENFP",
     "avatar": "🎨",
     "axes": {
@@ -697,8 +5257,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "thom_yorke",
     "name": "Thom Yorke",
-    "profession": "musician",
-    "role": "Muzician · INFP",
+    "profession": "artist",
+    "role": "Artist · INFP",
     "mbti": "INFP",
     "avatar": "🎵",
     "axes": {
@@ -727,8 +5287,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "tupac_shakur",
     "name": "Tupac Shakur",
-    "profession": "musician",
-    "role": "Muzician · ENFJ",
+    "profession": "artist",
+    "role": "Artist · ENFJ",
     "mbti": "ENFJ",
     "avatar": "🎵",
     "axes": {
@@ -757,8 +5317,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "nicki_minaj",
     "name": "Nicki Minaj",
-    "profession": "musician",
-    "role": "Muzician · ESFP",
+    "profession": "artist",
+    "role": "Artist · ESFP",
     "mbti": "ESFP",
     "avatar": "🎵",
     "axes": {
@@ -787,8 +5347,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "ariana_grande",
     "name": "Ariana Grande",
-    "profession": "musician",
-    "role": "Muzician · ESFJ",
+    "profession": "artist",
+    "role": "Artist · ESFJ",
     "mbti": "ESFJ",
     "avatar": "🎵",
     "axes": {
@@ -817,8 +5377,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "lady_gaga",
     "name": "Lady Gaga",
-    "profession": "musician",
-    "role": "Muzician · ISFP",
+    "profession": "artist",
+    "role": "Artist · ISFP",
     "mbti": "ISFP",
     "avatar": "🎵",
     "axes": {
@@ -847,8 +5407,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "emily_bront",
     "name": "Emily Brontë",
-    "profession": "writer",
-    "role": "Scriitor · INTJ",
+    "profession": "artist",
+    "role": "Artist · INTJ",
     "mbti": "INTJ",
     "avatar": "✍️",
     "axes": {
@@ -878,7 +5438,7 @@ export const NOTABLE_FIGURES = [
     "id": "david_fincher",
     "name": "David Fincher",
     "profession": "artist",
-    "role": "Artist & Actor · INTJ",
+    "role": "Artist · INTJ",
     "mbti": "INTJ",
     "avatar": "🎨",
     "axes": {
@@ -907,8 +5467,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "charles_bukowski",
     "name": "Charles Bukowski",
-    "profession": "writer",
-    "role": "Scriitor · ISFP",
+    "profession": "artist",
+    "role": "Artist · ISFP",
     "mbti": "ISFP",
     "avatar": "✍️",
     "axes": {
@@ -937,8 +5497,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "anton_chekhov",
     "name": "Anton Chekhov",
-    "profession": "writer",
-    "role": "Scriitor · INTP",
+    "profession": "artist",
+    "role": "Artist · INTP",
     "mbti": "INTP",
     "avatar": "✍️",
     "axes": {
@@ -967,8 +5527,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "virginia_woolf",
     "name": "Virginia Woolf",
-    "profession": "writer",
-    "role": "Scriitor · INFP",
+    "profession": "artist",
+    "role": "Artist · INFP",
     "mbti": "INFP",
     "avatar": "✍️",
     "axes": {
@@ -998,7 +5558,7 @@ export const NOTABLE_FIGURES = [
     "id": "martin_scorsese",
     "name": "Martin Scorsese",
     "profession": "artist",
-    "role": "Artist & Actor · ENTP",
+    "role": "Artist · ENTP",
     "mbti": "ENTP",
     "avatar": "🎨",
     "axes": {
@@ -1025,40 +5585,10 @@ export const NOTABLE_FIGURES = [
     "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/54/Martin_Scorsese-68749.jpg/330px-Martin_Scorsese-68749.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
   },
   {
-    "id": "h_p_lovecraft",
-    "name": "H. P. Lovecraft",
-    "profession": "writer",
-    "role": "Scriitor · INTP",
-    "mbti": "INTP",
-    "avatar": "✍️",
-    "axes": {
-      "E": 1,
-      "I": 99,
-      "N": 98,
-      "S": 2,
-      "T": 81,
-      "F": 19,
-      "J": 10,
-      "P": 90
-    },
-    "scores": {
-      "Ne": 85,
-      "Ni": 60,
-      "Te": 75,
-      "Ti": 95,
-      "Fe": 35,
-      "Fi": 30,
-      "Se": 45,
-      "Si": 65
-    },
-    "quote": "H. P. Lovecraft este asociat(ă) arhetipului INTP cu profilul spectral I 99%, N 98%, T 81%, P 90%.",
-    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/H._P._Lovecraft%2C_June_1934.jpg/330px-H._P._Lovecraft%2C_June_1934.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
-  },
-  {
     "id": "leo_tolstoy",
     "name": "Leo Tolstoy",
-    "profession": "writer",
-    "role": "Scriitor · INFJ",
+    "profession": "artist",
+    "role": "Artist · INFJ",
     "mbti": "INFJ",
     "avatar": "✍️",
     "axes": {
@@ -1087,8 +5617,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "jane_austen",
     "name": "Jane Austen",
-    "profession": "writer",
-    "role": "Scriitor · INTJ",
+    "profession": "artist",
+    "role": "Artist · INTJ",
     "mbti": "INTJ",
     "avatar": "✍️",
     "axes": {
@@ -1118,7 +5648,7 @@ export const NOTABLE_FIGURES = [
     "id": "frida_kahlo",
     "name": "Frida Kahlo",
     "profession": "artist",
-    "role": "Artist & Actor · ISFP",
+    "role": "Artist · ISFP",
     "mbti": "ISFP",
     "avatar": "🎨",
     "axes": {
@@ -1147,8 +5677,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "stan_lee",
     "name": "Stan Lee",
-    "profession": "writer",
-    "role": "Scriitor · ENTP",
+    "profession": "artist",
+    "role": "Artist · ENTP",
     "mbti": "ENTP",
     "avatar": "✍️",
     "axes": {
@@ -1177,8 +5707,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "j_r_r_tolkien",
     "name": "J. R. R. Tolkien",
-    "profession": "writer",
-    "role": "Scriitor · INFP",
+    "profession": "artist",
+    "role": "Artist · INFP",
     "mbti": "INFP",
     "avatar": "✍️",
     "axes": {
@@ -1207,8 +5737,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "agatha_christie",
     "name": "Agatha Christie",
-    "profession": "writer",
-    "role": "Scriitor · INFJ",
+    "profession": "artist",
+    "role": "Artist · INFJ",
     "mbti": "INFJ",
     "avatar": "✍️",
     "axes": {
@@ -1237,8 +5767,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "walt_disney",
     "name": "Walt Disney",
-    "profession": "musician",
-    "role": "Muzician · ENFP",
+    "profession": "artist",
+    "role": "Artist · ENFP",
     "mbti": "ENFP",
     "avatar": "🎵",
     "axes": {
@@ -1267,8 +5797,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "oscar_wilde",
     "name": "Oscar Wilde",
-    "profession": "writer",
-    "role": "Scriitor · ENFP",
+    "profession": "artist",
+    "role": "Artist · ENFP",
     "mbti": "ENFP",
     "avatar": "✍️",
     "axes": {
@@ -1297,8 +5827,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "clarice_lispector",
     "name": "Clarice Lispector",
-    "profession": "writer",
-    "role": "Scriitor · INFP",
+    "profession": "artist",
+    "role": "Artist · INFP",
     "mbti": "INFP",
     "avatar": "✍️",
     "axes": {
@@ -1328,7 +5858,7 @@ export const NOTABLE_FIGURES = [
     "id": "christopher_nolan",
     "name": "Christopher Nolan",
     "profession": "artist",
-    "role": "Artist & Actor · INTJ",
+    "role": "Artist · INTJ",
     "mbti": "INTJ",
     "avatar": "🎨",
     "axes": {
@@ -1357,8 +5887,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "sylvia_plath",
     "name": "Sylvia Plath",
-    "profession": "writer",
-    "role": "Scriitor · INFP",
+    "profession": "artist",
+    "role": "Artist · INFP",
     "mbti": "INFP",
     "avatar": "✍️",
     "axes": {
@@ -1388,7 +5918,7 @@ export const NOTABLE_FIGURES = [
     "id": "salvador_dal",
     "name": "Salvador Dalí",
     "profession": "artist",
-    "role": "Artist & Actor · ENFP",
+    "role": "Artist · ENFP",
     "mbti": "ENFP",
     "avatar": "🎨",
     "axes": {
@@ -1418,7 +5948,7 @@ export const NOTABLE_FIGURES = [
     "id": "david_lynch",
     "name": "David Lynch",
     "profession": "artist",
-    "role": "Artist & Actor · INFP",
+    "role": "Artist · INFP",
     "mbti": "INFP",
     "avatar": "🎨",
     "axes": {
@@ -1448,7 +5978,7 @@ export const NOTABLE_FIGURES = [
     "id": "bob_ross",
     "name": "Bob Ross",
     "profession": "artist",
-    "role": "Artist & Actor · ISFJ",
+    "role": "Artist · ISFJ",
     "mbti": "ISFJ",
     "avatar": "🎨",
     "axes": {
@@ -1478,7 +6008,7 @@ export const NOTABLE_FIGURES = [
     "id": "tim_burton",
     "name": "Tim Burton",
     "profession": "artist",
-    "role": "Artist & Actor · INFP",
+    "role": "Artist · INFP",
     "mbti": "INFP",
     "avatar": "🎨",
     "axes": {
@@ -1507,8 +6037,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "stephen_king",
     "name": "Stephen King",
-    "profession": "writer",
-    "role": "Scriitor · INTP",
+    "profession": "artist",
+    "role": "Artist · INTP",
     "mbti": "INTP",
     "avatar": "✍️",
     "axes": {
@@ -1537,8 +6067,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "edgar_allan_poe",
     "name": "Edgar Allan Poe",
-    "profession": "writer",
-    "role": "Scriitor · INFP",
+    "profession": "artist",
+    "role": "Artist · INFP",
     "mbti": "INFP",
     "avatar": "✍️",
     "axes": {
@@ -1567,8 +6097,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "william_shakespeare",
     "name": "William Shakespeare",
-    "profession": "writer",
-    "role": "Scriitor · INFP",
+    "profession": "artist",
+    "role": "Artist · INFP",
     "mbti": "INFP",
     "avatar": "✍️",
     "axes": {
@@ -1597,8 +6127,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "anne_frank",
     "name": "Anne Frank",
-    "profession": "writer",
-    "role": "Scriitor · ENFP",
+    "profession": "artist",
+    "role": "Artist · ENFP",
     "mbti": "ENFP",
     "avatar": "✍️",
     "axes": {
@@ -1628,7 +6158,7 @@ export const NOTABLE_FIGURES = [
     "id": "stanley_kubrick",
     "name": "Stanley Kubrick",
     "profession": "artist",
-    "role": "Artist & Actor · INTJ",
+    "role": "Artist · INTJ",
     "mbti": "INTJ",
     "avatar": "🎨",
     "axes": {
@@ -1658,7 +6188,7 @@ export const NOTABLE_FIGURES = [
     "id": "hayao_miyazaki",
     "name": "Hayao Miyazaki",
     "profession": "artist",
-    "role": "Artist & Actor · INFP",
+    "role": "Artist · INFP",
     "mbti": "INFP",
     "avatar": "🎨",
     "axes": {
@@ -1687,8 +6217,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "george_r_r_martin",
     "name": "George R. R. Martin",
-    "profession": "writer",
-    "role": "Scriitor · INTP",
+    "profession": "artist",
+    "role": "Artist · INTP",
     "mbti": "INTP",
     "avatar": "✍️",
     "axes": {
@@ -1717,8 +6247,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "franz_kafka",
     "name": "Franz Kafka",
-    "profession": "writer",
-    "role": "Scriitor · INFP",
+    "profession": "artist",
+    "role": "Artist · INFP",
     "mbti": "INFP",
     "avatar": "✍️",
     "axes": {
@@ -1748,7 +6278,7 @@ export const NOTABLE_FIGURES = [
     "id": "pablo_picasso",
     "name": "Pablo Picasso",
     "profession": "artist",
-    "role": "Artist & Actor · ESFP",
+    "role": "Artist · ESFP",
     "mbti": "ESFP",
     "avatar": "🎨",
     "axes": {
@@ -1778,7 +6308,7 @@ export const NOTABLE_FIGURES = [
     "id": "alfred_hitchcock",
     "name": "Alfred Hitchcock",
     "profession": "artist",
-    "role": "Artist & Actor · ESTP",
+    "role": "Artist · ESTP",
     "mbti": "ESTP",
     "avatar": "🎨",
     "axes": {
@@ -1808,7 +6338,7 @@ export const NOTABLE_FIGURES = [
     "id": "vincent_van_gogh",
     "name": "Vincent van Gogh",
     "profession": "artist",
-    "role": "Artist & Actor · INFP",
+    "role": "Artist · INFP",
     "mbti": "INFP",
     "avatar": "🎨",
     "axes": {
@@ -1837,8 +6367,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "osamu_dazai",
     "name": "Osamu Dazai",
-    "profession": "writer",
-    "role": "Scriitor · INFJ",
+    "profession": "artist",
+    "role": "Artist · INFJ",
     "mbti": "INFJ",
     "avatar": "✍️",
     "axes": {
@@ -1867,8 +6397,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "fyodor_dostoevsky",
     "name": "Fyodor Dostoevsky",
-    "profession": "writer",
-    "role": "Scriitor · INFJ",
+    "profession": "artist",
+    "role": "Artist · INFJ",
     "mbti": "INFJ",
     "avatar": "✍️",
     "axes": {
@@ -1898,7 +6428,7 @@ export const NOTABLE_FIGURES = [
     "id": "gordon_ramsay",
     "name": "Gordon Ramsay",
     "profession": "entrepreneur",
-    "role": "Antreprenor & Lider · ESTJ",
+    "role": "Business · ESTJ",
     "mbti": "ESTJ",
     "avatar": "💼",
     "axes": {
@@ -1928,7 +6458,7 @@ export const NOTABLE_FIGURES = [
     "id": "arthur_schopenhauer",
     "name": "Arthur Schopenhauer",
     "profession": "philosopher",
-    "role": "Filosof · INTJ",
+    "role": "Philosophy · INTJ",
     "mbti": "INTJ",
     "avatar": "🏛️",
     "axes": {
@@ -1958,7 +6488,7 @@ export const NOTABLE_FIGURES = [
     "id": "ren_descartes",
     "name": "René Descartes",
     "profession": "philosopher",
-    "role": "Filosof · INTP",
+    "role": "Philosophy · INTP",
     "mbti": "INTP",
     "avatar": "🏛️",
     "axes": {
@@ -1988,7 +6518,7 @@ export const NOTABLE_FIGURES = [
     "id": "diogenes",
     "name": "Diogenes",
     "profession": "philosopher",
-    "role": "Filosof · ISTP",
+    "role": "Philosophy · ISTP",
     "mbti": "ISTP",
     "avatar": "🏛️",
     "axes": {
@@ -2018,7 +6548,7 @@ export const NOTABLE_FIGURES = [
     "id": "aristotle",
     "name": "Aristotle",
     "profession": "philosopher",
-    "role": "Filosof · ENTJ",
+    "role": "Philosophy · ENTJ",
     "mbti": "ENTJ",
     "avatar": "🏛️",
     "axes": {
@@ -2048,7 +6578,7 @@ export const NOTABLE_FIGURES = [
     "id": "plato",
     "name": "Plato",
     "profession": "philosopher",
-    "role": "Filosof · INFJ",
+    "role": "Philosophy · INFJ",
     "mbti": "INFJ",
     "avatar": "🏛️",
     "axes": {
@@ -2078,7 +6608,7 @@ export const NOTABLE_FIGURES = [
     "id": "niccol_machiavelli",
     "name": "Niccolò Machiavelli",
     "profession": "philosopher",
-    "role": "Filosof · ENTP",
+    "role": "Philosophy · ENTP",
     "mbti": "ENTP",
     "avatar": "🏛️",
     "axes": {
@@ -2108,7 +6638,7 @@ export const NOTABLE_FIGURES = [
     "id": "immanuel_kant",
     "name": "Immanuel Kant",
     "profession": "philosopher",
-    "role": "Filosof · INTP",
+    "role": "Philosophy · INTP",
     "mbti": "INTP",
     "avatar": "🏛️",
     "axes": {
@@ -2138,7 +6668,7 @@ export const NOTABLE_FIGURES = [
     "id": "karl_marx",
     "name": "Karl Marx",
     "profession": "philosopher",
-    "role": "Filosof · INTJ",
+    "role": "Philosophy · INTJ",
     "mbti": "INTJ",
     "avatar": "🏛️",
     "axes": {
@@ -2168,7 +6698,7 @@ export const NOTABLE_FIGURES = [
     "id": "socrates",
     "name": "Socrates",
     "profession": "philosopher",
-    "role": "Filosof · ENTP",
+    "role": "Philosophy · ENTP",
     "mbti": "ENTP",
     "avatar": "🏛️",
     "axes": {
@@ -2198,7 +6728,7 @@ export const NOTABLE_FIGURES = [
     "id": "friedrich_nietzsche",
     "name": "Friedrich Nietzsche",
     "profession": "philosopher",
-    "role": "Filosof · INTJ",
+    "role": "Philosophy · INTJ",
     "mbti": "INTJ",
     "avatar": "🏛️",
     "axes": {
@@ -2228,7 +6758,7 @@ export const NOTABLE_FIGURES = [
     "id": "thomas_edison",
     "name": "Thomas Edison",
     "profession": "scientist",
-    "role": "Om de știință · ENTP",
+    "role": "Science · ENTP",
     "mbti": "ENTP",
     "avatar": "⚛️",
     "axes": {
@@ -2258,7 +6788,7 @@ export const NOTABLE_FIGURES = [
     "id": "alan_turing",
     "name": "Alan Turing",
     "profession": "scientist",
-    "role": "Om de știință · INTP",
+    "role": "Science · INTP",
     "mbti": "INTP",
     "avatar": "⚛️",
     "axes": {
@@ -2288,7 +6818,7 @@ export const NOTABLE_FIGURES = [
     "id": "neil_degrasse_tyson",
     "name": "Neil deGrasse Tyson",
     "profession": "scientist",
-    "role": "Om de știință · ENTP",
+    "role": "Science · ENTP",
     "mbti": "ENTP",
     "avatar": "⚛️",
     "axes": {
@@ -2318,7 +6848,7 @@ export const NOTABLE_FIGURES = [
     "id": "sigmund_freud",
     "name": "Sigmund Freud",
     "profession": "scientist",
-    "role": "Om de știință · ISTJ",
+    "role": "Science · ISTJ",
     "mbti": "ISTJ",
     "avatar": "⚛️",
     "axes": {
@@ -2348,7 +6878,7 @@ export const NOTABLE_FIGURES = [
     "id": "nikola_tesla",
     "name": "Nikola Tesla",
     "profession": "scientist",
-    "role": "Om de știință · INTJ",
+    "role": "Science · INTJ",
     "mbti": "INTJ",
     "avatar": "⚛️",
     "axes": {
@@ -2378,7 +6908,7 @@ export const NOTABLE_FIGURES = [
     "id": "albert_einstein",
     "name": "Albert Einstein",
     "profession": "scientist",
-    "role": "Om de știință · INTP",
+    "role": "Science · INTP",
     "mbti": "INTP",
     "avatar": "⚛️",
     "axes": {
@@ -2408,7 +6938,7 @@ export const NOTABLE_FIGURES = [
     "id": "blaise_pascal",
     "name": "Blaise Pascal",
     "profession": "scientist",
-    "role": "Om de știință · INTP",
+    "role": "Science · INTP",
     "mbti": "INTP",
     "avatar": "⚛️",
     "axes": {
@@ -2438,7 +6968,7 @@ export const NOTABLE_FIGURES = [
     "id": "j_robert_oppenheimer",
     "name": "J. Robert Oppenheimer",
     "profession": "scientist",
-    "role": "Om de știință · INTJ",
+    "role": "Science · INTJ",
     "mbti": "INTJ",
     "avatar": "⚛️",
     "axes": {
@@ -2468,7 +6998,7 @@ export const NOTABLE_FIGURES = [
     "id": "neil_armstrong",
     "name": "Neil Armstrong",
     "profession": "scientist",
-    "role": "Om de știință · INTJ",
+    "role": "Science · INTJ",
     "mbti": "INTJ",
     "avatar": "⚛️",
     "axes": {
@@ -2498,7 +7028,7 @@ export const NOTABLE_FIGURES = [
     "id": "erling_haaland",
     "name": "Erling Haaland",
     "profession": "sportiv",
-    "role": "Sportiv · ISTP",
+    "role": "Sports · ISTP",
     "mbti": "ISTP",
     "avatar": "⚽",
     "axes": {
@@ -2528,7 +7058,7 @@ export const NOTABLE_FIGURES = [
     "id": "bobby_fischer",
     "name": "Bobby Fischer",
     "profession": "sportiv",
-    "role": "Sportiv · INTJ",
+    "role": "Sports · INTJ",
     "mbti": "INTJ",
     "avatar": "⚽",
     "axes": {
@@ -2558,7 +7088,7 @@ export const NOTABLE_FIGURES = [
     "id": "neymar_jr",
     "name": "Neymar Jr",
     "profession": "sportiv",
-    "role": "Sportiv · ESFP",
+    "role": "Sports · ESFP",
     "mbti": "ESFP",
     "avatar": "⚽",
     "axes": {
@@ -2588,7 +7118,7 @@ export const NOTABLE_FIGURES = [
     "id": "kylian_mbapp",
     "name": "Kylian Mbappé",
     "profession": "sportiv",
-    "role": "Sportiv · ESTP",
+    "role": "Sports · ESTP",
     "mbti": "ESTP",
     "avatar": "⚽",
     "axes": {
@@ -2618,7 +7148,7 @@ export const NOTABLE_FIGURES = [
     "id": "magnus_carlsen",
     "name": "Magnus Carlsen",
     "profession": "sportiv",
-    "role": "Sportiv · ISTP",
+    "role": "Sports · ISTP",
     "mbti": "ISTP",
     "avatar": "⚽",
     "axes": {
@@ -2648,7 +7178,7 @@ export const NOTABLE_FIGURES = [
     "id": "andrew_tate",
     "name": "Andrew Tate",
     "profession": "artist",
-    "role": "Artist & Actor · ESTP",
+    "role": "Artist · ESTP",
     "mbti": "ESTP",
     "avatar": "🎨",
     "axes": {
@@ -2677,8 +7207,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "robert_kiyosaki",
     "name": "Robert Kiyosaki",
-    "profession": "writer",
-    "role": "Scriitor · ESTP",
+    "profession": "artist",
+    "role": "Artist · ESTP",
     "mbti": "ESTP",
     "avatar": "✍️",
     "axes": {
@@ -2708,7 +7238,7 @@ export const NOTABLE_FIGURES = [
     "id": "larry_page",
     "name": "Larry Page",
     "profession": "entrepreneur",
-    "role": "Antreprenor & Lider · INTP",
+    "role": "Business · INTP",
     "mbti": "INTP",
     "avatar": "💼",
     "axes": {
@@ -2738,7 +7268,7 @@ export const NOTABLE_FIGURES = [
     "id": "tim_cook",
     "name": "Tim Cook",
     "profession": "entrepreneur",
-    "role": "Antreprenor & Lider · ISTJ",
+    "role": "Business · ISTJ",
     "mbti": "ISTJ",
     "avatar": "💼",
     "axes": {
@@ -2768,7 +7298,7 @@ export const NOTABLE_FIGURES = [
     "id": "george_soros",
     "name": "George Soros",
     "profession": "entrepreneur",
-    "role": "Antreprenor & Lider · ENTJ",
+    "role": "Business · ENTJ",
     "mbti": "ENTJ",
     "avatar": "💼",
     "axes": {
@@ -2798,7 +7328,7 @@ export const NOTABLE_FIGURES = [
     "id": "sam_altman",
     "name": "Sam Altman",
     "profession": "entrepreneur",
-    "role": "Antreprenor & Lider · INTJ",
+    "role": "Business · INTJ",
     "mbti": "INTJ",
     "avatar": "💼",
     "axes": {
@@ -2828,7 +7358,7 @@ export const NOTABLE_FIGURES = [
     "id": "jeff_bezos",
     "name": "Jeff Bezos",
     "profession": "entrepreneur",
-    "role": "Antreprenor & Lider · ISTJ",
+    "role": "Business · ISTJ",
     "mbti": "ISTJ",
     "avatar": "💼",
     "axes": {
@@ -2858,7 +7388,7 @@ export const NOTABLE_FIGURES = [
     "id": "steve_jobs",
     "name": "Steve Jobs",
     "profession": "entrepreneur",
-    "role": "Antreprenor & Lider · ENTJ",
+    "role": "Business · ENTJ",
     "mbti": "ENTJ",
     "avatar": "💼",
     "axes": {
@@ -2888,7 +7418,7 @@ export const NOTABLE_FIGURES = [
     "id": "bill_gates",
     "name": "Bill Gates",
     "profession": "entrepreneur",
-    "role": "Antreprenor & Lider · INTP",
+    "role": "Business · INTP",
     "mbti": "INTP",
     "avatar": "💼",
     "axes": {
@@ -2918,7 +7448,7 @@ export const NOTABLE_FIGURES = [
     "id": "mark_zuckerberg",
     "name": "Mark Zuckerberg",
     "profession": "entrepreneur",
-    "role": "Antreprenor & Lider · INTJ",
+    "role": "Business · INTJ",
     "mbti": "INTJ",
     "avatar": "💼",
     "axes": {
@@ -2948,7 +7478,7 @@ export const NOTABLE_FIGURES = [
     "id": "erwin_rommel",
     "name": "Erwin Rommel",
     "profession": "politician",
-    "role": "Lider & Politician · ISTP",
+    "role": "Historical · ISTP",
     "mbti": "ISTP",
     "avatar": "👑",
     "axes": {
@@ -2978,7 +7508,7 @@ export const NOTABLE_FIGURES = [
     "id": "margaret_thatcher",
     "name": "Margaret Thatcher",
     "profession": "politician",
-    "role": "Lider & Politician · ENTJ",
+    "role": "Historical · ENTJ",
     "mbti": "ENTJ",
     "avatar": "👑",
     "axes": {
@@ -3008,7 +7538,7 @@ export const NOTABLE_FIGURES = [
     "id": "mohandas_mahatma_gandhi",
     "name": "Mohandas Mahatma Gandhi",
     "profession": "politician",
-    "role": "Lider & Politician · INFJ",
+    "role": "Historical · INFJ",
     "mbti": "INFJ",
     "avatar": "👑",
     "axes": {
@@ -3038,7 +7568,7 @@ export const NOTABLE_FIGURES = [
     "id": "winston_churchill",
     "name": "Winston Churchill",
     "profession": "politician",
-    "role": "Lider & Politician · ESTP",
+    "role": "Historical · ESTP",
     "mbti": "ESTP",
     "avatar": "👑",
     "axes": {
@@ -3068,7 +7598,7 @@ export const NOTABLE_FIGURES = [
     "id": "heinrich_himmler",
     "name": "Heinrich Himmler",
     "profession": "politician",
-    "role": "Lider & Politician · ISTJ",
+    "role": "Historical · ISTJ",
     "mbti": "ISTJ",
     "avatar": "👑",
     "axes": {
@@ -3098,7 +7628,7 @@ export const NOTABLE_FIGURES = [
     "id": "grigori_rasputin",
     "name": "Grigori Rasputin",
     "profession": "religious",
-    "role": "Figură Spirituală · ENTP",
+    "role": "Religion · ENTP",
     "mbti": "ENTP",
     "avatar": "🕊️",
     "axes": {
@@ -3128,7 +7658,7 @@ export const NOTABLE_FIGURES = [
     "id": "vladimir_lenin",
     "name": "Vladimir Lenin",
     "profession": "politician",
-    "role": "Lider & Politician · INTJ",
+    "role": "Historical · INTJ",
     "mbti": "INTJ",
     "avatar": "👑",
     "axes": {
@@ -3158,7 +7688,7 @@ export const NOTABLE_FIGURES = [
     "id": "saddam_hussein",
     "name": "Saddam Hussein",
     "profession": "politician",
-    "role": "Lider & Politician · ESTJ",
+    "role": "Historical · ESTJ",
     "mbti": "ESTJ",
     "avatar": "👑",
     "axes": {
@@ -3188,7 +7718,7 @@ export const NOTABLE_FIGURES = [
     "id": "genghis_khan",
     "name": "Genghis Khan",
     "profession": "politician",
-    "role": "Lider & Politician · ENTJ",
+    "role": "Historical · ENTJ",
     "mbti": "ENTJ",
     "avatar": "👑",
     "axes": {
@@ -3218,7 +7748,7 @@ export const NOTABLE_FIGURES = [
     "id": "charles_de_gaulle",
     "name": "Charles de Gaulle",
     "profession": "politician",
-    "role": "Lider & Politician · INTJ",
+    "role": "Historical · INTJ",
     "mbti": "INTJ",
     "avatar": "👑",
     "axes": {
@@ -3248,7 +7778,7 @@ export const NOTABLE_FIGURES = [
     "id": "julius_caesar",
     "name": "Julius Caesar",
     "profession": "politician",
-    "role": "Lider & Politician · ENTJ",
+    "role": "Historical · ENTJ",
     "mbti": "ENTJ",
     "avatar": "👑",
     "axes": {
@@ -3278,7 +7808,7 @@ export const NOTABLE_FIGURES = [
     "id": "nero",
     "name": "Nero",
     "profession": "politician",
-    "role": "Lider & Politician · ESFP",
+    "role": "Historical · ESFP",
     "mbti": "ESFP",
     "avatar": "👑",
     "axes": {
@@ -3308,7 +7838,7 @@ export const NOTABLE_FIGURES = [
     "id": "cicero",
     "name": "Cicero",
     "profession": "politician",
-    "role": "Lider & Politician · ENTJ",
+    "role": "Historical · ENTJ",
     "mbti": "ENTJ",
     "avatar": "👑",
     "axes": {
@@ -3338,7 +7868,7 @@ export const NOTABLE_FIGURES = [
     "id": "mehmed_the_conqueror",
     "name": "Mehmed the Conqueror",
     "profession": "politician",
-    "role": "Lider & Politician · INTJ",
+    "role": "Historical · INTJ",
     "mbti": "INTJ",
     "avatar": "👑",
     "axes": {
@@ -3368,7 +7898,7 @@ export const NOTABLE_FIGURES = [
     "id": "nelson_mandela",
     "name": "Nelson Mandela",
     "profession": "politician",
-    "role": "Lider & Politician · INFJ",
+    "role": "Historical · INFJ",
     "mbti": "INFJ",
     "avatar": "👑",
     "axes": {
@@ -3398,7 +7928,7 @@ export const NOTABLE_FIGURES = [
     "id": "alexander_hamilton",
     "name": "Alexander Hamilton",
     "profession": "politician",
-    "role": "Lider & Politician · ENTJ",
+    "role": "Historical · ENTJ",
     "mbti": "ENTJ",
     "avatar": "👑",
     "axes": {
@@ -3428,7 +7958,7 @@ export const NOTABLE_FIGURES = [
     "id": "ernesto_che_guevara",
     "name": "Ernesto Che Guevara",
     "profession": "politician",
-    "role": "Lider & Politician · ENFP",
+    "role": "Historical · ENFP",
     "mbti": "ENFP",
     "avatar": "👑",
     "axes": {
@@ -3458,7 +7988,7 @@ export const NOTABLE_FIGURES = [
     "id": "christopher_columbus",
     "name": "Christopher Columbus",
     "profession": "scientist",
-    "role": "Om de știință · ENTP",
+    "role": "Science · ENTP",
     "mbti": "ENTP",
     "avatar": "⚛️",
     "axes": {
@@ -3488,7 +8018,7 @@ export const NOTABLE_FIGURES = [
     "id": "augustus_octavian",
     "name": "Augustus Octavian",
     "profession": "politician",
-    "role": "Lider & Politician · INTJ",
+    "role": "Historical · INTJ",
     "mbti": "INTJ",
     "avatar": "👑",
     "axes": {
@@ -3518,7 +8048,7 @@ export const NOTABLE_FIGURES = [
     "id": "martin_luther_king_jr",
     "name": "Martin Luther King Jr.",
     "profession": "politician",
-    "role": "Lider & Politician · ENFJ",
+    "role": "Historical · ENFJ",
     "mbti": "ENFJ",
     "avatar": "👑",
     "axes": {
@@ -3548,7 +8078,7 @@ export const NOTABLE_FIGURES = [
     "id": "alexander_the_great",
     "name": "Alexander the Great",
     "profession": "politician",
-    "role": "Lider & Politician · ESTP",
+    "role": "Historical · ESTP",
     "mbti": "ESTP",
     "avatar": "👑",
     "axes": {
@@ -3578,7 +8108,7 @@ export const NOTABLE_FIGURES = [
     "id": "napol_on_bonaparte",
     "name": "Napoléon Bonaparte",
     "profession": "politician",
-    "role": "Lider & Politician · ENTJ",
+    "role": "Historical · ENTJ",
     "mbti": "ENTJ",
     "avatar": "👑",
     "axes": {
@@ -3608,7 +8138,7 @@ export const NOTABLE_FIGURES = [
     "id": "joseph_stalin",
     "name": "Joseph Stalin",
     "profession": "politician",
-    "role": "Lider & Politician · ENTJ",
+    "role": "Historical · ENTJ",
     "mbti": "ENTJ",
     "avatar": "👑",
     "axes": {
@@ -3638,7 +8168,7 @@ export const NOTABLE_FIGURES = [
     "id": "solomon",
     "name": "Solomon",
     "profession": "politician",
-    "role": "Lider & Politician · INTJ",
+    "role": "Historical · INTJ",
     "mbti": "INTJ",
     "avatar": "👑",
     "axes": {
@@ -3668,7 +8198,7 @@ export const NOTABLE_FIGURES = [
     "id": "david",
     "name": "David",
     "profession": "politician",
-    "role": "Lider & Politician · ENFJ",
+    "role": "Historical · ENFJ",
     "mbti": "ENFJ",
     "avatar": "👑",
     "axes": {
@@ -3698,7 +8228,7 @@ export const NOTABLE_FIGURES = [
     "id": "adam",
     "name": "Adam",
     "profession": "religious",
-    "role": "Figură Spirituală · ISFJ",
+    "role": "Religion · ISFJ",
     "mbti": "ISFJ",
     "avatar": "🕊️",
     "axes": {
@@ -3728,7 +8258,7 @@ export const NOTABLE_FIGURES = [
     "id": "john_the_apostle",
     "name": "John the Apostle",
     "profession": "religious",
-    "role": "Figură Spirituală · INFJ",
+    "role": "Religion · INFJ",
     "mbti": "INFJ",
     "avatar": "🕊️",
     "axes": {
@@ -3758,7 +8288,7 @@ export const NOTABLE_FIGURES = [
     "id": "cain",
     "name": "Cain",
     "profession": "sportiv",
-    "role": "Sportiv · ESTP",
+    "role": "Sports · ESTP",
     "mbti": "ESTP",
     "avatar": "⚽",
     "axes": {
@@ -3788,7 +8318,7 @@ export const NOTABLE_FIGURES = [
     "id": "mary_mother_of_jesus",
     "name": "Mary Mother of Jesus",
     "profession": "religious",
-    "role": "Figură Spirituală · INFJ",
+    "role": "Religion · INFJ",
     "mbti": "INFJ",
     "avatar": "🕊️",
     "axes": {
@@ -3818,7 +8348,7 @@ export const NOTABLE_FIGURES = [
     "id": "lucifer",
     "name": "Lucifer",
     "profession": "artist",
-    "role": "Artist & Actor · ENTP",
+    "role": "Artist · ENTP",
     "mbti": "ENTP",
     "avatar": "🎨",
     "axes": {
@@ -3848,7 +8378,7 @@ export const NOTABLE_FIGURES = [
     "id": "odin",
     "name": "Odin",
     "profession": "politician",
-    "role": "Lider & Politician · INTJ",
+    "role": "Historical · INTJ",
     "mbti": "INTJ",
     "avatar": "👑",
     "axes": {
@@ -3878,7 +8408,7 @@ export const NOTABLE_FIGURES = [
     "id": "thor",
     "name": "Thor",
     "profession": "sportiv",
-    "role": "Sportiv · ESTP",
+    "role": "Sports · ESTP",
     "mbti": "ESTP",
     "avatar": "⚽",
     "axes": {
@@ -3908,7 +8438,7 @@ export const NOTABLE_FIGURES = [
     "id": "loki",
     "name": "Loki",
     "profession": "artist",
-    "role": "Artist & Actor · ENTP",
+    "role": "Artist · ENTP",
     "mbti": "ENTP",
     "avatar": "🎨",
     "axes": {
@@ -3938,7 +8468,7 @@ export const NOTABLE_FIGURES = [
     "id": "medusa",
     "name": "Medusa",
     "profession": "religious",
-    "role": "Figură Spirituală · INFJ",
+    "role": "Religion · INFJ",
     "mbti": "INFJ",
     "avatar": "🕊️",
     "axes": {
@@ -3968,7 +8498,7 @@ export const NOTABLE_FIGURES = [
     "id": "medea",
     "name": "Medea",
     "profession": "politician",
-    "role": "Lider & Politician · ENFJ",
+    "role": "Historical · ENFJ",
     "mbti": "ENFJ",
     "avatar": "👑",
     "axes": {
@@ -3998,7 +8528,7 @@ export const NOTABLE_FIGURES = [
     "id": "cerberus",
     "name": "Cerberus",
     "profession": "politician",
-    "role": "Lider & Politician · ESTJ",
+    "role": "Historical · ESTJ",
     "mbti": "ESTJ",
     "avatar": "👑",
     "axes": {
@@ -4028,7 +8558,7 @@ export const NOTABLE_FIGURES = [
     "id": "pandora",
     "name": "Pandora",
     "profession": "artist",
-    "role": "Artist & Actor · INFP",
+    "role": "Artist · INFP",
     "mbti": "INFP",
     "avatar": "🎨",
     "axes": {
@@ -4058,7 +8588,7 @@ export const NOTABLE_FIGURES = [
     "id": "poseidon",
     "name": "Poseidon",
     "profession": "politician",
-    "role": "Lider & Politician · ESTJ",
+    "role": "Historical · ESTJ",
     "mbti": "ESTJ",
     "avatar": "👑",
     "axes": {
@@ -4088,7 +8618,7 @@ export const NOTABLE_FIGURES = [
     "id": "14th_dalai_lama",
     "name": "14th Dalai Lama",
     "profession": "religious",
-    "role": "Figură Spirituală · INFP",
+    "role": "Religion · INFP",
     "mbti": "INFP",
     "avatar": "🕊️",
     "axes": {
@@ -4118,7 +8648,7 @@ export const NOTABLE_FIGURES = [
     "id": "pope_francis",
     "name": "Pope Francis",
     "profession": "religious",
-    "role": "Figură Spirituală · ESFJ",
+    "role": "Religion · ESFJ",
     "mbti": "ESFJ",
     "avatar": "🕊️",
     "axes": {
@@ -4148,7 +8678,7 @@ export const NOTABLE_FIGURES = [
     "id": "artemis",
     "name": "Artemis",
     "profession": "sportiv",
-    "role": "Sportiv · ISTP",
+    "role": "Sports · ISTP",
     "mbti": "ISTP",
     "avatar": "⚽",
     "axes": {
@@ -4178,7 +8708,7 @@ export const NOTABLE_FIGURES = [
     "id": "saint_mother_teresa",
     "name": "Saint Mother Teresa",
     "profession": "religious",
-    "role": "Figură Spirituală · ISFJ",
+    "role": "Religion · ISFJ",
     "mbti": "ISFJ",
     "avatar": "🕊️",
     "axes": {
@@ -4208,7 +8738,7 @@ export const NOTABLE_FIGURES = [
     "id": "lilith",
     "name": "Lilith",
     "profession": "artist",
-    "role": "Artist & Actor · INTJ",
+    "role": "Artist · INTJ",
     "mbti": "INTJ",
     "avatar": "🎨",
     "axes": {
@@ -4237,8 +8767,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "apollo",
     "name": "Apollo",
-    "profession": "musician",
-    "role": "Muzician · ENFP",
+    "profession": "artist",
+    "role": "Artist · ENFP",
     "mbti": "ENFP",
     "avatar": "🎵",
     "axes": {
@@ -4268,7 +8798,7 @@ export const NOTABLE_FIGURES = [
     "id": "persephone",
     "name": "Persephone",
     "profession": "artist",
-    "role": "Artist & Actor · INFP",
+    "role": "Artist · INFP",
     "mbti": "INFP",
     "avatar": "🎨",
     "axes": {
@@ -4298,7 +8828,7 @@ export const NOTABLE_FIGURES = [
     "id": "achilles",
     "name": "Achilles",
     "profession": "sportiv",
-    "role": "Sportiv · ISFP",
+    "role": "Sports · ISFP",
     "mbti": "ISFP",
     "avatar": "⚽",
     "axes": {
@@ -4328,7 +8858,7 @@ export const NOTABLE_FIGURES = [
     "id": "aphrodite",
     "name": "Aphrodite",
     "profession": "artist",
-    "role": "Artist & Actor · ESFP",
+    "role": "Artist · ESFP",
     "mbti": "ESFP",
     "avatar": "🎨",
     "axes": {
@@ -4358,7 +8888,7 @@ export const NOTABLE_FIGURES = [
     "id": "siddhartha_gautama_buddha",
     "name": "Siddhartha Gautama Buddha",
     "profession": "religious",
-    "role": "Figură Spirituală · INFJ",
+    "role": "Religion · INFJ",
     "mbti": "INFJ",
     "avatar": "🕊️",
     "axes": {
@@ -4388,7 +8918,7 @@ export const NOTABLE_FIGURES = [
     "id": "hades",
     "name": "Hades",
     "profession": "politician",
-    "role": "Lider & Politician · INTJ",
+    "role": "Historical · INTJ",
     "mbti": "INTJ",
     "avatar": "👑",
     "axes": {
@@ -4418,7 +8948,7 @@ export const NOTABLE_FIGURES = [
     "id": "pedro_s_nchez",
     "name": "Pedro Sánchez",
     "profession": "politician",
-    "role": "Lider & Politician · ESFJ",
+    "role": "Historical · ESFJ",
     "mbti": "ESFJ",
     "avatar": "👑",
     "axes": {
@@ -4448,7 +8978,7 @@ export const NOTABLE_FIGURES = [
     "id": "richard_nixon",
     "name": "Richard Nixon",
     "profession": "politician",
-    "role": "Lider & Politician · ISTJ",
+    "role": "Historical · ISTJ",
     "mbti": "ISTJ",
     "avatar": "👑",
     "axes": {
@@ -4478,7 +9008,7 @@ export const NOTABLE_FIGURES = [
     "id": "ronald_reagan",
     "name": "Ronald Reagan",
     "profession": "politician",
-    "role": "Lider & Politician · ESFP",
+    "role": "Historical · ESFP",
     "mbti": "ESFP",
     "avatar": "👑",
     "axes": {
@@ -4508,7 +9038,7 @@ export const NOTABLE_FIGURES = [
     "id": "theodore_roosevelt",
     "name": "Theodore Roosevelt",
     "profession": "politician",
-    "role": "Lider & Politician · ESTP",
+    "role": "Historical · ESTP",
     "mbti": "ESTP",
     "avatar": "👑",
     "axes": {
@@ -4538,7 +9068,7 @@ export const NOTABLE_FIGURES = [
     "id": "benjamin_netanyahu",
     "name": "Benjamin Netanyahu",
     "profession": "politician",
-    "role": "Lider & Politician · ENTJ",
+    "role": "Historical · ENTJ",
     "mbti": "ENTJ",
     "avatar": "👑",
     "axes": {
@@ -4568,7 +9098,7 @@ export const NOTABLE_FIGURES = [
     "id": "bill_clinton",
     "name": "Bill Clinton",
     "profession": "politician",
-    "role": "Lider & Politician · ESFP",
+    "role": "Historical · ESFP",
     "mbti": "ESFP",
     "avatar": "👑",
     "axes": {
@@ -4598,7 +9128,7 @@ export const NOTABLE_FIGURES = [
     "id": "george_w_bush",
     "name": "George W. Bush",
     "profession": "politician",
-    "role": "Lider & Politician · ESTP",
+    "role": "Historical · ESTP",
     "mbti": "ESTP",
     "avatar": "👑",
     "axes": {
@@ -4628,7 +9158,7 @@ export const NOTABLE_FIGURES = [
     "id": "hillary_clinton",
     "name": "Hillary Clinton",
     "profession": "politician",
-    "role": "Lider & Politician · ESTJ",
+    "role": "Historical · ESTJ",
     "mbti": "ESTJ",
     "avatar": "👑",
     "axes": {
@@ -4658,7 +9188,7 @@ export const NOTABLE_FIGURES = [
     "id": "john_f_kennedy",
     "name": "John F. Kennedy",
     "profession": "politician",
-    "role": "Lider & Politician · ESFP",
+    "role": "Historical · ESFP",
     "mbti": "ESFP",
     "avatar": "👑",
     "axes": {
@@ -4688,7 +9218,7 @@ export const NOTABLE_FIGURES = [
     "id": "alexandria_ocasio_cortez",
     "name": "Alexandria Ocasio-Cortez",
     "profession": "politician",
-    "role": "Lider & Politician · ENFJ",
+    "role": "Historical · ENFJ",
     "mbti": "ENFJ",
     "avatar": "👑",
     "axes": {
@@ -4718,7 +9248,7 @@ export const NOTABLE_FIGURES = [
     "id": "kamala_harris",
     "name": "Kamala Harris",
     "profession": "politician",
-    "role": "Lider & Politician · ESTJ",
+    "role": "Historical · ESTJ",
     "mbti": "ESTJ",
     "avatar": "👑",
     "axes": {
@@ -4748,7 +9278,7 @@ export const NOTABLE_FIGURES = [
     "id": "abraham_lincoln",
     "name": "Abraham Lincoln",
     "profession": "politician",
-    "role": "Lider & Politician · INTP",
+    "role": "Historical · INTP",
     "mbti": "INTP",
     "avatar": "👑",
     "axes": {
@@ -4778,7 +9308,7 @@ export const NOTABLE_FIGURES = [
     "id": "kim_jong_un",
     "name": "Kim Jong-un",
     "profession": "politician",
-    "role": "Lider & Politician · ESTJ",
+    "role": "Historical · ESTJ",
     "mbti": "ESTJ",
     "avatar": "👑",
     "axes": {
@@ -4808,7 +9338,7 @@ export const NOTABLE_FIGURES = [
     "id": "recep_tayyip_erdo_an",
     "name": "Recep Tayyip Erdoğan",
     "profession": "politician",
-    "role": "Lider & Politician · ESTJ",
+    "role": "Historical · ESTJ",
     "mbti": "ESTJ",
     "avatar": "👑",
     "axes": {
@@ -4838,7 +9368,7 @@ export const NOTABLE_FIGURES = [
     "id": "joe_biden",
     "name": "Joe Biden",
     "profession": "politician",
-    "role": "Lider & Politician · ESFJ",
+    "role": "Historical · ESFJ",
     "mbti": "ESFJ",
     "avatar": "👑",
     "axes": {
@@ -4868,7 +9398,7 @@ export const NOTABLE_FIGURES = [
     "id": "zohran_mamdani",
     "name": "Zohran Mamdani",
     "profession": "politician",
-    "role": "Lider & Politician · ENFJ",
+    "role": "Historical · ENFJ",
     "mbti": "ENFJ",
     "avatar": "👑",
     "axes": {
@@ -4898,7 +9428,7 @@ export const NOTABLE_FIGURES = [
     "id": "boris_johnson",
     "name": "Boris Johnson",
     "profession": "politician",
-    "role": "Lider & Politician · ENTP",
+    "role": "Historical · ENTP",
     "mbti": "ENTP",
     "avatar": "👑",
     "axes": {
@@ -4928,7 +9458,7 @@ export const NOTABLE_FIGURES = [
     "id": "vladimir_putin",
     "name": "Vladimir Putin",
     "profession": "politician",
-    "role": "Lider & Politician · ISTP",
+    "role": "Historical · ISTP",
     "mbti": "ISTP",
     "avatar": "👑",
     "axes": {
@@ -4958,7 +9488,7 @@ export const NOTABLE_FIGURES = [
     "id": "ben_shapiro",
     "name": "Ben Shapiro",
     "profession": "politician",
-    "role": "Lider & Politician · ESTJ",
+    "role": "Historical · ESTJ",
     "mbti": "ESTJ",
     "avatar": "👑",
     "axes": {
@@ -4988,7 +9518,7 @@ export const NOTABLE_FIGURES = [
     "id": "donald_trump",
     "name": "Donald Trump",
     "profession": "politician",
-    "role": "Lider & Politician · ESTP",
+    "role": "Historical · ESTP",
     "mbti": "ESTP",
     "avatar": "👑",
     "axes": {
@@ -5017,8 +9547,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "pitbull",
     "name": "Pitbull",
-    "profession": "musician",
-    "role": "Muzician · ESTJ",
+    "profession": "artist",
+    "role": "Artist · ESTJ",
     "mbti": "ESTJ",
     "avatar": "🎵",
     "axes": {
@@ -5048,7 +9578,7 @@ export const NOTABLE_FIGURES = [
     "id": "emma_watson",
     "name": "Emma Watson",
     "profession": "artist",
-    "role": "Artist & Actor · ESTJ",
+    "role": "Artist · ESTJ",
     "mbti": "ESTJ",
     "avatar": "🎨",
     "axes": {
@@ -5078,7 +9608,7 @@ export const NOTABLE_FIGURES = [
     "id": "mike_tyson",
     "name": "Mike Tyson",
     "profession": "sportiv",
-    "role": "Sportiv · ISTP",
+    "role": "Sports · ISTP",
     "mbti": "ISTP",
     "avatar": "⚽",
     "axes": {
@@ -5107,8 +9637,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "lorde",
     "name": "Lorde",
-    "profession": "musician",
-    "role": "Muzician · ISFP",
+    "profession": "artist",
+    "role": "Artist · ISFP",
     "mbti": "ISFP",
     "avatar": "🎵",
     "axes": {
@@ -5137,8 +9667,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "rihanna",
     "name": "Rihanna",
-    "profession": "musician",
-    "role": "Muzician · ISFP",
+    "profession": "artist",
+    "role": "Artist · ISFP",
     "mbti": "ISFP",
     "avatar": "🎵",
     "axes": {
@@ -5168,7 +9698,7 @@ export const NOTABLE_FIGURES = [
     "id": "marilyn_monroe",
     "name": "Marilyn Monroe",
     "profession": "artist",
-    "role": "Artist & Actor · ISFP",
+    "role": "Artist · ISFP",
     "mbti": "ISFP",
     "avatar": "🎨",
     "axes": {
@@ -5198,7 +9728,7 @@ export const NOTABLE_FIGURES = [
     "id": "megan_fox",
     "name": "Megan Fox",
     "profession": "artist",
-    "role": "Artist & Actor · ISTP",
+    "role": "Artist · ISTP",
     "mbti": "ISTP",
     "avatar": "🎨",
     "axes": {
@@ -5228,7 +9758,7 @@ export const NOTABLE_FIGURES = [
     "id": "denzel_washington",
     "name": "Denzel Washington",
     "profession": "artist",
-    "role": "Artist & Actor · ESTJ",
+    "role": "Artist · ESTJ",
     "mbti": "ESTJ",
     "avatar": "🎨",
     "axes": {
@@ -5258,7 +9788,7 @@ export const NOTABLE_FIGURES = [
     "id": "matthew_mcconaughey",
     "name": "Matthew McConaughey",
     "profession": "artist",
-    "role": "Artist & Actor · ENFJ",
+    "role": "Artist · ENFJ",
     "mbti": "ENFJ",
     "avatar": "🎨",
     "axes": {
@@ -5287,8 +9817,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "johann_wolfgang_von_goethe",
     "name": "Johann Wolfgang von Goethe",
-    "profession": "writer",
-    "role": "Scriitor · ENFJ",
+    "profession": "artist",
+    "role": "Artist · ENFJ",
     "mbti": "ENFJ",
     "avatar": "✍️",
     "axes": {
@@ -5318,7 +9848,7 @@ export const NOTABLE_FIGURES = [
     "id": "luigi_mangione",
     "name": "Luigi Mangione",
     "profession": "politician",
-    "role": "Lider & Politician · ENTJ",
+    "role": "Historical · ENTJ",
     "mbti": "ENTJ",
     "avatar": "👑",
     "axes": {
@@ -5347,8 +9877,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "harry_styles",
     "name": "Harry Styles",
-    "profession": "musician",
-    "role": "Muzician · ENFJ",
+    "profession": "artist",
+    "role": "Artist · ENFJ",
     "mbti": "ENFJ",
     "avatar": "🎵",
     "axes": {
@@ -5377,8 +9907,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "joseph_haydn",
     "name": "Joseph Haydn",
-    "profession": "musician",
-    "role": "Muzician · ENFP",
+    "profession": "artist",
+    "role": "Artist · ENFP",
     "mbti": "ENFP",
     "avatar": "🎵",
     "axes": {
@@ -5408,7 +9938,7 @@ export const NOTABLE_FIGURES = [
     "id": "steve_harvey",
     "name": "Steve Harvey",
     "profession": "artist",
-    "role": "Artist & Actor · ENFJ",
+    "role": "Artist · ENFJ",
     "mbti": "ENFJ",
     "avatar": "🎨",
     "axes": {
@@ -5438,7 +9968,7 @@ export const NOTABLE_FIGURES = [
     "id": "chris_evans",
     "name": "Chris Evans",
     "profession": "artist",
-    "role": "Artist & Actor · ESFJ",
+    "role": "Artist · ESFJ",
     "mbti": "ESFJ",
     "avatar": "🎨",
     "axes": {
@@ -5467,8 +9997,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "paul_mccartney",
     "name": "Paul McCartney",
-    "profession": "musician",
-    "role": "Muzician · ESFJ",
+    "profession": "artist",
+    "role": "Artist · ESFJ",
     "mbti": "ESFJ",
     "avatar": "🎵",
     "axes": {
@@ -5498,7 +10028,7 @@ export const NOTABLE_FIGURES = [
     "id": "pope_benedict_xvi",
     "name": "Pope Benedict XVI",
     "profession": "religious",
-    "role": "Figură Spirituală · ISTJ",
+    "role": "Religion · ISTJ",
     "mbti": "ISTJ",
     "avatar": "🕊️",
     "axes": {
@@ -5528,7 +10058,7 @@ export const NOTABLE_FIGURES = [
     "id": "friedrich_merz",
     "name": "Friedrich Merz",
     "profession": "politician",
-    "role": "Lider & Politician · ISTJ",
+    "role": "Historical · ISTJ",
     "mbti": "ISTJ",
     "avatar": "👑",
     "axes": {
@@ -5558,7 +10088,7 @@ export const NOTABLE_FIGURES = [
     "id": "george_h_w_bush",
     "name": "George H. W. Bush",
     "profession": "politician",
-    "role": "Lider & Politician · ISTJ",
+    "role": "Historical · ISTJ",
     "mbti": "ISTJ",
     "avatar": "👑",
     "axes": {
@@ -5588,7 +10118,7 @@ export const NOTABLE_FIGURES = [
     "id": "warren_buffett",
     "name": "Warren Buffett",
     "profession": "entrepreneur",
-    "role": "Antreprenor & Lider · ISTJ",
+    "role": "Business · ISTJ",
     "mbti": "ISTJ",
     "avatar": "💼",
     "axes": {
@@ -5618,7 +10148,7 @@ export const NOTABLE_FIGURES = [
     "id": "robert_de_niro",
     "name": "Robert de Niro",
     "profession": "artist",
-    "role": "Artist & Actor · ISTJ",
+    "role": "Artist · ISTJ",
     "mbti": "ISTJ",
     "avatar": "🎨",
     "axes": {
@@ -5648,7 +10178,7 @@ export const NOTABLE_FIGURES = [
     "id": "angela_merkel",
     "name": "Angela Merkel",
     "profession": "politician",
-    "role": "Lider & Politician · ISTJ",
+    "role": "Historical · ISTJ",
     "mbti": "ISTJ",
     "avatar": "👑",
     "axes": {
@@ -5678,7 +10208,7 @@ export const NOTABLE_FIGURES = [
     "id": "natalie_portman",
     "name": "Natalie Portman",
     "profession": "artist",
-    "role": "Artist & Actor · ISTJ",
+    "role": "Artist · ISTJ",
     "mbti": "ISTJ",
     "avatar": "🎨",
     "axes": {
@@ -5708,7 +10238,7 @@ export const NOTABLE_FIGURES = [
     "id": "chuck_norris",
     "name": "Chuck Norris",
     "profession": "sportiv",
-    "role": "Sportiv · ISTJ",
+    "role": "Sports · ISTJ",
     "mbti": "ISTJ",
     "avatar": "⚽",
     "axes": {
@@ -5738,7 +10268,7 @@ export const NOTABLE_FIGURES = [
     "id": "bruce_willis",
     "name": "Bruce Willis",
     "profession": "artist",
-    "role": "Artist & Actor · ISFJ",
+    "role": "Artist · ISFJ",
     "mbti": "ISFJ",
     "avatar": "🎨",
     "axes": {
@@ -5768,7 +10298,7 @@ export const NOTABLE_FIGURES = [
     "id": "mark_ruffalo",
     "name": "Mark Ruffalo",
     "profession": "artist",
-    "role": "Artist & Actor · ISFJ",
+    "role": "Artist · ISFJ",
     "mbti": "ISFJ",
     "avatar": "🎨",
     "axes": {
@@ -5797,8 +10327,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "shawn_mendes",
     "name": "Shawn Mendes",
-    "profession": "musician",
-    "role": "Muzician · ISFJ",
+    "profession": "artist",
+    "role": "Artist · ISFJ",
     "mbti": "ISFJ",
     "avatar": "🎵",
     "axes": {
@@ -5827,8 +10357,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "ed_sheeran",
     "name": "Ed Sheeran",
-    "profession": "musician",
-    "role": "Muzician · ISFJ",
+    "profession": "artist",
+    "role": "Artist · ISFJ",
     "mbti": "ISFJ",
     "avatar": "🎵",
     "axes": {
@@ -5857,8 +10387,8 @@ export const NOTABLE_FIGURES = [
   {
     "id": "snoop_dogg",
     "name": "Snoop Dogg",
-    "profession": "musician",
-    "role": "Muzician · ISTP",
+    "profession": "artist",
+    "role": "Artist · ISTP",
     "mbti": "ISTP",
     "avatar": "🎵",
     "axes": {
@@ -5886,10 +10416,17 @@ export const NOTABLE_FIGURES = [
   }
 ];
 
-import { FUNCTIONS_LIST } from "./functions.js";
+export const FUNCTIONS = ["Ne", "Ni", "Te", "Ti", "Fe", "Fi", "Se", "Si"];
 
-export const FUNCTIONS = FUNCTIONS_LIST;
-
+/**
+ * Calculates similarity percentage between user and a figure
+ * Combines 4-Axis Spectrum Distance (70%) and Cognitive Functions Alignment (30%)
+ *
+ * @param {Object} userScores - User's 8 cognitive function percentages { Ne, Ni, ... }
+ * @param {Object} userAxisScores - User's 4 MBTI axis scores { EI, NS, TF, JP }
+ * @param {Object} figure - Personality object from NOTABLE_FIGURES
+ * @returns {number} Compatibility percentage [0 - 100]
+ */
 export function calculateFigureSimilarity(userScores, userAxisScores, figure) {
   if (!figure) return 50;
 
@@ -5938,13 +10475,13 @@ export function calculateFigureSimilarity(userScores, userAxisScores, figure) {
   const avgFuncDiff = funcDiff / FUNCTIONS.length;
   const funcSimilarity = Math.max(0, Math.min(100, 100 - avgFuncDiff));
 
-  // 3. Integrated Similarity: 70% direct 4-axis scores + 30% cognitive functions
-  const finalScore = Math.round(0.70 * axisSimilarity + 0.30 * funcSimilarity);
-  return Math.max(0, Math.min(100, finalScore));
+  // Weighted blend: 70% axis alignment + 30% cognitive functions
+  const combined = Math.round(axisSimilarity * 0.70 + funcSimilarity * 0.30);
+  return Math.max(0, Math.min(100, combined));
 }
 
 /**
- * Returns Top 10 Similar and Top 10 Opposite Figures for the user
+ * Returns ranked similar and opposite personalities for the user
  *
  * @param {Object} userScores - User's 8 cognitive function percentages
  * @param {Object} userAxisScores - User's 4 MBTI axis scores
@@ -5969,8 +10506,8 @@ export function getRankedFigures(userScores, userAxisScores) {
 }
 
 export const FIGURE_CATEGORIES = {
-  musician: "Artist",
   artist: "Artist",
+  musician: "Artist",
   writer: "Artist",
   philosopher: "Philosophy",
   scientist: "Science",
