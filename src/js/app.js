@@ -170,7 +170,8 @@ class App {
     this.figuresDirSearch = "";
     this.figuresDirTemp = "all"; // 'all' | 'NT' | 'NF' | 'SJ' | 'SP'
     this.figuresDirMbti = "all"; // 'all' | 'INTJ' | ...
-    this.figuresDirSort = "name"; // 'similarity' | 'name' | 'mbti'
+    this.figuresDirSort = null; // 'similarity' | 'name' | 'mbti'
+    this.figuresSelectedFilters = new Set();
 
     // Apply saved theme
     document.documentElement.setAttribute("data-theme", this.state.theme);
@@ -1213,6 +1214,12 @@ class App {
       history.replaceState(null, "", fullResultsPath);
     }
 
+    // Persist scores for match comparison on figures directory
+    try {
+      this.state.lastUserResults = { percentages, axisScores };
+      localStorage.setItem('8func_last_user_results', JSON.stringify(this.state.lastUserResults));
+    } catch (e) {}
+
     // Primary 4-letter type is derived directly from the 4 axis dimensions!
     const topTypeData = MBTI_TYPES[derivedType] || MBTI_TYPES["INTJ"];
     const temp = getTypeTemperament(derivedType);
@@ -1747,7 +1754,7 @@ class App {
 
               <!-- Comparison Card (Image 2 style) -->
               <div class="comp-card-v2">
-                <div class="comp-v2-header">
+                <div class="comp-v2-header" id="comp-figure-header-trigger" style="cursor: pointer;" title="${lang === 'ro' ? 'Apasă pentru detalii complete' : 'Click to inspect spectrum'}" data-id="${currentComparisonFigure.id}">
                   ${currentComparisonFigure.photo ? `
                     <img class="comp-v2-avatar" src="${currentComparisonFigure.photo}" alt="${currentComparisonFigure.name}" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
                     <div class="comp-v2-avatar comp-v2-avatar-fallback" style="display:none; background:${currentFigTemp.color};">${currentComparisonFigure.avatar || currentComparisonFigure.name.charAt(0)}</div>
@@ -2014,16 +2021,33 @@ class App {
       });
     }
 
-    // Figure item click in Historical Figures list (Image 2 style)
+    // Clicking a figure in Notable Figures opens pop out modal
     document.querySelectorAll(".fig-list-item").forEach(item => {
       item.addEventListener("click", () => {
         const id = item.getAttribute("data-id");
         if (id) {
-          this.selectedFigureId = id;
-          this.renderResults();
-          const compSection = document.getElementById("comparar");
-          if (compSection) compSection.scrollIntoView({ behavior: "smooth" });
+          this.openFigureDetailModal(id, true);
         }
+      });
+    });
+
+    // Clicking Comparative Analysis figure header opens pop out modal
+    const compHeaderTrigger = document.getElementById("comp-figure-header-trigger");
+    if (compHeaderTrigger) {
+      compHeaderTrigger.addEventListener("click", () => {
+        const id = compHeaderTrigger.getAttribute("data-id");
+        if (id) {
+          this.openFigureDetailModal(id, true);
+        }
+      });
+    }
+
+    // Clicking figure dot in Comparative Analysis tracks opens pop out modal
+    document.querySelectorAll(".comp-v2-dot-fig").forEach(dot => {
+      dot.style.cursor = "pointer";
+      dot.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.openFigureDetailModal(currentComparisonFigure.id, true);
       });
     });
 
@@ -2287,7 +2311,7 @@ class App {
   renderFiguresDirectory() {
     const lang = this.state.lang || "ro";
 
-    // Check if user has test scores available
+    // Check if user has test scores available (from URL, state, or localStorage)
     let userPercentages = null;
     let userAxisScores = null;
     let hasUserScores = false;
@@ -2296,7 +2320,25 @@ class App {
       userPercentages = this.state.urlResultsScores.percentages;
       userAxisScores = this.state.urlResultsScores.axisScores;
       hasUserScores = true;
+    } else if (this.state.lastUserResults) {
+      userPercentages = this.state.lastUserResults.percentages;
+      userAxisScores = this.state.lastUserResults.axisScores;
+      hasUserScores = true;
     } else {
+      try {
+        const saved = localStorage.getItem('8func_last_user_results');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed && parsed.percentages && parsed.axisScores) {
+            userPercentages = parsed.percentages;
+            userAxisScores = parsed.axisScores;
+            hasUserScores = true;
+          }
+        }
+      } catch (e) {}
+    }
+
+    if (!hasUserScores) {
       const { percentages, axisScores, isComplete } = calculateScores(this.state.questions, this.state.answers);
       if (isComplete && Object.keys(this.state.answers).length >= this.state.questions.length) {
         userPercentages = percentages;
@@ -2305,7 +2347,7 @@ class App {
       }
     }
 
-    // Default sort
+    // Default sort: if scores exist and no manual sort selected, default to similarity (Match)
     const activeSort = this.figuresDirSort || (hasUserScores ? "similarity" : "name");
 
     // Map all figures with original 1-based index and similarity if scores exist
@@ -2331,32 +2373,34 @@ class App {
       });
     }
 
-    // 2. Quick filter (Functions, Axes, Temperaments, Types)
-    const activeCat = this.figuresFilterCategory || "all";
-    const activeVal = this.figuresFilterValue || "all";
+    // 2. Multi-Select Quick filters (Functions, Axes, Temperaments, Types) - Union (OR) logic
+    if (this.figuresSelectedFilters && this.figuresSelectedFilters.size > 0) {
+      const activeFilters = Array.from(this.figuresSelectedFilters).map(key => {
+        const idx = key.indexOf(":");
+        return { cat: key.slice(0, idx), val: key.slice(idx + 1) };
+      });
 
-    if (activeCat !== "all" && activeVal !== "all") {
-      if (activeCat === "function") {
-        const fn = activeVal.toLowerCase();
-        filtered = filtered.filter(f => {
-          const stack = (MBTI_TYPES[f.mbti]?.stack || []).map(s => s.toLowerCase());
-          return stack.slice(0, 2).includes(fn);
+      filtered = filtered.filter(f => {
+        const upperMbti = (f.mbti || "").toUpperCase();
+        const stack = (MBTI_TYPES[f.mbti]?.stack || []).map(s => s.toLowerCase());
+
+        return activeFilters.some(({ cat, val }) => {
+          if (cat === "function") {
+            return stack.slice(0, 2).includes(val.toLowerCase());
+          }
+          if (cat === "axis") {
+            return upperMbti.includes(val.toUpperCase());
+          }
+          if (cat === "temperament") {
+            const v = val.toUpperCase();
+            return upperMbti.includes(v.charAt(0)) && upperMbti.includes(v.charAt(1));
+          }
+          if (cat === "type") {
+            return upperMbti === val.toUpperCase();
+          }
+          return false;
         });
-      } else if (activeCat === "axis") {
-        const ax = activeVal.toUpperCase();
-        filtered = filtered.filter(f => (f.mbti || "").toUpperCase().includes(ax));
-      } else if (activeCat === "temperament") {
-        const temp = activeVal.toUpperCase();
-        const l1 = temp.charAt(0);
-        const l2 = temp.charAt(1);
-        filtered = filtered.filter(f => {
-          const m = (f.mbti || "").toUpperCase();
-          return m.includes(l1) && m.includes(l2);
-        });
-      } else if (activeCat === "type") {
-        const typ = activeVal.toUpperCase();
-        filtered = filtered.filter(f => (f.mbti || "").toUpperCase() === typ);
-      }
+      });
     }
 
     // 4. Sorting
@@ -2415,19 +2459,9 @@ class App {
         ${this.renderNavbar()}
         <main class="e-main">
           <div class="figures-dir-container">
-            <!-- Hero / Header -->
-            <section class="figures-dir-hero">
-              <span class="figures-dir-eyebrow">${t('figuresDirectoryEyebrow', {}, lang)}</span>
-              <h1 class="figures-dir-title">${t('figuresDirectoryTitle', {}, lang)}</h1>
-              <p class="figures-dir-lead">${t('figuresDirectoryLead', {}, lang)}</p>
-              <div class="figures-dir-badge-pill">
-                ${t('figuresDirectoryBadge', {}, lang)}
-              </div>
-            </section>
-
-            <!-- Sticky Controls Box -->
+            <!-- Controls Box (Hero eliminated per user request) -->
             <section class="figures-dir-controls">
-              <!-- Search Bar -->
+              <!-- Search Bar: No text, no emoji, only search symbol -->
               <div class="figures-search-box">
                 <svg class="figures-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="11" cy="11" r="8"></circle>
@@ -2438,7 +2472,7 @@ class App {
                   id="figures-dir-search-input" 
                   class="figures-dir-search-input" 
                   value="${this.figuresDirSearch || ''}" 
-                  placeholder="${t('searchFiguresPlaceholder', {}, lang)}" 
+                  placeholder="" 
                   autocomplete="off" 
                 />
                 ${this.figuresDirSearch ? `
@@ -2446,13 +2480,13 @@ class App {
                 ` : ''}
               </div>
 
-              <!-- Quick Filter Section (All Caps) -->
+              <!-- Quick Filter Section (All Caps, Multi-Select) -->
               <div class="figures-quick-filters">
                 <div class="figures-qf-header">
                   <span class="figures-qf-title">${lang === 'ro' ? 'FILTRE RAPIDE' : 'QUICK FILTER'}</span>
-                  ${activeVal !== 'all' ? `
+                  ${(this.figuresSelectedFilters && this.figuresSelectedFilters.size > 0) ? `
                     <button class="figures-qf-clear-btn" type="button" id="figures-qf-clear">
-                      ✕ ${lang === 'ro' ? 'RESETEAZĂ FILTRUL' : 'CLEAR FILTER'}
+                      ✕ ${lang === 'ro' ? 'RESETEAZĂ FILTRELE' : 'CLEAR FILTERS'} (${this.figuresSelectedFilters.size})
                     </button>
                   ` : ''}
                 </div>
@@ -2462,7 +2496,7 @@ class App {
                   <span class="figures-qf-label">FUNCTIONS:</span>
                   <div class="figures-qf-chips">
                     ${["NE", "NI", "SE", "SI", "TE", "TI", "FE", "FI"].map(fn => {
-                      const isChipActive = activeCat === "function" && activeVal === fn;
+                      const isChipActive = this.figuresSelectedFilters && this.figuresSelectedFilters.has(`function:${fn}`);
                       return `
                         <button 
                           class="figures-qf-chip ${isChipActive ? 'active' : ''}" 
@@ -2482,7 +2516,7 @@ class App {
                   <span class="figures-qf-label">AXES:</span>
                   <div class="figures-qf-chips">
                     ${["E", "I", "N", "S", "T", "F", "P", "J"].map(ax => {
-                      const isChipActive = activeCat === "axis" && activeVal === ax;
+                      const isChipActive = this.figuresSelectedFilters && this.figuresSelectedFilters.has(`axis:${ax}`);
                       return `
                         <button 
                           class="figures-qf-chip ${isChipActive ? 'active' : ''}" 
@@ -2502,7 +2536,7 @@ class App {
                   <span class="figures-qf-label">TEMPERAMENTS:</span>
                   <div class="figures-qf-chips">
                     ${["NT", "NF", "ST", "SF", "EJ", "EP", "IJ", "IP"].map(temp => {
-                      const isChipActive = activeCat === "temperament" && activeVal === temp;
+                      const isChipActive = this.figuresSelectedFilters && this.figuresSelectedFilters.has(`temperament:${temp}`);
                       return `
                         <button 
                           class="figures-qf-chip ${isChipActive ? 'active' : ''}" 
@@ -2527,7 +2561,7 @@ class App {
                       "ESTJ", "ISTJ", "ESFJ", "ISFJ", 
                       "ESTP", "ISTP", "ESFP", "ISFP"
                     ].map(type => {
-                      const isChipActive = activeCat === "type" && activeVal === type;
+                      const isChipActive = this.figuresSelectedFilters && this.figuresSelectedFilters.has(`type:${type}`);
                       return `
                         <button 
                           class="figures-qf-chip ${isChipActive ? 'active' : ''}" 
@@ -2631,8 +2665,7 @@ class App {
     if (resetBtn) {
       resetBtn.addEventListener("click", () => {
         this.figuresDirSearch = "";
-        this.figuresFilterCategory = "all";
-        this.figuresFilterValue = "all";
+        if (this.figuresSelectedFilters) this.figuresSelectedFilters.clear();
         this.figuresDirSort = hasUserScores ? "similarity" : "name";
         this.renderFiguresDirectory();
       });
@@ -2641,24 +2674,24 @@ class App {
     const qfClearBtn = document.getElementById("figures-qf-clear");
     if (qfClearBtn) {
       qfClearBtn.addEventListener("click", () => {
-        this.figuresFilterCategory = "all";
-        this.figuresFilterValue = "all";
+        if (this.figuresSelectedFilters) this.figuresSelectedFilters.clear();
         this.renderFiguresDirectory();
       });
     }
 
-    // Quick filter chips click handler (all caps)
+    // Quick filter chips click handler (multi-select union)
     document.querySelectorAll(".figures-qf-chip").forEach(chip => {
       chip.addEventListener("click", () => {
         const cat = chip.getAttribute("data-category");
         const val = chip.getAttribute("data-value");
-        if (this.figuresFilterCategory === cat && this.figuresFilterValue === val) {
-          // Toggle off
-          this.figuresFilterCategory = "all";
-          this.figuresFilterValue = "all";
+        const key = `${cat}:${val}`;
+        if (!this.figuresSelectedFilters) {
+          this.figuresSelectedFilters = new Set();
+        }
+        if (this.figuresSelectedFilters.has(key)) {
+          this.figuresSelectedFilters.delete(key);
         } else {
-          this.figuresFilterCategory = cat;
-          this.figuresFilterValue = val;
+          this.figuresSelectedFilters.add(key);
         }
         this.renderFiguresDirectory();
       });
@@ -2701,8 +2734,20 @@ class App {
     if (!fig) return;
 
     const lang = this.state.lang || "ro";
-    const modal = document.getElementById("figure-detail-modal");
-    if (!modal) return;
+    let modal = document.getElementById("figure-detail-modal");
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.className = "modal-overlay";
+      modal.id = "figure-detail-modal";
+      modal.setAttribute("role", "dialog");
+      modal.setAttribute("aria-modal", "true");
+      modal.setAttribute("aria-labelledby", "fig-modal-title");
+      modal.innerHTML = `<div class="modal-content fig-modal-content"></div>`;
+      document.body.appendChild(modal);
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) modal.classList.remove("active");
+      });
+    }
 
     const modalContent = modal.querySelector(".modal-content");
     if (!modalContent) return;
@@ -2713,7 +2758,7 @@ class App {
     const mbtiData = MBTI_TYPES[fig.mbti] || {};
     const stack = mbtiData.stack || [];
 
-    // Calculate similarity if user has scores
+    // Calculate similarity if user has scores (from URL, state, or localStorage)
     let userPercentages = null;
     let userAxisScores = null;
     let simPct = null;
@@ -2721,7 +2766,24 @@ class App {
       userPercentages = this.state.urlResultsScores.percentages;
       userAxisScores = this.state.urlResultsScores.axisScores;
       simPct = calculateFigureSimilarity(userPercentages, userAxisScores, fig);
+    } else if (this.state.lastUserResults) {
+      userPercentages = this.state.lastUserResults.percentages;
+      userAxisScores = this.state.lastUserResults.axisScores;
+      simPct = calculateFigureSimilarity(userPercentages, userAxisScores, fig);
     } else {
+      try {
+        const saved = localStorage.getItem('8func_last_user_results');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed && parsed.percentages && parsed.axisScores) {
+            userPercentages = parsed.percentages;
+            userAxisScores = parsed.axisScores;
+            simPct = calculateFigureSimilarity(userPercentages, userAxisScores, fig);
+          }
+        }
+      } catch (e) {}
+    }
+    if (simPct === null) {
       const { percentages, axisScores, isComplete } = calculateScores(this.state.questions, this.state.answers);
       if (isComplete && Object.keys(this.state.answers).length >= this.state.questions.length) {
         userPercentages = percentages;
@@ -2804,14 +2866,6 @@ class App {
       </div>
 
       <div class="fig-modal-body">
-        <!-- Quote / Description -->
-        <div class="fig-modal-quote-box">
-          <p class="fig-modal-quote">"${fig.quote || mbtiData.quote || mbtiData.description || ''}"</p>
-          <div class="fig-modal-mbti-summary">
-            <b>${mbtiData.title || fig.mbti}</b> — ${mbtiData.description || ''}
-          </div>
-        </div>
-
         <!-- 4 Spectrum Axes -->
         <div class="fig-modal-sec">
           <h4 class="fig-modal-sec-title">${lang === 'ro' ? '4 Axe' : '4 Axis'}</h4>
@@ -2861,51 +2915,13 @@ class App {
           </div>
         </div>
       </div>
-
-      <div class="fig-modal-footer">
-        ${simPct !== null ? `
-          <button class="e-btn e-btn-primary" type="button" id="fig-modal-compare-btn">
-            <span>${t('compareWithYourScores', {}, lang)}</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-          </button>
-        ` : `
-          <button class="e-btn e-btn-primary" type="button" id="fig-modal-take-test-btn">
-            <span>${t('takeTestToCompare', {}, lang)}</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-          </button>
-        `}
-        <button class="e-btn e-btn-outline" type="button" id="fig-modal-close-footer-btn">
-          <span>${lang === 'ro' ? 'Închide' : 'Close'}</span>
-        </button>
-      </div>
     `;
 
     modal.classList.add("active");
 
     const closeHeaderBtn = document.getElementById("fig-modal-close-btn");
-    const closeFooterBtn = document.getElementById("fig-modal-close-footer-btn");
-    if (closeHeaderBtn) closeHeaderBtn.addEventListener("click", () => modal.classList.remove("active"));
-    if (closeFooterBtn) closeFooterBtn.addEventListener("click", () => modal.classList.remove("active"));
-
-    const compareBtn = document.getElementById("fig-modal-compare-btn");
-    if (compareBtn) {
-      compareBtn.addEventListener("click", () => {
-        modal.classList.remove("active");
-        this.selectedFigureId = fig.id;
-        this.state.showResults();
-        setTimeout(() => {
-          const compSec = document.getElementById("comparar");
-          if (compSec) compSec.scrollIntoView({ behavior: "smooth" });
-        }, 150);
-      });
-    }
-
-    const takeTestBtn = document.getElementById("fig-modal-take-test-btn");
-    if (takeTestBtn) {
-      takeTestBtn.addEventListener("click", () => {
-        modal.classList.remove("active");
-        this.state.showWelcome();
-      });
+    if (closeHeaderBtn) {
+      closeHeaderBtn.addEventListener("click", () => modal.classList.remove("active"));
     }
   }
 }

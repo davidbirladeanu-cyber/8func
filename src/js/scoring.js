@@ -391,17 +391,14 @@ export function calculateScores(questions, answers) {
 
 /**
  * Builds the results URL path in the format:
- * /results/I=80/E=80/N=80/S=80/T=80/F=80/J=80/P=80/Ne=80/Ni=80/Se=80/Si=80/Te=80/Ti=80/Fe=80/Fi=80/
+ * /results/EI=60/NS=40/TF=50/JP=45/Ne=67/Ni=42/Se=58/Si=33/Te=25/Ti=58/Fe=50/Fi=67/
+ * where EI, NS, TF, JP represent thumb position along the 4 Axes (0-100% of the right pole: I, S, F, P)
  */
 export function buildResultsUrlPath(axisScores, percentages) {
-  const I = axisScores?.EI ? (axisScores.EI.roundB ?? Math.round(axisScores.EI.pctB)) : 50;
-  const E = axisScores?.EI ? (axisScores.EI.roundA ?? Math.round(axisScores.EI.pctA)) : 50;
-  const N = axisScores?.NS ? (axisScores.NS.roundA ?? Math.round(axisScores.NS.pctA)) : 50;
-  const S = axisScores?.NS ? (axisScores.NS.roundB ?? Math.round(axisScores.NS.pctB)) : 50;
-  const T = axisScores?.TF ? (axisScores.TF.roundA ?? Math.round(axisScores.TF.pctA)) : 50;
-  const F = axisScores?.TF ? (axisScores.TF.roundB ?? Math.round(axisScores.TF.pctB)) : 50;
-  const J = axisScores?.JP ? (axisScores.JP.roundA ?? Math.round(axisScores.JP.pctA)) : 50;
-  const P = axisScores?.JP ? (axisScores.JP.roundB ?? Math.round(axisScores.JP.pctB)) : 50;
+  const EI = axisScores?.EI ? (axisScores.EI.roundB ?? Math.round(axisScores.EI.pctB)) : 50;
+  const NS = axisScores?.NS ? (axisScores.NS.roundB ?? Math.round(axisScores.NS.pctB)) : 50;
+  const TF = axisScores?.TF ? (axisScores.TF.roundB ?? Math.round(axisScores.TF.pctB)) : 50;
+  const JP = axisScores?.JP ? (axisScores.JP.roundB ?? Math.round(axisScores.JP.pctB)) : 50;
 
   const Ne = percentages?.Ne ?? 50;
   const Ni = percentages?.Ni ?? 50;
@@ -412,11 +409,12 @@ export function buildResultsUrlPath(axisScores, percentages) {
   const Fe = percentages?.Fe ?? 50;
   const Fi = percentages?.Fi ?? 50;
 
-  return `/results/I=${I}/E=${E}/N=${N}/S=${S}/T=${T}/F=${F}/J=${J}/P=${P}/Ne=${Ne}/Ni=${Ni}/Se=${Se}/Si=${Si}/Te=${Te}/Ti=${Ti}/Fe=${Fe}/Fi=${Fi}/`;
+  return `/results/EI=${EI}/NS=${NS}/TF=${TF}/JP=${JP}/Ne=${Ne}/Ni=${Ni}/Se=${Se}/Si=${Si}/Te=${Te}/Ti=${Ti}/Fe=${Fe}/Fi=${Fi}/`;
 }
 
 /**
- * Parses a results URL path and extracts the 16 score percentages
+ * Parses a results URL path and extracts the score percentages and axis scores
+ * Supports both new /EI=../NS=../TF=../JP=../ and legacy /I=../E=../ formats
  */
 export function parseResultsUrlPath(pathname) {
   if (!pathname || !pathname.includes("/results/")) return null;
@@ -436,9 +434,48 @@ export function parseResultsUrlPath(pathname) {
     }
   });
 
-  const keys = ["I", "E", "N", "S", "T", "F", "J", "P", "Ne", "Ni", "Se", "Si", "Te", "Ti", "Fe", "Fi"];
+  const keys = ["EI", "NS", "TF", "JP", "I", "E", "N", "S", "T", "F", "J", "P", "Ne", "Ni", "Se", "Si", "Te", "Ti", "Fe", "Fi"];
   const hasKeys = keys.some(k => data[k] !== undefined);
   if (!hasKeys) return null;
 
-  return data;
+  const pI = data.EI !== undefined ? data.EI : (data.I ?? 50);
+  const pE = data.EI !== undefined ? (100 - data.EI) : (data.E ?? 50);
+  const pS = data.NS !== undefined ? data.NS : (data.S ?? 50);
+  const pN = data.NS !== undefined ? (100 - data.NS) : (data.N ?? 50);
+  const pF = data.TF !== undefined ? data.TF : (data.F ?? 50);
+  const pT = data.TF !== undefined ? (100 - data.TF) : (data.T ?? 50);
+  const pP = data.JP !== undefined ? data.JP : (data.P ?? 50);
+  const pJ = data.JP !== undefined ? (100 - data.JP) : (data.J ?? 50);
+
+  return {
+    ...data,
+    EI: pI,
+    NS: pS,
+    TF: pF,
+    JP: pP,
+    I: pI,
+    E: pE,
+    S: pS,
+    N: pN,
+    F: pF,
+    T: pT,
+    P: pP,
+    J: pJ,
+    percentages: {
+      Ne: data.Ne ?? 50,
+      Ni: data.Ni ?? 50,
+      Se: data.Se ?? 50,
+      Si: data.Si ?? 50,
+      Te: data.Te ?? 50,
+      Ti: data.Ti ?? 50,
+      Fe: data.Fe ?? 50,
+      Fi: data.Fi ?? 50
+    },
+    axisScores: {
+      EI: { dimension: "EI", poleA: "E", poleB: "I", pctA: pE, pctB: pI, roundA: pE, roundB: pI, dominant: pE >= pI ? "E" : "I" },
+      NS: { dimension: "NS", poleA: "N", poleB: "S", pctA: pN, pctB: pS, roundA: pN, roundB: pS, dominant: pN >= pS ? "N" : "S" },
+      TF: { dimension: "TF", poleA: "T", poleB: "F", pctA: pT, pctB: pF, roundA: pT, roundB: pF, dominant: pT >= pF ? "T" : "F" },
+      JP: { dimension: "JP", poleA: "J", poleB: "P", pctA: pJ, pctB: pP, roundA: pJ, roundB: pP, dominant: pJ >= pP ? "J" : "P" }
+    }
+  };
 }

@@ -572,12 +572,16 @@ test("Results URL Path: Format matches /results/I=80/E=80/N=80/S=80/T=80/F=80/J=
   };
 
   const path = buildResultsUrlPath(mockAxisScores, mockPercentages);
-  const expectedPath = "/results/I=80/E=20/N=85/S=15/T=90/F=10/J=75/P=25/Ne=84/Ni=91/Se=54/Si=36/Te=97/Ti=84/Fe=39/Fi=89/";
+  const expectedPath = "/results/EI=80/NS=15/TF=10/JP=25/Ne=84/Ni=91/Se=54/Si=36/Te=97/Ti=84/Fe=39/Fi=89/";
   assert.strictEqual(path, expectedPath);
 
-  // Test parsing
+  // Test parsing new format
   const parsed = parseResultsUrlPath(expectedPath);
   assert.ok(parsed !== null);
+  assert.strictEqual(parsed.EI, 80);
+  assert.strictEqual(parsed.NS, 15);
+  assert.strictEqual(parsed.TF, 10);
+  assert.strictEqual(parsed.JP, 25);
   assert.strictEqual(parsed.I, 80);
   assert.strictEqual(parsed.E, 20);
   assert.strictEqual(parsed.N, 85);
@@ -594,6 +598,14 @@ test("Results URL Path: Format matches /results/I=80/E=80/N=80/S=80/T=80/F=80/J=
   assert.strictEqual(parsed.Ti, 84);
   assert.strictEqual(parsed.Fe, 39);
   assert.strictEqual(parsed.Fi, 89);
+
+  // Test backwards compatibility with legacy format
+  const legacyPath = "/results/I=80/E=20/N=85/S=15/T=90/F=10/J=75/P=25/Ne=84/Ni=91/Se=54/Si=36/Te=97/Ti=84/Fe=39/Fi=89/";
+  const parsedLegacy = parseResultsUrlPath(legacyPath);
+  assert.ok(parsedLegacy !== null);
+  assert.strictEqual(parsedLegacy.I, 80);
+  assert.strictEqual(parsedLegacy.E, 20);
+  assert.strictEqual(parsedLegacy.EI, 80);
 });
 
 // ----------------------------------------------------

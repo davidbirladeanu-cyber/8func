@@ -60,19 +60,35 @@ export class AppState {
       this.theme = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     }
 
+    // Load persisted user results for Match comparisons
+    try {
+      const savedLast = localStorage.getItem('8func_last_user_results');
+      if (savedLast) this.lastUserResults = JSON.parse(savedLast);
+    } catch (e) {}
+
     // Screen state & URL results check
     const isFiguresPath = window.location.pathname.includes("/figures") || window.location.hash === "#figures" || window.location.pathname.includes("/personalitati");
     const parsedUrlScores = parseResultsUrlPath(window.location.pathname) || parseResultsUrlPath(window.location.hash);
     if (parsedUrlScores) {
       this.screen = "results";
       this.urlResultsScores = parsedUrlScores;
+      this.lastUserResults = { percentages: parsedUrlScores.percentages, axisScores: parsedUrlScores.axisScores };
+      try {
+        localStorage.setItem('8func_last_user_results', JSON.stringify(this.lastUserResults));
+      } catch (e) {}
     } else if (isFiguresPath) {
       this.screen = "figures";
       this.urlResultsScores = null;
     } else {
       this.urlResultsScores = null;
       const savedScreen = localStorage.getItem(STORAGE_KEYS.SCREEN);
-      const { isComplete } = calculateScores(this.questions, this.answers);
+      const { percentages, axisScores, isComplete } = calculateScores(this.questions, this.answers);
+      if (isComplete && Object.keys(this.answers).length >= this.questions.length) {
+        this.lastUserResults = { percentages, axisScores };
+        try {
+          localStorage.setItem('8func_last_user_results', JSON.stringify(this.lastUserResults));
+        } catch (e) {}
+      }
 
       if (savedScreen === "figures") {
         this.screen = "figures";
@@ -110,6 +126,14 @@ export class AppState {
       localStorage.setItem(STORAGE_KEYS.THEME, this.theme);
       localStorage.setItem(STORAGE_KEYS.LANG, this.lang);
       localStorage.setItem(STORAGE_KEYS.SCREEN, this.screen);
+
+      if (this.questions && this.answers) {
+        const { percentages, axisScores, isComplete } = calculateScores(this.questions, this.answers);
+        if (isComplete && Object.keys(this.answers).length >= this.questions.length) {
+          this.lastUserResults = { percentages, axisScores };
+          localStorage.setItem('8func_last_user_results', JSON.stringify(this.lastUserResults));
+        }
+      }
     } catch (e) {
       console.warn("Storage save error", e);
     }
