@@ -143,7 +143,7 @@ class App {
     this.isAdvancing = false;
 
     this.figuresTab = "similar"; // 'similar' | 'opposite'
-    this.selectedFigureId = NOTABLE_FIGURES[0].id;
+    this.selectedFigureId = null;
     this.lastRecordedSignature = null;
 
     // Apply saved theme
@@ -1406,7 +1406,7 @@ class App {
         <div class="fig-list-item ${isSelected ? 'selected' : ''}" data-id="${fig.id}" style="background: ${figColors.bg}; color: #ffffff;">
           <span class="fig-num" style="color: #ffffff; opacity: 0.85;">${numStr}</span>
           ${fig.photo ? `
-            <img class="fig-avatar-img" src="${fig.photo}" alt="${fig.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+            <img class="fig-avatar-img" src="${fig.photo}" alt="${fig.name}" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
             <div class="fig-avatar-fallback" style="display:none; background: rgba(0,0,0,0.22); color: #ffffff;">${fig.avatar || fig.name.charAt(0)}</div>
           ` : `
             <div class="fig-avatar-fallback" style="background: rgba(0,0,0,0.22); color: #ffffff;">${fig.avatar || fig.name.charAt(0)}</div>
@@ -1504,6 +1504,11 @@ class App {
         </div>
       `;
     }).join("");
+
+    const figN = currentComparisonFigure.axes ? currentComparisonFigure.axes.N : (currentComparisonFigure.mbti.includes("N") ? 75 : 25);
+    const figT = currentComparisonFigure.axes ? currentComparisonFigure.axes.T : (currentComparisonFigure.mbti.includes("T") ? 75 : 25);
+    const figCompassX = Math.max(10, Math.min(90, figT));
+    const figCompassY = Math.max(10, Math.min(90, 100 - figN));
 
     this.root.innerHTML = `
       <div class="app-shell" data-screen="results">
@@ -1609,7 +1614,17 @@ class App {
                       <div class="spectrum-crosshair-h"></div>
                       <div class="spectrum-crosshair-v"></div>
 
-                      <div class="spectrum-plot-dot" style="left: ${compassX}%; top: ${compassY}%;" title="${topMbti.type}"></div>
+                      <div class="spectrum-plot-dot" style="left: ${compassX}%; top: ${compassY}%;" title="${lang === 'ro' ? 'Tu' : 'You'} (${topMbti.type})"></div>
+                      ${currentComparisonFigure ? `
+                        <div class="spectrum-plot-dot-fig" style="left: ${figCompassX}%; top: ${figCompassY}%; border-color: ${currentFigTemp.color || '#ffffff'};" title="${currentComparisonFigure.name} (${currentComparisonFigure.mbti})">
+                          ${currentComparisonFigure.photo ? `
+                            <img src="${currentComparisonFigure.photo}" alt="${currentComparisonFigure.name}" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                            <span style="display:none;">${currentComparisonFigure.avatar || currentComparisonFigure.name.charAt(0)}</span>
+                          ` : `
+                            <span>${currentComparisonFigure.avatar || currentComparisonFigure.name.charAt(0)}</span>
+                          `}
+                        </div>
+                      ` : ""}
                     </div>
                     <div class="spectrum-cardinal-lbl spectrum-lbl-right">${s1Right}</div>
                   </div>
@@ -1736,7 +1751,7 @@ class App {
               <div class="comp-card-v2">
                 <div class="comp-v2-header">
                   ${currentComparisonFigure.photo ? `
-                    <img class="comp-v2-avatar" src="${currentComparisonFigure.photo}" alt="${currentComparisonFigure.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                    <img class="comp-v2-avatar" src="${currentComparisonFigure.photo}" alt="${currentComparisonFigure.name}" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
                     <div class="comp-v2-avatar comp-v2-avatar-fallback" style="display:none; background:${currentFigTemp.color};">${currentComparisonFigure.avatar || currentComparisonFigure.name.charAt(0)}</div>
                   ` : `
                     <div class="comp-v2-avatar comp-v2-avatar-fallback" style="background:${currentFigTemp.color}26; border: 2px solid ${currentFigTemp.color};">${currentComparisonFigure.avatar || currentComparisonFigure.name.charAt(0)}</div>
@@ -1848,9 +1863,9 @@ class App {
             <span>${lang === "ro" ? "Se descarcă imaginea..." : "Downloading image..."}</span>
           `;
 
-          setTimeout(() => {
+          setTimeout(async () => {
             try {
-              const dataUrl = generateResultsCardCanvas({
+              const dataUrl = await generateResultsCardCanvas({
                 topMbti,
                 percentages,
                 axisScores,

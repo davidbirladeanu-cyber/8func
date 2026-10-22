@@ -3647,6 +3647,36 @@ a {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55);
 }
 
+.spectrum-plot-dot-fig {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+  z-index: 6;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s;
+  background: var(--card-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spectrum-plot-dot-fig img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.spectrum-plot-dot-fig:hover {
+  transform: translate(-50%, -50%) scale(1.35);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.65);
+}
+
 .spectrum-bottom-bar {
   margin-top: 1.5rem;
   display: flex;
