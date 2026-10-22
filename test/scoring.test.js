@@ -4,6 +4,7 @@ import { calculateScores, ANSWER_OPTIONS, ANSWER_VALUE_MAP, AXIS_DIMENSIONS, get
 import { FUNCTIONS_LIST } from "../src/data/functions.js";
 import { MBTI_TYPES, getTypeTemperament, calculateBestMbtiType } from "../src/data/mbtiTypes.js";
 import { t } from "../src/data/translations.js";
+import { NOTABLE_FIGURES, calculateFigureSimilarity, getRankedFigures, FUNCTIONS } from "../src/data/figures.js";
 
 console.log("=========================================");
 console.log("Running 8Func Scoring System Test Suite (100 Questions)");
@@ -615,6 +616,32 @@ test("Raport Real Normalizat: Axes sum to exactly 100% and reflect relative pole
   assert.strictEqual(res.axisPercentages.I, 100, "I should be 100%");
   assert.strictEqual(res.axisPercentages.E + res.axisPercentages.I, 100, "Must sum to 100%");
   assert.strictEqual(res.axisScores.EI.dominant, "I");
+});
+
+// ----------------------------------------------------
+// 22. Figure Similarity & Ranking Integrity
+// ----------------------------------------------------
+test("Figure Similarity and Ranking: FUNCTIONS is defined and similarity calculation runs correctly", () => {
+  assert.ok(Array.isArray(FUNCTIONS), "FUNCTIONS must be an array");
+  assert.strictEqual(FUNCTIONS.length, 8, "FUNCTIONS must have 8 cognitive functions");
+
+  const mockUserScores = { Ne: 85, Ni: 60, Te: 75, Ti: 40, Fe: 35, Fi: 25, Se: 30, Si: 65 };
+  const mockUserAxes = {
+    EI: { pctA: 70, pctB: 30, roundA: 70, roundB: 30 },
+    NS: { pctA: 80, pctB: 20, roundA: 80, roundB: 20 },
+    TF: { pctA: 85, pctB: 15, roundA: 85, roundB: 15 },
+    JP: { pctA: 90, pctB: 10, roundA: 90, roundB: 10 }
+  };
+
+  const sim = calculateFigureSimilarity(mockUserScores, mockUserAxes, NOTABLE_FIGURES[0]);
+  assert.ok(typeof sim === "number" && sim >= 0 && sim <= 100, "Similarity must be a percentage between 0 and 100");
+
+  const ranked = getRankedFigures(mockUserScores, mockUserAxes);
+  assert.strictEqual(ranked.similar.length, 10, "Must have 10 similar figures");
+  assert.strictEqual(ranked.opposite.length, 10, "Must have 10 opposite figures");
+  assert.strictEqual(ranked.all.length, NOTABLE_FIGURES.length, "All figures must be processed");
+  assert.ok(ranked.similar[0].similarity >= ranked.similar[9].similarity, "Similar figures must be sorted descending");
+  assert.ok(ranked.opposite[0].similarity <= ranked.opposite[9].similarity, "Opposite figures must be sorted ascending");
 });
 
 console.log(`\nAll ${passedTests} tests passed successfully!`);

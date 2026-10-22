@@ -5886,6 +5886,10 @@ export const NOTABLE_FIGURES = [
   }
 ];
 
+import { FUNCTIONS_LIST } from "./functions.js";
+
+export const FUNCTIONS = FUNCTIONS_LIST;
+
 export function calculateFigureSimilarity(userScores, userAxisScores, figure) {
   if (!figure) return 50;
 
