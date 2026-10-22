@@ -5,6 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#102E24">
 
+  <!-- GitHub Pages SPA routing restoration (rafgraph/spa-github-pages) -->
+  <script type="text/javascript">
+    (function(l) {
+      if (l.search[1] === '/') {
+        var decoded = l.search.slice(1).split('&').map(function(s) { 
+          return s.replace(/~and~/g, '&');
+        }).join('?');
+        window.history.replaceState(null, null,
+          l.pathname.slice(0, -1) + decoded + l.hash
+        );
+      }
+    }(window.location));
+  </script>
+
   <!-- Primary SEO -->
   <title>8Func — Jungian Cognitive Functions Test Across 8 Axes</title>
   <meta name="description" content="Free, fast, and precise Jungian cognitive functions test across 8 axes: Ne, Ni, Te, Ti, Fe, Fi, Se, Si. Choose between Quick (24), Recommended (40), or Precise (160) assessment modes with an editorial minimalist 12axes-inspired design.">
@@ -44,7 +58,7 @@
     "isAccessibleForFree": true
   }
   </script>
-  <script type="module" crossorigin src="/8func/assets/index-HERhkDzB.js"></script>
+  <script type="module" crossorigin src="/8func/assets/index-D2Geo5e0.js"></script>
   <link rel="stylesheet" crossorigin href="/8func/assets/index-isCpFzx9.css">
 </head>
 <body>
