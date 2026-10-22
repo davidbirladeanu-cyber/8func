@@ -1804,21 +1804,40 @@ class App {
     if (genImgBtn) {
       genImgBtn.addEventListener("click", () => {
         try {
-          const dataUrl = generateResultsCardCanvas({
-            topMbti,
-            percentages,
-            axisScores,
-            similarFigures,
-            lang
-          });
-          openResultsImageModal({
-            dataUrl,
-            topMbti,
-            lang
-          });
+          genImgBtn.disabled = true;
+          const origContent = genImgBtn.innerHTML;
+          genImgBtn.innerHTML = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 20px; height: 20px; animation: spin 0.8s linear infinite;">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-dasharray="32" stroke-linecap="round"></circle>
+            </svg>
+            <span>${lang === "ro" ? "Se generează imaginea..." : "Generating image..."}</span>
+          `;
+
+          setTimeout(() => {
+            try {
+              const dataUrl = generateResultsCardCanvas({
+                topMbti,
+                percentages,
+                axisScores,
+                similarFigures,
+                lang
+              });
+              openResultsImageModal({
+                dataUrl,
+                topMbti,
+                lang
+              });
+            } catch (err) {
+              console.error("Failed to generate results image:", err);
+              alert(lang === "ro" ? "Eroare la generarea imaginii: " + err.message : "Error generating image: " + err.message);
+            } finally {
+              genImgBtn.disabled = false;
+              genImgBtn.innerHTML = origContent;
+            }
+          }, 35);
         } catch (err) {
-          console.error("Failed to generate results image:", err);
-          alert(lang === "ro" ? "Eroare la generarea imaginii: " + err.message : "Error generating image: " + err.message);
+          console.error("Generate button click error:", err);
+          genImgBtn.disabled = false;
         }
       });
     }

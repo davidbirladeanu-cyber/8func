@@ -4219,12 +4219,15 @@ a {
   background: rgba(10, 8, 14, 0.78);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  display: flex;
+  display: flex !important;
   align-items: center;
   justify-content: center;
   z-index: 99999;
   padding: 1.25rem;
   box-sizing: border-box;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  visibility: visible !important;
 }
 
 #results-image-modal .modal-content {
@@ -4234,6 +4237,7 @@ a {
   border: 1px solid var(--card-border);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
   animation: modalScaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(0) scale(1) !important;
 }
 
 @keyframes modalScaleIn {
@@ -4244,6 +4248,12 @@ a {
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 

@@ -151,7 +151,7 @@ export function generateResultsCardCanvas({
   ctx.font = "800 15px 'Sora', 'Poppins', sans-serif";
   ctx.textAlign = "left";
   ctx.textBaseline = "alphabetic";
-  ctx.letterSpacing = "0.08em";
+  try { ctx.letterSpacing = "1.5px"; } catch (_) {}
   ctx.fillText(tempTitle, marginX, curY);
 
   curY += 34;
@@ -361,7 +361,7 @@ export function generateResultsCardCanvas({
     ctx.font = "800 12px 'Sora', 'Poppins', sans-serif";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
-    ctx.letterSpacing = "0.08em";
+    try { ctx.letterSpacing = "1.5px"; } catch (_) {}
     ctx.fillText(ax.title, rightColX + 22, cardY + 16);
 
     // Slider track
@@ -484,6 +484,26 @@ export function generateResultsCardCanvas({
 }
 
 /**
+ * Converts a base64 data URL to a standard binary Blob safely without fetch().
+ */
+export function dataUrlToBlob(dataUrl) {
+  try {
+    const parts = dataUrl.split(",");
+    const mime = parts[0].match(/:(.*?);/)?.[1] || "image/png";
+    const bstr = atob(parts[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new Blob([u8arr], { type: mime });
+  } catch (e) {
+    console.error("dataUrlToBlob error:", e);
+    return null;
+  }
+}
+
+/**
  * Opens a modal preview allowing the user to view, copy, or download the generated card.
  */
 export function openResultsImageModal({
@@ -494,27 +514,34 @@ export function openResultsImageModal({
   const existingModal = document.getElementById("results-image-modal");
   if (existingModal) existingModal.remove();
 
+  const blob = dataUrlToBlob(dataUrl);
+  const blobUrl = blob ? URL.createObjectURL(blob) : dataUrl;
+  const fileName = `8Func-${topMbti?.type || 'Results'}-${topMbti?.title || 'Profile'}.png`;
+
   const modalHtml = `
-    <div class="modal-overlay is-open" id="results-image-modal" style="display: flex; z-index: 9999;">
-      <div class="modal-content" style="max-width: 580px; width: 92%; padding: 1.5rem; max-height: 90vh; display: flex; flex-direction: column;">
+    <div class="modal-overlay active is-open" id="results-image-modal" style="display: flex !important; z-index: 99999; opacity: 1 !important; pointer-events: auto !important; visibility: visible !important;">
+      <div class="modal-content" style="max-width: 580px; width: 92%; padding: 1.5rem; max-height: 90vh; display: flex; flex-direction: column; opacity: 1 !important; transform: scale(1) !important;">
         <header class="modal-header" style="margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between;">
           <h3 class="modal-title" style="margin: 0; font-size: 1.25rem; font-weight: 800;">
             ${lang === "ro" ? "Card Rezultate 8Func" : "8Func Results Share Card"}
           </h3>
-          <button class="modal-close" type="button" id="img-modal-close-x" style="background:none; border:none; cursor:pointer; font-size: 1.5rem; color: var(--text-muted);">&times;</button>
+          <button class="modal-close" type="button" id="img-modal-close-x" style="background:none; border:none; cursor:pointer; font-size: 1.6rem; color: var(--text-muted); line-height: 1;">&times;</button>
         </header>
         
         <div class="modal-body" style="overflow-y: auto; text-align: center; padding: 0.5rem 0;">
           <div style="border-radius: 16px; overflow: hidden; box-shadow: 0 12px 36px rgba(0,0,0,0.45); display: inline-block; max-width: 100%;">
-            <img src="${dataUrl}" alt="8Func Results Card" style="width: 100%; height: auto; display: block;" />
+            <img src="${blobUrl}" alt="8Func Results Card" style="width: 100%; height: auto; display: block;" />
           </div>
         </div>
         
         <footer class="modal-actions" style="margin-top: 1.25rem; display: flex; gap: 0.75rem; justify-content: flex-end; flex-wrap: wrap;">
+          <button class="e-btn e-btn-outline" type="button" id="img-modal-share-btn" style="display: none;">
+            🔗 <span>${lang === "ro" ? "Distribuie" : "Share"}</span>
+          </button>
           <button class="e-btn e-btn-outline" type="button" id="img-modal-copy-btn">
             📋 <span>${lang === "ro" ? "Copiază Imaginea" : "Copy Image"}</span>
           </button>
-          <a class="e-btn e-btn-primary" id="img-modal-download-btn" href="${dataUrl}" download="8Func-${topMbti?.type || 'Results'}-${topMbti?.title || 'Profile'}.png">
+          <a class="e-btn e-btn-primary" id="img-modal-download-btn" href="${blobUrl}" download="${fileName}">
             📥 <span>${lang === "ro" ? "Descarcă PNG" : "Download PNG"}</span>
           </a>
           <button class="e-btn e-btn-outline" type="button" id="img-modal-close-btn">
@@ -528,7 +555,12 @@ export function openResultsImageModal({
   document.body.insertAdjacentHTML("beforeend", modalHtml);
 
   const modal = document.getElementById("results-image-modal");
-  const close = () => modal?.remove();
+  const close = () => {
+    modal?.remove();
+    if (blobUrl && blobUrl.startsWith("blob:")) {
+      URL.revokeObjectURL(blobUrl);
+    }
+  };
 
   document.getElementById("img-modal-close-x")?.addEventListener("click", close);
   document.getElementById("img-modal-close-btn")?.addEventListener("click", close);
@@ -536,22 +568,63 @@ export function openResultsImageModal({
     if (e.target === modal) close();
   });
 
+  // Native Web Share API if supported
+  const shareBtn = document.getElementById("img-modal-share-btn");
+  if (shareBtn && navigator.share && blob) {
+    shareBtn.style.display = "inline-flex";
+    shareBtn.addEventListener("click", async () => {
+      try {
+        const file = new File([blob], fileName, { type: "image/png" });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            title: `8Func - ${topMbti?.title || 'Profile'} (${topMbti?.type || 'MBTI'})`,
+            text: `Rezultatele mele 8Func: ${topMbti?.title || 'Profile'} (${topMbti?.type || 'MBTI'})!`,
+            files: [file]
+          });
+        } else {
+          await navigator.share({
+            title: `8Func - ${topMbti?.type || 'Results'}`,
+            url: window.location.href
+          });
+        }
+      } catch (err) {
+        if (err.name !== "AbortError") console.warn("Share error:", err);
+      }
+    });
+  }
+
   // Copy to clipboard handler
   document.getElementById("img-modal-copy-btn")?.addEventListener("click", async () => {
     try {
-      const res = await fetch(dataUrl);
-      const blob = await res.blob();
-      await navigator.clipboard.write([
-        new ClipboardItem({ "image/png": blob })
-      ]);
-      const btnSpan = document.querySelector("#img-modal-copy-btn span");
-      if (btnSpan) {
-        const oldText = btnSpan.textContent;
-        btnSpan.textContent = lang === "ro" ? "Copiat în clipboard!" : "Copied to clipboard!";
-        setTimeout(() => { btnSpan.textContent = oldText; }, 2000);
+      if (!blob) throw new Error("Image blob unavailable");
+      if (navigator.clipboard && window.ClipboardItem) {
+        await navigator.clipboard.write([
+          new ClipboardItem({ "image/png": blob })
+        ]);
+        const btnSpan = document.querySelector("#img-modal-copy-btn span");
+        if (btnSpan) {
+          const oldText = btnSpan.textContent;
+          btnSpan.textContent = lang === "ro" ? "Copiat în clipboard!" : "Copied to clipboard!";
+          setTimeout(() => { btnSpan.textContent = oldText; }, 2000);
+        }
+      } else {
+        throw new Error("Clipboard API unsupported");
       }
     } catch (err) {
-      alert(lang === "ro" ? "Nu s-a putut copia automat. Te rugăm să descarci fișierul PNG." : "Could not copy automatically. Please download the PNG.");
+      console.warn("Clipboard copy unavailable, downloading PNG instead:", err);
+      // Trigger download fallback
+      const dlLink = document.getElementById("img-modal-download-btn");
+      if (dlLink) dlLink.click();
+    }
+  });
+
+  // Download button handler to ensure download trigger on mobile
+  document.getElementById("img-modal-download-btn")?.addEventListener("click", () => {
+    const btnSpan = document.querySelector("#img-modal-download-btn span");
+    if (btnSpan) {
+      const oldText = btnSpan.textContent;
+      btnSpan.textContent = lang === "ro" ? "Se descarcă..." : "Downloading...";
+      setTimeout(() => { btnSpan.textContent = oldText; }, 1500);
     }
   });
 }
