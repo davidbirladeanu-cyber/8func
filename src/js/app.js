@@ -2359,7 +2359,6 @@ class App {
 
     // Generate Cards HTML
     const cardsHtml = filtered.map(fig => {
-      const numStr = String(fig.originalIndex).padStart(2, "0");
       const figColors = getMbtiTileColors(fig.mbti);
       const temp = getTypeTemperament(fig.mbti);
       const cleanRole = getFigureRole(fig, lang);
@@ -2368,7 +2367,6 @@ class App {
       return `
         <div class="figure-dir-card" data-id="${fig.id}" style="background: ${figColors.bg}; color: #ffffff;" role="button" tabindex="0" aria-label="${fig.name} · ${fig.mbti}">
           <div class="figure-dir-card-top">
-            <span class="figure-dir-num">#${numStr}</span>
             <span class="figure-dir-badge">${fig.mbti}</span>
             ${fig.similarity !== null ? `
               <span class="figure-dir-match">${fig.similarity}% ${lang === 'ro' ? 'compatibilitate' : 'match'}</span>
@@ -2396,13 +2394,6 @@ class App {
               const fColor = getFuncTileColors(st).bg;
               return `<span class="resemble-stack-pill" style="background: ${fColor}; color: #ffffff;">${st}</span>`;
             }).join("")}
-          </div>
-
-          <div class="figure-dir-footer">
-            <span class="figure-dir-inspect-btn">
-              <span>${lang === 'ro' ? 'Vezi spectrul' : 'Inspect spectrum'}</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 13px; height: 13px;"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-            </span>
           </div>
         </div>
       `;
