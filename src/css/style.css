@@ -2078,6 +2078,29 @@ a {
   border-color: rgba(255, 255, 255, 0.25);
 }
 
+.hero-resemble-stack {
+  margin-top: 0.35rem;
+  gap: 0.5rem;
+}
+
+.hero-resemble-stack .resemble-stack-pill {
+  font-size: 0.92rem;
+  font-weight: 800;
+  padding: 0.38rem 0.85rem;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--c, var(--accent)) 14%, var(--paper));
+  color: var(--c, var(--accent));
+  border: 1px solid color-mix(in srgb, var(--c, var(--accent)) 30%, transparent);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .hero-resemble-stack .resemble-stack-pill {
+  background: color-mix(in srgb, var(--c, var(--accent)) 22%, rgba(0, 0, 0, 0.45));
+  color: #FFFFFF;
+  border-color: color-mix(in srgb, var(--c, var(--accent)) 45%, transparent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
 @media (max-width: 768px) {
   .e-top-head {
     flex-direction: column;

@@ -1488,6 +1488,13 @@ class App {
                     ${topMbti.temperamentName}
                   </span>
                   <h1 class="e-hero-title">${topMbti.title} <span style="color: ${topMbti.temperamentColor};">(${topMbti.type})</span></h1>
+                  <div class="resemble-stack hero-resemble-stack">
+                    ${(topMbti.stack || []).map(st => {
+                      const fInfo = COGNITIVE_FUNCTIONS[st];
+                      const fTitle = lang === "ro" ? (fInfo?.nameRo || fInfo?.name || st) : (fInfo?.name || st);
+                      return `<span class="resemble-stack-pill" title="${fTitle}">${st}</span>`;
+                    }).join("")}
+                  </div>
                 </div>
                 <div class="e-ring e-ring-lg" role="img" aria-label="Compatibility: ${topMbti.matchPercentage} percent">
                   <svg viewBox="0 0 140 140">
