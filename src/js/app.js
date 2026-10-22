@@ -1621,16 +1621,6 @@ class App {
                       <div class="spectrum-crosshair-v"></div>
 
                       <div class="spectrum-plot-dot" style="left: ${compassX}%; top: ${compassY}%;" title="${lang === 'ro' ? 'Tu' : 'You'} (${topMbti.type})"></div>
-                      ${currentComparisonFigure ? `
-                        <div class="spectrum-plot-dot-fig" style="left: ${figCompassX}%; top: ${figCompassY}%; border-color: ${currentFigTemp.color || '#ffffff'};" title="${currentComparisonFigure.name} (${currentComparisonFigure.mbti})">
-                          ${currentComparisonFigure.photo ? `
-                            <img src="${currentComparisonFigure.photo}" alt="${currentComparisonFigure.name}" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                            <span style="display:none;">${currentComparisonFigure.avatar || currentComparisonFigure.name.charAt(0)}</span>
-                          ` : `
-                            <span>${currentComparisonFigure.avatar || currentComparisonFigure.name.charAt(0)}</span>
-                          `}
-                        </div>
-                      ` : ""}
                     </div>
                     <div class="spectrum-cardinal-lbl spectrum-lbl-right">${s1Right}</div>
                   </div>

@@ -165,43 +165,43 @@ export async function generateResultsCardCanvas({
   ctx.textBaseline = "middle";
   ctx.fillText("func", marginX + 54, curY + 23);
 
-  // 2. Top Right: Circular Match Ring ("cercul cu match nu chenarul ala")
+  // 2. Top Right: Circular Match Ring
   const matchPct = topMbti?.matchPercentage ?? 90;
-  const tempAccentColor = topMbti?.temperamentColor || "#a78bfa";
-  const ringRadius = 40;
-  const ringCenterX = baseW - marginX - ringRadius;
-  const ringCenterY = curY + ringRadius;
+  const tempAccentColor = topMbti?.temperamentColor || "#95637e";
+  const ringRadius = 58;
+  const ringCenterX = baseW - marginX - ringRadius - 6;
+  const ringCenterY = 96;
 
-  // Background ring track
+  // Background ring track (in translucent personality color)
   ctx.beginPath();
   ctx.arc(ringCenterX, ringCenterY, ringRadius, 0, Math.PI * 2);
-  ctx.strokeStyle = "rgba(255, 255, 255, 0.16)";
-  ctx.lineWidth = 6.5;
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
+  ctx.lineWidth = 11;
   ctx.stroke();
 
-  // Arc progress
+  // Arc progress (personality color)
   const startAngle = -Math.PI / 2;
   const endAngle = startAngle + (matchPct / 100) * (Math.PI * 2);
   ctx.beginPath();
   ctx.arc(ringCenterX, ringCenterY, ringRadius, startAngle, endAngle);
   ctx.strokeStyle = tempAccentColor;
-  ctx.lineWidth = 6.5;
+  ctx.lineWidth = 11;
   ctx.lineCap = "round";
   ctx.stroke();
 
-  // Text inside circle: "88%" bold + "MATCH" below
+  // Text inside circle: big percentage + MATCH below
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillStyle = "#FFFFFF";
-  ctx.font = `800 21px ${FONT_FAMILY}`;
-  ctx.fillText(`${matchPct}%`, ringCenterX, ringCenterY - 4);
+  ctx.font = `800 36px ${FONT_FAMILY}`;
+  ctx.fillText(`${matchPct}%`, ringCenterX, ringCenterY - 6);
 
-  ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
-  ctx.font = `800 9px ${FONT_FAMILY}`;
-  ctx.fillText("MATCH", ringCenterX, ringCenterY + 14);
+  ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
+  ctx.font = `800 12.5px ${FONT_FAMILY}`;
+  ctx.fillText("MATCH", ringCenterX, ringCenterY + 18);
 
   // 3. Hero Personality Info (left side below logo)
-  curY += 58;
+  curY += 56;
 
   // e-tag-hero: smooth pill with solid temperament color & white text
   const tempTitle = (topMbti?.temperamentName || "Analysts").toUpperCase();
@@ -240,8 +240,8 @@ export async function generateResultsCardCanvas({
   // Function Stack Pills (squarish, solidly colored with function colors)
   const stack = topMbti?.stack || ["Ni", "Te", "Fi", "Se"];
   const pillW = 32;
-  const pillH = 30;
-  const pillGap = 6;
+  const pillH = 28;
+  const pillGap = 8;
 
   stack.forEach((st, idx) => {
     const pillX = marginX + idx * (pillW + pillGap);
@@ -251,7 +251,7 @@ export async function generateResultsCardCanvas({
     ctx.fill();
 
     ctx.fillStyle = "#FFFFFF";
-    ctx.font = `800 12px ${FONT_FAMILY}`;
+    ctx.font = `800 12.5px ${FONT_FAMILY}`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(st, pillX + pillW / 2, curY + pillH / 2 + 0.5);
@@ -260,12 +260,13 @@ export async function generateResultsCardCanvas({
   curY += 42; // Spacing before main 2-column grid
 
   // ----------------------------------------------------
-  // MAIN GRID: BALANCED 2 COLUMNS (370px each)
+  // MAIN GRID: BALANCED 2 COLUMNS (368px each, 24px gap)
   // ----------------------------------------------------
   const gridTopY = curY;
-  const colW = 370;
-  const leftColX = marginX;
-  const rightColX = baseW - marginX - colW; // 430px
+  const colW = 368;
+  const leftColX = marginX; // 40
+  const colGap = 24;
+  const rightColX = leftColX + colW + colGap; // 432
 
   // ----------------------------------------------------
   // LEFT COLUMN: 8 Cognitive Functions Grid
@@ -274,7 +275,7 @@ export async function generateResultsCardCanvas({
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
   ctx.fillStyle = "rgba(255, 255, 255, 0.72)";
-  ctx.font = `800 12.5px ${FONT_FAMILY}`;
+  ctx.font = `800 12px ${FONT_FAMILY}`;
   ctx.fillText(lang === "ro" ? "IERARHIA COGNITIVĂ" : "COGNITIVE HIERARCHY", leftColX, gridTopY);
 
   const funcsList = FUNCTIONS_LIST || ["Ni", "Ne", "Te", "Ti", "Fe", "Fi", "Se", "Si"];
@@ -283,8 +284,8 @@ export async function generateResultsCardCanvas({
     .sort((a, b) => b.score - a.score);
 
   const fCardsTopY = gridTopY + 22;
-  const fCardW = (colW - 12) / 2; // 179px
-  const fCardH = 92;
+  const fCardW = (colW - 12) / 2; // 178px
+  const fCardH = 86;
   const fGapY = 10;
   const fGapX = 12;
 
@@ -295,21 +296,10 @@ export async function generateResultsCardCanvas({
     const cardY = fCardsTopY + rowIdx * (fCardH + fGapY);
     const cardColor = getFunctionCardColor(item.func);
 
-    // Card background
+    // Card background - clean solid pastel color (no shine/glare)
     roundRect(ctx, cardX, cardY, fCardW, fCardH, 14);
     ctx.fillStyle = cardColor;
     ctx.fill();
-
-    // Subtle inset top highlight
-    ctx.save();
-    roundRect(ctx, cardX, cardY, fCardW, fCardH, 14);
-    ctx.clip();
-    const hlGrad = ctx.createLinearGradient(cardX, cardY, cardX, cardY + 24);
-    hlGrad.addColorStop(0, "rgba(255, 255, 255, 0.22)");
-    hlGrad.addColorStop(1, "transparent");
-    ctx.fillStyle = hlGrad;
-    ctx.fillRect(cardX, cardY, fCardW, 24);
-    ctx.restore();
 
     // Rank (e.g. #1)
     ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
@@ -320,12 +310,12 @@ export async function generateResultsCardCanvas({
 
     // Function name (e.g. Ni)
     ctx.fillStyle = "#FFFFFF";
-    ctx.font = `800 30px ${FONT_FAMILY}`;
+    ctx.font = `800 28px ${FONT_FAMILY}`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(item.func, cardX + fCardW / 2, cardY + 48);
+    ctx.fillText(item.func, cardX + fCardW / 2, cardY + 44);
 
-    // Score (e.g. 90% score)
+    // Score (e.g. 94% score)
     ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
     ctx.font = `700 12px ${FONT_FAMILY}`;
     ctx.textAlign = "center";
@@ -333,22 +323,22 @@ export async function generateResultsCardCanvas({
     ctx.fillText(`${item.score}% score`, cardX + fCardW / 2, cardY + fCardH - 10);
   });
 
-  const funcsTotalHeight = 4 * fCardH + 3 * fGapY; // 398px
+  const funcsTotalHeight = 4 * fCardH + 3 * fGapY; // 374px
 
   // ----------------------------------------------------
   // LEFT COLUMN: 2D Spectrum Quadrant Matrix
-  // Perfectly square (370x370), with exact coordinates
+  // Perfectly square (368x368px), clean bordered
   // ----------------------------------------------------
   const matrixSectionY = fCardsTopY + funcsTotalHeight + 20;
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
   ctx.fillStyle = "rgba(255, 255, 255, 0.72)";
-  ctx.font = `800 12.5px ${FONT_FAMILY}`;
+  ctx.font = `800 12px ${FONT_FAMILY}`;
   ctx.fillText("SPECTRUM", leftColX, matrixSectionY);
 
   const matrixY = matrixSectionY + 22;
-  const matrixSize = colW; // 370x370px
-  const quadHalf = matrixSize / 2; // 185px
+  const matrixSize = colW; // 368px
+  const quadHalf = matrixSize / 2; // 184px
 
   ctx.save();
   roundRect(ctx, leftColX, matrixY, matrixSize, matrixSize, 18);
@@ -382,30 +372,30 @@ export async function generateResultsCardCanvas({
   ctx.stroke();
 
   // Quadrant Cardinal Labels inside
-  ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+  ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
   ctx.font = `800 11.5px ${FONT_FAMILY}`;
   ctx.textAlign = "center";
 
   // Top (Intuition)
   ctx.textBaseline = "top";
-  ctx.fillText(lang === "ro" ? "INTUIȚIE" : "INTUITION", leftColX + quadHalf, matrixY + 10);
+  ctx.fillText(lang === "ro" ? "INTUIȚIE" : "INTUITION", leftColX + quadHalf, matrixY + 12);
 
   // Bottom (Sensing)
   ctx.textBaseline = "bottom";
-  ctx.fillText(lang === "ro" ? "SENZORIAL" : "SENSING", leftColX + quadHalf, matrixY + matrixSize - 10);
+  ctx.fillText(lang === "ro" ? "SENZORIAL" : "SENSING", leftColX + quadHalf, matrixY + matrixSize - 12);
 
   // Left (Feeling)
   ctx.save();
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";
-  ctx.fillText(lang === "ro" ? "SENTIMENT" : "FEELING", leftColX + 12, matrixY + quadHalf);
+  ctx.fillText(lang === "ro" ? "SENTIMENT" : "FEELING", leftColX + 14, matrixY + quadHalf);
   ctx.restore();
 
   // Right (Thinking)
   ctx.save();
   ctx.textAlign = "right";
   ctx.textBaseline = "middle";
-  ctx.fillText(lang === "ro" ? "GÂNDIRE" : "THINKING", leftColX + matrixSize - 12, matrixY + quadHalf);
+  ctx.fillText(lang === "ro" ? "GÂNDIRE" : "THINKING", leftColX + matrixSize - 14, matrixY + quadHalf);
   ctx.restore();
 
   // User position dot (F left 0%, T right 100% / N top 0%, S bottom 100%)
@@ -419,58 +409,24 @@ export async function generateResultsCardCanvas({
 
   // Solid white user dot (crisp, no glow, subtle dark outline)
   ctx.beginPath();
-  ctx.arc(dotPxX, dotPxY, 8.5, 0, Math.PI * 2);
+  ctx.arc(dotPxX, dotPxY, 9, 0, Math.PI * 2);
   ctx.fillStyle = "#FFFFFF";
   ctx.fill();
   ctx.lineWidth = 2;
   ctx.strokeStyle = "rgba(0, 0, 0, 0.35)";
   ctx.stroke();
 
-  // Optional: If top figure exists, render their mini photo dot on the quadrant
-  const topFig = top4[0];
-  if (topFig) {
-    const fN = topFig.axes ? topFig.axes.N : (topFig.mbti?.includes("N") ? 75 : 25);
-    const fT = topFig.axes ? topFig.axes.T : (topFig.mbti?.includes("T") ? 75 : 25);
-    const fCompassX = Math.max(12, Math.min(88, fT));
-    const fCompassY = Math.max(12, Math.min(88, 100 - fN));
-    const fDotX = leftColX + (fCompassX / 100) * matrixSize;
-    const fDotY = matrixY + (fCompassY / 100) * matrixSize;
-
-    const figImg = loadedFigureImages[0];
-    if (figImg) {
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(fDotX, fDotY, 11, 0, Math.PI * 2);
-      ctx.clip();
-      ctx.drawImage(figImg, fDotX - 11, fDotY - 11, 22, 22);
-      ctx.restore();
-
-      ctx.beginPath();
-      ctx.arc(fDotX, fDotY, 11, 0, Math.PI * 2);
-      ctx.strokeStyle = "#FFFFFF";
-      ctx.lineWidth = 1.8;
-      ctx.stroke();
-    }
-  }
-
   ctx.restore();
 
-  // Bottom coordinates label
-  ctx.fillStyle = "#FFFFFF";
-  ctx.font = `800 13px ${FONT_FAMILY}`;
-  ctx.textAlign = "center";
-  ctx.textBaseline = "top";
-  ctx.fillText(`${pN}% N · ${pT}% T`, leftColX + colW / 2, matrixY + matrixSize + 8);
-
   // ----------------------------------------------------
-  // RIGHT COLUMN: 4 MBTI Spectrum Axis Sliders
-  // Exactly matching the 398px height of the left function cards
+  // RIGHT COLUMN: 4 Spectrum Axis Sliders (Title: 4 AXES)
+  // Exactly matching the 374px height of the left function cards
   // ----------------------------------------------------
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
   ctx.fillStyle = "rgba(255, 255, 255, 0.72)";
-  ctx.font = `800 12.5px ${FONT_FAMILY}`;
-  ctx.fillText(lang === "ro" ? "CELE 4 AXE MBTI" : "4 MBTI AXES", rightColX, gridTopY);
+  ctx.font = `800 12px ${FONT_FAMILY}`;
+  ctx.fillText(lang === "ro" ? "CELE 4 AXE" : "4 AXES", rightColX, gridTopY);
 
   const pE = axisScores?.EI?.roundA ?? 50;
   const pI = axisScores?.EI?.roundB ?? 50;
@@ -517,13 +473,13 @@ export async function generateResultsCardCanvas({
   ];
 
   const axisCardsTopY = gridTopY + 22;
-  const axisCardH = 92;
+  const axisCardH = 86;
   const axisGapY = 10;
 
   axisData.forEach((ax, idx) => {
     const cardY = axisCardsTopY + idx * (axisCardH + axisGapY);
 
-    // Card background
+    // Card background - clean flat solid color (no shine/glare)
     roundRect(ctx, rightColX, cardY, colW, axisCardH, 14);
     ctx.fillStyle = ax.color;
     ctx.fill();
@@ -533,15 +489,15 @@ export async function generateResultsCardCanvas({
     ctx.font = `800 12px ${FONT_FAMILY}`;
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
-    ctx.fillText(ax.title, rightColX + 20, cardY + 15);
+    ctx.fillText(ax.title, rightColX + 20, cardY + 14);
 
     // Slider track
     const trackPad = 20;
     const trackX1 = rightColX + trackPad;
     const trackW = colW - trackPad * 2;
-    const trackY = cardY + 45;
+    const trackY = cardY + 43;
 
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.35)";
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
     ctx.lineWidth = 3;
     ctx.lineCap = "round";
     ctx.beginPath();
@@ -552,7 +508,7 @@ export async function generateResultsCardCanvas({
     // White thumb knob (no glow, clean solid circle)
     const thumbX = trackX1 + (Math.max(4, Math.min(96, ax.pct)) / 100) * trackW;
     ctx.beginPath();
-    ctx.arc(thumbX, trackY, 8, 0, Math.PI * 2);
+    ctx.arc(thumbX, trackY, 8.5, 0, Math.PI * 2);
     ctx.fillStyle = "#FFFFFF";
     ctx.fill();
 
@@ -561,34 +517,34 @@ export async function generateResultsCardCanvas({
     ctx.font = `700 12px ${FONT_FAMILY}`;
     ctx.textAlign = "left";
     ctx.textBaseline = "bottom";
-    ctx.fillText(ax.leftLabel, trackX1, cardY + axisCardH - 12);
+    ctx.fillText(ax.leftLabel, trackX1, cardY + axisCardH - 11);
 
     ctx.textAlign = "right";
-    ctx.fillText(ax.rightLabel, trackX1 + trackW, cardY + axisCardH - 12);
+    ctx.fillText(ax.rightLabel, trackX1 + trackW, cardY + axisCardH - 11);
   });
 
-  const axisTotalHeight = 4 * axisCardH + 3 * axisGapY; // 398px
+  const axisTotalHeight = 4 * axisCardH + 3 * axisGapY; // 374px
 
   // ----------------------------------------------------
   // RIGHT COLUMN: 4 Similar Personalities (Notable Figures)
-  // Matching the 2D Quadrant Matrix height
+  // Matching the 2D Quadrant Matrix height (368px)
   // ----------------------------------------------------
   const figuresSectionY = axisCardsTopY + axisTotalHeight + 20;
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
   ctx.fillStyle = "rgba(255, 255, 255, 0.72)";
-  ctx.font = `800 12.5px ${FONT_FAMILY}`;
+  ctx.font = `800 12px ${FONT_FAMILY}`;
   ctx.fillText(lang === "ro" ? "PERSONALITĂȚI SIMILARE" : "SIMILAR FIGURES", rightColX, figuresSectionY);
 
   const figuresY = figuresSectionY + 22;
-  const figCardH = 85;
-  const figGapY = 10;
+  const figCardH = 82;
+  const figGapY = 13.3;
 
   const fallbackFigures = [
-    { name: "Karl Marx", role: "Philosopher", mbti: topMbti?.type || "INTJ", similarity: 96, avatar: "🏛️" },
-    { name: "J. Robert Oppenheimer", role: "Physicist", mbti: topMbti?.type || "INTJ", similarity: 93, avatar: "⚛️" },
-    { name: "Friedrich Nietzsche", role: "Philosopher", mbti: topMbti?.type || "INTJ", similarity: 91, avatar: "📖" },
-    { name: "Bobby Fischer", role: "Chess Grandmaster", mbti: topMbti?.type || "INTJ", similarity: 88, avatar: "♟️" }
+    { name: "Mehmed the Conqueror", role: "Leader & Politician", mbti: topMbti?.type || "INTJ", similarity: 93, avatar: "👑" },
+    { name: "Augustus Octavian", role: "Leader & Politician", mbti: topMbti?.type || "INTJ", similarity: 93, avatar: "🏛️" },
+    { name: "Bobby Fischer", role: "Athlete", mbti: topMbti?.type || "INTJ", similarity: 92, avatar: "♟️" },
+    { name: "Christopher Nolan", role: "Artist & Actor", mbti: topMbti?.type || "INTJ", similarity: 91, avatar: "🎬" }
   ];
 
   const figuresToRender = top4.length > 0 ? top4 : fallbackFigures;
@@ -602,25 +558,31 @@ export async function generateResultsCardCanvas({
     ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
     ctx.fill();
 
-    // Avatar (circular photo or fallback)
+    // Avatar (circular photo or fallback) - Crop with proper aspect ratio without stretching
     const avatarCenterX = rightColX + 34;
     const avatarCenterY = cardY + figCardH / 2;
     const avatarR = 24;
     const preloadedImg = loadedFigureImages[idx];
 
     if (preloadedImg) {
+      const imgW = preloadedImg.naturalWidth || preloadedImg.width || 1;
+      const imgH = preloadedImg.naturalHeight || preloadedImg.height || 1;
+      const minDim = Math.min(imgW, imgH);
+      const sx = (imgW - minDim) / 2;
+      const sy = (imgH - minDim) / 2;
+
       ctx.save();
       ctx.beginPath();
       ctx.arc(avatarCenterX, avatarCenterY, avatarR, 0, Math.PI * 2);
       ctx.clip();
-      ctx.drawImage(preloadedImg, avatarCenterX - avatarR, avatarCenterY - avatarR, avatarR * 2, avatarR * 2);
+      ctx.drawImage(preloadedImg, sx, sy, minDim, minDim, avatarCenterX - avatarR, avatarCenterY - avatarR, avatarR * 2, avatarR * 2);
       ctx.restore();
 
       // Clean white ring border around photo
       ctx.beginPath();
       ctx.arc(avatarCenterX, avatarCenterY, avatarR, 0, Math.PI * 2);
       ctx.strokeStyle = "rgba(255, 255, 255, 0.45)";
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 1.8;
       ctx.stroke();
     } else {
       // Fallback circular avatar
@@ -636,64 +598,64 @@ export async function generateResultsCardCanvas({
       ctx.fillText(fig.avatar || fig.name.charAt(0), avatarCenterX, avatarCenterY);
     }
 
-    // Text Details
+    // Text Details - formal, clean, unstretched
     const textStartX = rightColX + 68;
 
     // Line 1: Figure Name (left) & Match % (right)
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
     ctx.fillStyle = "#FFFFFF";
-    ctx.font = `700 15px ${FONT_FAMILY}`;
+    ctx.font = `700 15.5px ${FONT_FAMILY}`;
 
     let displayName = fig.name;
-    if (ctx.measureText(displayName).width > 185) {
-      displayName = displayName.slice(0, 18) + "…";
+    if (ctx.measureText(displayName).width > 200) {
+      displayName = displayName.slice(0, 19) + "…";
     }
-    ctx.fillText(displayName, textStartX, cardY + 14);
+    ctx.fillText(displayName, textStartX, cardY + 12);
 
-    // Similarity %
+    // Similarity % (right)
     ctx.textAlign = "right";
     ctx.fillStyle = "#FFFFFF";
-    ctx.font = `800 16.5px ${FONT_FAMILY}`;
-    ctx.fillText(`${simPct}%`, rightColX + colW - 20, cardY + 13);
+    ctx.font = `800 18px ${FONT_FAMILY}`;
+    ctx.fillText(`${simPct}%`, rightColX + colW - 18, cardY + 11);
 
     // Line 2: Role + MBTI Badge
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
-    ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
+    ctx.fillStyle = "rgba(255, 255, 255, 0.82)";
     ctx.font = `500 12px ${FONT_FAMILY}`;
 
     let roleText = getFigureRole(fig, lang) || fig.profession || (lang === "en" ? "Notable figure" : "Personalitate notabilă");
-    if (ctx.measureText(roleText).width > 165) {
+    if (ctx.measureText(roleText).width > 160) {
       roleText = roleText.slice(0, 16) + "…";
     }
-    ctx.fillText(roleText, textStartX, cardY + 36);
+    ctx.fillText(roleText, textStartX, cardY + 34);
     const roleWidth = ctx.measureText(roleText).width;
 
     // MBTI badge pill
     const pillX = textStartX + roleWidth + 8;
-    const pillY = cardY + 34;
-    const mbtiPillW = 44;
+    const pillY = cardY + 32;
+    const mbtiPillW = 42;
     const mbtiPillH = 18;
     roundRect(ctx, pillX, pillY, mbtiPillW, mbtiPillH, 5);
-    ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
+    ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
     ctx.fill();
 
     ctx.fillStyle = "#FFFFFF";
-    ctx.font = `800 10px ${FONT_FAMILY}`;
+    ctx.font = `800 10.5px ${FONT_FAMILY}`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(fig.mbti || "INTJ", pillX + mbtiPillW / 2, pillY + mbtiPillH / 2 + 0.5);
 
     // Line 3: Progress bar at bottom
     const barX = textStartX;
-    const barW = (rightColX + colW - 20) - barX;
-    const barY = cardY + 62;
-    const barH = 4.5;
+    const barW = (rightColX + colW - 18) - barX;
+    const barY = cardY + 58;
+    const barH = 5;
 
     // Track
     roundRect(ctx, barX, barY, barW, barH, 2.5);
-    ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
+    ctx.fillStyle = "rgba(255, 255, 255, 0.22)";
     ctx.fill();
 
     // Fill
@@ -708,9 +670,9 @@ export async function generateResultsCardCanvas({
   // ----------------------------------------------------
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillStyle = "rgba(255, 255, 255, 0.45)";
-  ctx.font = `500 11.5px ${FONT_FAMILY}`;
-  ctx.fillText("8func.com · Testul Funcțiilor Cognitive Jungiene (MBTI)", baseW / 2, baseH - 26);
+  ctx.fillStyle = "rgba(255, 255, 255, 0.55)";
+  ctx.font = `700 18px ${FONT_FAMILY}`;
+  ctx.fillText("8func.com", baseW / 2, baseH - 34);
 
   return canvas.toDataURL("image/png");
 }
