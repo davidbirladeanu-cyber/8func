@@ -51,7 +51,7 @@ export const TRANSLATIONS = {
 
     // Welcome Screen
     welcomeEyebrow: "Psychometric Cognitive Assessment",
-    welcomeTitle: "Jungian Cognitive Functions & MBTI Archetypes",
+    welcomeTitle: "Jungian Cognitive Functions & Archetypes",
     welcomeLead: "Discover your psychological engine through authentic 8-function cognitive polarity and 4 MBTI spectrum axes.",
     selectDepth: "Select Assessment Depth",
     questionsCount: "questions",
@@ -218,7 +218,7 @@ export const TRANSLATIONS = {
 
     // Welcome Screen
     welcomeEyebrow: "Evaluare Psihometrică Cognitivă",
-    welcomeTitle: "Funcțiile Cognitive Jungiene & Arhetipurile MBTI",
+    welcomeTitle: "Funcțiile Cognitive Jungiene & Arhetipuri",
     welcomeLead: "Descoperă-ți mecanismul psihologic prin polaritatea autentică a celor 8 funcții cognitive și a celor 4 axe spectrale MBTI.",
     selectDepth: "Alege Profunzimea Evaluării",
     questionsCount: "întrebări",

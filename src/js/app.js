@@ -547,73 +547,45 @@ class App {
 
     const modeCardsHtml = Object.values(TEST_MODES).map(m => {
       const modeTrans = modesData[m.key] || m;
+      const isStandard = m.isPopular;
+      const arrowIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px; margin-left: 0.25rem;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`;
+
       return `
-        <div class="mode-card ${m.isPopular ? 'is-popular' : ''}" data-mode="${m.key}">
-          <span class="mode-badge-pill">${modeTrans.badge}</span>
-          <div class="mode-icon">${m.icon}</div>
+        <div class="mode-card ${isStandard ? 'is-popular' : ''}" data-mode="${m.key}">
+          <div class="mode-card-header">
+            <div class="mode-icon">${m.icon}</div>
+            ${isStandard ? `<span class="mode-badge-pill">${lang === 'ro' ? 'RECOMANDAT' : 'RECOMMENDED'}</span>` : ''}
+          </div>
           <h2 class="mode-name">${modeTrans.name}</h2>
           <div class="mode-meta">
-            <span><b>${m.totalQuestions}</b> ${t('questionsCount', {}, lang)}</span>
-            <span>•</span>
+            <span>${m.totalQuestions} ${t('questionsCount', {}, lang)}</span>
+            <span class="mode-meta-dot">•</span>
             <span>${m.timeEst}</span>
           </div>
-          <p class="mode-desc">${modeTrans.description}</p>
-          <button class="mode-start-btn" type="button">
+          <button class="mode-start-btn ${isStandard ? 'mode-start-btn-popular' : ''}" type="button">
             <span>${t('startTest', { name: modeTrans.name }, lang)}</span>
-            <span class="btn-arrow">${ICONS.arrowRight}</span>
+            ${arrowIcon}
           </button>
-        </div>
-      `;
-    }).join("");
-
-    const funcChipsHtml = FUNCTIONS_LIST.map(f => {
-      const fn = COGNITIVE_FUNCTIONS[f];
-      const fnName = lang === "ro" ? (fn.nameRo || fn.name) : fn.name;
-      const fnKeywords = lang === "ro" ? (fn.keywordsRo || fn.keywords) : fn.keywords;
-      return `
-        <div class="func-chip" style="--chip-color: ${fn.color};" data-func="${fn.code}">
-          <div class="func-chip-top">
-            <span class="func-chip-badge">${fn.code}</span>
-            <span class="func-chip-name">${fnName}</span>
-          </div>
-          <span class="func-chip-sub">${fnKeywords}</span>
         </div>
       `;
     }).join("");
 
     this.root.innerHTML = `
       <div class="app-shell" data-screen="welcome">
-        <a class="skip-link" href="#main-content">${t('skipLink', {}, lang)}</a>
         ${this.renderNavbar()}
-        <span id="main-content" class="skip-target" tabindex="-1"></span>
 
         <main class="welcome-screen">
           <section class="welcome-hero">
-            <div class="welcome-badge">8 Cognitive Functions • 4 Spectrum Axes</div>
+            <div class="welcome-badge">${lang === 'ro' ? '16 TIPURI • 8 FUNCȚII COGNITIVE • 4 AXE DE SPECTRU' : '16 TYPES • 8 COGNITIVE FUNCTIONS • 4 SPECTRUM AXES'}</div>
             <h1 class="welcome-title">${t('welcomeTitle', {}, lang)}</h1>
             <p class="welcome-subtitle">
               ${t('welcomeLead', {}, lang)}
             </p>
-            <div class="test-guidance-pill" style="max-width: 640px; margin: 1.25rem auto 0; padding: 0.65rem 1.25rem; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-pill); font-size: 0.82rem; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 0.5rem; line-height: 1.4;">
-              <span style="font-weight: 700; color: var(--accent);">${lang === 'ro' ? 'Ghid de răspuns:' : 'Answering guide:'}</span>
-              <span>${lang === 'ro' ? 'Răspunde după tendința ta naturală și spontană, nu după excepții.' : 'Answer according to your typical natural tendency, not rare exceptions.'}</span>
-            </div>
           </section>
 
           <!-- 3 Mode Selection Cards -->
           <section class="mode-grid" aria-label="${t('selectDepth', {}, lang)}">
             ${modeCardsHtml}
-          </section>
-
-          <!-- 8 Functions Showcase -->
-          <section class="welcome-showcase">
-            <header class="showcase-header">
-              <h2>${t('eightFunctionsTitle', {}, lang)}</h2>
-              <p>${t('eightFunctionsSub', {}, lang)}</p>
-            </header>
-            <div class="function-chips-grid">
-              ${funcChipsHtml}
-            </div>
           </section>
         </main>
       </div>
@@ -645,13 +617,6 @@ class App {
       card.addEventListener("click", () => {
         const modeKey = card.getAttribute("data-mode");
         this.state.selectMode(modeKey);
-      });
-    });
-
-    document.querySelectorAll(".func-chip").forEach(chip => {
-      chip.addEventListener("click", () => {
-        const f = chip.getAttribute("data-func");
-        this.showFunctionModal(f);
       });
     });
 
