@@ -4593,77 +4593,116 @@ a {
   color: #101010;
 }
 
-/* Temperament Tabs */
-.figures-temp-tabs {
+/* Figures Quick Filters */
+.figures-quick-filters {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 0.25rem 0;
 }
 
-.figures-temp-tab {
-  display: inline-flex;
+.figures-qf-header {
+  display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: var(--radius-pill);
-  background: var(--paper);
-  border: 1px solid var(--line);
-  color: var(--text-strong);
-  font-size: 0.84rem;
-  font-weight: 700;
+  justify-content: space-between;
+  margin-bottom: 0.15rem;
+}
+
+.figures-qf-title {
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.figures-qf-clear-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
   cursor: pointer;
-  transition: all 0.2s ease;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  transition: all 0.15s ease;
 }
 
-.figures-temp-tab:hover {
-  background: var(--card-bg);
-  border-color: var(--accent);
+.figures-qf-clear-btn:hover {
+  color: var(--accent);
+  background: var(--paper);
 }
 
-.figures-temp-tab.active {
-  background: var(--text-strong);
-  border-color: var(--text-strong);
-  color: var(--card-bg);
+.figures-qf-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
-.figures-temp-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+.figures-qf-label {
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  min-width: 125px;
   flex-shrink: 0;
 }
 
-/* 16 MBTI Chips */
-.figures-mbti-chips-wrap {
+.figures-qf-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
-  padding-top: 0.25rem;
-  border-top: 1px solid var(--line);
+  gap: 0.35rem;
+  flex: 1;
 }
 
-.figures-mbti-chip {
+.figures-qf-chip {
   padding: 0.35rem 0.65rem;
   border-radius: 8px;
   background: var(--paper);
   border: 1px solid var(--line);
-  color: var(--text-muted);
+  color: var(--text-strong);
   font-size: 0.76rem;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: 0.04em;
   cursor: pointer;
   transition: all 0.15s ease;
+  line-height: 1.1;
+  text-transform: uppercase;
 }
 
-.figures-mbti-chip:hover {
-  color: var(--text-strong);
+.figures-qf-chip:hover {
+  background: var(--card-bg);
   border-color: var(--accent);
+  color: var(--text-strong);
+  transform: translateY(-1px);
 }
 
-.figures-mbti-chip.active {
+.figures-qf-chip.active {
   background: var(--text-strong);
   border-color: var(--text-strong);
   color: var(--card-bg);
-  font-weight: 800;
+  font-weight: 900;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .figures-qf-chip.active {
+  background: #FFFFFF;
+  border-color: #FFFFFF;
+  color: #101010;
+}
+
+@media (max-width: 640px) {
+  .figures-qf-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+  .figures-qf-label {
+    min-width: auto;
+  }
 }
 
 /* Status & Sort Row */

@@ -17,10 +17,10 @@ export function getFunctionCardColor(f) {
 
 // Colors for the 4 Axis slider cards
 export const AXIS_CARD_COLORS = {
-  ENERGY: "#394e8b",  // deep vibrant blue
-  MIND: "#8e5f78",    // rich muted plum
-  NATURE: "#72cccd",  // crisp cyan
-  TACTICS: "#395296"  // deep royal blue
+  ENERGY: "#395296",  // unified royal blue
+  MIND: "#95637e",    // plum (default for N)
+  NATURE: "#72cccd",  // cyan (default for T)
+  TACTICS: "#395296"  // unified royal blue
 };
 
 // Colors for the 2D Spectrum Quadrants (Mind & Nature)
@@ -334,7 +334,7 @@ export async function generateResultsCardCanvas({
   ctx.textBaseline = "top";
   ctx.fillStyle = "rgba(255, 255, 255, 0.72)";
   ctx.font = `800 12px ${FONT_FAMILY}`;
-  ctx.fillText("SPECTRUM", leftColX, matrixSectionY);
+  ctx.fillText(lang === "ro" ? "SPECTRU" : "SPECTRUM", leftColX, matrixSectionY);
 
   const matrixY = matrixSectionY + 22;
   const matrixSize = colW; // 368px
@@ -426,7 +426,7 @@ export async function generateResultsCardCanvas({
   ctx.textBaseline = "top";
   ctx.fillStyle = "rgba(255, 255, 255, 0.72)";
   ctx.font = `800 12px ${FONT_FAMILY}`;
-  ctx.fillText(lang === "ro" ? "CELE 4 AXE" : "4 AXES", rightColX, gridTopY);
+  ctx.fillText(lang === "ro" ? "4 AXE" : "4 AXIS", rightColX, gridTopY);
 
   const pE = axisScores?.EI?.roundA ?? 50;
   const pI = axisScores?.EI?.roundB ?? 50;
@@ -441,31 +441,35 @@ export async function generateResultsCardCanvas({
     return Math.round(((poleB ?? 50) / sum) * 100);
   };
 
+  const mindColor = pN >= pS ? "#95637e" : "#e5c727";
+  const natureColor = pT >= pF ? "#72cccd" : "#9ac262";
+  const sharedBlue = "#395296";
+
   const axisData = [
     {
       title: lang === "ro" ? "ENERGIE" : "ENERGY",
-      color: AXIS_CARD_COLORS.ENERGY,
+      color: sharedBlue,
       leftLabel: lang === "ro" ? `Extraversie ${pE}%` : `Extraversion ${pE}%`,
       rightLabel: lang === "ro" ? `${pI}% Introversie` : `${pI}% Introversion`,
       pct: calcThumbPct(pE, pI)
     },
     {
       title: lang === "ro" ? "MINTE" : "MIND",
-      color: AXIS_CARD_COLORS.MIND,
+      color: mindColor,
       leftLabel: lang === "ro" ? `Intuiție ${pN}%` : `Intuition ${pN}%`,
       rightLabel: lang === "ro" ? `${pS}% Senzorial` : `${pS}% Sensing`,
       pct: calcThumbPct(pN, pS)
     },
     {
       title: lang === "ro" ? "NATURĂ" : "NATURE",
-      color: AXIS_CARD_COLORS.NATURE,
+      color: natureColor,
       leftLabel: lang === "ro" ? `Gândire ${pT}%` : `Thinking ${pT}%`,
       rightLabel: lang === "ro" ? `${pF}% Sentiment` : `${pF}% Feeling`,
       pct: calcThumbPct(pT, pF)
     },
     {
       title: lang === "ro" ? "TACTICĂ" : "TACTICS",
-      color: AXIS_CARD_COLORS.TACTICS,
+      color: sharedBlue,
       leftLabel: lang === "ro" ? `Judecată ${pJ}%` : `Judging ${pJ}%`,
       rightLabel: lang === "ro" ? `${pP}% Percepție` : `${pP}% Perceiving`,
       pct: calcThumbPct(pJ, pP)

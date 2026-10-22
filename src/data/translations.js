@@ -91,7 +91,7 @@ export const TRANSLATIONS = {
     rankedHierarchySub: "Cognitive Function Agreement Scores (50% is neutral baseline)",
     agreementScoreLabel: "score",
     lowDataLabel: "Low data",
-    mbtiAxesTitle: "4 Axes",
+    mbtiAxesTitle: "4 Axis",
     mbtiAxesLead: "Direct axis preference scores calculated from axis item means centered at 50% (neutral).",
     scaleGuideTitle: "Scale Interpretation Guide:",
     scaleGuideDesc: "Percentages represent relative comparative preferences between pole item means centered at 50% (neutral baseline).",

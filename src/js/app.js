@@ -1333,10 +1333,10 @@ class App {
     // ========================================================
     // 4 Axes Minimalist Layout with Colored Boxes (like Cognitive Hierarchy)
     // ========================================================
-    const energyColor = axisScores.EI.roundA >= axisScores.EI.roundB ? "#4361ab" : "#4d69ba";
+    const energyColor = "#395296";
     const mindColor = axisScores.NS.roundA >= axisScores.NS.roundB ? "#95637e" : "#e5c727";
     const natureColor = axisScores.TF.roundA >= axisScores.TF.roundB ? "#72cccd" : "#9ac262";
-    const tacticsColor = axisScores.JP.roundA >= axisScores.JP.roundB ? "#395296" : "#5573c7";
+    const tacticsColor = "#395296";
 
     const axesData = [
       {
@@ -1594,7 +1594,7 @@ class App {
             <!-- 4 Axes Minimalist (Image 3) -->
             <section class="e-panel" id="mbti-axes">
               <div class="e-sec-head" style="margin-bottom: 1.5rem;">
-                <h2 class="e-sec-title">${lang === "ro" ? "Cele 4 Axe" : "4 Axes"}</h2>
+                <h2 class="e-sec-title">${lang === "ro" ? "4 Axe" : "4 Axis"}</h2>
               </div>
               <div class="minimal-axes-grid">
                 ${mbtiAxesRowsHtml}
@@ -1604,7 +1604,7 @@ class App {
             <!-- Spectrum (Minimalist Single Compass: Mind & Nature, Poza 2 style) -->
             <section class="e-panel" id="spectrum-compass">
               <div class="e-sec-head" style="margin-bottom: 2rem;">
-                <h2 class="e-sec-title">Spectrum</h2>
+                <h2 class="e-sec-title">${lang === "ro" ? "Spectru" : "Spectrum"}</h2>
               </div>
               
               <div class="spectrum-single-wrap">
@@ -1733,12 +1733,14 @@ class App {
 
               <!-- Search personality bar with Autocomplete Dropdown -->
               <div class="figure-search-wrapper" style="margin-bottom: 1.25rem; position: relative;">
+                <span class="comp-search-icon" aria-hidden="true" style="position: absolute; left: 1.15rem; top: 50%; transform: translateY(-50%); pointer-events: none; opacity: 0.65; font-size: 1.1rem; line-height: 1;">🔍</span>
                 <input 
                   type="text" 
                   id="figure-search-input" 
                   class="comp-search-bar" 
+                  style="padding-left: 2.85rem;"
                   autocomplete="off"
-                  placeholder="${lang === 'ro' ? '🔍 Caută o personalitate (ex: John Lennon, Tesla, Einstein, Brad Pitt, Steve Jobs)...' : '🔍 Search a personality (e.g. John Lennon, Tesla, Einstein, Brad Pitt, Steve Jobs)...'}" 
+                  placeholder="" 
                 />
                 <div id="figure-autocomplete-list" class="figure-autocomplete-dropdown" style="display: none;"></div>
               </div>
@@ -1777,7 +1779,7 @@ class App {
                   <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
                   <circle cx="12" cy="13" r="4"></circle>
                 </svg>
-                <span>${lang === "ro" ? "Generează Imaginea Rezultatelor" : "Generate Results Image"}</span>
+                <span>${lang === "ro" ? "Generează Imagine" : "Generate Image"}</span>
               </button>
             </div>
 
@@ -2329,23 +2331,32 @@ class App {
       });
     }
 
-    // 2. Temperament filter (all, NT, NF, SJ, SP)
-    const activeTemp = this.figuresDirTemp || "all";
-    if (activeTemp !== "all") {
-      filtered = filtered.filter(f => {
-        const upper = (f.mbti || "").toUpperCase();
-        if (activeTemp === "NT") return upper.includes("N") && upper.includes("T");
-        if (activeTemp === "NF") return upper.includes("N") && upper.includes("F");
-        if (activeTemp === "SJ") return upper.includes("S") && upper.includes("J");
-        if (activeTemp === "SP") return upper.includes("S") && upper.includes("P");
-        return true;
-      });
-    }
+    // 2. Quick filter (Functions, Axes, Temperaments, Types)
+    const activeCat = this.figuresFilterCategory || "all";
+    const activeVal = this.figuresFilterValue || "all";
 
-    // 3. MBTI chip filter
-    const activeMbti = this.figuresDirMbti || "all";
-    if (activeMbti !== "all") {
-      filtered = filtered.filter(f => (f.mbti || "").toUpperCase() === activeMbti.toUpperCase());
+    if (activeCat !== "all" && activeVal !== "all") {
+      if (activeCat === "function") {
+        const fn = activeVal.toLowerCase();
+        filtered = filtered.filter(f => {
+          const stack = (MBTI_TYPES[f.mbti]?.stack || []).map(s => s.toLowerCase());
+          return stack.slice(0, 2).includes(fn);
+        });
+      } else if (activeCat === "axis") {
+        const ax = activeVal.toUpperCase();
+        filtered = filtered.filter(f => (f.mbti || "").toUpperCase().includes(ax));
+      } else if (activeCat === "temperament") {
+        const temp = activeVal.toUpperCase();
+        const l1 = temp.charAt(0);
+        const l2 = temp.charAt(1);
+        filtered = filtered.filter(f => {
+          const m = (f.mbti || "").toUpperCase();
+          return m.includes(l1) && m.includes(l2);
+        });
+      } else if (activeCat === "type") {
+        const typ = activeVal.toUpperCase();
+        filtered = filtered.filter(f => (f.mbti || "").toUpperCase() === typ);
+      }
     }
 
     // 4. Sorting
@@ -2435,53 +2446,101 @@ class App {
                 ` : ''}
               </div>
 
-              <!-- Temperament Filter Tabs -->
-              <div class="figures-temp-tabs">
-                <button class="figures-temp-tab ${activeTemp === 'all' ? 'active' : ''}" type="button" data-temp="all">
-                  <span>${t('filterAllFigures', {}, lang)}</span>
-                </button>
-                <button class="figures-temp-tab temp-nt ${activeTemp === 'NT' ? 'active' : ''}" type="button" data-temp="NT">
-                  <span class="figures-temp-dot" style="background:#95637e;"></span>
-                  <span>${t('filterNT', {}, lang)}</span>
-                </button>
-                <button class="figures-temp-tab temp-nf ${activeTemp === 'NF' ? 'active' : ''}" type="button" data-temp="NF">
-                  <span class="figures-temp-dot" style="background:#9ac262;"></span>
-                  <span>${t('filterNF', {}, lang)}</span>
-                </button>
-                <button class="figures-temp-tab temp-sj ${activeTemp === 'SJ' ? 'active' : ''}" type="button" data-temp="SJ">
-                  <span class="figures-temp-dot" style="background:#72cccd;"></span>
-                  <span>${t('filterSJ', {}, lang)}</span>
-                </button>
-                <button class="figures-temp-tab temp-sp ${activeTemp === 'SP' ? 'active' : ''}" type="button" data-temp="SP">
-                  <span class="figures-temp-dot" style="background:#e5c727;"></span>
-                  <span>${t('filterSP', {}, lang)}</span>
-                </button>
-              </div>
-
-              <!-- 16 MBTI Chips Filter -->
-              <div class="figures-mbti-chips-wrap">
-                <button class="figures-mbti-chip ${activeMbti === 'all' ? 'active' : ''}" type="button" data-mbti="all">
-                  ${lang === 'ro' ? 'Toate (16)' : 'All 16'}
-                </button>
-                ${[
-                  "INTJ", "INTP", "ENTJ", "ENTP",
-                  "INFJ", "INFP", "ENFJ", "ENFP",
-                  "ISTJ", "ISFJ", "ESTJ", "ESFJ",
-                  "ISTP", "ISFP", "ESTP", "ESFP"
-                ].map(mbti => {
-                  const mbtiColors = getMbtiTileColors(mbti);
-                  const isChipActive = activeMbti === mbti;
-                  return `
-                    <button 
-                      class="figures-mbti-chip ${isChipActive ? 'active' : ''}" 
-                      type="button" 
-                      data-mbti="${mbti}"
-                      style="${isChipActive ? `background: ${mbtiColors.bg}; color: #ffffff; border-color: ${mbtiColors.bg}; font-weight: 800;` : ''}"
-                    >
-                      ${mbti}
+              <!-- Quick Filter Section (All Caps) -->
+              <div class="figures-quick-filters">
+                <div class="figures-qf-header">
+                  <span class="figures-qf-title">${lang === 'ro' ? 'FILTRE RAPIDE' : 'QUICK FILTER'}</span>
+                  ${activeVal !== 'all' ? `
+                    <button class="figures-qf-clear-btn" type="button" id="figures-qf-clear">
+                      ✕ ${lang === 'ro' ? 'RESETEAZĂ FILTRUL' : 'CLEAR FILTER'}
                     </button>
-                  `;
-                }).join("")}
+                  ` : ''}
+                </div>
+
+                <!-- Row 1: Functions (8) -->
+                <div class="figures-qf-row">
+                  <span class="figures-qf-label">FUNCTIONS:</span>
+                  <div class="figures-qf-chips">
+                    ${["NE", "NI", "SE", "SI", "TE", "TI", "FE", "FI"].map(fn => {
+                      const isChipActive = activeCat === "function" && activeVal === fn;
+                      return `
+                        <button 
+                          class="figures-qf-chip ${isChipActive ? 'active' : ''}" 
+                          type="button" 
+                          data-category="function" 
+                          data-value="${fn}"
+                        >
+                          ${fn}
+                        </button>
+                      `;
+                    }).join("")}
+                  </div>
+                </div>
+
+                <!-- Row 2: Axes (8) -->
+                <div class="figures-qf-row">
+                  <span class="figures-qf-label">AXES:</span>
+                  <div class="figures-qf-chips">
+                    ${["E", "I", "N", "S", "T", "F", "P", "J"].map(ax => {
+                      const isChipActive = activeCat === "axis" && activeVal === ax;
+                      return `
+                        <button 
+                          class="figures-qf-chip ${isChipActive ? 'active' : ''}" 
+                          type="button" 
+                          data-category="axis" 
+                          data-value="${ax}"
+                        >
+                          ${ax}
+                        </button>
+                      `;
+                    }).join("")}
+                  </div>
+                </div>
+
+                <!-- Row 3: Temperaments (8) -->
+                <div class="figures-qf-row">
+                  <span class="figures-qf-label">TEMPERAMENTS:</span>
+                  <div class="figures-qf-chips">
+                    ${["NT", "NF", "ST", "SF", "EJ", "EP", "IJ", "IP"].map(temp => {
+                      const isChipActive = activeCat === "temperament" && activeVal === temp;
+                      return `
+                        <button 
+                          class="figures-qf-chip ${isChipActive ? 'active' : ''}" 
+                          type="button" 
+                          data-category="temperament" 
+                          data-value="${temp}"
+                        >
+                          ${temp}
+                        </button>
+                      `;
+                    }).join("")}
+                  </div>
+                </div>
+
+                <!-- Row 4: Types (16) -->
+                <div class="figures-qf-row">
+                  <span class="figures-qf-label">TYPES:</span>
+                  <div class="figures-qf-chips">
+                    ${[
+                      "ENTJ", "INTJ", "ENTP", "INTP", 
+                      "ENFJ", "INFJ", "ENFP", "INFP", 
+                      "ESTJ", "ISTJ", "ESFJ", "ISFJ", 
+                      "ESTP", "ISTP", "ESFP", "ISFP"
+                    ].map(type => {
+                      const isChipActive = activeCat === "type" && activeVal === type;
+                      return `
+                        <button 
+                          class="figures-qf-chip ${isChipActive ? 'active' : ''}" 
+                          type="button" 
+                          data-category="type" 
+                          data-value="${type}"
+                        >
+                          ${type}
+                        </button>
+                      `;
+                    }).join("")}
+                  </div>
+                </div>
               </div>
 
               <!-- Count & Sort Row -->
@@ -2572,26 +2631,35 @@ class App {
     if (resetBtn) {
       resetBtn.addEventListener("click", () => {
         this.figuresDirSearch = "";
-        this.figuresDirTemp = "all";
-        this.figuresDirMbti = "all";
+        this.figuresFilterCategory = "all";
+        this.figuresFilterValue = "all";
         this.figuresDirSort = hasUserScores ? "similarity" : "name";
         this.renderFiguresDirectory();
       });
     }
 
-    // Temperament filter tabs
-    document.querySelectorAll(".figures-temp-tab").forEach(tab => {
-      tab.addEventListener("click", () => {
-        this.figuresDirTemp = tab.getAttribute("data-temp");
-        this.figuresDirMbti = "all";
+    const qfClearBtn = document.getElementById("figures-qf-clear");
+    if (qfClearBtn) {
+      qfClearBtn.addEventListener("click", () => {
+        this.figuresFilterCategory = "all";
+        this.figuresFilterValue = "all";
         this.renderFiguresDirectory();
       });
-    });
+    }
 
-    // 16 MBTI chips
-    document.querySelectorAll(".figures-mbti-chip").forEach(chip => {
+    // Quick filter chips click handler (all caps)
+    document.querySelectorAll(".figures-qf-chip").forEach(chip => {
       chip.addEventListener("click", () => {
-        this.figuresDirMbti = chip.getAttribute("data-mbti");
+        const cat = chip.getAttribute("data-category");
+        const val = chip.getAttribute("data-value");
+        if (this.figuresFilterCategory === cat && this.figuresFilterValue === val) {
+          // Toggle off
+          this.figuresFilterCategory = "all";
+          this.figuresFilterValue = "all";
+        } else {
+          this.figuresFilterCategory = cat;
+          this.figuresFilterValue = val;
+        }
         this.renderFiguresDirectory();
       });
     });
@@ -2662,7 +2730,16 @@ class App {
       }
     }
 
-    // Axes values
+    // Axes values & dynamic colors matching Mind & Nature
+    const figN = fig.axes?.N ?? (fig.mbti.includes("N") ? 75 : 25);
+    const figS = fig.axes?.S ?? (fig.mbti.includes("S") ? 75 : 25);
+    const figT = fig.axes?.T ?? (fig.mbti.includes("T") ? 75 : 25);
+    const figF = fig.axes?.F ?? (fig.mbti.includes("F") ? 75 : 25);
+
+    const figMindColor = figN >= figS ? "#95637e" : "#e5c727";
+    const figNatureColor = figT >= figF ? "#72cccd" : "#9ac262";
+    const sharedBlue = "#395296";
+
     const axesList = [
       {
         id: "EI",
@@ -2671,34 +2748,34 @@ class App {
         rightName: lang === "ro" ? "Introversie" : "Introversion",
         leftVal: fig.axes?.E ?? 50,
         rightVal: fig.axes?.I ?? 50,
-        color: "#394e8b"
+        color: sharedBlue
       },
       {
         id: "NS",
-        name: lang === "ro" ? "PERCEPȚIE" : "PERCEPTION",
+        name: lang === "ro" ? "MINTE" : "MIND",
         leftName: lang === "ro" ? "Intuiție" : "Intuition",
-        rightName: lang === "ro" ? "Senzație" : "Sensing",
+        rightName: lang === "ro" ? "Senzorial" : "Sensing",
         leftVal: fig.axes?.N ?? 50,
         rightVal: fig.axes?.S ?? 50,
-        color: "#8e5f78"
+        color: figMindColor
       },
       {
         id: "TF",
-        name: lang === "ro" ? "DECIZIE" : "DECISION",
+        name: lang === "ro" ? "NATURĂ" : "NATURE",
         leftName: lang === "ro" ? "Gândire" : "Thinking",
         rightName: lang === "ro" ? "Sentiment" : "Feeling",
         leftVal: fig.axes?.T ?? 50,
         rightVal: fig.axes?.F ?? 50,
-        color: "#72cccd"
+        color: figNatureColor
       },
       {
         id: "JP",
         name: lang === "ro" ? "TACTICĂ" : "TACTICS",
         leftName: lang === "ro" ? "Judecată" : "Judging",
-        rightName: lang === "ro" ? "Percepție" : "Perception",
+        rightName: lang === "ro" ? "Percepție" : "Perceiving",
         leftVal: fig.axes?.J ?? 50,
         rightVal: fig.axes?.P ?? 50,
-        color: "#395296"
+        color: sharedBlue
       }
     ];
 
@@ -2737,7 +2814,7 @@ class App {
 
         <!-- 4 Spectrum Axes -->
         <div class="fig-modal-sec">
-          <h4 class="fig-modal-sec-title">${lang === 'ro' ? 'Spectrul celor 4 Axe MBTI' : '4-Axis MBTI Spectrum'}</h4>
+          <h4 class="fig-modal-sec-title">${lang === 'ro' ? '4 Axe' : '4 Axis'}</h4>
           <div class="fig-modal-axes-grid">
             ${axesList.map(ax => `
               <div class="fig-modal-axis-card">
@@ -2760,7 +2837,7 @@ class App {
 
         <!-- 8 Cognitive Functions Breakdown -->
         <div class="fig-modal-sec">
-          <h4 class="fig-modal-sec-title">${lang === 'ro' ? 'Ierarhia celor 8 Funcții Cognitive' : '8 Cognitive Functions Breakdown'}</h4>
+          <h4 class="fig-modal-sec-title">8 Cognitive</h4>
           <div class="fig-modal-funcs-grid">
             ${FUNCTIONS_LIST.map(f => {
               const fPct = fig.scores?.[f] ?? 50;
