@@ -303,7 +303,7 @@ function renderVaultContent(modal) {
             </div>
             ${topFuncs ? `<div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.6rem;">Top funcții: <strong style="color: var(--text-strong);">${topFuncs}</strong></div>` : ""}
             <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-              <button type="button" class="vault-btn-dl" data-idx="${idx}" style="padding: 0.35rem 0.75rem; border-radius: var(--radius-pill); font-size: 0.78rem; font-weight: 700; background: var(--accent); color: #fff; border: none; cursor: pointer;">
+              <button type="button" class="vault-btn-dl" data-idx="${idx}" style="padding: 0.35rem 0.75rem; border-radius: var(--radius-pill); font-size: 0.78rem; font-weight: 700; background: var(--accent); color: var(--accent-contrast, #101010); border: none; cursor: pointer;">
                 📥 Descarcă JSON
               </button>
               <button type="button" class="vault-btn-view" data-idx="${idx}" style="padding: 0.35rem 0.75rem; border-radius: var(--radius-pill); font-size: 0.78rem; font-weight: 600; background: var(--card-bg); color: var(--text-strong); border: 1px solid var(--line); cursor: pointer;">
@@ -363,7 +363,7 @@ function renderVaultContent(modal) {
             </p>
             <div style="display: flex; gap: 0.4rem;">
               <input type="url" id="vault-webhook-input" value="${currentWebhook}" placeholder="https://discord.com/api/webhooks/..." style="flex: 1; padding: 0.45rem 0.75rem; border-radius: var(--radius-sm); border: 1.5px solid var(--line); background: var(--card-bg); color: var(--text-strong); font-size: 0.8rem;">
-              <button type="button" id="vault-webhook-save-btn" style="padding: 0.45rem 0.85rem; border-radius: var(--radius-sm); background: var(--accent); color: #fff; font-weight: 700; font-size: 0.8rem; border: none; cursor: pointer;">
+              <button type="button" id="vault-webhook-save-btn" style="padding: 0.45rem 0.85rem; border-radius: var(--radius-sm); background: var(--accent); color: var(--accent-contrast, #101010); font-weight: 700; font-size: 0.8rem; border: none; cursor: pointer;">
                 Salvează
               </button>
             </div>

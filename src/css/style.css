@@ -37,6 +37,7 @@
 
   --accent: #101010;
   --accent-deep: #000000;
+  --accent-contrast: #FFFFFF;
   --accent-soft: #F0F0F0;
   --critical-deep: var(--red-700);
   --critical-soft: var(--red-50);
@@ -103,6 +104,7 @@
 
   --accent: #FFFFFF;
   --accent-deep: #E0E0E0;
+  --accent-contrast: #101010;
   --accent-soft: #222222;
   --critical-deep: #E0535E;
   --critical-soft: #2E1517;
@@ -369,7 +371,7 @@ a {
 
 .e-btn-primary {
   background: var(--accent);
-  color: #FFFFFF;
+  color: var(--accent-contrast, #FFFFFF);
 }
 
 .e-btn-primary:hover {
@@ -380,6 +382,14 @@ a {
 [data-theme="dark"] .e-btn-primary {
   background: #FFFFFF;
   color: #101010;
+}
+
+[data-theme="dark"] .e-btn-primary * {
+  color: #101010;
+}
+
+[data-theme="dark"] .e-btn-primary svg {
+  stroke: #101010;
 }
 
 [data-theme="dark"] .e-btn-primary:hover {
@@ -517,8 +527,14 @@ a {
 
 .mode-card.is-popular .mode-badge-pill {
   background: var(--accent);
-  color: #FFFFFF;
+  color: var(--accent-contrast, #FFFFFF);
   border-color: var(--accent);
+}
+
+[data-theme="dark"] .mode-card.is-popular .mode-badge-pill {
+  background: #FFFFFF;
+  color: #101010;
+  border-color: #FFFFFF;
 }
 
 .mode-icon {
@@ -591,8 +607,25 @@ a {
 .mode-card:hover .mode-start-btn,
 .mode-card.is-popular .mode-start-btn {
   background: var(--accent);
-  color: #FFFFFF;
+  color: var(--accent-contrast, #FFFFFF);
   border-color: var(--accent);
+}
+
+[data-theme="dark"] .mode-card:hover .mode-start-btn,
+[data-theme="dark"] .mode-card.is-popular .mode-start-btn {
+  background: #FFFFFF;
+  color: #101010;
+  border-color: #FFFFFF;
+}
+
+[data-theme="dark"] .mode-card:hover .mode-start-btn *,
+[data-theme="dark"] .mode-card.is-popular .mode-start-btn * {
+  color: #101010;
+}
+
+[data-theme="dark"] .mode-card:hover .mode-start-btn svg,
+[data-theme="dark"] .mode-card.is-popular .mode-start-btn svg {
+  stroke: #101010;
 }
 
 .welcome-showcase {
@@ -1389,12 +1422,35 @@ a {
 
 .primary-button {
   background: var(--accent);
-  color: #FFFFFF;
+  color: var(--accent-contrast, #FFFFFF);
+}
+
+.primary-button .btn-arrow {
+  stroke: currentColor;
+}
+
+[data-theme="dark"] .primary-button {
+  background: #FFFFFF;
+  color: #101010;
+  border-color: #FFFFFF;
+}
+
+[data-theme="dark"] .primary-button * {
+  color: #101010;
+}
+
+[data-theme="dark"] .primary-button .btn-arrow {
+  stroke: #101010;
 }
 
 .primary-button:not(:disabled):hover {
   background: var(--accent-deep);
   transform: translateX(2px);
+}
+
+[data-theme="dark"] .primary-button:not(:disabled):hover {
+  background: #E5E5E5;
+  color: #101010;
 }
 
 .btn-arrow {
@@ -2665,8 +2721,18 @@ a {
 
 .fig-tab.active {
   background: var(--accent);
-  color: #FFFFFF;
+  color: var(--accent-contrast, #FFFFFF);
   border-color: var(--accent);
+}
+
+[data-theme="dark"] .fig-tab.active {
+  background: #FFFFFF;
+  color: #101010;
+  border-color: #FFFFFF;
+}
+
+[data-theme="dark"] .fig-tab.active * {
+  color: #101010;
 }
 
 .fig-grid {
@@ -3945,13 +4011,18 @@ a {
   height: 48px;
   border-radius: 50%;
   background: var(--accent);
-  color: #fff;
+  color: var(--accent-contrast, #fff);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
   font-size: 1rem;
   flex-shrink: 0;
+}
+
+[data-theme="dark"] .fig-avatar-fallback {
+  background: #FFFFFF;
+  color: #101010;
 }
 
 .fig-info {
@@ -4375,8 +4446,18 @@ a {
 .e-nav-figures-btn.active {
   background: var(--accent);
   border-color: var(--accent);
-  color: #ffffff;
+  color: var(--accent-contrast, #ffffff);
   box-shadow: 0 4px 12px rgba(16, 16, 16, 0.25);
+}
+
+[data-theme="dark"] .e-nav-figures-btn.active {
+  background: #FFFFFF;
+  border-color: #FFFFFF;
+  color: #101010;
+}
+
+[data-theme="dark"] .e-nav-figures-btn.active * {
+  color: #101010;
 }
 
 .figures-dir-container {
@@ -4504,7 +4585,12 @@ a {
 
 .figures-search-clear:hover {
   background: var(--accent);
-  color: #ffffff;
+  color: var(--accent-contrast, #ffffff);
+}
+
+[data-theme="dark"] .figures-search-clear:hover {
+  background: #FFFFFF;
+  color: #101010;
 }
 
 /* Temperament Tabs */
@@ -4628,7 +4714,17 @@ a {
 .figures-sort-btn.active {
   background: var(--accent);
   border-color: var(--accent);
-  color: #ffffff;
+  color: var(--accent-contrast, #ffffff);
+}
+
+[data-theme="dark"] .figures-sort-btn.active {
+  background: #FFFFFF;
+  border-color: #FFFFFF;
+  color: #101010;
+}
+
+[data-theme="dark"] .figures-sort-btn.active * {
+  color: #101010;
 }
 
 /* Figures Grid */
@@ -5102,5 +5198,78 @@ a {
   display: flex;
   justify-content: flex-end;
   gap: 0.75rem;
+}
+
+/* ==========================================================================
+   Universal Dark Mode Button & Pill Contrast Guarantee
+   Ensures ALL white/accent buttons in dark mode have dark, readable text & icons
+   ========================================================================== */
+
+[data-theme="dark"] .primary-button,
+[data-theme="dark"] .e-btn-primary,
+[data-theme="dark"] .mode-start-btn:hover,
+[data-theme="dark"] .mode-card.is-popular .mode-start-btn,
+[data-theme="dark"] .mode-card:hover .mode-start-btn,
+[data-theme="dark"] .mode-card.is-popular .mode-badge-pill,
+[data-theme="dark"] .fig-tab.active,
+[data-theme="dark"] .e-nav-figures-btn.active,
+[data-theme="dark"] .figures-sort-btn.active,
+[data-theme="dark"] .figures-temp-tab.active,
+[data-theme="dark"] .figures-mbti-chip.active,
+[data-theme="dark"] .figures-search-clear:hover,
+[data-theme="dark"] .vault-btn-dl,
+[data-theme="dark"] #vault-webhook-save-btn,
+[data-theme="dark"] button[style*="background: var(--accent)"],
+[data-theme="dark"] button[style*="background: #FFFFFF"],
+[data-theme="dark"] button[style*="background: #ffffff"],
+[data-theme="dark"] button[style*="background: #fff"],
+[data-theme="dark"] button[style*="background: white"] {
+  background-color: #FFFFFF !important;
+  color: #101010 !important;
+  border-color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .primary-button *,
+[data-theme="dark"] .e-btn-primary *,
+[data-theme="dark"] .mode-start-btn:hover *,
+[data-theme="dark"] .mode-card.is-popular .mode-start-btn *,
+[data-theme="dark"] .mode-card:hover .mode-start-btn *,
+[data-theme="dark"] .mode-card.is-popular .mode-badge-pill *,
+[data-theme="dark"] .fig-tab.active *,
+[data-theme="dark"] .e-nav-figures-btn.active *,
+[data-theme="dark"] .figures-sort-btn.active *,
+[data-theme="dark"] .figures-temp-tab.active *,
+[data-theme="dark"] .figures-mbti-chip.active *,
+[data-theme="dark"] .figures-search-clear:hover *,
+[data-theme="dark"] .vault-btn-dl *,
+[data-theme="dark"] #vault-webhook-save-btn *,
+[data-theme="dark"] button[style*="background: var(--accent)"] *,
+[data-theme="dark"] button[style*="background: #FFFFFF"] *,
+[data-theme="dark"] button[style*="background: #ffffff"] *,
+[data-theme="dark"] button[style*="background: #fff"] *,
+[data-theme="dark"] button[style*="background: white"] * {
+  color: #101010 !important;
+}
+
+[data-theme="dark"] .primary-button svg,
+[data-theme="dark"] .e-btn-primary svg,
+[data-theme="dark"] .mode-start-btn:hover svg,
+[data-theme="dark"] .mode-card.is-popular .mode-start-btn svg,
+[data-theme="dark"] .mode-card:hover .mode-start-btn svg,
+[data-theme="dark"] button[style*="background: var(--accent)"] svg,
+[data-theme="dark"] button[style*="background: #FFFFFF"] svg,
+[data-theme="dark"] button[style*="background: #ffffff"] svg,
+[data-theme="dark"] button[style*="background: #fff"] svg,
+[data-theme="dark"] button[style*="background: white"] svg {
+  stroke: #101010 !important;
+}
+
+[data-theme="dark"] .primary-button:not(:disabled):hover,
+[data-theme="dark"] .e-btn-primary:not(:disabled):hover,
+[data-theme="dark"] .mode-card.is-popular .mode-start-btn:hover,
+[data-theme="dark"] .mode-card:hover .mode-start-btn:hover {
+  background-color: #E5E5E5 !important;
+  color: #101010 !important;
+  border-color: #E5E5E5 !important;
 }
 
