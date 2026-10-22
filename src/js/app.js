@@ -863,103 +863,136 @@ class App {
         if (q.options) q.options.forEach(o => { if (o.pole) tags.push(o.pole); });
       }
 
+      // Determine target pole and calculate question weight
+      const primaryTarget = q.category === "axis" ? (q.agreementPole || q.target) : q.target;
+      const targetQuestions = questions.filter(item => {
+        if (item.category === q.category) {
+          if ((item.agreementPole || item.target) === primaryTarget) return true;
+          if (item.options && item.options.some(o => o.pole === primaryTarget)) return true;
+        }
+        return false;
+      });
+      const countForTarget = Math.max(1, targetQuestions.length);
+      const questionMaxPct = Math.round((100 / countForTarget) * 10) / 10;
+
+      const AXIS_COLOR_MAP = {
+        E: "#e0535e", I: "#0284C7",
+        N: "#95637e", S: "#e5c727",
+        T: "#3B49DF", F: "#9ac262",
+        J: "#72cccd", P: "#d97706"
+      };
+
+      let targetColor = "var(--accent)";
+      if (COGNITIVE_FUNCTIONS[primaryTarget]) {
+        targetColor = COGNITIVE_FUNCTIONS[primaryTarget]?.color || "#3B49DF";
+      } else if (AXIS_COLOR_MAP[primaryTarget]) {
+        targetColor = AXIS_COLOR_MAP[primaryTarget];
+      }
+
       let impactBadge = "";
-      let impactBadgeColor = "var(--text-muted)";
+      let impactBadgeBg = targetColor;
+      let impactBadgeTextColor = "#ffffff";
       let ansLabel = "";
       let impactDesc = "";
+      let edgeBadgeHtml = "";
 
       if (hasAnswer) {
         if (q.format === "wouldYouRather" || q.format === "direct") {
           const opt = (q.options || []).find(o => o.id === userAnsKey);
           const optText = (lang === "ro" && opt?.textRo) ? opt.textRo : opt?.text;
+          const targetPole = opt?.pole || primaryTarget;
           ansLabel = `${lang === "ro" ? "Opțiunea" : "Option"} ${userAnsKey}: "${optText || ""}"`;
-          const targetPole = opt?.pole || "";
-          impactBadge = `+1.0 → ${targetPole}`;
-          impactBadgeColor = COGNITIVE_FUNCTIONS[targetPole]?.color || "var(--accent)";
+          
+          if (COGNITIVE_FUNCTIONS[targetPole]) targetColor = COGNITIVE_FUNCTIONS[targetPole].color;
+          else if (AXIS_COLOR_MAP[targetPole]) targetColor = AXIS_COLOR_MAP[targetPole];
+          
+          impactBadge = `+${questionMaxPct}% → ${targetPole}`;
+          impactBadgeBg = targetColor;
+          impactBadgeTextColor = "#ffffff";
+          edgeBadgeHtml = `<span class="breakdown-edge-badge" style="background: rgba(47, 124, 99, 0.15); color: #1B5844; border: 1px solid rgba(47, 124, 99, 0.3);">⚡ ${lang === 'ro' ? 'Alegere Directă' : 'Direct Choice'}</span>`;
           impactDesc = lang === "ro"
-            ? `Alegerea directă a adăugat +1.0 punct pentru ${targetPole}.`
-            : `Your direct choice added +1.0 point to ${targetPole}.`;
+            ? `Alegerea directă ți-a adus <strong>+${questionMaxPct}%</strong> la <strong>${targetPole}</strong> și te-a plasat ferm la marginea spectrului pentru această trăsătură.`
+            : `Your direct choice added <strong>+${questionMaxPct}%</strong> to <strong>${targetPole}</strong> and placed you firmly at the edge of the spectrum.`;
         } else {
           // Agreement scale
-          const val = ANSWER_VALUE_MAP[userAnsKey] ?? 0;
           const scaleLabelsRo = {
-            STRONGLY_AGREE: "Total de acord (+1.0)",
-            AGREE: "De acord (+0.5)",
-            NEUTRAL: "Neutru (0.0)",
-            DISAGREE: "Dezacord (-0.5)",
-            STRONGLY_DISAGREE: "Total dezacord (-1.0)"
+            STRONGLY_AGREE: "Total de acord (100%)",
+            AGREE: "De acord (75%)",
+            NEUTRAL: "Neutru (50%)",
+            DISAGREE: "Dezacord (25%)",
+            STRONGLY_DISAGREE: "Total dezacord (0%)"
           };
           const scaleLabelsEn = {
-            STRONGLY_AGREE: "Strongly agree (+1.0)",
-            AGREE: "Agree (+0.5)",
-            NEUTRAL: "Neutral (0.0)",
-            DISAGREE: "Disagree (-0.5)",
-            STRONGLY_DISAGREE: "Strongly disagree (-1.0)"
+            STRONGLY_AGREE: "Strongly agree (100%)",
+            AGREE: "Agree (75%)",
+            NEUTRAL: "Neutral (50%)",
+            DISAGREE: "Disagree (25%)",
+            STRONGLY_DISAGREE: "Strongly disagree (0%)"
           };
           ansLabel = (lang === "ro" ? scaleLabelsRo[userAnsKey] : scaleLabelsEn[userAnsKey]) || userAnsKey;
 
-          if (q.category === "function") {
-            if (val > 0) {
-              impactBadge = `+${val.toFixed(1)} → ${q.target}`;
-              impactBadgeColor = COGNITIVE_FUNCTIONS[q.target]?.color || "var(--accent)";
-              impactDesc = lang === "ro"
-                ? `Acordul a crescut scorul funcției ${q.target} (+${val.toFixed(1)}).`
-                : `Agreement raised ${q.target} score (+${val.toFixed(1)}).`;
-            } else if (val < 0) {
-              const opp = q.oppositePole || "Opus";
-              impactBadge = `+${Math.abs(val).toFixed(1)} → ${opp}`;
-              impactBadgeColor = COGNITIVE_FUNCTIONS[opp]?.color || "var(--accent)";
-              impactDesc = lang === "ro"
-                ? `Dezacordul a orientat punctajul spre funcția opusă ${opp} (+${Math.abs(val).toFixed(1)}).`
-                : `Disagreement shifted points to opposite ${opp} (+${Math.abs(val).toFixed(1)}).`;
-            } else {
-              impactBadge = lang === "ro" ? "0.0 (Neutru)" : "0.0 (Neutral)";
-              impactBadgeColor = "var(--text-muted)";
-              impactDesc = lang === "ro"
-                ? "Răspunsul neutru nu a modificat balanța între funcții."
-                : "Neutral response maintained baseline balance.";
-            }
-          } else {
-            // Axis item
-            if (val > 0) {
-              const target = q.agreementPole || q.target;
-              impactBadge = `+${val.toFixed(1)} → ${target}`;
-              impactBadgeColor = "var(--accent)";
-              impactDesc = lang === "ro"
-                ? `Acordul a favorizat polul ${target} (+${val.toFixed(1)}).`
-                : `Agreement favored pole ${target} (+${val.toFixed(1)}).`;
-            } else if (val < 0) {
-              const opp = q.oppositePole || q.opposite;
-              impactBadge = `+${Math.abs(val).toFixed(1)} → ${opp}`;
-              impactBadgeColor = "var(--accent)";
-              impactDesc = lang === "ro"
-                ? `Dezacordul a favorizat polul opus ${opp} (+${Math.abs(val).toFixed(1)}).`
-                : `Disagreement favored opposite pole ${opp} (+${Math.abs(val).toFixed(1)}).`;
-            } else {
-              impactBadge = lang === "ro" ? "0.0 (Neutru)" : "0.0 (Neutral)";
-              impactBadgeColor = "var(--text-muted)";
-              impactDesc = lang === "ro"
-                ? `Răspuns neutru pe axa ${q.dimension || ""}.`
-                : `Neutral response on axis ${q.dimension || ""}.`;
-            }
+          if (userAnsKey === "STRONGLY_AGREE") {
+            const pct = questionMaxPct;
+            impactBadge = `+${pct}% → ${primaryTarget}`;
+            impactBadgeBg = targetColor;
+            impactBadgeTextColor = "#ffffff";
+            edgeBadgeHtml = `<span class="breakdown-edge-badge" style="background: rgba(224, 83, 94, 0.14); color: #C23A45; border: 1px solid rgba(224, 83, 94, 0.3);">⚡ ${lang === 'ro' ? 'Marginea Spectrului (100%)' : 'Spectrum Edge (100%)'}</span>`;
+            impactDesc = lang === "ro"
+              ? `Întrebarea ți-a adus <strong>+${pct}%</strong> la <strong>${primaryTarget}</strong> și <strong>te-a plasat fix la marginea spectrului</strong> cu un scor extrem de acord 100%.`
+              : `This question added <strong>+${pct}%</strong> to <strong>${primaryTarget}</strong> and <strong>placed you right at the edge of the spectrum</strong> (100% agreement).`;
+          } else if (userAnsKey === "AGREE") {
+            const pct = Math.round(questionMaxPct * 0.75 * 10) / 10;
+            impactBadge = `+${pct}% → ${primaryTarget}`;
+            impactBadgeBg = targetColor;
+            impactBadgeTextColor = "#ffffff";
+            impactDesc = lang === "ro"
+              ? `Întrebarea ți-a adus <strong>+${pct}%</strong> la <strong>${primaryTarget}</strong> (din potențialul maxim de ${questionMaxPct}%), consolidând clar această preferință.`
+              : `This question added <strong>+${pct}%</strong> to <strong>${primaryTarget}</strong> (out of max ${questionMaxPct}%), clearly reinforcing this preference.`;
+          } else if (userAnsKey === "NEUTRAL") {
+            const pct = Math.round(questionMaxPct * 0.5 * 10) / 10;
+            impactBadge = `+${pct}% · Median`;
+            impactBadgeBg = "var(--ink-200)";
+            impactBadgeTextColor = "var(--text-strong)";
+            impactDesc = lang === "ro"
+              ? `Răspunsul neutru a adus o contribuție mediană de <strong>+${pct}%</strong>, menținând echilibrul pe axă fără să încline balanța.`
+              : `Neutral response brought a median contribution of <strong>+${pct}%</strong>, maintaining balance on the axis without tilting.`;
+          } else if (userAnsKey === "DISAGREE") {
+            const opp = q.oppositePole || q.opposite || "Opus";
+            const targetPct = Math.round(questionMaxPct * 0.25 * 10) / 10;
+            const oppPct = Math.round(questionMaxPct * 0.75 * 10) / 10;
+            let oppColor = targetColor;
+            if (COGNITIVE_FUNCTIONS[opp]) oppColor = COGNITIVE_FUNCTIONS[opp].color;
+            else if (AXIS_COLOR_MAP[opp]) oppColor = AXIS_COLOR_MAP[opp];
+            impactBadge = `+${oppPct}% → ${opp}`;
+            impactBadgeBg = oppColor;
+            impactBadgeTextColor = "#ffffff";
+            impactDesc = lang === "ro"
+              ? `Dezacordul a adus doar +${targetPct}% la ${primaryTarget}, redirecționând <strong>+${oppPct}%</strong> către polul opus <strong>${opp}</strong>.`
+              : `Disagreement brought only +${targetPct}% to ${primaryTarget}, redirecting <strong>+${oppPct}%</strong> towards the opposite pole <strong>${opp}</strong>.`;
+          } else if (userAnsKey === "STRONGLY_DISAGREE") {
+            const opp = q.oppositePole || q.opposite || "Opus";
+            const oppPct = questionMaxPct;
+            let oppColor = targetColor;
+            if (COGNITIVE_FUNCTIONS[opp]) oppColor = COGNITIVE_FUNCTIONS[opp].color;
+            else if (AXIS_COLOR_MAP[opp]) oppColor = AXIS_COLOR_MAP[opp];
+            impactBadge = `+${oppPct}% → ${opp}`;
+            impactBadgeBg = oppColor;
+            impactBadgeTextColor = "#ffffff";
+            edgeBadgeHtml = `<span class="breakdown-edge-badge" style="background: rgba(224, 83, 94, 0.14); color: #C23A45; border: 1px solid rgba(224, 83, 94, 0.3);">⚡ ${lang === 'ro' ? 'Marginea Spectrului (0%)' : 'Spectrum Edge (0%)'}</span>`;
+            impactDesc = lang === "ro"
+              ? `Dezacordul total ți-a adus 0% la ${primaryTarget} și <strong>te-a plasat fix la marginea spectrului</strong>, împingând o pondere de <strong>+${oppPct}%</strong> către polul opus <strong>${opp}</strong>.`
+              : `Strong disagreement gave 0% to ${primaryTarget} and <strong>placed you right at the edge of the spectrum</strong>, transferring <strong>+${oppPct}%</strong> to opposite pole <strong>${opp}</strong>.`;
           }
         }
       } else {
         // Shared URL / no local answers
         ansLabel = lang === "ro" ? "Ghid de calibrare întrebare" : "Question calibration reference";
-        if (q.category === "function") {
-          impactBadge = `${q.target} ⟷ ${q.oppositePole || ""}`;
-          impactBadgeColor = COGNITIVE_FUNCTIONS[q.target]?.color || "var(--accent)";
-          impactDesc = lang === "ro"
-            ? `Acord: favorizează ${q.target} (+1.0) · Dezacord: favorizează ${q.oppositePole} (+1.0)`
-            : `Agree: favors ${q.target} (+1.0) · Disagree: favors ${q.oppositePole} (+1.0)`;
-        } else {
-          impactBadge = `Axa ${q.dimension || q.target}`;
-          impactBadgeColor = "var(--accent)";
-          impactDesc = lang === "ro"
-            ? `Acord: favorizează ${q.target} · Dezacord: favorizează ${q.oppositePole}`
-            : `Agree: favors ${q.target} · Disagree: favors ${q.oppositePole}`;
-        }
+        impactBadge = `${primaryTarget} (max +${questionMaxPct}%)`;
+        impactBadgeBg = targetColor;
+        impactBadgeTextColor = "#ffffff";
+        impactDesc = lang === "ro"
+          ? `Fiecare răspuns la această întrebare poate adăuga până la <strong>+${questionMaxPct}%</strong> la scorul ${primaryTarget}.`
+          : `Each answer to this question can contribute up to <strong>+${questionMaxPct}%</strong> to ${primaryTarget}.`;
       }
 
       const categoryLabel = q.category === "axis"
@@ -967,21 +1000,22 @@ class App {
         : (lang === "ro" ? `Funcție (${q.target} vs ${q.oppositePole || ""})` : `Function (${q.target} vs ${q.oppositePole || ""})`);
 
       return `
-        <div class="breakdown-card" data-tags="${tags.join(" ")}" data-category="${q.category}">
+        <div class="breakdown-card" data-tags="${tags.join(" ")}" data-category="${q.category}" style="border-left: 5px solid ${targetColor};">
           <div class="breakdown-card-top">
-            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 0.55rem; flex-wrap: wrap;">
               <span class="breakdown-qid">#${qNum} · ${q.id}</span>
               <span class="breakdown-cat-tag">${categoryLabel}</span>
+              ${edgeBadgeHtml}
             </div>
-            <span class="breakdown-impact-pill" style="color: ${impactBadgeColor}; border-color: color-mix(in srgb, ${impactBadgeColor} 35%, transparent); background: color-mix(in srgb, ${impactBadgeColor} 10%, transparent);">
+            <span class="breakdown-impact-pill" style="background: ${impactBadgeBg}; color: ${impactBadgeTextColor};">
               ${impactBadge}
             </span>
           </div>
           <p class="breakdown-qtext">"${qText}"</p>
           <div class="breakdown-answer-box">
             <div class="breakdown-ans-label">
-              <span style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em;">${t('yourAnswerLabel', {}, lang)}:</span>
-              <strong style="margin-left: 0.35rem; color: var(--text-strong);">${ansLabel}</strong>
+              <span style="color: var(--text-muted); font-size: 0.78rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.04em;">${t('yourAnswerLabel', {}, lang)}:</span>
+              <strong style="color: var(--text-strong);">${ansLabel}</strong>
             </div>
             <p class="breakdown-ans-expl">${impactDesc}</p>
           </div>
@@ -1484,7 +1518,7 @@ class App {
             <article class="e-panel e-top" style="--c: ${topMbti.temperamentColor}; --cb: ${topMbti.temperamentBg};">
               <div class="e-top-head">
                 <div class="e-top-title-group">
-                  <span class="e-tag e-tag-hero" style="background: ${topMbti.temperamentBg}; color: ${topMbti.temperamentColor}; border: 1px solid ${topMbti.temperamentBorder};">
+                  <span class="e-tag e-tag-hero" style="background: ${topMbti.temperamentColor}; color: #ffffff !important; border: none; border-radius: 999px;">
                     ${topMbti.temperamentName}
                   </span>
                   <h1 class="e-hero-title">${topMbti.title} <span style="color: ${topMbti.temperamentColor};">(${topMbti.type})</span></h1>
@@ -1492,7 +1526,8 @@ class App {
                     ${(topMbti.stack || []).map(st => {
                       const fInfo = COGNITIVE_FUNCTIONS[st];
                       const fTitle = lang === "ro" ? (fInfo?.nameRo || fInfo?.name || st) : (fInfo?.name || st);
-                      return `<span class="resemble-stack-pill" title="${fTitle}">${st}</span>`;
+                      const fColor = fInfo?.color || "#3B49DF";
+                      return `<span class="resemble-stack-pill" style="background: ${fColor}; color: #ffffff;" title="${fTitle}">${st}</span>`;
                     }).join("")}
                   </div>
                 </div>
@@ -1648,7 +1683,10 @@ class App {
                       <h3 class="resemble-name">${m.title}</h3>
                       <p class="resemble-desc">${m.description}</p>
                       <div class="resemble-stack">
-                        ${m.stack.map(st => `<span class="resemble-stack-pill">${st}</span>`).join("")}
+                        ${m.stack.map(st => {
+                          const fColor = COGNITIVE_FUNCTIONS[st]?.color || "#3B49DF";
+                          return `<span class="resemble-stack-pill" style="background: ${fColor}; color: #ffffff;">${st}</span>`;
+                        }).join("")}
                       </div>
                     </div>
                   `;
@@ -1723,16 +1761,13 @@ class App {
 
             <!-- Generate Image CTA Button (After Comparative Analysis) -->
             <div class="generate-card-cta-wrapper">
-              <button class="e-btn e-btn-generate-card" type="button" id="generate-image-btn" style="background: ${topMbti.temperamentColor || 'var(--accent)'}; box-shadow: 0 10px 28px ${topMbti.temperamentColor}44;">
+              <button class="e-btn e-btn-generate-card" type="button" id="generate-image-btn" style="background: ${topMbti.temperamentColor || 'var(--accent)'};">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 22px; height: 22px;">
                   <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
                   <circle cx="12" cy="13" r="4"></circle>
                 </svg>
                 <span>${lang === "ro" ? "Generează Imaginea Rezultatelor" : "Generate Results Image"}</span>
               </button>
-              <div class="generate-card-hint" style="margin-top: 0.65rem; font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">
-                ${lang === "ro" ? "Descarcă cardul grafic complet: funcții cognitive pastel, axe MBTI, spectru și personalități similare." : "Download your complete results graphic card: pastel cognitive functions, MBTI axes, spectrum, and similar figures."}
-              </div>
             </div>
 
             ${this.renderQuestionBreakdown(percentages, axisScores, lang)}
@@ -1810,7 +1845,7 @@ class App {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 20px; height: 20px; animation: spin 0.8s linear infinite;">
               <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-dasharray="32" stroke-linecap="round"></circle>
             </svg>
-            <span>${lang === "ro" ? "Se generează imaginea..." : "Generating image..."}</span>
+            <span>${lang === "ro" ? "Se descarcă imaginea..." : "Downloading image..."}</span>
           `;
 
           setTimeout(() => {
@@ -1822,15 +1857,28 @@ class App {
                 similarFigures,
                 lang
               });
-              openResultsImageModal({
-                dataUrl,
-                topMbti,
-                lang
-              });
+              
+              // Direct download to user device
+              const downloadLink = document.createElement("a");
+              downloadLink.download = `8func-${(topMbti?.type || "personality").toLowerCase()}-results.png`;
+              downloadLink.href = dataUrl;
+              document.body.appendChild(downloadLink);
+              downloadLink.click();
+              document.body.removeChild(downloadLink);
+
+              genImgBtn.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>${lang === "ro" ? "Imagine Descărcată!" : "Image Downloaded!"}</span>
+              `;
+              setTimeout(() => {
+                genImgBtn.disabled = false;
+                genImgBtn.innerHTML = origContent;
+              }, 2000);
             } catch (err) {
               console.error("Failed to generate results image:", err);
               alert(lang === "ro" ? "Eroare la generarea imaginii: " + err.message : "Error generating image: " + err.message);
-            } finally {
               genImgBtn.disabled = false;
               genImgBtn.innerHTML = origContent;
             }

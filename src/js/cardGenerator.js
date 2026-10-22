@@ -315,17 +315,14 @@ export function generateResultsCardCanvas({
   const dotPxX = leftColX + (compassX / 100) * matrixSize;
   const dotPxY = matrixY + (compassY / 100) * matrixSize;
 
-  // Outer glow
-  ctx.beginPath();
-  ctx.arc(dotPxX, dotPxY, 13, 0, Math.PI * 2);
-  ctx.fillStyle = "rgba(255, 255, 255, 0.38)";
-  ctx.fill();
-
-  // Solid white center dot
+  // Solid white center dot (crisp, no glow)
   ctx.beginPath();
   ctx.arc(dotPxX, dotPxY, 7.5, 0, Math.PI * 2);
   ctx.fillStyle = "#FFFFFF";
   ctx.fill();
+  ctx.lineWidth = 1.8;
+  ctx.strokeStyle = "rgba(0, 0, 0, 0.22)";
+  ctx.stroke();
 
   ctx.restore();
 
