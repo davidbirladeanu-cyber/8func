@@ -1,6 +1,9 @@
 /**
- * 8Func - Minimalist 12Axes-Style Personality Spectrum Canvas
- * All 347 personalities placed at their exact % coordinates on 4 quadrants without connecting lines.
+ * 8Func - 3D Personality Spectrum
+ * An interactive 3D spatial spectrum combining:
+ * 1. The 4 Keirsey Temperaments on X/Y (NT, NF, SF, ST)
+ * 2. The 4 Interaction Styles on Z (EJ, EP, IJ, IP)
+ * Placing all 347 personalities at their exact 3D coordinates.
  */
 
 import { NOTABLE_FIGURES, calculateFigureSimilarity, getFigureRole } from "../data/figures.js";
@@ -10,12 +13,65 @@ import { calculateScores } from "./scoring.js";
 import { ICONS } from "./icons.js";
 import { t } from "../data/translations.js";
 
-// World coordinate dimensions (centered at 0, 0)
-const WORLD_W = 1400;
-const WORLD_H = 1000;
-const PHOTO_ZOOM_THRESHOLD = 0.45;
+// 3D Bounding Box Dimensions
+const BOX_W = 1000; // X: Thinking (+) vs Feeling (-)
+const BOX_H = 750;  // Y: Intuition (+) vs Sensing (-)
+const BOX_D = 1000; // Z: Interaction Styles (Depth: EJ -> EP -> IJ -> IP)
 
 const FUNCTIONS_LIST = ["Ne", "Ni", "Se", "Si", "Te", "Ti", "Fe", "Fi"];
+
+export const INTERACTION_STYLES = {
+  EJ: {
+    code: "EJ",
+    name: "Directori (EJ)",
+    nameEn: "Directors / In-Charge (EJ)",
+    types: ["ENTJ", "ESTJ", "ENFJ", "ESFJ"],
+    color: "#e11d48",
+    colorBg: "rgba(225, 29, 72, 0.18)",
+    baseZ: 380,
+    desc: "Lideri orientați spre acțiune, decizii rapide, mobilizare și structură externă."
+  },
+  EP: {
+    code: "EP",
+    name: "Exploratori (EP)",
+    nameEn: "Explorers / Initiators (EP)",
+    types: ["ENTP", "ESTP", "ENFP", "ESFP"],
+    color: "#f59e0b",
+    colorBg: "rgba(245, 158, 11, 0.18)",
+    baseZ: 130,
+    desc: "Inițiatori entuziaști, brainstormeri flexibili, rapizi în adaptare și experimentare."
+  },
+  IJ: {
+    code: "IJ",
+    name: "Planificatori (IJ)",
+    nameEn: "Planners / Chart-the-Course (IJ)",
+    types: ["INTJ", "ISTJ", "INFJ", "ISFJ"],
+    color: "#6366f1",
+    colorBg: "rgba(99, 102, 241, 0.18)",
+    baseZ: -130,
+    desc: "Strategi reflexivi, concentrați pe previziune, traiectorie și structură profundă."
+  },
+  IP: {
+    code: "IP",
+    name: "Autonomi (IP)",
+    nameEn: "Behind-the-Scenes / Observers (IP)",
+    types: ["INTP", "ISTP", "INFP", "ISFP"],
+    color: "#10b981",
+    colorBg: "rgba(16, 185, 129, 0.18)",
+    baseZ: -380,
+    desc: "Gânditori independenți, analitici, orientați pe claritate internă și perfecțiune."
+  }
+};
+
+export function getInteractionStyle(typeCode = "") {
+  const upper = (typeCode || "").toUpperCase();
+  const isE = upper.includes("E");
+  const isJ = upper.includes("J");
+  if (isE && isJ) return INTERACTION_STYLES.EJ;
+  if (isE && !isJ) return INTERACTION_STYLES.EP;
+  if (!isE && isJ) return INTERACTION_STYLES.IJ;
+  return INTERACTION_STYLES.IP;
+}
 
 function getFuncTileColors(f) {
   if (f === "Ne" || f === "Ni") return { bg: "#95637e", text: "#ffffff" };
@@ -32,9 +88,23 @@ export class SpectrumController {
     this.ctx = null;
     this.wrap = null;
 
-    // Viewport transform
-    this.transform = { x: 0, y: 0, k: 1 };
-    this.baseScale = 1;
+    // 3D Spherical Orbit Camera
+    this.camera = {
+      theta: 0.52,      // Azimuth / Horizontal orbit angle (radians)
+      phi: 0.28,        // Elevation / Pitch orbit angle (radians)
+      radius: 1750,     // Distance from target
+      target: { x: 0, y: 0, z: 0 },
+      panX: 0,
+      panY: 0
+    };
+
+    // Camera inertia
+    this.velTheta = 0;
+    this.velPhi = 0;
+
+    // Active filter: "ALL" | "EJ" | "EP" | "IJ" | "IP" | "NT" | "NF" | "SF" | "ST"
+    this.activeFilter = "ALL";
+    this.currentViewMode = "orbit";
 
     // Interaction state
     this.hoveredIndex = -1;
@@ -43,39 +113,58 @@ export class SpectrumController {
     this.userSelected = false;
 
     this.isDragging = false;
-    this.dragStart = { x: 0, y: 0, tx: 0, ty: 0 };
+    this.dragStart = { x: 0, y: 0, theta: 0, phi: 0 };
     this.dragDistance = 0;
     this.pointers = new Map();
     this.pinchStart = null;
 
     // Animation & rendering
     this.rafId = 0;
-    this.flyRafId = 0;
+    this.cameraAnim = null;
     this.isReducedMotion = false;
     this.imageCache = new Map();
 
     // Search query
     this.searchQuery = "";
 
-    // Build data nodes from 347 NOTABLE_FIGURES
+    // Build 3D data nodes
     this.nodes = this.buildNodes();
   }
 
   buildNodes() {
     return NOTABLE_FIGURES.map((fig, idx) => {
-      // X = T (0% F -> 100% T)
-      // Y = N (0% S -> 100% N, top is N so negative in canvas)
+      // 4 MBTI Axes
       const t = fig.axes ? fig.axes.T : (fig.mbti.includes("T") ? 75 : 25);
       const n = fig.axes ? fig.axes.N : (fig.mbti.includes("N") ? 75 : 25);
       const f = fig.axes ? fig.axes.F : 100 - t;
       const s = fig.axes ? fig.axes.S : 100 - n;
+      const e = fig.axes ? fig.axes.E : (fig.mbti.includes("E") ? 75 : 25);
+      const i = fig.axes ? fig.axes.I : 100 - e;
+      const j = fig.axes ? fig.axes.J : (fig.mbti.includes("J") ? 75 : 25);
+      const p = fig.axes ? fig.axes.P : 100 - j;
 
-      const wx = ((t - 50) / 50) * (WORLD_W / 2);
-      const wy = -((n - 50) / 50) * (WORLD_H / 2);
+      // 3D Spatial Coordinates:
+      // X: Nature (Thinking right +, Feeling left -)
+      const wx = ((t - 50) / 50) * (BOX_W / 2);
+      // Y: Energy (Intuition top +, Sensing bottom -)
+      const wy = ((n - 50) / 50) * (BOX_H / 2);
+
+      // Z: The 4 Interaction Styles (EJ -> EP -> IJ -> IP along depth)
+      const style = getInteractionStyle(fig.mbti);
+      let wz = style.baseZ;
+      if (style.code === "EJ") {
+        wz += (((e - 50) + (j - 50)) / 2) * 1.8;
+      } else if (style.code === "EP") {
+        wz += (((e - 50) + (p - 50)) / 2) * 1.8;
+      } else if (style.code === "IJ") {
+        wz -= (((i - 50) + (j - 50)) / 2) * 1.8;
+      } else if (style.code === "IP") {
+        wz -= (((i - 50) + (p - 50)) / 2) * 1.8;
+      }
 
       const temp = getTypeTemperament(fig.mbti);
 
-      // Micro floating phase
+      // Subtle natural phase offset for gentle breathing
       const phaseA = (idx * 2.399963) % (Math.PI * 2);
       const phaseB = (idx * 1.618034 + 1.3) % (Math.PI * 2);
 
@@ -90,14 +179,21 @@ export class SpectrumController {
         quote: fig.quote || "",
         photo: fig.photo,
         avatar: fig.avatar || fig.name.charAt(0),
-        axes: fig.axes || { E: 50, I: 50, N: n, S: s, T: t, F: f, J: 50, P: 50 },
+        axes: fig.axes || { E: e, I: i, N: n, S: s, T: t, F: f, J: j, P: p },
         scores: fig.scores || {},
         tPct: t,
         nPct: n,
         fPct: f,
         sPct: s,
+        ePct: e,
+        iPct: i,
+        jPct: j,
+        pPct: p,
         x: wx,
         y: wy,
+        z: wz,
+        style,
+        temp,
         color: temp.color,
         colorBg: temp.colorBg,
         tempName: temp.name,
@@ -139,10 +235,22 @@ export class SpectrumController {
     const j = axisScores?.JP?.roundA ?? 50;
     const p = axisScores?.JP?.roundB ?? (100 - j);
 
-    const wx = ((t - 50) / 50) * (WORLD_W / 2);
-    const wy = -((n - 50) / 50) * (WORLD_H / 2);
-
     const derivedType = `${e >= i ? 'E' : 'I'}${n >= s ? 'N' : 'S'}${t >= f ? 'T' : 'F'}${j >= p ? 'J' : 'P'}`;
+    const style = getInteractionStyle(derivedType);
+
+    const wx = ((t - 50) / 50) * (BOX_W / 2);
+    const wy = ((n - 50) / 50) * (BOX_H / 2);
+
+    let wz = style.baseZ;
+    if (style.code === "EJ") {
+      wz += (((e - 50) + (j - 50)) / 2) * 1.8;
+    } else if (style.code === "EP") {
+      wz += (((e - 50) + (p - 50)) / 2) * 1.8;
+    } else if (style.code === "IJ") {
+      wz -= (((i - 50) + (j - 50)) / 2) * 1.8;
+    } else if (style.code === "IP") {
+      wz -= (((i - 50) + (p - 50)) / 2) * 1.8;
+    }
 
     return {
       hasScores: true,
@@ -157,6 +265,8 @@ export class SpectrumController {
       pPct: p,
       x: wx,
       y: wy,
+      z: wz,
+      style,
       percentages,
       axisScores
     };
@@ -170,16 +280,16 @@ export class SpectrumController {
 
     this.app.root.innerHTML = `
       <div class="ed tree-page">
-        <!-- Minimalist 12Axes Header -->
+        <!-- Minimalist Header with Live Autocomplete -->
         <header class="sh tree-sh">
           <div class="sh-wrap">
             <button class="sh-logo" id="tree-nav-logo" type="button" aria-label="8Func Home">
-              <b>8</b><span>func</span>
+              <b>8</b><span>func 3D</span>
             </button>
             <nav class="sh-links" aria-label="Web">
               <button type="button" class="sh-link-btn" id="tree-nav-test">${lang === 'ro' ? 'Test' : 'Quiz'}</button>
               <button type="button" class="sh-link-btn" id="tree-nav-figures">${lang === 'ro' ? 'Personalități' : 'Personalities'}</button>
-              <button type="button" class="sh-link-btn active" aria-current="page">${lang === 'ro' ? 'Spectru' : 'Spectrum'}</button>
+              <button type="button" class="sh-link-btn active" aria-current="page">${lang === 'ro' ? 'Spectru 3D' : '3D Spectrum'}</button>
               <button type="button" class="sh-lang" id="tree-nav-lang">${lang === 'ro' ? 'RO' : 'EN'}</button>
               <button type="button" class="theme-toggle" id="tree-nav-theme" aria-label="Toggle Theme">${isDark ? ICONS.sun : ICONS.moon}</button>
             </nav>
@@ -188,8 +298,8 @@ export class SpectrumController {
                 <input 
                   type="search" 
                   id="tree-search-input" 
-                  placeholder="${lang === 'ro' ? 'Caută personalitate…' : 'Search personality…'}" 
-                  aria-label="${lang === 'ro' ? 'Caută personalitate…' : 'Search personality…'}" 
+                  placeholder="${lang === 'ro' ? 'Caută în spațiul 3D…' : 'Search in 3D…'}" 
+                  aria-label="${lang === 'ro' ? 'Caută personalitate' : 'Search personality'}" 
                   value="${this.searchQuery}"
                   autocomplete="off"
                 />
@@ -204,17 +314,58 @@ export class SpectrumController {
           </div>
         </header>
 
-        <!-- Fullscreen Canvas Stage -->
+        <!-- Fullscreen 3D Canvas Stage -->
         <main class="tree-stage" id="tree-stage">
           <div class="tree-canvas-wrap" id="tree-canvas-wrap">
-            <canvas class="tree-canvas" id="tree-canvas" aria-label="Web · Personalities"></canvas>
+            <canvas class="tree-canvas" id="tree-canvas" aria-label="3D Spectrum"></canvas>
           </div>
 
-          <!-- 4 Compass Cardinal Pole Labels -->
-          <span class="tree-compass tree-compass-top">${lang === 'ro' ? 'INTUIȚIE' : 'INTUITION'}</span>
-          <span class="tree-compass tree-compass-bottom">${lang === 'ro' ? 'SENZORIAL' : 'SENSING'}</span>
-          <span class="tree-compass tree-compass-left">${lang === 'ro' ? 'SENTIMENT' : 'FEELING'}</span>
-          <span class="tree-compass tree-compass-right">${lang === 'ro' ? 'GÂNDIRE' : 'THINKING'}</span>
+          <!-- 3D Hint -->
+          <div class="tree-hint-3d">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
+            <span>${lang === 'ro' ? 'Trage pentru a roti 3D · Scroll pentru zoom' : 'Drag to rotate in 3D · Scroll to zoom'}</span>
+          </div>
+
+          <!-- 3D Floating Stage Controls & Filter Toolbar -->
+          <div class="tree-3d-controls" id="tree-3d-controls">
+            <!-- View Mode Presets -->
+            <div class="tree-3d-btn-group">
+              <button type="button" class="tree-3d-btn active" data-view="orbit" id="btn-view-orbit" title="${lang === 'ro' ? 'Vedere 3D Orbit liber' : 'Free 3D Orbit View'}">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                <span>3D Orbit</span>
+              </button>
+              <button type="button" class="tree-3d-btn" data-view="front" id="btn-view-front" title="${lang === 'ro' ? 'Planul Temperamentelor: NT · NF · SF · ST' : 'Temperaments Plane'}">
+                <span>NT · NF · SF · ST</span>
+              </button>
+              <button type="button" class="tree-3d-btn" data-view="side" id="btn-view-side" title="${lang === 'ro' ? 'Planul Stilurilor: EJ · EP · IJ · IP' : 'Interaction Styles Plane'}">
+                <span>EJ · EP · IJ · IP</span>
+              </button>
+              ${userData.hasScores ? `
+                <button type="button" class="tree-3d-btn" id="tree-3d-focus-user" title="${lang === 'ro' ? 'Centrează pe poziția ta' : 'Focus on you'}">
+                  <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#ffffff; box-shadow:0 0 4px #10b981;"></span>
+                  <span>TU</span>
+                </button>
+              ` : ''}
+              <button type="button" class="tree-3d-btn tree-3d-btn-icon" id="tree-3d-reset" title="${lang === 'ro' ? 'Resetează camera' : 'Reset Camera'}">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+              </button>
+            </div>
+
+            <!-- Style & Temperament Filter Pills -->
+            <div class="tree-3d-filter-group">
+              <button type="button" class="tree-filter-pill active" data-filter="ALL">${lang === 'ro' ? 'Toți' : 'All'}</button>
+              <span class="tree-filter-divider"></span>
+              <button type="button" class="tree-filter-pill" data-filter="EJ" style="--pill-color: #e11d48;" title="Extraverted Judging: ENTJ, ESTJ, ENFJ, ESFJ">EJ</button>
+              <button type="button" class="tree-filter-pill" data-filter="EP" style="--pill-color: #f59e0b;" title="Extraverted Perceiving: ENTP, ESTP, ENFP, ESFP">EP</button>
+              <button type="button" class="tree-filter-pill" data-filter="IJ" style="--pill-color: #6366f1;" title="Introverted Judging: INTJ, ISTJ, INFJ, ISFJ">IJ</button>
+              <button type="button" class="tree-filter-pill" data-filter="IP" style="--pill-color: #10b981;" title="Introverted Perceiving: INTP, ISTP, INFP, ISFP">IP</button>
+              <span class="tree-filter-divider"></span>
+              <button type="button" class="tree-filter-pill" data-filter="NT" style="--pill-color: #95637e;" title="Analysts: NT">NT</button>
+              <button type="button" class="tree-filter-pill" data-filter="NF" style="--pill-color: #9ac262;" title="Diplomats: NF">NF</button>
+              <button type="button" class="tree-filter-pill" data-filter="SF" style="--pill-color: #e5c727;" title="Explorers: SF">SF</button>
+              <button type="button" class="tree-filter-pill" data-filter="ST" style="--pill-color: #72cccd;" title="Sentinels: ST">ST</button>
+            </div>
+          </div>
 
           <!-- Side Inspector Panel for Selected Person / User (Styled like fig-modal) -->
           <aside class="e-panel tree-panel" id="tree-panel" style="display: none;" aria-label="Personality detail"></aside>
@@ -232,15 +383,9 @@ export class SpectrumController {
     if (!this.wrap || !this.canvas) return;
 
     this.ctx = this.canvas.getContext("2d");
-
-    // Check reduced motion preference
     this.isReducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // Size canvas properly
     this.resizeCanvas();
-    this.fitToScreen();
-
-    // Start render loop
     this.requestFrame();
   }
 
@@ -252,24 +397,6 @@ export class SpectrumController {
 
     this.canvas.width = Math.round(w * dpr);
     this.canvas.height = Math.round(h * dpr);
-  }
-
-  fitToScreen() {
-    if (!this.wrap) return;
-    const w = this.wrap.clientWidth;
-    const h = this.wrap.clientHeight;
-
-    // Margin fit
-    const scaleX = w / (WORLD_W * 1.15);
-    const scaleY = h / (WORLD_H * 1.15);
-    const k = Math.min(scaleX, scaleY);
-
-    this.baseScale = k;
-    this.transform = {
-      k,
-      x: w / 2,
-      y: h / 2
-    };
   }
 
   requestFrame() {
@@ -292,6 +419,44 @@ export class SpectrumController {
     return img.complete && img.naturalWidth > 0 ? img : null;
   }
 
+  /**
+   * Projects a 3D point (x, y, z) to 2D screen coordinates using spherical orbit camera
+   */
+  project3D(x, y, z, cx, cy) {
+    const { theta, phi, radius, target, panX, panY } = this.camera;
+
+    // Relative to target
+    const dx = x - target.x;
+    const dy = y - target.y;
+    const dz = z - target.z;
+
+    // Rotate horizontally by theta (yaw)
+    const cosT = Math.cos(theta);
+    const sinT = Math.sin(theta);
+    const x1 = dx * cosT - dz * sinT;
+    const z1 = dx * sinT + dz * cosT;
+
+    // Rotate vertically by phi (pitch)
+    const cosP = Math.cos(phi);
+    const sinP = Math.sin(phi);
+    const y2 = dy * cosP - z1 * sinP;
+    const z2 = dy * sinP + z1 * cosP;
+
+    // Camera depth & perspective scaling
+    const dist = radius - z2;
+    if (dist < 80) return null; // Behind camera
+
+    const fov = 1150;
+    const scale = fov / dist;
+
+    return {
+      sx: cx + x1 * scale + panX,
+      sy: cy - y2 * scale + panY,
+      scale,
+      zDepth: z2 // Higher means closer to viewer
+    };
+  }
+
   draw() {
     this.rafId = 0;
     const ctx = this.ctx;
@@ -301,124 +466,292 @@ export class SpectrumController {
 
     const w = wrap.clientWidth;
     const h = wrap.clientHeight;
+    const cx = w / 2;
+    const cy = h / 2;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const now = performance.now();
     const isDark = this.app.state.theme === "dark";
 
-    const { x: panX, y: panY, k } = this.transform;
-    const relZoom = k / this.baseScale;
+    // Camera inertia update
+    if (!this.isDragging) {
+      if (Math.abs(this.velTheta) > 0.0001 || Math.abs(this.velPhi) > 0.0001) {
+        this.camera.theta += this.velTheta;
+        this.camera.phi = Math.max(-1.42, Math.min(1.42, this.camera.phi + this.velPhi));
+        this.velTheta *= 0.91;
+        this.velPhi *= 0.91;
+        this.requestFrame();
+      }
+    }
+
+    // Camera fly animation update
+    if (this.cameraAnim) {
+      const elapsed = now - this.cameraAnim.startTime;
+      const p = Math.min(1, elapsed / this.cameraAnim.duration);
+      const ease = 1 - Math.pow(1 - p, 3); // Cubic ease out
+
+      const s = this.cameraAnim.start;
+      const t = this.cameraAnim.target;
+
+      this.camera.theta = s.theta + (t.theta - s.theta) * ease;
+      this.camera.phi = s.phi + (t.phi - s.phi) * ease;
+      this.camera.radius = s.radius + (t.radius - s.radius) * ease;
+      this.camera.target.x = s.tx + (t.tx - s.tx) * ease;
+      this.camera.target.y = s.ty + (t.ty - s.ty) * ease;
+      this.camera.target.z = s.tz + (t.tz - s.tz) * ease;
+
+      if (p < 1) {
+        this.requestFrame();
+      } else {
+        this.cameraAnim = null;
+      }
+    }
 
     // Reset transform to DPR
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     // Canvas background
-    ctx.fillStyle = isDark ? "#101010" : "#F4F1E8";
+    ctx.fillStyle = isDark ? "#0d0f12" : "#F4F1E8";
     ctx.fillRect(0, 0, w, h);
 
-    // 1. Subtle Quadrant Radial Tints (No harsh lines, pure minimalist beauty)
-    const quadTints = [
-      { x: WORLD_W * 0.25, y: -WORLD_H * 0.25, color: "rgba(149, 99, 126, 0.16)", label: "NT" }, // NT (Top-Right)
-      { x: -WORLD_W * 0.25, y: -WORLD_H * 0.25, color: "rgba(154, 194, 98, 0.16)", label: "NF" }, // NF (Top-Left)
-      { x: -WORLD_W * 0.25, y: WORLD_H * 0.25, color: "rgba(229, 199, 39, 0.14)", label: "SF" }, // SF (Bottom-Left)
-      { x: WORLD_W * 0.25, y: WORLD_H * 0.25, color: "rgba(114, 204, 205, 0.16)", label: "ST" }  // ST (Bottom-Right)
+    // 1. Draw 3D Floor Grid at Y = -BOX_H / 2
+    const floorY = -BOX_H / 2;
+    const gridLines = 8;
+    ctx.save();
+    ctx.strokeStyle = isDark ? "rgba(255,255,255,0.05)" : "rgba(16,16,16,0.05)";
+    ctx.lineWidth = 1;
+
+    // Grid lines along Z
+    for (let i = 0; i <= gridLines; i++) {
+      const gx = -BOX_W / 2 + (BOX_W / gridLines) * i;
+      const pStart = this.project3D(gx, floorY, -BOX_D / 2, cx, cy);
+      const pEnd = this.project3D(gx, floorY, BOX_D / 2, cx, cy);
+      if (pStart && pEnd) {
+        ctx.beginPath();
+        ctx.moveTo(pStart.sx, pStart.sy);
+        ctx.lineTo(pEnd.sx, pEnd.sy);
+        ctx.stroke();
+      }
+    }
+
+    // Grid lines along X
+    for (let i = 0; i <= gridLines; i++) {
+      const gz = -BOX_D / 2 + (BOX_D / gridLines) * i;
+      const pStart = this.project3D(-BOX_W / 2, floorY, gz, cx, cy);
+      const pEnd = this.project3D(BOX_W / 2, floorY, gz, cx, cy);
+      if (pStart && pEnd) {
+        ctx.beginPath();
+        ctx.moveTo(pStart.sx, pStart.sy);
+        ctx.lineTo(pEnd.sx, pEnd.sy);
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+
+    // 2. Draw 3D Wireframe Bounding Box
+    const hw = BOX_W / 2;
+    const hh = BOX_H / 2;
+    const hd = BOX_D / 2;
+
+    const corners = [
+      { x: -hw, y: -hh, z: -hd },
+      { x: hw, y: -hh, z: -hd },
+      { x: hw, y: hh, z: -hd },
+      { x: -hw, y: hh, z: -hd },
+      { x: -hw, y: -hh, z: hd },
+      { x: hw, y: -hh, z: hd },
+      { x: hw, y: hh, z: hd },
+      { x: -hw, y: hh, z: hd }
     ];
 
-    const quadR = (WORLD_W * 0.38) * k;
-    quadTints.forEach(q => {
-      const sx = q.x * k + panX;
-      const sy = q.y * k + panY;
-      if (sx + quadR < 0 || sx - quadR > w || sy + quadR < 0 || sy - quadR > h) return;
+    const projectedCorners = corners.map(c => this.project3D(c.x, c.y, c.z, cx, cy));
 
-      const grad = ctx.createRadialGradient(sx, sy, 0, sx, sy, quadR);
-      grad.addColorStop(0, q.color);
-      grad.addColorStop(1, "transparent");
-      ctx.fillStyle = grad;
-      ctx.fillRect(sx - quadR, sy - quadR, quadR * 2, quadR * 2);
+    const edges = [
+      [0, 1], [1, 2], [2, 3], [3, 0], // Back
+      [4, 5], [5, 6], [6, 7], [7, 4], // Front
+      [0, 4], [1, 5], [2, 6], [3, 7]  // Connectors
+    ];
 
-      // Subtle Watermark Quadrant Letters
-      const wmAlpha = Math.max(0.04, Math.min(0.08, 0.12 - relZoom * 0.02));
-      if (wmAlpha > 0.02) {
+    ctx.save();
+    ctx.strokeStyle = isDark ? "rgba(255,255,255,0.08)" : "rgba(16,16,16,0.09)";
+    ctx.lineWidth = 1;
+    edges.forEach(([a, b]) => {
+      const pa = projectedCorners[a];
+      const pb = projectedCorners[b];
+      if (pa && pb) {
+        ctx.beginPath();
+        ctx.moveTo(pa.sx, pa.sy);
+        ctx.lineTo(pb.sx, pb.sy);
+        ctx.stroke();
+      }
+    });
+    ctx.restore();
+
+    // 3. Draw 3D Cardinal Center Axes (X: T/F, Y: N/S, Z: Interaction Styles)
+    const pCenter = this.project3D(0, 0, 0, cx, cy);
+    const pPosX = this.project3D(hw, 0, 0, cx, cy);
+    const pNegX = this.project3D(-hw, 0, 0, cx, cy);
+    const pPosY = this.project3D(0, hh, 0, cx, cy);
+    const pNegY = this.project3D(0, -hh, 0, cx, cy);
+    const pPosZ = this.project3D(0, 0, hd, cx, cy);
+    const pNegZ = this.project3D(0, 0, -hd, cx, cy);
+
+    ctx.save();
+    ctx.lineWidth = 1.2;
+
+    // X Axis: Feeling <-> Thinking
+    if (pNegX && pPosX) {
+      ctx.strokeStyle = "rgba(114, 204, 205, 0.45)"; // Teal
+      ctx.beginPath();
+      ctx.moveTo(pNegX.sx, pNegX.sy);
+      ctx.lineTo(pPosX.sx, pPosX.sy);
+      ctx.stroke();
+    }
+
+    // Y Axis: Sensing <-> Intuition
+    if (pNegY && pPosY) {
+      ctx.strokeStyle = "rgba(149, 99, 126, 0.45)"; // Violet
+      ctx.beginPath();
+      ctx.moveTo(pNegY.sx, pNegY.sy);
+      ctx.lineTo(pPosY.sx, pPosY.sy);
+      ctx.stroke();
+    }
+
+    // Z Axis: The 4 Interaction Styles
+    if (pNegZ && pPosZ) {
+      ctx.strokeStyle = "rgba(225, 29, 72, 0.45)"; // Crimson
+      ctx.beginPath();
+      ctx.moveTo(pNegZ.sx, pNegZ.sy);
+      ctx.lineTo(pPosZ.sx, pPosZ.sy);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // 4. Draw 3D Floating Zone Banners for EJ, EP, IJ, IP along Z
+    const styleZones = [
+      { style: INTERACTION_STYLES.EJ, z: INTERACTION_STYLES.EJ.baseZ, label: "👑 EJ · Directori (ENTJ, ESTJ, ENFJ, ESFJ)" },
+      { style: INTERACTION_STYLES.EP, z: INTERACTION_STYLES.EP.baseZ, label: "⚡ EP · Exploratori (ENTP, ESTP, ENFP, ESFP)" },
+      { style: INTERACTION_STYLES.IJ, z: INTERACTION_STYLES.IJ.baseZ, label: "🧭 IJ · Planificatori (INTJ, ISTJ, INFJ, ISFJ)" },
+      { style: INTERACTION_STYLES.IP, z: INTERACTION_STYLES.IP.baseZ, label: "🔬 IP · Autonomi (INTP, ISTP, INFP, ISFP)" }
+    ];
+
+    styleZones.forEach(zone => {
+      // Draw transverse guide line on floor
+      const pLeft = this.project3D(-hw * 0.9, floorY, zone.z, cx, cy);
+      const pRight = this.project3D(hw * 0.9, floorY, zone.z, cx, cy);
+      if (pLeft && pRight) {
         ctx.save();
-        ctx.font = "800 64px Sora, sans-serif";
-        ctx.textAlign = "center";
+        ctx.strokeStyle = zone.style.colorBg;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(pLeft.sx, pLeft.sy);
+        ctx.lineTo(pRight.sx, pRight.sy);
+        ctx.stroke();
+
+        // Label on floor edge
+        const fontSize = Math.max(9, Math.min(13, 11 * pLeft.scale));
+        ctx.font = `800 ${fontSize}px Sora, sans-serif`;
+        ctx.fillStyle = zone.style.color;
+        ctx.textAlign = "left";
         ctx.textBaseline = "middle";
-        ctx.fillStyle = isDark ? `rgba(255,255,255,${wmAlpha})` : `rgba(16,16,16,${wmAlpha})`;
-        ctx.fillText(q.label, sx, sy);
+        ctx.fillText(zone.label, pLeft.sx + 4, pLeft.sy - 8);
         ctx.restore();
       }
     });
 
-    // 2. Subtle Minimalist Crosshairs (Center axes: x = 0, y = 0)
-    const centerScreenX = 0 * k + panX;
-    const centerScreenY = 0 * k + panY;
+    // 5. Draw 3D Cardinal Pole Labels
+    const cardinalLabels = [
+      { p: this.project3D(hw + 40, 0, 0, cx, cy), text: "THINKING (T)", color: "#72cccd" },
+      { p: this.project3D(-hw - 40, 0, 0, cx, cy), text: "FEELING (F)", color: "#9ac262" },
+      { p: this.project3D(0, hh + 35, 0, cx, cy), text: "INTUITION (N)", color: "#95637e" },
+      { p: this.project3D(0, -hh - 35, 0, cx, cy), text: "SENSING (S)", color: "#e5c727" }
+    ];
 
-    ctx.save();
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = isDark ? "rgba(255,255,255,0.08)" : "rgba(16,16,16,0.08)";
-    // Horizontal axis
-    ctx.beginPath();
-    ctx.moveTo(0, centerScreenY);
-    ctx.lineTo(w, centerScreenY);
-    ctx.stroke();
-    // Vertical axis
-    ctx.beginPath();
-    ctx.moveTo(centerScreenX, 0);
-    ctx.lineTo(centerScreenX, h);
-    ctx.stroke();
-    ctx.restore();
+    cardinalLabels.forEach(cl => {
+      if (!cl.p) return;
+      ctx.save();
+      const fs = Math.max(9, Math.min(13, 11 * cl.p.scale));
+      ctx.font = `800 ${fs}px Sora, sans-serif`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = cl.color;
+      ctx.fillText(cl.text, cl.p.sx, cl.p.sy);
+      ctx.restore();
+    });
 
-    // 3. Render all 347 Personalities at their exact coordinates ("FARA LINII DE CONECTARE")
+    // 6. Project and Render all 347 Personalities + User ("TU")
     const hovered = this.hoveredIndex;
     const selected = this.selectedIndex;
     const userData = this.getUserData();
 
-    // Calculate screen positions
-    const screenPos = new Float64Array(this.nodes.length * 2);
-
+    // Prepare projected personality nodes
+    const projectedNodes = [];
     for (let i = 0; i < this.nodes.length; i++) {
       const n = this.nodes[i];
-      // Gentle breathing float
-      let floatX = 0;
-      let floatY = 0;
+
+      // Subtle natural breathing float
+      let fx = 0, fy = 0;
       if (!this.isReducedMotion) {
-        floatX = Math.sin(now / 1900 + n.phaseA) * 2.2 + Math.sin(now / 4700 + n.phaseB) * 2.8;
-        floatY = Math.cos(now / 2300 + n.phaseB) * 2.2 + Math.sin(now / 5300 + n.phaseA) * 2.8;
+        fx = Math.sin(now / 1900 + n.phaseA) * 3.5;
+        fy = Math.cos(now / 2300 + n.phaseB) * 3.5;
       }
 
-      screenPos[i * 2] = n.x * k + panX + floatX;
-      screenPos[i * 2 + 1] = n.y * k + panY + floatY;
+      const proj = this.project3D(n.x + fx, n.y + fy, n.z, cx, cy);
+      if (!proj) continue;
+
+      // Filter check
+      let matchesFilter = true;
+      if (this.activeFilter !== "ALL") {
+        if (["EJ", "EP", "IJ", "IP"].includes(this.activeFilter)) {
+          matchesFilter = n.style.code === this.activeFilter;
+        } else if (["NT", "NF", "SF", "ST"].includes(this.activeFilter)) {
+          matchesFilter = n.temp.code === this.activeFilter;
+        }
+      }
+
+      projectedNodes.push({
+        node: n,
+        index: i,
+        sx: proj.sx,
+        sy: proj.sy,
+        scale: proj.scale,
+        zDepth: proj.zDepth,
+        matchesFilter
+      });
     }
 
-    // Sort draw order: unselected first, hovered/selected on top
-    const drawOrder = this.nodes.map((_, i) => i);
-    drawOrder.sort((a, b) => {
-      if (a === selected) return 1;
-      if (b === selected) return -1;
-      if (a === hovered) return 1;
-      if (b === hovered) return -1;
-      return 0;
-    });
+    // Project User ("TU") if completed
+    let projectedUser = null;
+    if (userData.hasScores) {
+      const uProj = this.project3D(userData.x, userData.y, userData.z, cx, cy);
+      if (uProj) {
+        projectedUser = {
+          sx: uProj.sx,
+          sy: uProj.sy,
+          scale: uProj.scale,
+          zDepth: uProj.zDepth
+        };
+      }
+    }
 
-    // Node radius scales generously with zoom so photos and faces are clearly visible!
-    const baseR = 18;
-    const currentR = Math.max(12, Math.min(38, baseR * Math.pow(Math.max(relZoom, 0.4), 0.55)));
+    // Sort draw order by 3D depth (lowest zDepth = furthest, drawn first; highest = closest)
+    projectedNodes.sort((a, b) => a.zDepth - b.zDepth);
 
-    // Draw individual personality nodes
-    for (const i of drawOrder) {
-      const sx = screenPos[i * 2];
-      const sy = screenPos[i * 2 + 1];
+    // Render 3D Personalities
+    for (const item of projectedNodes) {
+      const { node, index, sx, sy, scale, matchesFilter } = item;
+      const isHovered = index === hovered;
+      const isSelected = index === selected;
 
-      // Viewport culling
-      if (sx < -60 || sx > w + 60 || sy < -60 || sy > h + 60) continue;
-
-      const node = this.nodes[i];
-      const isHovered = i === hovered;
-      const isSelected = i === selected;
-
-      let r = currentR;
+      // Generous, clearly visible radius scaling in 3D
+      const baseR = 19;
+      let r = Math.max(12, Math.min(42, baseR * scale));
       if (isHovered || isSelected) r += 5;
 
-      const photoImg = relZoom >= PHOTO_ZOOM_THRESHOLD && node.photo ? this.loadImage(node.photo) : null;
+      const alpha = matchesFilter ? 1.0 : 0.15;
+      ctx.save();
+      ctx.globalAlpha = alpha;
+
+      const photoImg = node.photo ? this.loadImage(node.photo) : null;
 
       // Draw avatar photo if loaded
       if (photoImg) {
@@ -430,17 +763,14 @@ export class SpectrumController {
         ctx.drawImage(photoImg, 0, 0, minDim, minDim, sx - r, sy - r, r * 2, r * 2);
         ctx.restore();
 
-        // Crisp colored ring
-        ctx.save();
+        // 3D Rim Border
         ctx.strokeStyle = node.color;
         ctx.lineWidth = isSelected || isHovered ? 3.5 : 2;
         ctx.beginPath();
         ctx.arc(sx, sy, r, 0, Math.PI * 2);
         ctx.stroke();
-        ctx.restore();
       } else {
-        // Fallback circle with temperament background and avatar letter/emoji
-        ctx.save();
+        // Fallback circle with temperament color and initial
         ctx.fillStyle = node.colorBg || node.color;
         ctx.beginPath();
         ctx.arc(sx, sy, r, 0, Math.PI * 2);
@@ -450,7 +780,6 @@ export class SpectrumController {
         ctx.lineWidth = isSelected || isHovered ? 3 : 1.5;
         ctx.stroke();
 
-        // Initial/Avatar inside
         if (r >= 12) {
           ctx.fillStyle = "#ffffff";
           ctx.font = `700 ${Math.round(r * 0.85)}px Sora, sans-serif`;
@@ -458,64 +787,63 @@ export class SpectrumController {
           ctx.textBaseline = "middle";
           ctx.fillText(node.avatar || node.name.charAt(0), sx, sy + 1);
         }
-        ctx.restore();
       }
 
       // Outer animated accent ring when hovered or selected
       if (isHovered || isSelected) {
-        ctx.save();
-        ctx.strokeStyle = node.color;
+        ctx.strokeStyle = node.style.color || node.color;
         ctx.lineWidth = 2.5;
-        const pulse = Math.sin(now / 350) * 1.5;
+        const pulse = Math.sin(now / 350) * 2;
         ctx.beginPath();
         ctx.arc(sx, sy, r + 5 + pulse, 0, Math.PI * 2);
         ctx.stroke();
-        ctx.restore();
       }
 
-      // Name Label (drawn when zoomed in or when hovered/selected)
-      const shouldDrawLabel = isHovered || isSelected || relZoom >= 1.4;
-      if (shouldDrawLabel) {
-        const labelText = isHovered || isSelected ? `${node.name} · ${node.mbti}` : node.name;
+      // 3D Billboard Name Tag
+      const shouldDrawLabel = isHovered || isSelected || scale >= 1.25;
+      if (shouldDrawLabel && matchesFilter) {
+        const labelText = isHovered || isSelected 
+          ? `${node.name} · ${node.mbti} (${node.style.code})` 
+          : `${node.name} · ${node.mbti}`;
         const tx = sx + r + 6;
         const ty = sy;
 
-        ctx.save();
-        ctx.font = isHovered || isSelected ? "700 13px Poppins, sans-serif" : "600 12px Poppins, sans-serif";
+        const fontSize = Math.max(10, Math.min(14, 12 * Math.max(0.85, scale)));
+        ctx.font = isHovered || isSelected ? `700 ${fontSize}px Poppins, sans-serif` : `600 ${fontSize}px Poppins, sans-serif`;
         ctx.textAlign = "left";
         ctx.textBaseline = "middle";
 
         // Halo outline
         ctx.lineWidth = 4;
-        ctx.strokeStyle = isDark ? "rgba(16,16,16,0.95)" : "rgba(244,241,232,0.95)";
+        ctx.strokeStyle = isDark ? "rgba(13,15,18,0.96)" : "rgba(244,241,232,0.96)";
         ctx.strokeText(labelText, tx, ty);
 
-        // Fill
+        // Fill text
         ctx.fillStyle = isHovered || isSelected ? (isDark ? "#ffffff" : "#101010") : (isDark ? "#e2ddcf" : "#22201b");
         ctx.fillText(labelText, tx, ty);
-        ctx.restore();
       }
+
+      ctx.restore();
     }
 
-    // 4. Render User ("TU") at their exact coordinates if they completed the test
-    // "bila aia sa fie doar alba fara palpait si fara tu intj 96 86"
-    if (userData.hasScores) {
-      const ux = userData.x * k + panX;
-      const uy = userData.y * k + panY;
+    // 7. Render User ("TU") in 3D:
+    // Pure solid white ball without pulsing, without text on canvas!
+    if (projectedUser) {
+      const { sx: ux, sy: uy, scale: uScale } = projectedUser;
       const isUserHovered = this.userHovered;
       const isUserSelected = this.userSelected;
 
-      const baseUserR = 18;
-      let userR = Math.max(13, Math.min(36, baseUserR * Math.pow(Math.max(relZoom, 0.4), 0.55)));
+      const baseUserR = 19;
+      let userR = Math.max(14, Math.min(38, baseUserR * uScale));
       if (isUserHovered || isUserSelected) userR += 4;
 
       ctx.save();
-      // Drop shadow so it pops cleanly
+      // Drop shadow in 3D
       ctx.shadowColor = "rgba(0, 0, 0, 0.45)";
-      ctx.shadowBlur = 8;
-      ctx.shadowOffsetY = 2;
+      ctx.shadowBlur = 10;
+      ctx.shadowOffsetY = 3;
 
-      // Solid pure white ball (NO pulsing, NO blinking, completely clean)
+      // Solid pure white ball (NO pulsing, NO blinking, clean and minimalist)
       ctx.fillStyle = "#ffffff";
       ctx.beginPath();
       ctx.arc(ux, uy, userR, 0, Math.PI * 2);
@@ -529,7 +857,7 @@ export class SpectrumController {
       ctx.restore();
     }
 
-    // Continue animation loop if motion is enabled
+    // Keep render loop alive for smooth orbit inertia & breathing
     if (!this.isReducedMotion && !document.hidden) {
       this.rafId = requestAnimationFrame(() => this.draw());
     }
@@ -540,79 +868,80 @@ export class SpectrumController {
     const wrap = this.wrap;
     if (!canvas || !wrap) return;
 
-    // Window resize observer
+    // Resize observer
     const resizeObserver = new ResizeObserver(() => {
       this.resizeCanvas();
       this.requestFrame();
     });
     resizeObserver.observe(wrap);
 
-    // Mouse Pointer / Touch event handling
     const getPos = (e) => {
       const rect = canvas.getBoundingClientRect();
       return { x: e.clientX - rect.left, y: e.clientY - rect.top };
     };
 
-    // Find node closest to mouse (checking User first, then figures)
-    const findHitNode = (mx, my) => {
-      const { x: panX, y: panY, k } = this.transform;
-      const relZoom = k / this.baseScale;
+    // 3D Hit Detection (closest in depth on top)
+    const findHitNode3D = (mx, my) => {
+      const cx = wrap.clientWidth / 2;
+      const cy = wrap.clientHeight / 2;
       const userData = this.getUserData();
 
-      // 1. Check user node hit
+      // 1. Check User node first
       if (userData.hasScores) {
-        const ux = userData.x * k + panX;
-        const uy = userData.y * k + panY;
-        const baseUserR = 18;
-        const userR = Math.max(13, Math.min(36, baseUserR * Math.pow(Math.max(relZoom, 0.4), 0.55)));
-        const dUser = Math.hypot(ux - mx, uy - my);
-        if (dUser <= userR + 8) {
-          return "user";
+        const uProj = this.project3D(userData.x, userData.y, userData.z, cx, cy);
+        if (uProj) {
+          const userR = Math.max(14, Math.min(38, 19 * uProj.scale));
+          if (Math.hypot(uProj.sx - mx, uProj.sy - my) <= userR + 8) {
+            return "user";
+          }
         }
       }
 
-      // 2. Check personalities
-      const baseR = 18;
-      const currentR = Math.max(12, Math.min(38, baseR * Math.pow(Math.max(relZoom, 0.4), 0.55)));
-      const hitThreshold = currentR + 8;
-
-      let closestIdx = -1;
-      let minDistance = hitThreshold;
-
+      // 2. Check all nodes from closest to furthest (reverse of depth sort)
+      const projected = [];
       for (let i = 0; i < this.nodes.length; i++) {
         const n = this.nodes[i];
-        const sx = n.x * k + panX;
-        const sy = n.y * k + panY;
-        const d = Math.hypot(sx - mx, sy - my);
-        if (d < minDistance) {
-          minDistance = d;
-          closestIdx = i;
+        const proj = this.project3D(n.x, n.y, n.z, cx, cy);
+        if (proj) {
+          projected.push({ index: i, sx: proj.sx, sy: proj.sy, scale: proj.scale, zDepth: proj.zDepth });
         }
       }
-      return closestIdx;
+
+      // Sort descending (nearest to camera first)
+      projected.sort((a, b) => b.zDepth - a.zDepth);
+
+      for (const item of projected) {
+        const r = Math.max(12, Math.min(42, 19 * item.scale));
+        if (Math.hypot(item.sx - mx, item.sy - my) <= r + 8) {
+          return item.index;
+        }
+      }
+
+      return -1;
     };
 
     // Pointer Down (Mouse drag or touch start)
     canvas.addEventListener("pointerdown", (e) => {
       canvas.setPointerCapture(e.pointerId);
-      this.pointers.set(e.pointerId, getPos(e));
+      const p = getPos(e);
+      this.pointers.set(e.pointerId, p);
 
       if (this.pointers.size === 1) {
-        const p = getPos(e);
         this.isDragging = true;
-        this.dragStart = { x: p.x, y: p.y, tx: this.transform.x, ty: this.transform.y };
+        this.dragStart = { x: p.x, y: p.y, theta: this.camera.theta, phi: this.camera.phi };
         this.dragDistance = 0;
+        this.velTheta = 0;
+        this.velPhi = 0;
       } else if (this.pointers.size === 2) {
-        // Pinch start
         const pts = Array.from(this.pointers.values());
         this.pinchStart = {
           dist: Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y),
-          k: this.transform.k
+          radius: this.camera.radius
         };
       }
     });
 
-    // Pointer Move
+    // Pointer Move (3D Orbit Rotation)
     canvas.addEventListener("pointermove", (e) => {
       const p = getPos(e);
       if (this.pointers.has(e.pointerId)) {
@@ -623,34 +952,28 @@ export class SpectrumController {
       if (this.pointers.size === 2 && this.pinchStart) {
         const pts = Array.from(this.pointers.values());
         const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
-        const ratio = dist / this.pinchStart.dist;
-        const midX = (pts[0].x + pts[1].x) / 2;
-        const midY = (pts[0].y + pts[1].y) / 2;
-
-        const newK = Math.max(this.baseScale * 0.4, Math.min(this.baseScale * 12, this.pinchStart.k * ratio));
-        const kRatio = newK / this.transform.k;
-
-        this.transform = {
-          k: newK,
-          x: midX - (midX - this.transform.x) * kRatio,
-          y: midY - (midY - this.transform.y) * kRatio
-        };
+        const ratio = this.pinchStart.dist / dist;
+        this.camera.radius = Math.max(700, Math.min(3800, this.pinchStart.radius * ratio));
         this.requestFrame();
         return;
       }
 
-      // One-finger or mouse drag
+      // 3D Spherical Orbit Drag
       if (this.isDragging && this.pointers.size === 1) {
         const dx = p.x - this.dragStart.x;
         const dy = p.y - this.dragStart.y;
         this.dragDistance += Math.hypot(dx, dy);
 
-        this.transform.x = this.dragStart.tx + dx;
-        this.transform.y = this.dragStart.ty + dy;
+        // Update spherical angles
+        this.camera.theta = this.dragStart.theta - dx * 0.0055;
+        this.camera.phi = Math.max(-1.42, Math.min(1.42, this.dragStart.phi + dy * 0.0055));
+
+        this.velTheta = -dx * 0.001;
+        this.velPhi = dy * 0.001;
+
         this.requestFrame();
       } else if (e.pointerType === "mouse") {
-        // Check hover
-        const hit = findHitNode(p.x, p.y);
+        const hit = findHitNode3D(p.x, p.y);
         const hitIsUser = hit === "user";
         const hitIdx = hitIsUser ? -1 : hit;
 
@@ -667,10 +990,10 @@ export class SpectrumController {
     canvas.addEventListener("pointerup", (e) => {
       this.pointers.delete(e.pointerId);
 
-      // If it was a click without significant drag
-      if (this.isDragging && this.dragDistance < 6) {
+      // If click without drag
+      if (this.isDragging && this.dragDistance < 7) {
         const p = getPos(e);
-        const hit = findHitNode(p.x, p.y);
+        const hit = findHitNode3D(p.x, p.y);
         if (hit === "user") {
           this.selectUser();
         } else if (typeof hit === "number" && hit >= 0) {
@@ -686,7 +1009,6 @@ export class SpectrumController {
       }
     });
 
-    // Pointer Leave
     canvas.addEventListener("pointerleave", () => {
       if (this.hoveredIndex !== -1 || this.userHovered) {
         this.hoveredIndex = -1;
@@ -698,29 +1020,99 @@ export class SpectrumController {
     // Wheel Zoom
     canvas.addEventListener("wheel", (e) => {
       e.preventDefault();
-      cancelAnimationFrame(this.flyRafId);
-
-      const p = getPos(e);
-      const zoomFactor = Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0016));
-      const newK = Math.max(this.baseScale * 0.45, Math.min(this.baseScale * 12, this.transform.k * zoomFactor));
-      const kRatio = newK / this.transform.k;
-
-      this.transform = {
-        k: newK,
-        x: p.x - (p.x - this.transform.x) * kRatio,
-        y: p.y - (p.y - this.transform.y) * kRatio
-      };
+      const zoomFactor = Math.exp(e.deltaY * 0.0015);
+      this.camera.radius = Math.max(700, Math.min(3800, this.camera.radius * zoomFactor));
       this.requestFrame();
     }, { passive: false });
 
-    // Keyboard Esc to close
+    // Keyboard Esc
     window.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
         this.deselectNode();
       }
     });
 
-    // Navigation buttons in header
+    // 3D View Preset Buttons
+    document.querySelectorAll(".tree-3d-btn[data-view]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const mode = btn.getAttribute("data-view");
+        this.setViewMode(mode);
+      });
+    });
+
+    const resetBtn = document.getElementById("tree-3d-reset");
+    if (resetBtn) {
+      resetBtn.addEventListener("click", () => this.setViewMode("orbit"));
+    }
+
+    const focusUserBtn = document.getElementById("tree-3d-focus-user");
+    if (focusUserBtn) {
+      focusUserBtn.addEventListener("click", () => this.selectUser());
+    }
+
+    // 3D Filter Pills (EJ, EP, IJ, IP, NT, NF, SF, ST, ALL)
+    document.querySelectorAll(".tree-filter-pill[data-filter]").forEach(pill => {
+      pill.addEventListener("click", () => {
+        document.querySelectorAll(".tree-filter-pill").forEach(p => p.classList.remove("active"));
+        pill.classList.add("active");
+        this.activeFilter = pill.getAttribute("data-filter");
+        this.requestFrame();
+      });
+    });
+
+    // Search Autocomplete
+    const searchInput = document.getElementById("tree-search-input");
+    const suggestionsList = document.getElementById("tree-search-suggestions");
+    if (searchInput && suggestionsList) {
+      searchInput.addEventListener("input", (e) => {
+        const q = e.target.value.trim().toLowerCase();
+        this.searchQuery = q;
+
+        if (q.length < 2) {
+          suggestionsList.style.display = "none";
+          suggestionsList.innerHTML = "";
+          return;
+        }
+
+        const matches = this.nodes
+          .filter(n => n.name.toLowerCase().includes(q) || n.mbti.toLowerCase().includes(q) || n.style.code.toLowerCase().includes(q))
+          .slice(0, 6);
+
+        if (matches.length === 0) {
+          suggestionsList.style.display = "none";
+          return;
+        }
+
+        suggestionsList.innerHTML = matches.map(m => `
+          <li>
+            <button type="button" data-idx="${m.index}">
+              <span class="tree-dot" style="background: ${m.color};"></span>
+              <span><b>${m.name}</b> <small style="opacity: 0.75;">(${m.mbti} · ${m.style.code})</small></span>
+            </button>
+          </li>
+        `).join("");
+
+        suggestionsList.style.display = "block";
+
+        suggestionsList.querySelectorAll("button").forEach(b => {
+          b.addEventListener("click", () => {
+            const idx = parseInt(b.getAttribute("data-idx"), 10);
+            suggestionsList.style.display = "none";
+            this.searchQuery = "";
+            searchInput.value = "";
+            this.selectNode(idx, true);
+          });
+        });
+      });
+
+      document.addEventListener("click", (evt) => {
+        if (!searchInput.contains(evt.target) && !suggestionsList.contains(evt.target)) {
+          suggestionsList.style.display = "none";
+        }
+      });
+    }
+
+    // Nav Header Buttons
     const logoBtn = document.getElementById("tree-nav-logo");
     if (logoBtn) logoBtn.addEventListener("click", () => this.app.state.showWelcome());
 
@@ -750,59 +1142,57 @@ export class SpectrumController {
 
     const themeBtn = document.getElementById("tree-nav-theme");
     if (themeBtn) themeBtn.addEventListener("click", () => this.app.state.toggleTheme());
+  }
 
-    // Search Box live autocomplete
-    const searchInput = document.getElementById("tree-search-input");
-    const suggestionsList = document.getElementById("tree-search-suggestions");
-    if (searchInput && suggestionsList) {
-      searchInput.addEventListener("input", (e) => {
-        const q = e.target.value.trim().toLowerCase();
-        this.searchQuery = q;
+  /**
+   * Smoothly animates camera to preset angles
+   */
+  setViewMode(mode) {
+    document.querySelectorAll(".tree-3d-btn[data-view]").forEach(b => {
+      b.classList.toggle("active", b.getAttribute("data-view") === mode);
+    });
 
-        if (q.length < 2) {
-          suggestionsList.style.display = "none";
-          suggestionsList.innerHTML = "";
-          return;
-        }
+    let targetTheta = 0.52;
+    let targetPhi = 0.28;
+    let targetRadius = 1750;
 
-        const matches = this.nodes
-          .filter(n => n.name.toLowerCase().includes(q) || n.mbti.toLowerCase().includes(q))
-          .slice(0, 6);
-
-        if (matches.length === 0) {
-          suggestionsList.style.display = "none";
-          return;
-        }
-
-        suggestionsList.innerHTML = matches.map(m => `
-          <li>
-            <button type="button" data-idx="${m.index}">
-              <span class="tree-dot" style="background: ${m.color};"></span>
-              <span><b>${m.name}</b> <small style="opacity: 0.7;">(${m.mbti})</small></span>
-            </button>
-          </li>
-        `).join("");
-
-        suggestionsList.style.display = "block";
-
-        suggestionsList.querySelectorAll("button").forEach(btn => {
-          btn.addEventListener("click", () => {
-            const idx = parseInt(btn.getAttribute("data-idx"), 10);
-            suggestionsList.style.display = "none";
-            this.searchQuery = "";
-            searchInput.value = "";
-            this.selectNode(idx, true);
-          });
-        });
-      });
-
-      // Close dropdown on outside click
-      document.addEventListener("click", (evt) => {
-        if (!searchInput.contains(evt.target) && !suggestionsList.contains(evt.target)) {
-          suggestionsList.style.display = "none";
-        }
-      });
+    if (mode === "front") {
+      // Front View: Temperament Plane (NT, NF, SF, ST)
+      targetTheta = 0;
+      targetPhi = 0;
+      targetRadius = 1550;
+    } else if (mode === "side") {
+      // Side View: Interaction Styles Plane (EJ, EP, IJ, IP)
+      targetTheta = Math.PI / 2;
+      targetPhi = 0;
+      targetRadius = 1550;
     }
+
+    this.animateCameraTo({
+      theta: targetTheta,
+      phi: targetPhi,
+      radius: targetRadius,
+      tx: 0,
+      ty: 0,
+      tz: 0
+    });
+  }
+
+  animateCameraTo(target, duration = 650) {
+    this.cameraAnim = {
+      startTime: performance.now(),
+      duration,
+      start: {
+        theta: this.camera.theta,
+        phi: this.camera.phi,
+        radius: this.camera.radius,
+        tx: this.camera.target.x,
+        ty: this.camera.target.y,
+        tz: this.camera.target.z
+      },
+      target
+    };
+    this.requestFrame();
   }
 
   selectNode(idx, flyTo = true) {
@@ -811,12 +1201,17 @@ export class SpectrumController {
     this.userSelected = false;
     const node = this.nodes[idx];
 
-    // Smooth fly to center
     if (flyTo) {
-      this.flyToNode(node);
+      this.animateCameraTo({
+        theta: this.camera.theta,
+        phi: this.camera.phi,
+        radius: Math.max(900, this.camera.radius * 0.75),
+        tx: node.x,
+        ty: node.y,
+        tz: node.z
+      });
     }
 
-    // Open detail side panel
     this.renderSidePanel(node);
     this.requestFrame();
   }
@@ -828,7 +1223,15 @@ export class SpectrumController {
     this.userSelected = true;
     this.selectedIndex = -1;
 
-    this.flyToNode({ x: userData.x, y: userData.y });
+    this.animateCameraTo({
+      theta: this.camera.theta,
+      phi: this.camera.phi,
+      radius: Math.max(900, this.camera.radius * 0.75),
+      tx: userData.x,
+      ty: userData.y,
+      tz: userData.z
+    });
+
     this.renderUserSidePanel(userData);
     this.requestFrame();
   }
@@ -843,52 +1246,6 @@ export class SpectrumController {
     this.requestFrame();
   }
 
-  flyToNode(node) {
-    if (!this.wrap) return;
-    cancelAnimationFrame(this.flyRafId);
-
-    const w = this.wrap.clientWidth;
-    const h = this.wrap.clientHeight;
-
-    const startX = this.transform.x;
-    const startY = this.transform.y;
-    const startK = this.transform.k;
-
-    const targetK = Math.max(startK, this.baseScale * 3.8);
-    // Shift slightly to the left on desktop to leave room for side panel
-    const offsetX = w > 820 ? 180 : 0;
-    const targetX = (w - offsetX) / 2 - node.x * targetK;
-    const targetY = h / 2 - node.y * targetK;
-
-    const duration = 650;
-    const startTime = performance.now();
-
-    const animate = (time) => {
-      const elapsed = time - startTime;
-      const p = Math.min(1, elapsed / duration);
-      // Cubic ease out
-      const ease = 1 - Math.pow(1 - p, 3);
-
-      this.transform = {
-        k: startK + (targetK - startK) * ease,
-        x: startX + (targetX - startX) * ease,
-        y: startY + (targetY - startY) * ease
-      };
-
-      this.requestFrame();
-
-      if (p < 1) {
-        this.flyRafId = requestAnimationFrame(animate);
-      }
-    };
-
-    this.flyRafId = requestAnimationFrame(animate);
-  }
-
-  focusOnUser() {
-    this.selectUser();
-  }
-
   renderSidePanel(node) {
     const panel = document.getElementById("tree-panel");
     if (!panel) return;
@@ -896,7 +1253,6 @@ export class SpectrumController {
     const lang = this.app.state.lang || "ro";
     const userData = this.getUserData();
     const cleanRole = getFigureRole(node.rawFig || node, lang);
-    const mbtiData = MBTI_TYPES[node.mbti] || {};
 
     // Calculate similarity with user if available
     let simPct = null;
@@ -904,12 +1260,12 @@ export class SpectrumController {
       simPct = calculateFigureSimilarity(userData.percentages, userData.axisScores, node);
     }
 
-    // Find 5 closest personalities on the spectrum
+    // 5 closest personalities in 3D Euclidean distance
     const similar = this.nodes
       .filter(n => n.id !== node.id)
       .map(n => {
-        const dist = Math.hypot(n.x - node.x, n.y - node.y);
-        const match = Math.max(10, Math.min(99, Math.round(100 - (dist / WORLD_W) * 140)));
+        const dist = Math.hypot(n.x - node.x, n.y - node.y, n.z - node.z);
+        const match = Math.max(10, Math.min(99, Math.round(100 - (dist / BOX_W) * 120)));
         return { node: n, match };
       })
       .sort((a, b) => b.match - a.match)
@@ -984,10 +1340,11 @@ export class SpectrumController {
             <div class="fig-modal-tags">
               <span class="fig-modal-mbti-tag">${node.mbti}</span>
               <span class="fig-modal-temp-tag">${node.tempName}</span>
+              <span class="fig-modal-temp-tag" style="background: ${node.style.color};">${node.style.code}</span>
               ${simPct !== null ? `<span class="fig-modal-sim-tag">${simPct}% ${lang === 'ro' ? 'compatibilitate' : 'match'}</span>` : ''}
             </div>
             <h2 class="fig-modal-name">${node.name}</h2>
-            <div class="fig-modal-role">${cleanRole}</div>
+            <div class="fig-modal-role">${cleanRole} · <span style="opacity:0.9;">${node.style.name}</span></div>
           </div>
         </div>
       </div>
@@ -1045,9 +1402,9 @@ export class SpectrumController {
           </div>
         ` : ''}
 
-        <!-- Closest Personalities on Spectrum -->
+        <!-- Closest Personalities in 3D Spectrum -->
         <div class="fig-modal-sec">
-          <h4 class="fig-modal-sec-title">${lang === 'ro' ? 'Personalități Asemănătoare' : 'Closest on Spectrum'}</h4>
+          <h4 class="fig-modal-sec-title">${lang === 'ro' ? 'Personalități Asemănătoare în Spațiul 3D' : 'Closest in 3D Spectrum'}</h4>
           <ul class="tree-similar">
             ${similar.map(({ node: sNode, match }) => `
               <li>
@@ -1058,7 +1415,7 @@ export class SpectrumController {
                   ` : `
                     <span class="tree-dot" style="background: ${sNode.color}; width: 34px; height: 34px; border-radius: 50%; display: inline-flex; align-items:center; justify-content:center; color:#fff; font-size:12px; font-weight:800;">${sNode.avatar || sNode.name.charAt(0)}</span>
                   `}
-                  <span class="tree-similar-name">${sNode.name} <small style="opacity:0.75; font-weight:600;">(${sNode.mbti})</small></span>
+                  <span class="tree-similar-name">${sNode.name} <small style="opacity:0.75; font-weight:600;">(${sNode.mbti} · ${sNode.style.code})</small></span>
                   <span class="tree-similar-pct">${match}%</span>
                 </button>
               </li>
@@ -1070,13 +1427,11 @@ export class SpectrumController {
 
     panel.style.display = "flex";
 
-    // Close button
     const closeBtn = document.getElementById("tree-panel-close");
     if (closeBtn) {
       closeBtn.addEventListener("click", () => this.deselectNode());
     }
 
-    // Similar personality buttons navigate and fly camera
     panel.querySelectorAll("[data-sim-idx]").forEach(btn => {
       btn.addEventListener("click", () => {
         const sIdx = parseInt(btn.getAttribute("data-sim-idx"), 10);
@@ -1092,11 +1447,11 @@ export class SpectrumController {
     const lang = this.app.state.lang || "ro";
     const userTemp = getTypeTemperament(userData.userType);
 
-    // Closest figures to user's spectrum coordinates
+    // 5 closest personalities to user in 3D Euclidean distance
     const similar = this.nodes
       .map(n => {
-        const dist = Math.hypot(n.x - userData.x, n.y - userData.y);
-        const match = Math.max(10, Math.min(99, Math.round(100 - (dist / WORLD_W) * 140)));
+        const dist = Math.hypot(n.x - userData.x, n.y - userData.y, n.z - userData.z);
+        const match = Math.max(10, Math.min(99, Math.round(100 - (dist / BOX_W) * 120)));
         return { node: n, match };
       })
       .sort((a, b) => b.match - a.match)
@@ -1159,10 +1514,11 @@ export class SpectrumController {
             <div class="fig-modal-tags">
               <span class="fig-modal-mbti-tag" style="background: #ffffff; color: #102e24;">${userData.userType}</span>
               <span class="fig-modal-temp-tag">${userTemp.name}</span>
+              <span class="fig-modal-temp-tag" style="background: ${userData.style.color};">${userData.style.code}</span>
               <span class="fig-modal-sim-tag" style="background: #10b981;">${lang === 'ro' ? 'Profilul tău' : 'Your Profile'}</span>
             </div>
-            <h2 class="fig-modal-name">${lang === 'ro' ? 'Poziția Ta pe Spectru' : 'Your Spectrum Position'}</h2>
-            <div class="fig-modal-role">${Math.round(userData.tPct)}% Thinking · ${Math.round(userData.nPct)}% Intuition</div>
+            <h2 class="fig-modal-name">${lang === 'ro' ? 'Poziția Ta în Spațiul 3D' : 'Your 3D Position'}</h2>
+            <div class="fig-modal-role">${userData.style.name} · ${Math.round(userData.tPct)}% Thinking, ${Math.round(userData.nPct)}% Intuition</div>
           </div>
         </div>
       </div>
@@ -1214,9 +1570,9 @@ export class SpectrumController {
           </div>
         ` : ''}
 
-        <!-- Closest Personalities on Spectrum -->
+        <!-- Closest Personalities in 3D Spectrum -->
         <div class="fig-modal-sec">
-          <h4 class="fig-modal-sec-title">${lang === 'ro' ? 'Personalități Asemănătoare pe Spectru' : 'Closest Personalities on Spectrum'}</h4>
+          <h4 class="fig-modal-sec-title">${lang === 'ro' ? 'Personalități Asemănătoare în Spațiul 3D' : 'Closest in 3D Spectrum'}</h4>
           <ul class="tree-similar">
             ${similar.map(({ node: sNode, match }) => `
               <li>
@@ -1227,7 +1583,7 @@ export class SpectrumController {
                   ` : `
                     <span class="tree-dot" style="background: ${sNode.color}; width: 34px; height: 34px; border-radius: 50%; display: inline-flex; align-items:center; justify-content:center; color:#fff; font-size:12px; font-weight:800;">${sNode.avatar || sNode.name.charAt(0)}</span>
                   `}
-                  <span class="tree-similar-name">${sNode.name} <small style="opacity:0.75; font-weight:600;">(${sNode.mbti})</small></span>
+                  <span class="tree-similar-name">${sNode.name} <small style="opacity:0.75; font-weight:600;">(${sNode.mbti} · ${sNode.style.code})</small></span>
                   <span class="tree-similar-pct">${match}%</span>
                 </button>
               </li>
@@ -1239,13 +1595,11 @@ export class SpectrumController {
 
     panel.style.display = "flex";
 
-    // Close button
     const closeBtn = document.getElementById("tree-panel-close");
     if (closeBtn) {
       closeBtn.addEventListener("click", () => this.deselectNode());
     }
 
-    // Similar personality buttons navigate and fly camera
     panel.querySelectorAll("[data-sim-idx]").forEach(btn => {
       btn.addEventListener("click", () => {
         const sIdx = parseInt(btn.getAttribute("data-sim-idx"), 10);
