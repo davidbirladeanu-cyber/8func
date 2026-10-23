@@ -10529,7 +10529,31 @@ export const FIGURE_CATEGORIES = {
  */
 export function getFigureRole(fig, lang = "ro") {
   if (!fig) return "";
-  const cat = FIGURE_CATEGORIES[fig.profession] || "Politics";
+  let cat = null;
+
+  const prof = (fig.profession || "").toLowerCase().trim();
+  if (prof && FIGURE_CATEGORIES[prof]) {
+    cat = FIGURE_CATEGORIES[prof];
+  } else if (fig.role) {
+    const rawPrefix = fig.role.split("·")[0].trim();
+    const prefixLower = rawPrefix.toLowerCase();
+    if (FIGURE_CATEGORIES[prefixLower]) {
+      cat = FIGURE_CATEGORIES[prefixLower];
+    } else {
+      for (const val of Object.values(FIGURE_CATEGORIES)) {
+        if (val.toLowerCase() === prefixLower) {
+          cat = val;
+          break;
+        }
+      }
+    }
+    if (!cat && rawPrefix && !rawPrefix.match(/^[A-Z]{4}$/i)) {
+      cat = rawPrefix;
+    }
+  }
+
+  if (!cat) cat = "Artist";
+
   if (lang === "ro") {
     const catRo = {
       "Artist": "Artist",
@@ -10545,3 +10569,4 @@ export function getFigureRole(fig, lang = "ro") {
   }
   return cat;
 }
+

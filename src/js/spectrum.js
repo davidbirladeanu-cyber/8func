@@ -13,7 +13,17 @@ import { t } from "../data/translations.js";
 // World coordinate dimensions (centered at 0, 0)
 const WORLD_W = 1400;
 const WORLD_H = 1000;
-const PHOTO_ZOOM_THRESHOLD = 2.0;
+const PHOTO_ZOOM_THRESHOLD = 0.45;
+
+const FUNCTIONS_LIST = ["Ne", "Ni", "Se", "Si", "Te", "Ti", "Fe", "Fi"];
+
+function getFuncTileColors(f) {
+  if (f === "Ne" || f === "Ni") return { bg: "#95637e", text: "#ffffff" };
+  if (f === "Te" || f === "Ti") return { bg: "#72cccd", text: "#0d2b2c" };
+  if (f === "Se" || f === "Si") return { bg: "#e5c727", text: "#2a2100" };
+  if (f === "Fe" || f === "Fi") return { bg: "#9ac262", text: "#142b08" };
+  return { bg: "#95637e", text: "#ffffff" };
+}
 
 export class SpectrumController {
   constructor(app) {
@@ -29,6 +39,9 @@ export class SpectrumController {
     // Interaction state
     this.hoveredIndex = -1;
     this.selectedIndex = -1;
+    this.userHovered = false;
+    this.userSelected = false;
+
     this.isDragging = false;
     this.dragStart = { x: 0, y: 0, tx: 0, ty: 0 };
     this.dragDistance = 0;
@@ -70,6 +83,8 @@ export class SpectrumController {
         index: idx,
         id: fig.id,
         name: fig.name,
+        profession: fig.profession,
+        rawFig: fig,
         role: fig.role || fig.profession || "",
         mbti: fig.mbti,
         quote: fig.quote || "",
@@ -201,21 +216,7 @@ export class SpectrumController {
           <span class="tree-compass tree-compass-left">${lang === 'ro' ? 'SENTIMENT' : 'FEELING'}</span>
           <span class="tree-compass tree-compass-right">${lang === 'ro' ? 'GÂNDIRE' : 'THINKING'}</span>
 
-          <!-- Minimalist Temperament Legend at Bottom Left -->
-          <ul class="tree-legend">
-            <li><span class="tree-dot" style="background: #95637e;"></span>NT ${lang === 'ro' ? 'Analitici' : 'Analysts'}</li>
-            <li><span class="tree-dot" style="background: #9ac262;"></span>NF ${lang === 'ro' ? 'Diplomați' : 'Diplomats'}</li>
-            <li><span class="tree-dot" style="background: #e5c727;"></span>SF ${lang === 'ro' ? 'Exploratori F' : 'Explorers F'}</li>
-            <li><span class="tree-dot" style="background: #72cccd;"></span>ST ${lang === 'ro' ? 'Sentinele T' : 'Sentinels T'}</li>
-            ${userData.hasScores ? `
-              <li id="tree-legend-user-btn" style="cursor: pointer; font-weight: 700; border-top: 1px solid var(--line); padding-top: 4px; margin-top: 2px;">
-                <span class="tree-dot" style="background: #10b981; box-shadow: 0 0 8px #10b981;"></span>
-                ${lang === 'ro' ? 'Tu' : 'You'} (${userData.userType})
-              </li>
-            ` : ''}
-          </ul>
-
-          <!-- Side Inspector Panel for Selected Person -->
+          <!-- Side Inspector Panel for Selected Person / User (Styled like fig-modal) -->
           <aside class="e-panel tree-panel" id="tree-panel" style="display: none;" aria-label="Personality detail"></aside>
         </main>
       </div>
@@ -398,25 +399,28 @@ export class SpectrumController {
       return 0;
     });
 
-    // Draw individual nodes
+    // Node radius scales generously with zoom so photos and faces are clearly visible!
+    const baseR = 18;
+    const currentR = Math.max(12, Math.min(38, baseR * Math.pow(Math.max(relZoom, 0.4), 0.55)));
+
+    // Draw individual personality nodes
     for (const i of drawOrder) {
       const sx = screenPos[i * 2];
       const sy = screenPos[i * 2 + 1];
 
       // Viewport culling
-      if (sx < -40 || sx > w + 40 || sy < -40 || sy > h + 40) continue;
+      if (sx < -60 || sx > w + 60 || sy < -60 || sy > h + 60) continue;
 
       const node = this.nodes[i];
       const isHovered = i === hovered;
       const isSelected = i === selected;
 
-      // Radius scales gently with zoom
-      let r = Math.max(3.5, Math.min(18, 3.5 * Math.pow(Math.max(relZoom, 0.4), 0.45)));
-      if (isHovered || isSelected) r += 3.5;
+      let r = currentR;
+      if (isHovered || isSelected) r += 5;
 
       const photoImg = relZoom >= PHOTO_ZOOM_THRESHOLD && node.photo ? this.loadImage(node.photo) : null;
 
-      // Node background / photo avatar
+      // Draw avatar photo if loaded
       if (photoImg) {
         ctx.save();
         ctx.beginPath();
@@ -426,125 +430,102 @@ export class SpectrumController {
         ctx.drawImage(photoImg, 0, 0, minDim, minDim, sx - r, sy - r, r * 2, r * 2);
         ctx.restore();
 
-        // Border
+        // Crisp colored ring
         ctx.save();
         ctx.strokeStyle = node.color;
-        ctx.lineWidth = isSelected || isHovered ? 3 : 1.8;
+        ctx.lineWidth = isSelected || isHovered ? 3.5 : 2;
         ctx.beginPath();
         ctx.arc(sx, sy, r, 0, Math.PI * 2);
         ctx.stroke();
         ctx.restore();
       } else {
-        // Crisp color circle
+        // Fallback circle with temperament background and avatar letter/emoji
         ctx.save();
-        ctx.fillStyle = node.color;
+        ctx.fillStyle = node.colorBg || node.color;
         ctx.beginPath();
         ctx.arc(sx, sy, r, 0, Math.PI * 2);
         ctx.fill();
 
-        // Subtle white border
-        ctx.strokeStyle = isDark ? "rgba(16,16,16,0.6)" : "rgba(255,255,255,0.7)";
-        ctx.lineWidth = 1;
+        ctx.strokeStyle = node.color;
+        ctx.lineWidth = isSelected || isHovered ? 3 : 1.5;
         ctx.stroke();
+
+        // Initial/Avatar inside
+        if (r >= 12) {
+          ctx.fillStyle = "#ffffff";
+          ctx.font = `700 ${Math.round(r * 0.85)}px Sora, sans-serif`;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(node.avatar || node.name.charAt(0), sx, sy + 1);
+        }
         ctx.restore();
       }
 
-      // Outer animated ring when hovered or selected
+      // Outer animated accent ring when hovered or selected
       if (isHovered || isSelected) {
         ctx.save();
         ctx.strokeStyle = node.color;
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 2.5;
         const pulse = Math.sin(now / 350) * 1.5;
         ctx.beginPath();
-        ctx.arc(sx, sy, r + 4 + pulse, 0, Math.PI * 2);
+        ctx.arc(sx, sy, r + 5 + pulse, 0, Math.PI * 2);
         ctx.stroke();
         ctx.restore();
       }
 
       // Name Label (drawn when zoomed in or when hovered/selected)
-      const shouldDrawLabel = isHovered || isSelected || relZoom >= 1.7;
+      const shouldDrawLabel = isHovered || isSelected || relZoom >= 1.4;
       if (shouldDrawLabel) {
         const labelText = isHovered || isSelected ? `${node.name} · ${node.mbti}` : node.name;
-        const tx = sx + r + 5;
+        const tx = sx + r + 6;
         const ty = sy;
 
         ctx.save();
-        ctx.font = isHovered || isSelected ? "700 13px Poppins, sans-serif" : "500 11.5px Poppins, sans-serif";
+        ctx.font = isHovered || isSelected ? "700 13px Poppins, sans-serif" : "600 12px Poppins, sans-serif";
         ctx.textAlign = "left";
         ctx.textBaseline = "middle";
 
         // Halo outline
-        ctx.lineWidth = 3.5;
-        ctx.strokeStyle = isDark ? "rgba(16,16,16,0.92)" : "rgba(244,241,232,0.92)";
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = isDark ? "rgba(16,16,16,0.95)" : "rgba(244,241,232,0.95)";
         ctx.strokeText(labelText, tx, ty);
 
         // Fill
-        ctx.fillStyle = isHovered || isSelected ? (isDark ? "#ffffff" : "#101010") : (isDark ? "#d4d4d4" : "#2c2b27");
+        ctx.fillStyle = isHovered || isSelected ? (isDark ? "#ffffff" : "#101010") : (isDark ? "#e2ddcf" : "#22201b");
         ctx.fillText(labelText, tx, ty);
         ctx.restore();
       }
     }
 
     // 4. Render User ("TU") at their exact coordinates if they completed the test
+    // "bila aia sa fie doar alba fara palpait si fara tu intj 96 86"
     if (userData.hasScores) {
       const ux = userData.x * k + panX;
       const uy = userData.y * k + panY;
+      const isUserHovered = this.userHovered;
+      const isUserSelected = this.userSelected;
 
-      // Radar pulsating ring
-      const ringPulse = (now / 1600) % 1;
-      const ringRadius = 14 + ringPulse * 28;
-      const ringAlpha = (1 - ringPulse) * 0.8;
+      const baseUserR = 18;
+      let userR = Math.max(13, Math.min(36, baseUserR * Math.pow(Math.max(relZoom, 0.4), 0.55)));
+      if (isUserHovered || isUserSelected) userR += 4;
 
       ctx.save();
-      // Outer radar ring
-      ctx.strokeStyle = `rgba(16, 185, 129, ${ringAlpha})`;
-      ctx.lineWidth = 2.5;
-      ctx.beginPath();
-      ctx.arc(ux, uy, ringRadius, 0, Math.PI * 2);
-      ctx.stroke();
+      // Drop shadow so it pops cleanly
+      ctx.shadowColor = "rgba(0, 0, 0, 0.45)";
+      ctx.shadowBlur = 8;
+      ctx.shadowOffsetY = 2;
 
-      // Second pulsing ring
-      const ringPulse2 = ((now + 800) / 1600) % 1;
-      const ringRadius2 = 14 + ringPulse2 * 28;
-      const ringAlpha2 = (1 - ringPulse2) * 0.8;
-      ctx.strokeStyle = `rgba(16, 185, 129, ${ringAlpha2})`;
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(ux, uy, ringRadius2, 0, Math.PI * 2);
-      ctx.stroke();
-
-      // Center bright emerald dot
-      ctx.fillStyle = "#10b981";
-      ctx.shadowColor = "rgba(16, 185, 129, 0.9)";
-      ctx.shadowBlur = 14;
-      ctx.beginPath();
-      ctx.arc(ux, uy, 7, 0, Math.PI * 2);
-      ctx.fill();
-
-      // White inner core
+      // Solid pure white ball (NO pulsing, NO blinking, completely clean)
       ctx.fillStyle = "#ffffff";
-      ctx.shadowBlur = 0;
       ctx.beginPath();
-      ctx.arc(ux, uy, 2.5, 0, Math.PI * 2);
+      ctx.arc(ux, uy, userR, 0, Math.PI * 2);
       ctx.fill();
 
-      // Standout label
-      const userTag = `TU · ${userData.userType} (${Math.round(userData.tPct)}% T, ${Math.round(userData.nPct)}% N)`;
-      ctx.font = "800 13px Sora, sans-serif";
-      ctx.textAlign = "left";
-      ctx.textBaseline = "middle";
-
-      const badgeX = ux + 12;
-      const badgeY = uy - 1;
-
-      // Halo
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = isDark ? "rgba(16,16,16,0.95)" : "rgba(244,241,232,0.95)";
-      ctx.strokeText(userTag, badgeX, badgeY);
-
-      // Text fill
-      ctx.fillStyle = "#10b981";
-      ctx.fillText(userTag, badgeX, badgeY);
+      // Clean crisp dark/emerald border
+      ctx.shadowColor = "transparent";
+      ctx.strokeStyle = isUserSelected || isUserHovered ? "#10b981" : (isDark ? "rgba(0,0,0,0.4)" : "rgba(0,0,0,0.25)");
+      ctx.lineWidth = isUserSelected || isUserHovered ? 3.5 : 2;
+      ctx.stroke();
       ctx.restore();
     }
 
@@ -572,11 +553,31 @@ export class SpectrumController {
       return { x: e.clientX - rect.left, y: e.clientY - rect.top };
     };
 
-    // Find node closest to mouse
+    // Find node closest to mouse (checking User first, then figures)
     const findHitNode = (mx, my) => {
       const { x: panX, y: panY, k } = this.transform;
+      const relZoom = k / this.baseScale;
+      const userData = this.getUserData();
+
+      // 1. Check user node hit
+      if (userData.hasScores) {
+        const ux = userData.x * k + panX;
+        const uy = userData.y * k + panY;
+        const baseUserR = 18;
+        const userR = Math.max(13, Math.min(36, baseUserR * Math.pow(Math.max(relZoom, 0.4), 0.55)));
+        const dUser = Math.hypot(ux - mx, uy - my);
+        if (dUser <= userR + 8) {
+          return "user";
+        }
+      }
+
+      // 2. Check personalities
+      const baseR = 18;
+      const currentR = Math.max(12, Math.min(38, baseR * Math.pow(Math.max(relZoom, 0.4), 0.55)));
+      const hitThreshold = currentR + 8;
+
       let closestIdx = -1;
-      let minDistance = 22; // Hit threshold in pixels
+      let minDistance = hitThreshold;
 
       for (let i = 0; i < this.nodes.length; i++) {
         const n = this.nodes[i];
@@ -650,9 +651,13 @@ export class SpectrumController {
       } else if (e.pointerType === "mouse") {
         // Check hover
         const hit = findHitNode(p.x, p.y);
-        if (hit !== this.hoveredIndex) {
-          this.hoveredIndex = hit;
-          canvas.style.cursor = hit >= 0 ? "pointer" : "grab";
+        const hitIsUser = hit === "user";
+        const hitIdx = hitIsUser ? -1 : hit;
+
+        if (hitIsUser !== this.userHovered || hitIdx !== this.hoveredIndex) {
+          this.userHovered = hitIsUser;
+          this.hoveredIndex = hitIdx;
+          canvas.style.cursor = (hitIsUser || hitIdx >= 0) ? "pointer" : "grab";
           this.requestFrame();
         }
       }
@@ -666,7 +671,9 @@ export class SpectrumController {
       if (this.isDragging && this.dragDistance < 6) {
         const p = getPos(e);
         const hit = findHitNode(p.x, p.y);
-        if (hit >= 0) {
+        if (hit === "user") {
+          this.selectUser();
+        } else if (typeof hit === "number" && hit >= 0) {
           this.selectNode(hit, true);
         } else {
           this.deselectNode();
@@ -681,8 +688,9 @@ export class SpectrumController {
 
     // Pointer Leave
     canvas.addEventListener("pointerleave", () => {
-      if (this.hoveredIndex !== -1) {
+      if (this.hoveredIndex !== -1 || this.userHovered) {
         this.hoveredIndex = -1;
+        this.userHovered = false;
         this.requestFrame();
       }
     });
@@ -743,12 +751,6 @@ export class SpectrumController {
     const themeBtn = document.getElementById("tree-nav-theme");
     if (themeBtn) themeBtn.addEventListener("click", () => this.app.state.toggleTheme());
 
-    // Legend "Tu" click -> focus on user
-    const legendUserBtn = document.getElementById("tree-legend-user-btn");
-    if (legendUserBtn) {
-      legendUserBtn.addEventListener("click", () => this.focusOnUser());
-    }
-
     // Search Box live autocomplete
     const searchInput = document.getElementById("tree-search-input");
     const suggestionsList = document.getElementById("tree-search-suggestions");
@@ -806,6 +808,7 @@ export class SpectrumController {
   selectNode(idx, flyTo = true) {
     if (idx < 0 || idx >= this.nodes.length) return;
     this.selectedIndex = idx;
+    this.userSelected = false;
     const node = this.nodes[idx];
 
     // Smooth fly to center
@@ -818,8 +821,21 @@ export class SpectrumController {
     this.requestFrame();
   }
 
+  selectUser() {
+    const userData = this.getUserData();
+    if (!userData.hasScores) return;
+
+    this.userSelected = true;
+    this.selectedIndex = -1;
+
+    this.flyToNode({ x: userData.x, y: userData.y });
+    this.renderUserSidePanel(userData);
+    this.requestFrame();
+  }
+
   deselectNode() {
     this.selectedIndex = -1;
+    this.userSelected = false;
     const panel = document.getElementById("tree-panel");
     if (panel) {
       panel.style.display = "none";
@@ -838,7 +854,7 @@ export class SpectrumController {
     const startY = this.transform.y;
     const startK = this.transform.k;
 
-    const targetK = Math.max(startK, this.baseScale * 4.5);
+    const targetK = Math.max(startK, this.baseScale * 3.8);
     // Shift slightly to the left on desktop to leave room for side panel
     const offsetX = w > 820 ? 180 : 0;
     const targetX = (w - offsetX) / 2 - node.x * targetK;
@@ -870,10 +886,7 @@ export class SpectrumController {
   }
 
   focusOnUser() {
-    const userData = this.getUserData();
-    if (!userData.hasScores || !this.wrap) return;
-
-    this.flyToNode({ x: userData.x, y: userData.y });
+    this.selectUser();
   }
 
   renderSidePanel(node) {
@@ -882,7 +895,7 @@ export class SpectrumController {
 
     const lang = this.app.state.lang || "ro";
     const userData = this.getUserData();
-    const cleanRole = getFigureRole(node, lang);
+    const cleanRole = getFigureRole(node.rawFig || node, lang);
     const mbtiData = MBTI_TYPES[node.mbti] || {};
 
     // Calculate similarity with user if available
@@ -891,7 +904,7 @@ export class SpectrumController {
       simPct = calculateFigureSimilarity(userData.percentages, userData.axisScores, node);
     }
 
-    // Find 4 closest personalities
+    // Find 5 closest personalities on the spectrum
     const similar = this.nodes
       .filter(n => n.id !== node.id)
       .map(n => {
@@ -902,99 +915,329 @@ export class SpectrumController {
       .sort((a, b) => b.match - a.match)
       .slice(0, 5);
 
+    // 4 Spectrum Axes
+    const figE = node.axes?.E ?? 50;
+    const figI = node.axes?.I ?? (100 - figE);
+    const figN = node.nPct ?? 50;
+    const figS = node.sPct ?? (100 - figN);
+    const figT = node.tPct ?? 50;
+    const figF = node.fPct ?? (100 - figT);
+    const figJ = node.axes?.J ?? 50;
+    const figP = node.axes?.P ?? (100 - figJ);
+
+    const axesList = [
+      {
+        id: "EI",
+        name: lang === "ro" ? "MINTE" : "MIND",
+        leftName: lang === "ro" ? "Extraversie" : "Extravertit",
+        rightName: lang === "ro" ? "Introversie" : "Introvertit",
+        leftVal: figE,
+        rightVal: figI,
+        pos: Math.max(7, Math.min(93, figI)),
+        color: "#4298b4"
+      },
+      {
+        id: "NS",
+        name: lang === "ro" ? "ENERGIE" : "ENERGY",
+        leftName: lang === "ro" ? "Intuiție" : "Intuitive",
+        rightName: lang === "ro" ? "Senzorial" : "Observant",
+        leftVal: figN,
+        rightVal: figS,
+        pos: Math.max(7, Math.min(93, figS)),
+        color: node.color
+      },
+      {
+        id: "TF",
+        name: lang === "ro" ? "NATURĂ" : "NATURE",
+        leftName: lang === "ro" ? "Gândire" : "Thinking",
+        rightName: lang === "ro" ? "Sentiment" : "Feeling",
+        leftVal: figT,
+        rightVal: figF,
+        pos: Math.max(7, Math.min(93, figF)),
+        color: "#72cccd"
+      },
+      {
+        id: "JP",
+        name: lang === "ro" ? "TACTICĂ" : "TACTICS",
+        leftName: lang === "ro" ? "Judecată" : "Judging",
+        rightName: lang === "ro" ? "Percepție" : "Prospecting",
+        leftVal: figJ,
+        rightVal: figP,
+        pos: Math.max(7, Math.min(93, figP)),
+        color: "#88619a"
+      }
+    ];
+
     panel.innerHTML = `
-      <button type="button" class="tree-close" id="tree-panel-close" aria-label="Close">×</button>
-
-      <div class="tree-id">
-        ${node.photo ? `
-          <img class="tree-avatar" src="${node.photo}" alt="${node.name}" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-          <div class="tree-avatar" style="display:none; align-items:center; justify-content:center; font-weight:800; background:rgba(0,0,0,0.1);">${node.avatar}</div>
-        ` : `
-          <div class="tree-avatar" style="display:flex; align-items:center; justify-content:center; font-weight:800; background:rgba(0,0,0,0.1);">${node.avatar}</div>
-        `}
-        <div style="display: flex; flex-direction: column; gap: 0.2rem;">
-          <span class="e-tag e-tag-cat" style="background: ${node.colorBg}; color: ${node.color}; border: 1px solid ${node.color}; width: fit-content;">
-            ${node.mbti} · ${node.tempName}
-          </span>
-          ${simPct !== null ? `
-            <span style="font-size: 0.76rem; font-weight: 800; color: #10b981;">
-              ${simPct}% ${lang === 'ro' ? 'compatibilitate cu tine' : 'match with you'}
-            </span>
-          ` : ''}
-        </div>
-      </div>
-
-      <h2 class="tree-title">${node.name}</h2>
-      <p class="tree-subtitle">${cleanRole}</p>
-      ${node.quote ? `<p class="tree-desc" style="font-style: italic;">"${node.quote}"</p>` : ''}
-
-      <!-- 4 Axes Minimalist Bars -->
-      <div class="tree-axes-section" style="margin: 1.5rem 0;">
-        <h4 style="font-size: 0.74rem; font-weight: 800; letter-spacing: 0.1em; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.75rem;">
-          ${lang === 'ro' ? 'Coordonate pe cele 4 Axe' : '4 Axis Coordinates'}
-        </h4>
-
-        <!-- N vs S -->
-        <div class="tree-axis-row">
-          <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; margin-bottom: 0.25rem;">
-            <span>${lang === 'ro' ? 'Intuiție' : 'Intuition'} <b>${node.nPct}%</b></span>
-            <span><b>${node.sPct}%</b> ${lang === 'ro' ? 'Senzorial' : 'Sensing'}</span>
+      <div class="tree-panel-header" style="background: ${node.colorBg || node.color}; color: #ffffff;">
+        <button type="button" class="tree-close" id="tree-panel-close" aria-label="Close">✕</button>
+        <div class="fig-modal-profile">
+          <div class="fig-modal-photo-wrap">
+            ${node.photo ? `
+              <img class="fig-modal-photo" src="${node.photo}" alt="${node.name}" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+              <div class="fig-modal-avatar-fallback" style="display:none; background: rgba(0,0,0,0.3); color: #ffffff;">${node.avatar || node.name.charAt(0)}</div>
+            ` : `
+              <div class="fig-modal-avatar-fallback" style="background: rgba(0,0,0,0.3); color: #ffffff;">${node.avatar || node.name.charAt(0)}</div>
+            `}
           </div>
-          <div class="tree-axis-track">
-            <div class="tree-axis-fill" style="width: ${node.nPct}%; background: #95637e;"></div>
-          </div>
-        </div>
-
-        <!-- T vs F -->
-        <div class="tree-axis-row" style="margin-top: 0.65rem;">
-          <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; margin-bottom: 0.25rem;">
-            <span>${lang === 'ro' ? 'Gândire' : 'Thinking'} <b>${node.tPct}%</b></span>
-            <span><b>${node.fPct}%</b> ${lang === 'ro' ? 'Sentiment' : 'Feeling'}</span>
-          </div>
-          <div class="tree-axis-track">
-            <div class="tree-axis-fill" style="width: ${node.tPct}%; background: #72cccd;"></div>
-          </div>
-        </div>
-
-        <!-- E vs I -->
-        <div class="tree-axis-row" style="margin-top: 0.65rem;">
-          <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; margin-bottom: 0.25rem;">
-            <span>${lang === 'ro' ? 'Extraversie' : 'Extraversion'} <b>${node.axes.E}%</b></span>
-            <span><b>${node.axes.I}%</b> ${lang === 'ro' ? 'Introversie' : 'Introversion'}</span>
-          </div>
-          <div class="tree-axis-track">
-            <div class="tree-axis-fill" style="width: ${node.axes.E}%; background: #395296;"></div>
-          </div>
-        </div>
-
-        <!-- J vs P -->
-        <div class="tree-axis-row" style="margin-top: 0.65rem;">
-          <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; margin-bottom: 0.25rem;">
-            <span>${lang === 'ro' ? 'Judecată' : 'Judging'} <b>${node.axes.J}%</b></span>
-            <span><b>${node.axes.P}%</b> ${lang === 'ro' ? 'Percepție' : 'Perceiving'}</span>
-          </div>
-          <div class="tree-axis-track">
-            <div class="tree-axis-fill" style="width: ${node.axes.J}%; background: #395296;"></div>
+          <div class="fig-modal-profile-text">
+            <div class="fig-modal-tags">
+              <span class="fig-modal-mbti-tag">${node.mbti}</span>
+              <span class="fig-modal-temp-tag">${node.tempName}</span>
+              ${simPct !== null ? `<span class="fig-modal-sim-tag">${simPct}% ${lang === 'ro' ? 'compatibilitate' : 'match'}</span>` : ''}
+            </div>
+            <h2 class="fig-modal-name">${node.name}</h2>
+            <div class="fig-modal-role">${cleanRole}</div>
           </div>
         </div>
       </div>
 
-      <!-- Closest Similar Personalities -->
-      <p class="e-eyebrow tree-eyebrow">${lang === 'ro' ? 'Cele mai apropiate pe spectru' : 'Closest on spectrum'}</p>
-      <ul class="tree-similar">
-        ${similar.map(({ node: sNode, match }) => `
-          <li>
-            <button type="button" data-sim-idx="${sNode.index}">
-              <span class="tree-dot" style="background: ${sNode.color};"></span>
-              <span class="tree-similar-name">${sNode.name}</span>
-              <span class="tree-similar-pct">${match}%</span>
-            </button>
-          </li>
-        `).join("")}
-      </ul>
+      <div class="tree-panel-body">
+        ${node.quote ? `
+          <div class="fig-modal-quote-box">
+            <p class="fig-modal-quote">"${node.quote}"</p>
+          </div>
+        ` : ''}
+
+        <!-- 4 Spectrum Axes with fig-modal-sec-title -->
+        <div class="fig-modal-sec">
+          <h4 class="fig-modal-sec-title">${lang === 'ro' ? '4 Axe' : '4 Axis'}</h4>
+          <div class="fig-modal-axes-grid">
+            ${axesList.map(ax => `
+              <div class="fig-modal-axis-card">
+                <div class="fig-modal-axis-head">
+                  <span class="fig-modal-axis-name">${ax.name}</span>
+                </div>
+                <div class="fig-modal-axis-track">
+                  <div class="fig-modal-axis-midpoint"></div>
+                  <div class="fig-modal-axis-dot" style="left: ${ax.pos}%; background: ${ax.color};" title="${ax.rightVal >= ax.leftVal ? ax.rightName + ' ' + ax.rightVal + '%' : ax.leftName + ' ' + ax.leftVal + '%'}"></div>
+                </div>
+                <div class="fig-modal-axis-labels">
+                  <span class="fig-modal-axis-lbl ${ax.leftVal >= ax.rightVal ? 'active-pole' : ''}">${ax.leftName} <b>${ax.leftVal}%</b></span>
+                  <span class="fig-modal-axis-lbl ${ax.rightVal > ax.leftVal ? 'active-pole' : ''}"><b>${ax.rightVal}%</b> ${ax.rightName}</span>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+
+        <!-- 8 Cognitive Functions Breakdown if present -->
+        ${node.scores && Object.keys(node.scores).length >= 4 ? `
+          <div class="fig-modal-sec">
+            <h4 class="fig-modal-sec-title">8 Cognitive</h4>
+            <div class="fig-modal-funcs-grid">
+              ${FUNCTIONS_LIST.map(f => {
+                const fPct = node.scores?.[f] ?? 50;
+                const fColor = getFuncTileColors(f).bg;
+                return `
+                  <div class="fig-modal-func-item">
+                    <div class="fig-modal-func-top">
+                      <span class="resemble-stack-pill" style="background: ${fColor}; color: #ffffff;">${f}</span>
+                      <span class="fig-modal-func-pct"><b>${fPct}%</b></span>
+                    </div>
+                    <div class="fig-modal-func-track">
+                      <div class="fig-modal-func-fill" style="width: ${fPct}%; background: ${fColor};"></div>
+                    </div>
+                  </div>
+                `;
+              }).join("")}
+            </div>
+          </div>
+        ` : ''}
+
+        <!-- Closest Personalities on Spectrum -->
+        <div class="fig-modal-sec">
+          <h4 class="fig-modal-sec-title">${lang === 'ro' ? 'Personalități Asemănătoare' : 'Closest on Spectrum'}</h4>
+          <ul class="tree-similar">
+            ${similar.map(({ node: sNode, match }) => `
+              <li>
+                <button type="button" data-sim-idx="${sNode.index}">
+                  ${sNode.photo ? `
+                    <img class="tree-similar-img" src="${sNode.photo}" alt="${sNode.name}" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';" />
+                    <span class="tree-dot" style="display:none; background: ${sNode.color}; width: 34px; height: 34px; border-radius: 50%;"></span>
+                  ` : `
+                    <span class="tree-dot" style="background: ${sNode.color}; width: 34px; height: 34px; border-radius: 50%; display: inline-flex; align-items:center; justify-content:center; color:#fff; font-size:12px; font-weight:800;">${sNode.avatar || sNode.name.charAt(0)}</span>
+                  `}
+                  <span class="tree-similar-name">${sNode.name} <small style="opacity:0.75; font-weight:600;">(${sNode.mbti})</small></span>
+                  <span class="tree-similar-pct">${match}%</span>
+                </button>
+              </li>
+            `).join("")}
+          </ul>
+        </div>
+      </div>
     `;
 
-    panel.style.display = "block";
+    panel.style.display = "flex";
+
+    // Close button
+    const closeBtn = document.getElementById("tree-panel-close");
+    if (closeBtn) {
+      closeBtn.addEventListener("click", () => this.deselectNode());
+    }
+
+    // Similar personality buttons navigate and fly camera
+    panel.querySelectorAll("[data-sim-idx]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const sIdx = parseInt(btn.getAttribute("data-sim-idx"), 10);
+        this.selectNode(sIdx, true);
+      });
+    });
+  }
+
+  renderUserSidePanel(userData) {
+    const panel = document.getElementById("tree-panel");
+    if (!panel) return;
+
+    const lang = this.app.state.lang || "ro";
+    const userTemp = getTypeTemperament(userData.userType);
+
+    // Closest figures to user's spectrum coordinates
+    const similar = this.nodes
+      .map(n => {
+        const dist = Math.hypot(n.x - userData.x, n.y - userData.y);
+        const match = Math.max(10, Math.min(99, Math.round(100 - (dist / WORLD_W) * 140)));
+        return { node: n, match };
+      })
+      .sort((a, b) => b.match - a.match)
+      .slice(0, 5);
+
+    // 4 Spectrum Axes
+    const axesList = [
+      {
+        id: "EI",
+        name: lang === "ro" ? "MINTE" : "MIND",
+        leftName: lang === "ro" ? "Extraversie" : "Extravertit",
+        rightName: lang === "ro" ? "Introversie" : "Introvertit",
+        leftVal: Math.round(userData.ePct),
+        rightVal: Math.round(userData.iPct),
+        pos: Math.max(7, Math.min(93, Math.round(userData.iPct))),
+        color: "#4298b4"
+      },
+      {
+        id: "NS",
+        name: lang === "ro" ? "ENERGIE" : "ENERGY",
+        leftName: lang === "ro" ? "Intuiție" : "Intuitive",
+        rightName: lang === "ro" ? "Senzorial" : "Observant",
+        leftVal: Math.round(userData.nPct),
+        rightVal: Math.round(userData.sPct),
+        pos: Math.max(7, Math.min(93, Math.round(userData.sPct))),
+        color: userTemp.color
+      },
+      {
+        id: "TF",
+        name: lang === "ro" ? "NATURĂ" : "NATURE",
+        leftName: lang === "ro" ? "Gândire" : "Thinking",
+        rightName: lang === "ro" ? "Sentiment" : "Feeling",
+        leftVal: Math.round(userData.tPct),
+        rightVal: Math.round(userData.fPct),
+        pos: Math.max(7, Math.min(93, Math.round(userData.fPct))),
+        color: "#72cccd"
+      },
+      {
+        id: "JP",
+        name: lang === "ro" ? "TACTICĂ" : "TACTICS",
+        leftName: lang === "ro" ? "Judecată" : "Judging",
+        rightName: lang === "ro" ? "Percepție" : "Prospecting",
+        leftVal: Math.round(userData.jPct),
+        rightVal: Math.round(userData.pPct),
+        pos: Math.max(7, Math.min(93, Math.round(userData.pPct))),
+        color: "#88619a"
+      }
+    ];
+
+    panel.innerHTML = `
+      <div class="tree-panel-header" style="background: linear-gradient(135deg, #102e24 0%, #1e4d3d 50%, #2f6b55 100%); color: #ffffff;">
+        <button type="button" class="tree-close" id="tree-panel-close" aria-label="Close">✕</button>
+        <div class="fig-modal-profile">
+          <div class="fig-modal-photo-wrap">
+            <div class="fig-modal-avatar-fallback" style="background: #ffffff; color: #102e24; font-weight: 900; font-size: 1.5rem; border: 3px solid rgba(255, 255, 255, 0.7); box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+              TU
+            </div>
+          </div>
+          <div class="fig-modal-profile-text">
+            <div class="fig-modal-tags">
+              <span class="fig-modal-mbti-tag" style="background: #ffffff; color: #102e24;">${userData.userType}</span>
+              <span class="fig-modal-temp-tag">${userTemp.name}</span>
+              <span class="fig-modal-sim-tag" style="background: #10b981;">${lang === 'ro' ? 'Profilul tău' : 'Your Profile'}</span>
+            </div>
+            <h2 class="fig-modal-name">${lang === 'ro' ? 'Poziția Ta pe Spectru' : 'Your Spectrum Position'}</h2>
+            <div class="fig-modal-role">${Math.round(userData.tPct)}% Thinking · ${Math.round(userData.nPct)}% Intuition</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tree-panel-body">
+        <!-- 4 Spectrum Axes with fig-modal-sec-title -->
+        <div class="fig-modal-sec">
+          <h4 class="fig-modal-sec-title">${lang === 'ro' ? '4 Axe Personale' : 'Your 4 Axes'}</h4>
+          <div class="fig-modal-axes-grid">
+            ${axesList.map(ax => `
+              <div class="fig-modal-axis-card">
+                <div class="fig-modal-axis-head">
+                  <span class="fig-modal-axis-name">${ax.name}</span>
+                </div>
+                <div class="fig-modal-axis-track">
+                  <div class="fig-modal-axis-midpoint"></div>
+                  <div class="fig-modal-axis-dot" style="left: ${ax.pos}%; background: ${ax.color};" title="${ax.rightVal >= ax.leftVal ? ax.rightName + ' ' + ax.rightVal + '%' : ax.leftName + ' ' + ax.leftVal + '%'}"></div>
+                </div>
+                <div class="fig-modal-axis-labels">
+                  <span class="fig-modal-axis-lbl ${ax.leftVal >= ax.rightVal ? 'active-pole' : ''}">${ax.leftName} <b>${ax.leftVal}%</b></span>
+                  <span class="fig-modal-axis-lbl ${ax.rightVal > ax.leftVal ? 'active-pole' : ''}"><b>${ax.rightVal}%</b> ${ax.rightName}</span>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+
+        <!-- 8 Cognitive Functions Breakdown if present -->
+        ${userData.percentages ? `
+          <div class="fig-modal-sec">
+            <h4 class="fig-modal-sec-title">${lang === 'ro' ? '8 Funcții Cognitive' : '8 Cognitive Functions'}</h4>
+            <div class="fig-modal-funcs-grid">
+              ${FUNCTIONS_LIST.map(f => {
+                const fPct = Math.round(userData.percentages[f] ?? 50);
+                const fColor = getFuncTileColors(f).bg;
+                return `
+                  <div class="fig-modal-func-item">
+                    <div class="fig-modal-func-top">
+                      <span class="resemble-stack-pill" style="background: ${fColor}; color: #ffffff;">${f}</span>
+                      <span class="fig-modal-func-pct"><b>${fPct}%</b></span>
+                    </div>
+                    <div class="fig-modal-func-track">
+                      <div class="fig-modal-func-fill" style="width: ${fPct}%; background: ${fColor};"></div>
+                    </div>
+                  </div>
+                `;
+              }).join("")}
+            </div>
+          </div>
+        ` : ''}
+
+        <!-- Closest Personalities on Spectrum -->
+        <div class="fig-modal-sec">
+          <h4 class="fig-modal-sec-title">${lang === 'ro' ? 'Personalități Asemănătoare pe Spectru' : 'Closest Personalities on Spectrum'}</h4>
+          <ul class="tree-similar">
+            ${similar.map(({ node: sNode, match }) => `
+              <li>
+                <button type="button" data-sim-idx="${sNode.index}">
+                  ${sNode.photo ? `
+                    <img class="tree-similar-img" src="${sNode.photo}" alt="${sNode.name}" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';" />
+                    <span class="tree-dot" style="display:none; background: ${sNode.color}; width: 34px; height: 34px; border-radius: 50%;"></span>
+                  ` : `
+                    <span class="tree-dot" style="background: ${sNode.color}; width: 34px; height: 34px; border-radius: 50%; display: inline-flex; align-items:center; justify-content:center; color:#fff; font-size:12px; font-weight:800;">${sNode.avatar || sNode.name.charAt(0)}</span>
+                  `}
+                  <span class="tree-similar-name">${sNode.name} <small style="opacity:0.75; font-weight:600;">(${sNode.mbti})</small></span>
+                  <span class="tree-similar-pct">${match}%</span>
+                </button>
+              </li>
+            `).join("")}
+          </ul>
+        </div>
+      </div>
+    `;
+
+    panel.style.display = "flex";
 
     // Close button
     const closeBtn = document.getElementById("tree-panel-close");
