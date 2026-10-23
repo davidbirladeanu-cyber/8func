@@ -151,32 +151,29 @@ export class SpectrumController {
       const hd = BOX_D / 2;
 
       // Top Ceiling: Interaction Styles (IJ · IP · EJ · EP)
-      // +X: Extraversion (E 100% -> +hw), -X: Introversion (I 100% -> -hw)
-      // +Z: Perceiving (P 100% -> +hd), -Z: Judging (J 100% -> -hd)
+      // -X: Introversion (I 100% -> -hw), +X: Extraversion (E 100% -> +hw)
+      // -Z: Judging (J 100% -> -hd), +Z: Perceiving (P 100% -> +hd)
       // Y = +hh (+375)
+      //   Corner IJ: I 100%, J 100% -> (-hw, +hh, -hd)
+      //   Corner IP: I 100%, P 100% -> (-hw, +hh, +hd)
       //   Corner EP: E 100%, P 100% -> (+hw, +hh, +hd)
       //   Corner EJ: E 100%, J 100% -> (+hw, +hh, -hd)
-      //   Corner IP: I 100%, P 100% -> (-hw, +hh, +hd)
-      //   Corner IJ: I 100%, J 100% -> (-hw, +hh, -hd)
       const topX = ((e - 50) / 50) * hw;
       const topZ = ((p - 50) / 50) * hd;
       const topY = hh;
 
       // Bottom Floor: Temperaments (NT · NF · ST · SF)
-      // +X: Thinking (T 100% -> +hw), -X: Feeling (F 100% -> -hw)
-      // -Z: Intuition (N 100% -> -hd), +Z: Sensing (S 100% -> +hd)
-      // Y = -hh (-375)
-      //   Corner NT: T 100%, N 100% -> (+hw, -hh, -hd)
-      //   Corner NF: F 100%, N 100% -> (-hw, -hh, -hd)
-      //   Corner ST: T 100%, S 100% -> (+hw, -hh, +hd)
-      //   Corner SF: F 100%, S 100% -> (-hw, -hh, +hd)
-      const botX = ((t - 50) / 50) * hw;
-      const botZ = ((s - 50) / 50) * hd;
+      //   Corner NT: T 100%, N 100% -> (-hw, -hh, -hd) [Atinge IJ]
+      //   Corner NF: F 100%, N 100% -> (-hw, -hh, +hd) [Atinge IP]
+      //   Corner ST: T 100%, S 100% -> (+hw, -hh, +hd) [Se opune IJ]
+      //   Corner SF: F 100%, S 100% -> (+hw, -hh, -hd) [Se opune IP]
+      const botX = ((s - 50) / 50) * hw;
+      const botZ = (((s - n) * (t - f)) / 10000) * hd;
       const botY = -hh;
 
       // 3D Space Coordinates (percentage-based):
-      const wx = topX;
-      const wz = topZ;
+      const wx = (topX + botX) / 2;
+      const wz = (topZ + botZ) / 2;
       const wy = ((n - 50) / 50) * hh;
 
       const style = getInteractionStyle(fig.mbti);
@@ -264,12 +261,12 @@ export class SpectrumController {
     const topZ = ((p - 50) / 50) * hd;
     const topY = hh;
 
-    const botX = ((t - 50) / 50) * hw;
-    const botZ = ((s - 50) / 50) * hd;
+    const botX = ((s - 50) / 50) * hw;
+    const botZ = (((s - n) * (t - f)) / 10000) * hd;
     const botY = -hh;
 
-    const wx = topX;
-    const wz = topZ;
+    const wx = (topX + botX) / 2;
+    const wz = (topZ + botZ) / 2;
     const wy = ((n - 50) / 50) * hh;
 
     return {
@@ -630,22 +627,22 @@ export class SpectrumController {
 
     // 2. Draw 3D Wireframe Bounding Box
     const corners = [
-      { x: -hw, y: -hh, z: -hd }, // 0: Bottom Back-Left (NF)
-      { x: hw, y: -hh, z: -hd },  // 1: Bottom Back-Right (NT)
-      { x: hw, y: hh, z: -hd },   // 2: Top Back-Right (EJ)
-      { x: -hw, y: hh, z: -hd },  // 3: Top Back-Left (IJ)
-      { x: -hw, y: -hh, z: hd },  // 4: Bottom Front-Left (SF)
-      { x: hw, y: -hh, z: hd },   // 5: Bottom Front-Right (ST)
-      { x: hw, y: hh, z: hd },    // 6: Top Front-Right (EP)
-      { x: -hw, y: hh, z: hd }    // 7: Top Front-Left (IP)
+      { x: -hw, y: -hh, z: -hd }, // 0: Bottom Back-Left (NT) - atinge IJ
+      { x: hw, y: -hh, z: -hd },  // 1: Bottom Back-Right (SF) - se opune IP
+      { x: hw, y: hh, z: -hd },   // 2: Top Back-Right (EJ) - se opune IP
+      { x: -hw, y: hh, z: -hd },  // 3: Top Back-Left (IJ) - atinge NT
+      { x: -hw, y: -hh, z: hd },  // 4: Bottom Front-Left (NF) - atinge IP
+      { x: hw, y: -hh, z: hd },   // 5: Bottom Front-Right (ST) - se opune IJ
+      { x: hw, y: hh, z: hd },    // 6: Top Front-Right (EP) - se opune IJ
+      { x: -hw, y: hh, z: hd }    // 7: Top Front-Left (IP) - atinge NF
     ];
 
     const projectedCorners = corners.map(c => this.project3D(c.x, c.y, c.z, cx, cy));
 
     const edges = [
-      [0, 1], [1, 2], [2, 3], [3, 0], // Back
-      [4, 5], [5, 6], [6, 7], [7, 4], // Front
-      [0, 4], [1, 5], [2, 6], [3, 7]  // Connectors
+      [0, 1], [1, 5], [5, 4], [4, 0], // Bottom perimeter (NT -> SF -> ST -> NF -> NT)
+      [3, 2], [2, 6], [6, 7], [7, 3], // Top perimeter (IJ -> EJ -> EP -> IP -> IJ)
+      [0, 3], [4, 7], [5, 6], [1, 2]  // Vertical pillars (NT-IJ, NF-IP, ST-EP, SF-EJ)
     ];
 
     ctx.save();
@@ -729,28 +726,28 @@ export class SpectrumController {
     // 4. TOP CEILING CORNERS (Colțurile de Sus): IJ · IP · EJ · EP at Y = +hh
     const topCorners = [
       {
+        p: this.project3D(-hw, ceilY, -hd, cx, cy),
+        tag: "COLȚUL IJ",
+        sub: "I 100% · J 100% (Planificatori)",
+        color: "#6366f1"
+      },
+      {
+        p: this.project3D(-hw, ceilY, hd, cx, cy),
+        tag: "COLȚUL IP",
+        sub: "I 100% · P 100% (Autonomi)",
+        color: "#10b981"
+      },
+      {
         p: this.project3D(hw, ceilY, hd, cx, cy),
         tag: "COLȚUL EP",
-        sub: "E 100% · P 100%",
+        sub: "E 100% · P 100% (Exploratori)",
         color: "#f59e0b"
       },
       {
         p: this.project3D(hw, ceilY, -hd, cx, cy),
         tag: "COLȚUL EJ",
-        sub: "E 100% · J 100%",
+        sub: "E 100% · J 100% (Directori)",
         color: "#e11d48"
-      },
-      {
-        p: this.project3D(-hw, ceilY, hd, cx, cy),
-        tag: "COLȚUL IP",
-        sub: "I 100% · P 100%",
-        color: "#10b981"
-      },
-      {
-        p: this.project3D(-hw, ceilY, -hd, cx, cy),
-        tag: "COLȚUL IJ",
-        sub: "I 100% · J 100%",
-        color: "#6366f1"
       }
     ];
 
@@ -782,27 +779,27 @@ export class SpectrumController {
     // 5. BOTTOM FLOOR CORNERS (Colțurile de Jos): NT · NF · ST · SF at Y = -hh
     const botCorners = [
       {
-        p: this.project3D(hw, floorY, -hd, cx, cy),
+        p: this.project3D(-hw, floorY, -hd, cx, cy),
         tag: "COLȚUL NT",
-        sub: "T 100% · N 100%",
+        sub: "T 100% · N 100% (Atinge IJ)",
         color: "#95637e"
       },
       {
-        p: this.project3D(-hw, floorY, -hd, cx, cy),
+        p: this.project3D(-hw, floorY, hd, cx, cy),
         tag: "COLȚUL NF",
-        sub: "F 100% · N 100%",
+        sub: "F 100% · N 100% (Atinge IP)",
         color: "#9ac262"
       },
       {
         p: this.project3D(hw, floorY, hd, cx, cy),
         tag: "COLȚUL ST",
-        sub: "T 100% · S 100%",
+        sub: "T 100% · S 100% (Opus IJ)",
         color: "#72cccd"
       },
       {
-        p: this.project3D(-hw, floorY, hd, cx, cy),
+        p: this.project3D(hw, floorY, -hd, cx, cy),
         tag: "COLȚUL SF",
-        sub: "F 100% · S 100%",
+        sub: "F 100% · S 100% (Opus IP)",
         color: "#e5c727"
       }
     ];
@@ -835,15 +832,13 @@ export class SpectrumController {
     // 6. Cardinal Axis Labels: Top Ceiling & Bottom Floor
     const cardinalLabels = [
       // Top Ceiling
-      { p: this.project3D(hw + 40, ceilY, 0, cx, cy), text: "EXTRAVERSIE (E 100%)", color: "#f59e0b" },
       { p: this.project3D(-hw - 40, ceilY, 0, cx, cy), text: "INTROVERSIE (I 100%)", color: "#6366f1" },
-      { p: this.project3D(0, ceilY, hd + 40, cx, cy), text: "PERCEPȚIE (P 100%)", color: "#10b981" },
+      { p: this.project3D(hw + 40, ceilY, 0, cx, cy), text: "EXTRAVERSIE (E 100%)", color: "#f59e0b" },
       { p: this.project3D(0, ceilY, -hd - 40, cx, cy), text: "JUDECATE (J 100%)", color: "#e11d48" },
+      { p: this.project3D(0, ceilY, hd + 40, cx, cy), text: "PERCEPȚIE (P 100%)", color: "#10b981" },
       // Bottom Floor
-      { p: this.project3D(hw + 40, floorY, 0, cx, cy), text: "GÂNDIRE (T 100%)", color: "#72cccd" },
-      { p: this.project3D(-hw - 40, floorY, 0, cx, cy), text: "SENTIMENT (F 100%)", color: "#9ac262" },
-      { p: this.project3D(0, floorY, -hd - 40, cx, cy), text: "INTUIȚIE (N 100%)", color: "#95637e" },
-      { p: this.project3D(0, floorY, hd + 40, cx, cy), text: "SENZORIAL (S 100%)", color: "#e5c727" }
+      { p: this.project3D(-hw - 40, floorY, 0, cx, cy), text: "INTUIȚIE (N 100%)", color: "#95637e" },
+      { p: this.project3D(hw + 40, floorY, 0, cx, cy), text: "SENZORIAL (S 100%)", color: "#e5c727" }
     ];
 
     cardinalLabels.forEach(cl => {
@@ -970,6 +965,23 @@ export class SpectrumController {
         ctx.beginPath();
         ctx.arc(sx, sy, r + 5, 0, Math.PI * 2);
         ctx.stroke();
+
+        // Subtle tether lines connecting to top (style) and bottom (temperament) planes
+        const pTop = this.project3D(node.topX, ceilY, node.topZ, cx, cy);
+        const pBot = this.project3D(node.botX, floorY, node.botZ, cx, cy);
+        if (pTop && pBot) {
+          ctx.save();
+          ctx.strokeStyle = isDark ? "rgba(255,255,255,0.25)" : "rgba(16,16,16,0.25)";
+          ctx.lineWidth = 1.2;
+          ctx.setLineDash([3, 3]);
+          ctx.beginPath();
+          ctx.moveTo(pBot.sx, pBot.sy);
+          ctx.lineTo(sx, sy);
+          ctx.lineTo(pTop.sx, pTop.sy);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.restore();
+        }
       }
 
       // Calm 3D Billboard Name Tag
