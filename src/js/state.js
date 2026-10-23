@@ -68,6 +68,7 @@ export class AppState {
 
     // Screen state & URL results check
     const isFiguresPath = window.location.pathname.includes("/figures") || window.location.hash === "#figures" || window.location.pathname.includes("/personalitati");
+    const isSpectrumPath = window.location.pathname.includes("/spectrum") || window.location.hash === "#spectrum" || window.location.pathname.includes("/spectru");
     const parsedUrlScores = parseResultsUrlPath(window.location.pathname) || parseResultsUrlPath(window.location.hash);
     if (parsedUrlScores) {
       this.screen = "results";
@@ -76,6 +77,9 @@ export class AppState {
       try {
         localStorage.setItem('8func_last_user_results', JSON.stringify(this.lastUserResults));
       } catch (e) {}
+    } else if (isSpectrumPath) {
+      this.screen = "spectrum";
+      this.urlResultsScores = null;
     } else if (isFiguresPath) {
       this.screen = "figures";
       this.urlResultsScores = null;
@@ -90,7 +94,9 @@ export class AppState {
         } catch (e) {}
       }
 
-      if (savedScreen === "figures") {
+      if (savedScreen === "spectrum") {
+        this.screen = "spectrum";
+      } else if (savedScreen === "figures") {
         this.screen = "figures";
       } else if (savedScreen === "results" || (isComplete && Object.keys(this.answers).length >= this.questions.length)) {
         this.screen = "results";
@@ -293,6 +299,11 @@ export class AppState {
 
   showFigures() {
     this.screen = "figures";
+    this.notify();
+  }
+
+  showSpectrum() {
+    this.screen = "spectrum";
     this.notify();
   }
 

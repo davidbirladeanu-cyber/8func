@@ -13,6 +13,7 @@ import { ICONS } from "./icons.js";
 import { t, TRANSLATIONS } from "../data/translations.js";
 import { recordQuizSubmission, initVaultTriggers } from "./vault.js";
 import { generateResultsCardCanvas, openResultsImageModal } from "./cardGenerator.js";
+import { SpectrumController } from "./spectrum.js";
 
 // MBTI Dichotomy Calculation from the 8 Cognitive Functions
 // Difference of group means centered at 50% (neutral baseline)
@@ -436,9 +437,18 @@ class App {
       this.renderResults();
     } else if (this.state.screen === "figures") {
       this.renderFiguresDirectory();
+    } else if (this.state.screen === "spectrum") {
+      this.renderSpectrum();
     } else {
       this.renderQuiz();
     }
+  }
+
+  renderSpectrum() {
+    if (!this.spectrumController) {
+      this.spectrumController = new SpectrumController(this);
+    }
+    this.spectrumController.render();
   }
 
   renderNavbar() {
@@ -471,6 +481,10 @@ class App {
             <b>8</b><span>func</span>
           </button>
           <div class="e-nav-actions">
+            <button class="e-nav-figures-btn ${this.state.screen === 'spectrum' ? 'active' : ''}" type="button" id="nav-spectrum-btn" title="${t('spectrumNav', {}, lang)}">
+              ${ICONS.compass}
+              <span>${t('spectrumNav', {}, lang)}</span>
+            </button>
             <button class="e-nav-figures-btn ${this.state.screen === 'figures' ? 'active' : ''}" type="button" id="nav-figures-btn" title="${t('figuresNav', {}, lang)}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
               <span>${t('figuresNav', {}, lang)}</span>
@@ -498,7 +512,7 @@ class App {
                 <span class="e-arr">${ICONS.restart}</span>
               </button>
             ` : ""}
-            ${this.state.screen === "figures" ? (hasCompletedResults ? `
+            ${(this.state.screen === "figures" || this.state.screen === "spectrum") ? (hasCompletedResults ? `
               <button class="e-btn e-btn-primary e-btn-sm" type="button" id="nav-results-btn">
                 <span>${lang === 'ro' ? 'Rezultate' : 'Results'}</span>
                 <svg class="e-arr" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2;"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
@@ -527,6 +541,9 @@ class App {
 
     const logoBtn = document.getElementById("nav-logo-btn");
     if (logoBtn) logoBtn.addEventListener("click", () => this.state.showWelcome());
+
+    const spectrumBtn = document.getElementById("nav-spectrum-btn");
+    if (spectrumBtn) spectrumBtn.addEventListener("click", () => this.state.showSpectrum());
 
     const figuresBtn = document.getElementById("nav-figures-btn");
     if (figuresBtn) figuresBtn.addEventListener("click", () => this.state.showFigures());
@@ -1602,6 +1619,13 @@ class App {
                 <div class="spectrum-bottom-bar">
                   <span class="spectrum-coord-lbl">${s1Coords}</span>
                 </div>
+                <div style="margin-top: 1.5rem; text-align: center;">
+                  <button class="e-btn e-btn-primary" type="button" id="btn-results-open-spectrum" style="font-weight: 700; gap: 0.5rem; padding: 0.6rem 1.4rem; box-shadow: 0 4px 14px rgba(0,0,0,0.12);">
+                    ${ICONS.compass}
+                    <span>${t('exploreSpectrumBtn', {}, lang)}</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 14px; height: 14px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                  </button>
+                </div>
               </div>
             </section>
 
@@ -2266,6 +2290,11 @@ class App {
       modalOverlay.addEventListener("click", (e) => {
         if (e.target === modalOverlay) this.closeModal();
       });
+    }
+
+    const openSpectrumBtn = document.getElementById("btn-results-open-spectrum");
+    if (openSpectrumBtn) {
+      openSpectrumBtn.addEventListener("click", () => this.state.showSpectrum());
     }
   }
 
