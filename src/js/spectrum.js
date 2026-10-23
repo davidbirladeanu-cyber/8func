@@ -1,16 +1,17 @@
 /**
  * 8Func - 3D Personality Spectrum
  * An interactive, calm 3D spatial spectrum where:
- * - X: Extraversion vs Introversion (E% - I%)
- * - Z: Perceiving vs Judging (P% - J%)
- *   Forming the 4 Interaction Style Corners:
- *     - Colțul EP: E 100%, P 100%
- *     - Colțul EJ: E 100%, J 100%
- *     - Colțul IP: I 100%, P 100%
- *     - Colțul IJ: I 100%, J 100%
- * - Y: Intuition vs Sensing (N% - S%)
- * - Color: Temperament & Nature (NT, NF, SF, ST)
- * 100% percentage-based, zero lag, calm on-demand rendering.
+ * - Colțurile de Sus (Top Ceiling Corners at Y = +hh):
+ *     - Colțul IJ: I 100%, J 100% (Planificatori)
+ *     - Colțul IP: I 100%, P 100% (Autonomi)
+ *     - Colțul EJ: E 100%, J 100% (Directori)
+ *     - Colțul EP: E 100%, P 100% (Exploratori / Inițiatori)
+ * - Colțurile de Jos (Bottom Floor Corners at Y = -hh):
+ *     - Colțul NT: T 100%, N 100% (Analitici)
+ *     - Colțul NF: F 100%, N 100% (Diplomați)
+ *     - Colțul ST: T 100%, S 100% (Sentinele)
+ *     - Colțul SF: F 100%, S 100% (Exploratori)
+ * 100% percentage-based, zero lag, calm on-demand rendering, camera target reset on deselect.
  */
 
 import { NOTABLE_FIGURES, calculateFigureSimilarity, getFigureRole } from "../data/figures.js";
@@ -145,20 +146,38 @@ export class SpectrumController {
       const j = fig.axes ? fig.axes.J : (fig.mbti.includes("J") ? 75 : 25);
       const p = fig.axes ? fig.axes.P : 100 - j;
 
-      // 100% PURE PERCENTAGE-BASED 3D COORDINATES:
-      // X: Extraversion vs Introversion (E 100% -> +500, I 100% -> -500)
-      const wx = ((e - 50) / 50) * (BOX_W / 2);
+      const hw = BOX_W / 2;
+      const hh = BOX_H / 2;
+      const hd = BOX_D / 2;
 
-      // Z: Perceiving vs Judging (P 100% -> +500, J 100% -> -500)
-      // This maps the 4 corners of (X, Z) cleanly:
-      //  (+500, +500) -> Corner EP (E 100%, P 100%)
-      //  (+500, -500) -> Corner EJ (E 100%, J 100%)
-      //  (-500, +500) -> Corner IP (I 100%, P 100%)
-      //  (-500, -500) -> Corner IJ (I 100%, J 100%)
-      const wz = ((p - 50) / 50) * (BOX_D / 2);
+      // Top Ceiling: Interaction Styles (IJ · IP · EJ · EP)
+      // +X: Extraversion (E 100% -> +hw), -X: Introversion (I 100% -> -hw)
+      // +Z: Perceiving (P 100% -> +hd), -Z: Judging (J 100% -> -hd)
+      // Y = +hh (+375)
+      //   Corner EP: E 100%, P 100% -> (+hw, +hh, +hd)
+      //   Corner EJ: E 100%, J 100% -> (+hw, +hh, -hd)
+      //   Corner IP: I 100%, P 100% -> (-hw, +hh, +hd)
+      //   Corner IJ: I 100%, J 100% -> (-hw, +hh, -hd)
+      const topX = ((e - 50) / 50) * hw;
+      const topZ = ((p - 50) / 50) * hd;
+      const topY = hh;
 
-      // Y: Intuition vs Sensing (N 100% -> +375 up, S 100% -> -375 down)
-      const wy = ((n - 50) / 50) * (BOX_H / 2);
+      // Bottom Floor: Temperaments (NT · NF · ST · SF)
+      // +X: Thinking (T 100% -> +hw), -X: Feeling (F 100% -> -hw)
+      // -Z: Intuition (N 100% -> -hd), +Z: Sensing (S 100% -> +hd)
+      // Y = -hh (-375)
+      //   Corner NT: T 100%, N 100% -> (+hw, -hh, -hd)
+      //   Corner NF: F 100%, N 100% -> (-hw, -hh, -hd)
+      //   Corner ST: T 100%, S 100% -> (+hw, -hh, +hd)
+      //   Corner SF: F 100%, S 100% -> (-hw, -hh, +hd)
+      const botX = ((t - 50) / 50) * hw;
+      const botZ = ((s - 50) / 50) * hd;
+      const botY = -hh;
+
+      // 3D Space Coordinates (percentage-based):
+      const wx = topX;
+      const wz = topZ;
+      const wy = ((n - 50) / 50) * hh;
 
       const style = getInteractionStyle(fig.mbti);
       const temp = getTypeTemperament(fig.mbti);
@@ -187,6 +206,12 @@ export class SpectrumController {
         x: wx,
         y: wy,
         z: wz,
+        topX,
+        topY,
+        topZ,
+        botX,
+        botY,
+        botZ,
         style,
         temp,
         color: temp.color,
@@ -231,10 +256,21 @@ export class SpectrumController {
     const derivedType = `${e >= i ? 'E' : 'I'}${n >= s ? 'N' : 'S'}${t >= f ? 'T' : 'F'}${j >= p ? 'J' : 'P'}`;
     const style = getInteractionStyle(derivedType);
 
-    // Exact percentage-based 3D coordinates for user
-    const wx = ((e - 50) / 50) * (BOX_W / 2);
-    const wz = ((p - 50) / 50) * (BOX_D / 2);
-    const wy = ((n - 50) / 50) * (BOX_H / 2);
+    const hw = BOX_W / 2;
+    const hh = BOX_H / 2;
+    const hd = BOX_D / 2;
+
+    const topX = ((e - 50) / 50) * hw;
+    const topZ = ((p - 50) / 50) * hd;
+    const topY = hh;
+
+    const botX = ((t - 50) / 50) * hw;
+    const botZ = ((s - 50) / 50) * hd;
+    const botY = -hh;
+
+    const wx = topX;
+    const wz = topZ;
+    const wy = ((n - 50) / 50) * hh;
 
     return {
       hasScores: true,
@@ -250,10 +286,37 @@ export class SpectrumController {
       x: wx,
       y: wy,
       z: wz,
+      topX,
+      topY,
+      topZ,
+      botX,
+      botY,
+      botZ,
       style,
       percentages,
       axisScores
     };
+  }
+
+  getNodeCoords(node) {
+    if (this.activeView === "bottom") {
+      return { x: node.botX, y: node.botY, z: node.botZ };
+    }
+    if (this.activeView === "top") {
+      return { x: node.topX, y: node.topY, z: node.topZ };
+    }
+    return { x: node.x, y: node.y, z: node.z };
+  }
+
+  getUserCoords(userData) {
+    if (!userData || !userData.hasScores) return { x: 0, y: 0, z: 0 };
+    if (this.activeView === "bottom") {
+      return { x: userData.botX, y: userData.botY, z: userData.botZ };
+    }
+    if (this.activeView === "top") {
+      return { x: userData.topX, y: userData.topY, z: userData.topZ };
+    }
+    return { x: userData.x, y: userData.y, z: userData.z };
   }
 
   render() {
@@ -318,11 +381,11 @@ export class SpectrumController {
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
                 <span>3D Orbit</span>
               </button>
-              <button type="button" class="tree-3d-btn" data-view="top" id="btn-view-top" title="${lang === 'ro' ? 'Planul Stilurilor (EJ, EP, IJ, IP de sus)' : 'Top-down styles view'}">
-                <span>EJ · EP · IJ · IP (Colțuri)</span>
+              <button type="button" class="tree-3d-btn" data-view="top" id="btn-view-top" title="${lang === 'ro' ? 'Colțurile de Sus: IJ · IP · EJ · EP (Stiluri de Interacțiune)' : 'Top Corners: IJ · IP · EJ · EP (Interaction Styles)'}">
+                <span>Sus: IJ · IP · EJ · EP</span>
               </button>
-              <button type="button" class="tree-3d-btn" data-view="front" id="btn-view-front" title="${lang === 'ro' ? 'Vedere frontală: Intuiție vs Senzorial' : 'Frontal view'}">
-                <span>Intuiție · Senzorial</span>
+              <button type="button" class="tree-3d-btn" data-view="bottom" id="btn-view-bottom" title="${lang === 'ro' ? 'Colțurile de Jos: NT · NF · ST · SF (Temperamente)' : 'Bottom Corners: NT · NF · ST · SF (Temperaments)'}">
+                <span>Jos: NT · NF · ST · SF</span>
               </button>
               ${userData.hasScores ? `
                 <button type="button" class="tree-3d-btn" id="tree-3d-focus-user" title="${lang === 'ro' ? 'Centrează pe poziția ta' : 'Focus on you'}">
@@ -507,13 +570,15 @@ export class SpectrumController {
     const hh = BOX_H / 2;
     const hd = BOX_D / 2;
     const floorY = -hh;
+    const ceilY = hh;
 
-    // 1. Draw 3D Floor Grid at Y = -hh with calm subtle lines
+    // 1. Draw 3D Grids: Bottom Floor (Y = -hh) & Top Ceiling (Y = +hh)
     ctx.save();
-    ctx.strokeStyle = isDark ? "rgba(255,255,255,0.05)" : "rgba(16,16,16,0.05)";
     ctx.lineWidth = 1;
-
     const gridLines = 8;
+
+    // Bottom Floor Grid (Temperaments)
+    ctx.strokeStyle = isDark ? "rgba(255,255,255,0.05)" : "rgba(16,16,16,0.05)";
     for (let i = 0; i <= gridLines; i++) {
       const gx = -hw + (BOX_W / gridLines) * i;
       const pStart = this.project3D(gx, floorY, -hd, cx, cy);
@@ -525,7 +590,6 @@ export class SpectrumController {
         ctx.stroke();
       }
     }
-
     for (let i = 0; i <= gridLines; i++) {
       const gz = -hd + (BOX_D / gridLines) * i;
       const pStart = this.project3D(-hw, floorY, gz, cx, cy);
@@ -537,18 +601,43 @@ export class SpectrumController {
         ctx.stroke();
       }
     }
+
+    // Top Ceiling Grid (Interaction Styles)
+    ctx.strokeStyle = isDark ? "rgba(255,255,255,0.035)" : "rgba(16,16,16,0.035)";
+    for (let i = 0; i <= gridLines; i++) {
+      const gx = -hw + (BOX_W / gridLines) * i;
+      const pStart = this.project3D(gx, ceilY, -hd, cx, cy);
+      const pEnd = this.project3D(gx, ceilY, hd, cx, cy);
+      if (pStart && pEnd) {
+        ctx.beginPath();
+        ctx.moveTo(pStart.sx, pStart.sy);
+        ctx.lineTo(pEnd.sx, pEnd.sy);
+        ctx.stroke();
+      }
+    }
+    for (let i = 0; i <= gridLines; i++) {
+      const gz = -hd + (BOX_D / gridLines) * i;
+      const pStart = this.project3D(-hw, ceilY, gz, cx, cy);
+      const pEnd = this.project3D(hw, ceilY, gz, cx, cy);
+      if (pStart && pEnd) {
+        ctx.beginPath();
+        ctx.moveTo(pStart.sx, pStart.sy);
+        ctx.lineTo(pEnd.sx, pEnd.sy);
+        ctx.stroke();
+      }
+    }
     ctx.restore();
 
     // 2. Draw 3D Wireframe Bounding Box
     const corners = [
-      { x: -hw, y: -hh, z: -hd },
-      { x: hw, y: -hh, z: -hd },
-      { x: hw, y: hh, z: -hd },
-      { x: -hw, y: hh, z: -hd },
-      { x: -hw, y: -hh, z: hd },
-      { x: hw, y: -hh, z: hd },
-      { x: hw, y: hh, z: hd },
-      { x: -hw, y: hh, z: hd }
+      { x: -hw, y: -hh, z: -hd }, // 0: Bottom Back-Left (NF)
+      { x: hw, y: -hh, z: -hd },  // 1: Bottom Back-Right (NT)
+      { x: hw, y: hh, z: -hd },   // 2: Top Back-Right (EJ)
+      { x: -hw, y: hh, z: -hd },  // 3: Top Back-Left (IJ)
+      { x: -hw, y: -hh, z: hd },  // 4: Bottom Front-Left (SF)
+      { x: hw, y: -hh, z: hd },   // 5: Bottom Front-Right (ST)
+      { x: hw, y: hh, z: hd },    // 6: Top Front-Right (EP)
+      { x: -hw, y: hh, z: hd }    // 7: Top Front-Left (IP)
     ];
 
     const projectedCorners = corners.map(c => this.project3D(c.x, c.y, c.z, cx, cy));
@@ -575,104 +664,186 @@ export class SpectrumController {
     ctx.restore();
 
     // 3. Draw 3D Center Axes
-    const pCenter = this.project3D(0, floorY, 0, cx, cy);
-    const pPosX = this.project3D(hw, floorY, 0, cx, cy);
-    const pNegX = this.project3D(-hw, floorY, 0, cx, cy);
-    const pPosZ = this.project3D(0, floorY, hd, cx, cy);
-    const pNegZ = this.project3D(0, floorY, -hd, cx, cy);
-    const pTopY = this.project3D(0, hh, 0, cx, cy);
-    const pBotY = this.project3D(0, -hh, 0, cx, cy);
+    const pCenterBot = this.project3D(0, floorY, 0, cx, cy);
+    const pCenterTop = this.project3D(0, ceilY, 0, cx, cy);
+
+    // Floor Center Axes
+    const pBotPosX = this.project3D(hw, floorY, 0, cx, cy);
+    const pBotNegX = this.project3D(-hw, floorY, 0, cx, cy);
+    const pBotPosZ = this.project3D(0, floorY, hd, cx, cy);
+    const pBotNegZ = this.project3D(0, floorY, -hd, cx, cy);
+
+    // Ceiling Center Axes
+    const pTopPosX = this.project3D(hw, ceilY, 0, cx, cy);
+    const pTopNegX = this.project3D(-hw, ceilY, 0, cx, cy);
+    const pTopPosZ = this.project3D(0, ceilY, hd, cx, cy);
+    const pTopNegZ = this.project3D(0, ceilY, -hd, cx, cy);
 
     ctx.save();
     ctx.lineWidth = 1.2;
 
-    // X Axis: Introvertit <-> Extravertit
-    if (pNegX && pPosX) {
-      ctx.strokeStyle = "rgba(114, 204, 205, 0.4)";
+    // Vertical Center Pillar (Floor to Ceiling)
+    if (pCenterBot && pCenterTop) {
+      ctx.strokeStyle = isDark ? "rgba(255,255,255,0.18)" : "rgba(16,16,16,0.18)";
+      ctx.setLineDash([3, 4]);
       ctx.beginPath();
-      ctx.moveTo(pNegX.sx, pNegX.sy);
-      ctx.lineTo(pPosX.sx, pPosX.sy);
+      ctx.moveTo(pCenterBot.sx, pCenterBot.sy);
+      ctx.lineTo(pCenterTop.sx, pCenterTop.sy);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Top Ceiling Center Axes: Extraversie (X) & Percepție (Z)
+    if (pTopNegX && pTopPosX) {
+      ctx.strokeStyle = "rgba(245, 158, 11, 0.35)";
+      ctx.beginPath();
+      ctx.moveTo(pTopNegX.sx, pTopNegX.sy);
+      ctx.lineTo(pTopPosX.sx, pTopPosX.sy);
+      ctx.stroke();
+    }
+    if (pTopNegZ && pTopPosZ) {
+      ctx.strokeStyle = "rgba(99, 102, 241, 0.35)";
+      ctx.beginPath();
+      ctx.moveTo(pTopNegZ.sx, pTopNegZ.sy);
+      ctx.lineTo(pTopPosZ.sx, pTopPosZ.sy);
       ctx.stroke();
     }
 
-    // Z Axis: Judecată <-> Percepție
-    if (pNegZ && pPosZ) {
-      ctx.strokeStyle = "rgba(225, 29, 72, 0.4)";
+    // Bottom Floor Center Axes: Gândire (X) & Senzorial (Z)
+    if (pBotNegX && pBotPosX) {
+      ctx.strokeStyle = "rgba(114, 204, 205, 0.35)";
       ctx.beginPath();
-      ctx.moveTo(pNegZ.sx, pNegZ.sy);
-      ctx.lineTo(pPosZ.sx, pPosZ.sy);
+      ctx.moveTo(pBotNegX.sx, pBotNegX.sy);
+      ctx.lineTo(pBotPosX.sx, pBotPosX.sy);
       ctx.stroke();
     }
-
-    // Y Axis: Senzorial <-> Intuiție
-    if (pBotY && pTopY) {
-      ctx.strokeStyle = "rgba(149, 99, 126, 0.4)";
+    if (pBotNegZ && pBotPosZ) {
+      ctx.strokeStyle = "rgba(149, 99, 126, 0.35)";
       ctx.beginPath();
-      ctx.moveTo(pBotY.sx, pBotY.sy);
-      ctx.lineTo(pTopY.sx, pTopY.sy);
+      ctx.moveTo(pBotNegZ.sx, pBotNegZ.sy);
+      ctx.lineTo(pBotPosZ.sx, pBotPosZ.sy);
       ctx.stroke();
     }
     ctx.restore();
 
-    // 4. THE 4 PURE PERCENTAGE CORNERS:
-    //  Corner (+hw, +hd): E 100%, P 100% -> COLȚUL EP
-    //  Corner (+hw, -hd): E 100%, J 100% -> COLȚUL EJ
-    //  Corner (-hw, +hd): I 100%, P 100% -> COLȚUL IP
-    //  Corner (-hw, -hd): I 100%, J 100% -> COLȚUL IJ
-    const corners4 = [
+    // 4. TOP CEILING CORNERS (Colțurile de Sus): IJ · IP · EJ · EP at Y = +hh
+    const topCorners = [
       {
-        p: this.project3D(hw, floorY, hd, cx, cy),
+        p: this.project3D(hw, ceilY, hd, cx, cy),
         tag: "COLȚUL EP",
         sub: "E 100% · P 100%",
         color: "#f59e0b"
       },
       {
-        p: this.project3D(hw, floorY, -hd, cx, cy),
+        p: this.project3D(hw, ceilY, -hd, cx, cy),
         tag: "COLȚUL EJ",
         sub: "E 100% · J 100%",
         color: "#e11d48"
       },
       {
-        p: this.project3D(-hw, floorY, hd, cx, cy),
+        p: this.project3D(-hw, ceilY, hd, cx, cy),
         tag: "COLȚUL IP",
         sub: "I 100% · P 100%",
         color: "#10b981"
       },
       {
-        p: this.project3D(-hw, floorY, -hd, cx, cy),
+        p: this.project3D(-hw, ceilY, -hd, cx, cy),
         tag: "COLȚUL IJ",
         sub: "I 100% · J 100%",
         color: "#6366f1"
       }
     ];
 
-    corners4.forEach(c => {
+    topCorners.forEach(c => {
       if (!c.p) return;
       ctx.save();
       const fs = Math.max(10, Math.min(14, 12 * c.p.scale));
-      ctx.font = `800 ${fs}px Sora, sans-serif`;
+
+      // Small glowing corner dot
       ctx.fillStyle = c.color;
+      ctx.beginPath();
+      ctx.arc(c.p.sx, c.p.sy, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.font = `800 ${fs}px Sora, sans-serif`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
 
       // Tag
-      ctx.fillText(c.tag, c.p.sx, c.p.sy - 8);
+      ctx.fillText(c.tag, c.p.sx, c.p.sy - 12);
 
       // Subtitle
       ctx.font = `600 ${Math.max(9, fs - 2)}px Poppins, sans-serif`;
-      ctx.fillStyle = isDark ? "rgba(255,255,255,0.7)" : "rgba(16,16,16,0.7)";
+      ctx.fillStyle = isDark ? "rgba(255,255,255,0.75)" : "rgba(16,16,16,0.75)";
       ctx.fillText(c.sub, c.p.sx, c.p.sy + 8);
       ctx.restore();
     });
 
-    // 5. Cardinal Axis Labels
+    // 5. BOTTOM FLOOR CORNERS (Colțurile de Jos): NT · NF · ST · SF at Y = -hh
+    const botCorners = [
+      {
+        p: this.project3D(hw, floorY, -hd, cx, cy),
+        tag: "COLȚUL NT",
+        sub: "T 100% · N 100%",
+        color: "#95637e"
+      },
+      {
+        p: this.project3D(-hw, floorY, -hd, cx, cy),
+        tag: "COLȚUL NF",
+        sub: "F 100% · N 100%",
+        color: "#9ac262"
+      },
+      {
+        p: this.project3D(hw, floorY, hd, cx, cy),
+        tag: "COLȚUL ST",
+        sub: "T 100% · S 100%",
+        color: "#72cccd"
+      },
+      {
+        p: this.project3D(-hw, floorY, hd, cx, cy),
+        tag: "COLȚUL SF",
+        sub: "F 100% · S 100%",
+        color: "#e5c727"
+      }
+    ];
+
+    botCorners.forEach(c => {
+      if (!c.p) return;
+      ctx.save();
+      const fs = Math.max(10, Math.min(14, 12 * c.p.scale));
+
+      // Small glowing corner dot
+      ctx.fillStyle = c.color;
+      ctx.beginPath();
+      ctx.arc(c.p.sx, c.p.sy, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.font = `800 ${fs}px Sora, sans-serif`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      // Tag
+      ctx.fillText(c.tag, c.p.sx, c.p.sy - 12);
+
+      // Subtitle
+      ctx.font = `600 ${Math.max(9, fs - 2)}px Poppins, sans-serif`;
+      ctx.fillStyle = isDark ? "rgba(255,255,255,0.75)" : "rgba(16,16,16,0.75)";
+      ctx.fillText(c.sub, c.p.sx, c.p.sy + 8);
+      ctx.restore();
+    });
+
+    // 6. Cardinal Axis Labels: Top Ceiling & Bottom Floor
     const cardinalLabels = [
-      { p: this.project3D(hw + 40, floorY, 0, cx, cy), text: "EXTRAVERSIE (E 100%)", color: "#f59e0b" },
-      { p: this.project3D(-hw - 40, floorY, 0, cx, cy), text: "INTROVERSIE (I 100%)", color: "#6366f1" },
-      { p: this.project3D(0, floorY, hd + 40, cx, cy), text: "PERCEPȚIE (P 100%)", color: "#10b981" },
-      { p: this.project3D(0, floorY, -hd - 40, cx, cy), text: "JUDECATE (J 100%)", color: "#e11d48" },
-      { p: this.project3D(0, hh + 35, 0, cx, cy), text: "INTUIȚIE (N 100%)", color: "#95637e" },
-      { p: this.project3D(0, -hh - 35, 0, cx, cy), text: "SENZORIAL (S 100%)", color: "#e5c727" }
+      // Top Ceiling
+      { p: this.project3D(hw + 40, ceilY, 0, cx, cy), text: "EXTRAVERSIE (E 100%)", color: "#f59e0b" },
+      { p: this.project3D(-hw - 40, ceilY, 0, cx, cy), text: "INTROVERSIE (I 100%)", color: "#6366f1" },
+      { p: this.project3D(0, ceilY, hd + 40, cx, cy), text: "PERCEPȚIE (P 100%)", color: "#10b981" },
+      { p: this.project3D(0, ceilY, -hd - 40, cx, cy), text: "JUDECATE (J 100%)", color: "#e11d48" },
+      // Bottom Floor
+      { p: this.project3D(hw + 40, floorY, 0, cx, cy), text: "GÂNDIRE (T 100%)", color: "#72cccd" },
+      { p: this.project3D(-hw - 40, floorY, 0, cx, cy), text: "SENTIMENT (F 100%)", color: "#9ac262" },
+      { p: this.project3D(0, floorY, -hd - 40, cx, cy), text: "INTUIȚIE (N 100%)", color: "#95637e" },
+      { p: this.project3D(0, floorY, hd + 40, cx, cy), text: "SENZORIAL (S 100%)", color: "#e5c727" }
     ];
 
     cardinalLabels.forEach(cl => {
@@ -687,7 +858,7 @@ export class SpectrumController {
       ctx.restore();
     });
 
-    // 6. Project and Render all 347 Personalities + User ("TU")
+    // 7. Project and Render all 347 Personalities + User ("TU")
     const hovered = this.hoveredIndex;
     const selected = this.selectedIndex;
     const userData = this.getUserData();
@@ -696,7 +867,8 @@ export class SpectrumController {
     const projectedNodes = [];
     for (let i = 0; i < this.nodes.length; i++) {
       const n = this.nodes[i];
-      const proj = this.project3D(n.x, n.y, n.z, cx, cy);
+      const coords = this.getNodeCoords(n);
+      const proj = this.project3D(coords.x, coords.y, coords.z, cx, cy);
       if (!proj) continue;
 
       let matchesFilter = true;
@@ -711,6 +883,7 @@ export class SpectrumController {
       projectedNodes.push({
         node: n,
         index: i,
+        coords,
         sx: proj.sx,
         sy: proj.sy,
         scale: proj.scale,
@@ -722,7 +895,8 @@ export class SpectrumController {
     // Project User ("TU")
     let projectedUser = null;
     if (userData.hasScores) {
-      const uProj = this.project3D(userData.x, userData.y, userData.z, cx, cy);
+      const uCoords = this.getUserCoords(userData);
+      const uProj = this.project3D(uCoords.x, uCoords.y, uCoords.z, cx, cy);
       if (uProj) {
         projectedUser = {
           sx: uProj.sx,
@@ -880,7 +1054,8 @@ export class SpectrumController {
 
       // 1. Check User node first
       if (userData.hasScores) {
-        const uProj = this.project3D(userData.x, userData.y, userData.z, cx, cy);
+        const uCoords = this.getUserCoords(userData);
+        const uProj = this.project3D(uCoords.x, uCoords.y, uCoords.z, cx, cy);
         if (uProj) {
           const userR = Math.max(14, Math.min(38, 19 * uProj.scale));
           if (Math.hypot(uProj.sx - mx, uProj.sy - my) <= userR + 8) {
@@ -893,7 +1068,8 @@ export class SpectrumController {
       const projected = [];
       for (let i = 0; i < this.nodes.length; i++) {
         const n = this.nodes[i];
-        const proj = this.project3D(n.x, n.y, n.z, cx, cy);
+        const coords = this.getNodeCoords(n);
+        const proj = this.project3D(coords.x, coords.y, coords.z, cx, cy);
         if (proj) {
           projected.push({ index: i, sx: proj.sx, sy: proj.sy, scale: proj.scale, zDepth: proj.zDepth });
         }
@@ -960,6 +1136,12 @@ export class SpectrumController {
 
         this.velTheta = -dx * 0.0008;
         this.velPhi = dy * 0.0008;
+
+        // If camera target was anchored on a node, gently pull it back towards center during drag orbit
+        if (Math.abs(this.camera.target.x) > 0.1 || Math.abs(this.camera.target.z) > 0.1) {
+          this.camera.target.x *= 0.92;
+          this.camera.target.z *= 0.92;
+        }
 
         this.requestFrame();
       } else if (e.pointerType === "mouse") {
@@ -1134,6 +1316,9 @@ export class SpectrumController {
   }
 
   setViewMode(mode) {
+    this.deselectNode(false);
+    this.activeView = mode;
+
     document.querySelectorAll(".tree-3d-btn[data-view]").forEach(b => {
       b.classList.toggle("active", b.getAttribute("data-view") === mode);
     });
@@ -1141,17 +1326,20 @@ export class SpectrumController {
     let targetTheta = 0.52;
     let targetPhi = 0.32;
     let targetRadius = 1750;
+    let targetY = 0;
 
     if (mode === "top") {
-      // Top-Down View: Looks directly at the (X, Z) plane with the 4 corners: EJ, EP, IJ, IP
+      // Top-Down View: Looks directly at top ceiling showing the 4 corners: IJ, IP, EJ, EP
       targetTheta = 0;
       targetPhi = 1.48; // Almost 90 degrees top down
       targetRadius = 1600;
-    } else if (mode === "front") {
-      // Front View: Intuition vs Sensing on Y, Extraversion vs Introversion on X
-      targetTheta = 0;
-      targetPhi = 0;
-      targetRadius = 1550;
+      targetY = BOX_H / 2;
+    } else if (mode === "bottom") {
+      // Bottom View: Looks down at bottom floor showing the 4 corners: NT, NF, ST, SF
+      targetTheta = 0.45;
+      targetPhi = 0.72;
+      targetRadius = 1600;
+      targetY = -BOX_H / 2;
     }
 
     this.animateCameraTo({
@@ -1159,7 +1347,7 @@ export class SpectrumController {
       phi: targetPhi,
       radius: targetRadius,
       tx: 0,
-      ty: 0,
+      ty: targetY,
       tz: 0
     });
   }
@@ -1186,15 +1374,16 @@ export class SpectrumController {
     this.selectedIndex = idx;
     this.userSelected = false;
     const node = this.nodes[idx];
+    const coords = this.getNodeCoords(node);
 
     if (flyTo) {
       this.animateCameraTo({
         theta: this.camera.theta,
         phi: this.camera.phi,
         radius: Math.max(900, this.camera.radius * 0.75),
-        tx: node.x,
-        ty: node.y,
-        tz: node.z
+        tx: coords.x,
+        ty: coords.y,
+        tz: coords.z
       });
     }
 
@@ -1208,27 +1397,44 @@ export class SpectrumController {
 
     this.userSelected = true;
     this.selectedIndex = -1;
+    const coords = this.getUserCoords(userData);
 
     this.animateCameraTo({
       theta: this.camera.theta,
       phi: this.camera.phi,
       radius: Math.max(900, this.camera.radius * 0.75),
-      tx: userData.x,
-      ty: userData.y,
-      tz: userData.z
+      tx: coords.x,
+      ty: coords.y,
+      tz: coords.z
     });
 
     this.renderUserSidePanel(userData);
     this.requestFrame();
   }
 
-  deselectNode() {
+  deselectNode(flyBack = true) {
     this.selectedIndex = -1;
     this.userSelected = false;
     const panel = document.getElementById("tree-panel");
     if (panel) {
       panel.style.display = "none";
     }
+
+    const defaultTy = this.activeView === "bottom" ? -BOX_H / 2 : (this.activeView === "top" ? BOX_H / 2 : 0);
+
+    if (flyBack) {
+      this.animateCameraTo({
+        theta: this.camera.theta,
+        phi: this.camera.phi,
+        radius: 1750,
+        tx: 0,
+        ty: defaultTy,
+        tz: 0
+      }, 350);
+    } else {
+      this.camera.target = { x: 0, y: defaultTy, z: 0 };
+    }
+
     this.requestFrame();
   }
 
