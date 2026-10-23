@@ -1,17 +1,17 @@
 /**
- * 8Func - 3D Personality Spectrum
- * An interactive, calm 3D spatial spectrum where:
- * - Colțurile de Sus (Top Ceiling Corners at Y = +hh):
+ * 8Func - 3D Personality Spectrum (Volumetric Cube)
+ * An interactive, calm 3D cube where:
+ * - Fața de Sus a Zarului (Top Face - Horizontal at Y = +hh):
  *     - Colțul IJ: I 100%, J 100% (Planificatori)
  *     - Colțul IP: I 100%, P 100% (Autonomi)
- *     - Colțul EJ: E 100%, J 100% (Directori)
  *     - Colțul EP: E 100%, P 100% (Exploratori / Inițiatori)
- * - Colțurile de Jos (Bottom Floor Corners at Y = -hh):
- *     - Colțul NT: T 100%, N 100% (Analitici)
- *     - Colțul NF: F 100%, N 100% (Diplomați)
- *     - Colțul ST: T 100%, S 100% (Sentinele)
- *     - Colțul SF: F 100%, S 100% (Exploratori)
- * 100% percentage-based, zero lag, calm on-demand rendering, camera target reset on deselect.
+ *     - Colțul EJ: E 100%, J 100% (Directori)
+ * - Fața Laterală a Zarului (Lateral Face - Vertical at X = -hw):
+ *     - Colțul NT: T 100%, N 100% (Analitici) -> Atinge IJ pe muchia de sus
+ *     - Colțul NF: F 100%, N 100% (Diplomați) -> Atinge IP pe muchia de sus
+ *     - Colțul ST: T 100%, S 100% (Sentinele) -> Se opune IJ
+ *     - Colțul SF: F 100%, S 100% (Exploratori) -> Se opune IP
+ * Two perpendicular spectra forming a true 3D cube with calm on-demand rendering.
  */
 
 import { NOTABLE_FIGURES, calculateFigureSimilarity, getFigureRole } from "../data/figures.js";
@@ -21,10 +21,10 @@ import { calculateScores } from "./scoring.js";
 import { ICONS } from "./icons.js";
 import { t } from "../data/translations.js";
 
-// 3D Bounding Box Dimensions
+// 3D Cube Dimensions (True 1000x1000x1000 Cube)
 const BOX_W = 1000; // X: Extraversion (+) vs Introversion (-)
-const BOX_H = 750;  // Y: Intuition (+) vs Sensing (-)
-const BOX_D = 1000; // Z: Perceiving (+) vs Judging (-)
+const BOX_H = 1000; // Y: Intuition (+) vs Sensing (-)
+const BOX_D = 1000; // Z: Perceiving (+) vs Judging (-) on top; Feeling (+) vs Thinking (-) on lateral
 
 const FUNCTIONS_LIST = ["Ne", "Ni", "Se", "Si", "Te", "Ti", "Fe", "Fi"];
 
@@ -150,10 +150,9 @@ export class SpectrumController {
       const hh = BOX_H / 2;
       const hd = BOX_D / 2;
 
-      // Top Ceiling: Interaction Styles (IJ · IP · EJ · EP)
-      // -X: Introversion (I 100% -> -hw), +X: Extraversion (E 100% -> +hw)
-      // -Z: Judging (J 100% -> -hd), +Z: Perceiving (P 100% -> +hd)
-      // Y = +hh (+375)
+      // Fața de Sus a Zarului (Top Horizontal Face at Y = +hh):
+      // -X: Introversie (I 100% -> -hw), +X: Extraversie (E 100% -> +hw)
+      // -Z: Judecată (J 100% -> -hd), +Z: Percepție (P 100% -> +hd)
       //   Corner IJ: I 100%, J 100% -> (-hw, +hh, -hd)
       //   Corner IP: I 100%, P 100% -> (-hw, +hh, +hd)
       //   Corner EP: E 100%, P 100% -> (+hw, +hh, +hd)
@@ -162,19 +161,21 @@ export class SpectrumController {
       const topZ = ((p - 50) / 50) * hd;
       const topY = hh;
 
-      // Bottom Floor: Temperaments (NT · NF · ST · SF)
-      //   Corner NT: T 100%, N 100% -> (-hw, -hh, -hd) [Atinge IJ]
-      //   Corner NF: F 100%, N 100% -> (-hw, -hh, +hd) [Atinge IP]
-      //   Corner ST: T 100%, S 100% -> (+hw, -hh, +hd) [Se opune IJ]
-      //   Corner SF: F 100%, S 100% -> (+hw, -hh, -hd) [Se opune IP]
-      const botX = ((s - 50) / 50) * hw;
-      const botZ = (((s - n) * (t - f)) / 10000) * hd;
-      const botY = -hh;
+      // Fața Laterală a Zarului (Side Vertical Face at X = -hw, fix lângă sus):
+      // -Z: Gândire (T 100% -> -hd), +Z: Sentiment (F 100% -> +hd)
+      // -Y: Senzorial (S 100% -> -hh), +Y: Intuiție (N 100% -> +hh)
+      //   Corner NT: T 100%, N 100% -> (-hw, +hh, -hd) [Atinge IJ!]
+      //   Corner NF: F 100%, N 100% -> (-hw, +hh, +hd) [Atinge IP!]
+      //   Corner ST: T 100%, S 100% -> (-hw, -hh, -hd) [Se opune IJ!]
+      //   Corner SF: F 100%, S 100% -> (-hw, -hh, +hd) [Se opune IP!]
+      const latX = -hw;
+      const latY = ((n - 50) / 50) * hh;
+      const latZ = ((f - 50) / 50) * hd;
 
-      // 3D Space Coordinates (percentage-based):
-      const wx = (topX + botX) / 2;
-      const wz = (topZ + botZ) / 2;
+      // Coordonate 3D în interiorul Cubului:
+      const wx = ((e - 50) / 50) * hw;
       const wy = ((n - 50) / 50) * hh;
+      const wz = ((((p - 50) / 50) + ((f - 50) / 50)) / 2) * hd;
 
       const style = getInteractionStyle(fig.mbti);
       const temp = getTypeTemperament(fig.mbti);
@@ -206,9 +207,9 @@ export class SpectrumController {
         topX,
         topY,
         topZ,
-        botX,
-        botY,
-        botZ,
+        latX,
+        latY,
+        latZ,
         style,
         temp,
         color: temp.color,
@@ -261,13 +262,13 @@ export class SpectrumController {
     const topZ = ((p - 50) / 50) * hd;
     const topY = hh;
 
-    const botX = ((s - 50) / 50) * hw;
-    const botZ = (((s - n) * (t - f)) / 10000) * hd;
-    const botY = -hh;
+    const latX = -hw;
+    const latY = ((n - 50) / 50) * hh;
+    const latZ = ((f - 50) / 50) * hd;
 
-    const wx = (topX + botX) / 2;
-    const wz = (topZ + botZ) / 2;
+    const wx = ((e - 50) / 50) * hw;
     const wy = ((n - 50) / 50) * hh;
+    const wz = ((((p - 50) / 50) + ((f - 50) / 50)) / 2) * hd;
 
     return {
       hasScores: true,
@@ -286,9 +287,9 @@ export class SpectrumController {
       topX,
       topY,
       topZ,
-      botX,
-      botY,
-      botZ,
+      latX,
+      latY,
+      latZ,
       style,
       percentages,
       axisScores
@@ -296,8 +297,8 @@ export class SpectrumController {
   }
 
   getNodeCoords(node) {
-    if (this.activeView === "bottom") {
-      return { x: node.botX, y: node.botY, z: node.botZ };
+    if (this.activeView === "lateral") {
+      return { x: node.latX, y: node.latY, z: node.latZ };
     }
     if (this.activeView === "top") {
       return { x: node.topX, y: node.topY, z: node.topZ };
@@ -307,8 +308,8 @@ export class SpectrumController {
 
   getUserCoords(userData) {
     if (!userData || !userData.hasScores) return { x: 0, y: 0, z: 0 };
-    if (this.activeView === "bottom") {
-      return { x: userData.botX, y: userData.botY, z: userData.botZ };
+    if (this.activeView === "lateral") {
+      return { x: userData.latX, y: userData.latY, z: userData.latZ };
     }
     if (this.activeView === "top") {
       return { x: userData.topX, y: userData.topY, z: userData.topZ };
@@ -374,15 +375,15 @@ export class SpectrumController {
           <div class="tree-3d-controls" id="tree-3d-controls">
             <!-- View Mode Presets -->
             <div class="tree-3d-btn-group">
-              <button type="button" class="tree-3d-btn active" data-view="orbit" id="btn-view-orbit" title="${lang === 'ro' ? 'Vedere 3D Orbit liberă' : 'Free 3D Orbit View'}">
+              <button type="button" class="tree-3d-btn active" data-view="orbit" id="btn-view-orbit" title="${lang === 'ro' ? 'Vedere 3D Cub liberă' : 'Free 3D Cube View'}">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-                <span>3D Orbit</span>
+                <span>3D Cub</span>
               </button>
-              <button type="button" class="tree-3d-btn" data-view="top" id="btn-view-top" title="${lang === 'ro' ? 'Colțurile de Sus: IJ · IP · EJ · EP (Stiluri de Interacțiune)' : 'Top Corners: IJ · IP · EJ · EP (Interaction Styles)'}">
+              <button type="button" class="tree-3d-btn" data-view="top" id="btn-view-top" title="${lang === 'ro' ? 'Fața de Sus a Zarului: IJ · IP · EJ · EP (Orizontal)' : 'Top Face of Die: IJ · IP · EJ · EP (Horizontal)'}">
                 <span>Sus: IJ · IP · EJ · EP</span>
               </button>
-              <button type="button" class="tree-3d-btn" data-view="bottom" id="btn-view-bottom" title="${lang === 'ro' ? 'Colțurile de Jos: NT · NF · ST · SF (Temperamente)' : 'Bottom Corners: NT · NF · ST · SF (Temperaments)'}">
-                <span>Jos: NT · NF · ST · SF</span>
+              <button type="button" class="tree-3d-btn" data-view="lateral" id="btn-view-lateral" title="${lang === 'ro' ? 'Fața Laterală fix lângă Sus: NT · NF · ST · SF (Vertical)' : 'Lateral Face next to Top: NT · NF · ST · SF (Vertical)'}">
+                <span>Lateral: NT · NF · ST · SF</span>
               </button>
               ${userData.hasScores ? `
                 <button type="button" class="tree-3d-btn" id="tree-3d-focus-user" title="${lang === 'ro' ? 'Centrează pe poziția ta' : 'Focus on you'}">
@@ -566,20 +567,36 @@ export class SpectrumController {
     const hw = BOX_W / 2;
     const hh = BOX_H / 2;
     const hd = BOX_D / 2;
-    const floorY = -hh;
-    const ceilY = hh;
+    const topY = hh;
+    const latX = -hw;
 
-    // 1. Draw 3D Grids: Bottom Floor (Y = -hh) & Top Ceiling (Y = +hh)
+    // 1. Draw 3D Top Horizontal Face (Y = +hh) & Lateral Vertical Face (X = -hw)
     ctx.save();
     ctx.lineWidth = 1;
     const gridLines = 8;
 
-    // Bottom Floor Grid (Temperaments)
+    // A. Top Face Plane Fill (Subtle tint for top face of die)
+    const pTopIJ = this.project3D(-hw, topY, -hd, cx, cy);
+    const pTopEJ = this.project3D(hw, topY, -hd, cx, cy);
+    const pTopEP = this.project3D(hw, topY, hd, cx, cy);
+    const pTopIP = this.project3D(-hw, topY, hd, cx, cy);
+    if (pTopIJ && pTopEJ && pTopEP && pTopIP) {
+      ctx.fillStyle = isDark ? "rgba(99, 102, 241, 0.04)" : "rgba(99, 102, 241, 0.05)";
+      ctx.beginPath();
+      ctx.moveTo(pTopIJ.sx, pTopIJ.sy);
+      ctx.lineTo(pTopEJ.sx, pTopEJ.sy);
+      ctx.lineTo(pTopEP.sx, pTopEP.sy);
+      ctx.lineTo(pTopIP.sx, pTopIP.sy);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // Top Face Grid (IJ · IP · EJ · EP)
     ctx.strokeStyle = isDark ? "rgba(255,255,255,0.05)" : "rgba(16,16,16,0.05)";
     for (let i = 0; i <= gridLines; i++) {
       const gx = -hw + (BOX_W / gridLines) * i;
-      const pStart = this.project3D(gx, floorY, -hd, cx, cy);
-      const pEnd = this.project3D(gx, floorY, hd, cx, cy);
+      const pStart = this.project3D(gx, topY, -hd, cx, cy);
+      const pEnd = this.project3D(gx, topY, hd, cx, cy);
       if (pStart && pEnd) {
         ctx.beginPath();
         ctx.moveTo(pStart.sx, pStart.sy);
@@ -589,8 +606,8 @@ export class SpectrumController {
     }
     for (let i = 0; i <= gridLines; i++) {
       const gz = -hd + (BOX_D / gridLines) * i;
-      const pStart = this.project3D(-hw, floorY, gz, cx, cy);
-      const pEnd = this.project3D(hw, floorY, gz, cx, cy);
+      const pStart = this.project3D(-hw, topY, gz, cx, cy);
+      const pEnd = this.project3D(hw, topY, gz, cx, cy);
       if (pStart && pEnd) {
         ctx.beginPath();
         ctx.moveTo(pStart.sx, pStart.sy);
@@ -599,12 +616,28 @@ export class SpectrumController {
       }
     }
 
-    // Top Ceiling Grid (Interaction Styles)
-    ctx.strokeStyle = isDark ? "rgba(255,255,255,0.035)" : "rgba(16,16,16,0.035)";
+    // B. Lateral Face Plane Fill (Subtle tint for lateral vertical face of die)
+    const pLatNT = this.project3D(latX, hh, -hd, cx, cy);
+    const pLatNF = this.project3D(latX, hh, hd, cx, cy);
+    const pLatSF = this.project3D(latX, -hh, hd, cx, cy);
+    const pLatST = this.project3D(latX, -hh, -hd, cx, cy);
+    if (pLatNT && pLatNF && pLatSF && pLatST) {
+      ctx.fillStyle = isDark ? "rgba(149, 99, 126, 0.04)" : "rgba(149, 99, 126, 0.05)";
+      ctx.beginPath();
+      ctx.moveTo(pLatNT.sx, pLatNT.sy);
+      ctx.lineTo(pLatNF.sx, pLatNF.sy);
+      ctx.lineTo(pLatSF.sx, pLatSF.sy);
+      ctx.lineTo(pLatST.sx, pLatST.sy);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // Lateral Face Grid (NT · NF · ST · SF)
+    ctx.strokeStyle = isDark ? "rgba(255,255,255,0.04)" : "rgba(16,16,16,0.04)";
     for (let i = 0; i <= gridLines; i++) {
-      const gx = -hw + (BOX_W / gridLines) * i;
-      const pStart = this.project3D(gx, ceilY, -hd, cx, cy);
-      const pEnd = this.project3D(gx, ceilY, hd, cx, cy);
+      const gz = -hd + (BOX_D / gridLines) * i;
+      const pStart = this.project3D(latX, -hh, gz, cx, cy);
+      const pEnd = this.project3D(latX, hh, gz, cx, cy);
       if (pStart && pEnd) {
         ctx.beginPath();
         ctx.moveTo(pStart.sx, pStart.sy);
@@ -613,9 +646,9 @@ export class SpectrumController {
       }
     }
     for (let i = 0; i <= gridLines; i++) {
-      const gz = -hd + (BOX_D / gridLines) * i;
-      const pStart = this.project3D(-hw, ceilY, gz, cx, cy);
-      const pEnd = this.project3D(hw, ceilY, gz, cx, cy);
+      const gy = -hh + (BOX_H / gridLines) * i;
+      const pStart = this.project3D(latX, gy, -hd, cx, cy);
+      const pEnd = this.project3D(latX, gy, hd, cx, cy);
       if (pStart && pEnd) {
         ctx.beginPath();
         ctx.moveTo(pStart.sx, pStart.sy);
@@ -625,24 +658,24 @@ export class SpectrumController {
     }
     ctx.restore();
 
-    // 2. Draw 3D Wireframe Bounding Box
+    // 2. Draw 3D Wireframe Bounding Box of the Cube
     const corners = [
-      { x: -hw, y: -hh, z: -hd }, // 0: Bottom Back-Left (NT) - atinge IJ
-      { x: hw, y: -hh, z: -hd },  // 1: Bottom Back-Right (SF) - se opune IP
-      { x: hw, y: hh, z: -hd },   // 2: Top Back-Right (EJ) - se opune IP
-      { x: -hw, y: hh, z: -hd },  // 3: Top Back-Left (IJ) - atinge NT
-      { x: -hw, y: -hh, z: hd },  // 4: Bottom Front-Left (NF) - atinge IP
-      { x: hw, y: -hh, z: hd },   // 5: Bottom Front-Right (ST) - se opune IJ
-      { x: hw, y: hh, z: hd },    // 6: Top Front-Right (EP) - se opune IJ
-      { x: -hw, y: hh, z: hd }    // 7: Top Front-Left (IP) - atinge NF
+      { x: -hw, y: -hh, z: -hd }, // 0: Bottom Back-Left (ST - Se opune IJ)
+      { x: hw, y: -hh, z: -hd },  // 1: Bottom Back-Right
+      { x: hw, y: hh, z: -hd },   // 2: Top Back-Right (EJ)
+      { x: -hw, y: hh, z: -hd },  // 3: Top Back-Left (IJ / NT - Atinge IJ!)
+      { x: -hw, y: -hh, z: hd },  // 4: Bottom Front-Left (SF - Se opune IP)
+      { x: hw, y: -hh, z: hd },   // 5: Bottom Front-Right
+      { x: hw, y: hh, z: hd },    // 6: Top Front-Right (EP)
+      { x: -hw, y: hh, z: hd }    // 7: Top Front-Left (IP / NF - Atinge IP!)
     ];
 
     const projectedCorners = corners.map(c => this.project3D(c.x, c.y, c.z, cx, cy));
 
     const edges = [
-      [0, 1], [1, 5], [5, 4], [4, 0], // Bottom perimeter (NT -> SF -> ST -> NF -> NT)
-      [3, 2], [2, 6], [6, 7], [7, 3], // Top perimeter (IJ -> EJ -> EP -> IP -> IJ)
-      [0, 3], [4, 7], [5, 6], [1, 2]  // Vertical pillars (NT-IJ, NF-IP, ST-EP, SF-EJ)
+      [0, 1], [1, 5], [5, 4], [4, 0], // Bottom perimeter
+      [3, 2], [2, 6], [6, 7],         // Top perimeter (minus shared edge [7, 3])
+      [0, 3], [4, 7], [5, 6], [1, 2]  // Vertical pillars
     ];
 
     ctx.save();
@@ -658,96 +691,103 @@ export class SpectrumController {
         ctx.stroke();
       }
     });
+
+    // Highlight the Shared Edge where Top and Lateral faces meet:
+    // From (-hw, hh, -hd) [IJ / NT] to (-hw, hh, hd) [IP / NF]
+    const pEdgeStart = projectedCorners[3];
+    const pEdgeEnd = projectedCorners[7];
+    if (pEdgeStart && pEdgeEnd) {
+      ctx.strokeStyle = "rgba(16, 185, 129, 0.75)";
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(pEdgeStart.sx, pEdgeStart.sy);
+      ctx.lineTo(pEdgeEnd.sx, pEdgeEnd.sy);
+      ctx.stroke();
+    }
     ctx.restore();
 
-    // 3. Draw 3D Center Axes
-    const pCenterBot = this.project3D(0, floorY, 0, cx, cy);
-    const pCenterTop = this.project3D(0, ceilY, 0, cx, cy);
+    // 3. Draw Center Axes for Both Faces
+    // Top Face Center Axes (Y = +hh): Extraversie (X) & Percepție (Z)
+    const pTopPosX = this.project3D(hw, topY, 0, cx, cy);
+    const pTopNegX = this.project3D(-hw, topY, 0, cx, cy);
+    const pTopPosZ = this.project3D(0, topY, hd, cx, cy);
+    const pTopNegZ = this.project3D(0, topY, -hd, cx, cy);
 
-    // Floor Center Axes
-    const pBotPosX = this.project3D(hw, floorY, 0, cx, cy);
-    const pBotNegX = this.project3D(-hw, floorY, 0, cx, cy);
-    const pBotPosZ = this.project3D(0, floorY, hd, cx, cy);
-    const pBotNegZ = this.project3D(0, floorY, -hd, cx, cy);
-
-    // Ceiling Center Axes
-    const pTopPosX = this.project3D(hw, ceilY, 0, cx, cy);
-    const pTopNegX = this.project3D(-hw, ceilY, 0, cx, cy);
-    const pTopPosZ = this.project3D(0, ceilY, hd, cx, cy);
-    const pTopNegZ = this.project3D(0, ceilY, -hd, cx, cy);
+    // Lateral Face Center Axes (X = -hw): Intuiție/Senzorial (Y) & Sentiment/Gândire (Z)
+    const pLatPosY = this.project3D(latX, hh, 0, cx, cy);
+    const pLatNegY = this.project3D(latX, -hh, 0, cx, cy);
+    const pLatPosZ = this.project3D(latX, 0, hd, cx, cy);
+    const pLatNegZ = this.project3D(latX, 0, -hd, cx, cy);
 
     ctx.save();
     ctx.lineWidth = 1.2;
 
-    // Vertical Center Pillar (Floor to Ceiling)
-    if (pCenterBot && pCenterTop) {
-      ctx.strokeStyle = isDark ? "rgba(255,255,255,0.18)" : "rgba(16,16,16,0.18)";
-      ctx.setLineDash([3, 4]);
-      ctx.beginPath();
-      ctx.moveTo(pCenterBot.sx, pCenterBot.sy);
-      ctx.lineTo(pCenterTop.sx, pCenterTop.sy);
-      ctx.stroke();
-      ctx.setLineDash([]);
-    }
-
-    // Top Ceiling Center Axes: Extraversie (X) & Percepție (Z)
+    // Top Face Center Axes
     if (pTopNegX && pTopPosX) {
-      ctx.strokeStyle = "rgba(245, 158, 11, 0.35)";
+      ctx.strokeStyle = "rgba(245, 158, 11, 0.45)"; // E-I
       ctx.beginPath();
       ctx.moveTo(pTopNegX.sx, pTopNegX.sy);
       ctx.lineTo(pTopPosX.sx, pTopPosX.sy);
       ctx.stroke();
     }
     if (pTopNegZ && pTopPosZ) {
-      ctx.strokeStyle = "rgba(99, 102, 241, 0.35)";
+      ctx.strokeStyle = "rgba(99, 102, 241, 0.45)"; // P-J
       ctx.beginPath();
       ctx.moveTo(pTopNegZ.sx, pTopNegZ.sy);
       ctx.lineTo(pTopPosZ.sx, pTopPosZ.sy);
       ctx.stroke();
     }
 
-    // Bottom Floor Center Axes: Gândire (X) & Senzorial (Z)
-    if (pBotNegX && pBotPosX) {
-      ctx.strokeStyle = "rgba(114, 204, 205, 0.35)";
+    // Lateral Face Center Axes
+    if (pLatNegY && pLatPosY) {
+      ctx.strokeStyle = "rgba(149, 99, 126, 0.45)"; // N-S
       ctx.beginPath();
-      ctx.moveTo(pBotNegX.sx, pBotNegX.sy);
-      ctx.lineTo(pBotPosX.sx, pBotPosX.sy);
+      ctx.moveTo(pLatNegY.sx, pLatNegY.sy);
+      ctx.lineTo(pLatPosY.sx, pLatPosY.sy);
       ctx.stroke();
     }
-    if (pBotNegZ && pBotPosZ) {
-      ctx.strokeStyle = "rgba(149, 99, 126, 0.35)";
+    if (pLatNegZ && pLatPosZ) {
+      ctx.strokeStyle = "rgba(114, 204, 205, 0.45)"; // F-T
       ctx.beginPath();
-      ctx.moveTo(pBotNegZ.sx, pBotNegZ.sy);
-      ctx.lineTo(pBotPosZ.sx, pBotPosZ.sy);
+      ctx.moveTo(pLatNegZ.sx, pLatNegZ.sy);
+      ctx.lineTo(pLatPosZ.sx, pLatPosZ.sy);
       ctx.stroke();
     }
     ctx.restore();
 
-    // 4. TOP CEILING CORNERS (Colțurile de Sus): IJ · IP · EJ · EP at Y = +hh
+    // 4. TOP FACE CORNERS (Colțurile de Sus ale Zarului): IJ · IP · EJ · EP
     const topCorners = [
       {
-        p: this.project3D(-hw, ceilY, -hd, cx, cy),
+        p: this.project3D(-hw, topY, -hd, cx, cy),
         tag: "COLȚUL IJ",
         sub: "I 100% · J 100% (Planificatori)",
-        color: "#6366f1"
+        color: "#6366f1",
+        offsetY: -16,
+        offsetX: 0
       },
       {
-        p: this.project3D(-hw, ceilY, hd, cx, cy),
+        p: this.project3D(-hw, topY, hd, cx, cy),
         tag: "COLȚUL IP",
         sub: "I 100% · P 100% (Autonomi)",
-        color: "#10b981"
+        color: "#10b981",
+        offsetY: -16,
+        offsetX: 0
       },
       {
-        p: this.project3D(hw, ceilY, hd, cx, cy),
+        p: this.project3D(hw, topY, hd, cx, cy),
         tag: "COLȚUL EP",
         sub: "E 100% · P 100% (Exploratori)",
-        color: "#f59e0b"
+        color: "#f59e0b",
+        offsetY: -16,
+        offsetX: 0
       },
       {
-        p: this.project3D(hw, ceilY, -hd, cx, cy),
+        p: this.project3D(hw, topY, -hd, cx, cy),
         tag: "COLȚUL EJ",
         sub: "E 100% · J 100% (Directori)",
-        color: "#e11d48"
+        color: "#e11d48",
+        offsetY: -16,
+        offsetX: 0
       }
     ];
 
@@ -756,89 +796,99 @@ export class SpectrumController {
       ctx.save();
       const fs = Math.max(10, Math.min(14, 12 * c.p.scale));
 
-      // Small glowing corner dot
       ctx.fillStyle = c.color;
       ctx.beginPath();
-      ctx.arc(c.p.sx, c.p.sy, 4, 0, Math.PI * 2);
+      ctx.arc(c.p.sx, c.p.sy, 4.5, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.font = `800 ${fs}px Sora, sans-serif`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
 
-      // Tag
-      ctx.fillText(c.tag, c.p.sx, c.p.sy - 12);
+      // Tag above
+      ctx.fillText(c.tag, c.p.sx + c.offsetX, c.p.sy + c.offsetY);
 
       // Subtitle
       ctx.font = `600 ${Math.max(9, fs - 2)}px Poppins, sans-serif`;
       ctx.fillStyle = isDark ? "rgba(255,255,255,0.75)" : "rgba(16,16,16,0.75)";
-      ctx.fillText(c.sub, c.p.sx, c.p.sy + 8);
+      ctx.fillText(c.sub, c.p.sx + c.offsetX, c.p.sy + c.offsetY + 12);
       ctx.restore();
     });
 
-    // 5. BOTTOM FLOOR CORNERS (Colțurile de Jos): NT · NF · ST · SF at Y = -hh
-    const botCorners = [
+    // 5. LATERAL FACE CORNERS (Colțurile Feței Laterale fix lângă Sus): NT · NF · ST · SF
+    const latCorners = [
       {
-        p: this.project3D(-hw, floorY, -hd, cx, cy),
+        p: this.project3D(latX, hh, -hd, cx, cy),
         tag: "COLȚUL NT",
         sub: "T 100% · N 100% (Atinge IJ)",
-        color: "#95637e"
+        color: "#95637e",
+        offsetX: -14,
+        offsetY: 18,
+        align: "right"
       },
       {
-        p: this.project3D(-hw, floorY, hd, cx, cy),
+        p: this.project3D(latX, hh, hd, cx, cy),
         tag: "COLȚUL NF",
         sub: "F 100% · N 100% (Atinge IP)",
-        color: "#9ac262"
+        color: "#9ac262",
+        offsetX: -14,
+        offsetY: 18,
+        align: "right"
       },
       {
-        p: this.project3D(hw, floorY, hd, cx, cy),
+        p: this.project3D(latX, -hh, -hd, cx, cy),
         tag: "COLȚUL ST",
-        sub: "T 100% · S 100% (Opus IJ)",
-        color: "#72cccd"
+        sub: "T 100% · S 100% (Se opune IJ)",
+        color: "#72cccd",
+        offsetX: 0,
+        offsetY: 18,
+        align: "center"
       },
       {
-        p: this.project3D(hw, floorY, -hd, cx, cy),
+        p: this.project3D(latX, -hh, hd, cx, cy),
         tag: "COLȚUL SF",
-        sub: "F 100% · S 100% (Opus IP)",
-        color: "#e5c727"
+        sub: "F 100% · S 100% (Se opune IP)",
+        color: "#e5c727",
+        offsetX: 0,
+        offsetY: 18,
+        align: "center"
       }
     ];
 
-    botCorners.forEach(c => {
+    latCorners.forEach(c => {
       if (!c.p) return;
       ctx.save();
       const fs = Math.max(10, Math.min(14, 12 * c.p.scale));
 
-      // Small glowing corner dot
       ctx.fillStyle = c.color;
       ctx.beginPath();
-      ctx.arc(c.p.sx, c.p.sy, 4, 0, Math.PI * 2);
+      ctx.arc(c.p.sx, c.p.sy, 4.5, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.font = `800 ${fs}px Sora, sans-serif`;
-      ctx.textAlign = "center";
+      ctx.textAlign = c.align || "center";
       ctx.textBaseline = "middle";
 
-      // Tag
-      ctx.fillText(c.tag, c.p.sx, c.p.sy - 12);
+      ctx.fillText(c.tag, c.p.sx + c.offsetX, c.p.sy + c.offsetY);
 
-      // Subtitle
       ctx.font = `600 ${Math.max(9, fs - 2)}px Poppins, sans-serif`;
       ctx.fillStyle = isDark ? "rgba(255,255,255,0.75)" : "rgba(16,16,16,0.75)";
-      ctx.fillText(c.sub, c.p.sx, c.p.sy + 8);
+      ctx.fillText(c.sub, c.p.sx + c.offsetX, c.p.sy + c.offsetY + 12);
       ctx.restore();
     });
 
-    // 6. Cardinal Axis Labels: Top Ceiling & Bottom Floor
+    // 6. Cardinal Axis Labels: Top Horizontal Face & Lateral Vertical Face
     const cardinalLabels = [
-      // Top Ceiling
-      { p: this.project3D(-hw - 40, ceilY, 0, cx, cy), text: "INTROVERSIE (I 100%)", color: "#6366f1" },
-      { p: this.project3D(hw + 40, ceilY, 0, cx, cy), text: "EXTRAVERSIE (E 100%)", color: "#f59e0b" },
-      { p: this.project3D(0, ceilY, -hd - 40, cx, cy), text: "JUDECATE (J 100%)", color: "#e11d48" },
-      { p: this.project3D(0, ceilY, hd + 40, cx, cy), text: "PERCEPȚIE (P 100%)", color: "#10b981" },
-      // Bottom Floor
-      { p: this.project3D(-hw - 40, floorY, 0, cx, cy), text: "INTUIȚIE (N 100%)", color: "#95637e" },
-      { p: this.project3D(hw + 40, floorY, 0, cx, cy), text: "SENZORIAL (S 100%)", color: "#e5c727" }
+      // Top Face (Horizontal at Y = +hh)
+      { p: this.project3D(-hw - 45, topY, 0, cx, cy), text: "INTROVERSIE (I 100%)", color: "#6366f1" },
+      { p: this.project3D(hw + 45, topY, 0, cx, cy), text: "EXTRAVERSIE (E 100%)", color: "#f59e0b" },
+      { p: this.project3D(0, topY, -hd - 45, cx, cy), text: "JUDECATE (J 100%)", color: "#e11d48" },
+      { p: this.project3D(0, topY, hd + 45, cx, cy), text: "PERCEPȚIE (P 100%)", color: "#10b981" },
+      // Lateral Face (Vertical at X = -hw)
+      { p: this.project3D(latX, hh + 45, 0, cx, cy), text: "INTUIȚIE (N 100%)", color: "#95637e" },
+      { p: this.project3D(latX, -hh - 45, 0, cx, cy), text: "SENZORIAL (S 100%)", color: "#e5c727" },
+      { p: this.project3D(latX, 0, -hd - 45, cx, cy), text: "GÂNDIRE (T 100%)", color: "#72cccd" },
+      { p: this.project3D(latX, 0, hd + 45, cx, cy), text: "SENTIMENT (F 100%)", color: "#9ac262" }
     ];
 
     cardinalLabels.forEach(cl => {
@@ -966,16 +1016,16 @@ export class SpectrumController {
         ctx.arc(sx, sy, r + 5, 0, Math.PI * 2);
         ctx.stroke();
 
-        // Subtle tether lines connecting to top (style) and bottom (temperament) planes
-        const pTop = this.project3D(node.topX, ceilY, node.topZ, cx, cy);
-        const pBot = this.project3D(node.botX, floorY, node.botZ, cx, cy);
-        if (pTop && pBot) {
+        // Subtle tether lines connecting to Top Face (horizontal) and Lateral Face (vertical)
+        const pTop = this.project3D(node.topX, hh, node.topZ, cx, cy);
+        const pLat = this.project3D(node.latX, node.latY, node.latZ, cx, cy);
+        if (pTop && pLat) {
           ctx.save();
           ctx.strokeStyle = isDark ? "rgba(255,255,255,0.25)" : "rgba(16,16,16,0.25)";
           ctx.lineWidth = 1.2;
           ctx.setLineDash([3, 3]);
           ctx.beginPath();
-          ctx.moveTo(pBot.sx, pBot.sy);
+          ctx.moveTo(pLat.sx, pLat.sy);
           ctx.lineTo(sx, sy);
           ctx.lineTo(pTop.sx, pTop.sy);
           ctx.stroke();
@@ -1335,32 +1385,38 @@ export class SpectrumController {
       b.classList.toggle("active", b.getAttribute("data-view") === mode);
     });
 
-    let targetTheta = 0.52;
-    let targetPhi = 0.32;
-    let targetRadius = 1750;
-    let targetY = 0;
+    let targetTheta = 0.58;
+    let targetPhi = 0.38;
+    let targetRadius = 1850;
+    let targetTx = 0;
+    let targetTy = 0;
+    let targetTz = 0;
 
     if (mode === "top") {
-      // Top-Down View: Looks directly at top ceiling showing the 4 corners: IJ, IP, EJ, EP
+      // Top-Down View: Fața de Sus a Zarului: IJ · IP · EJ · EP (Orizontal la Y = +hh)
       targetTheta = 0;
-      targetPhi = 1.48; // Almost 90 degrees top down
-      targetRadius = 1600;
-      targetY = BOX_H / 2;
-    } else if (mode === "bottom") {
-      // Bottom View: Looks down at bottom floor showing the 4 corners: NT, NF, ST, SF
-      targetTheta = 0.45;
-      targetPhi = 0.72;
-      targetRadius = 1600;
-      targetY = -BOX_H / 2;
+      targetPhi = 1.48; // Privire perpendiculară de sus în jos
+      targetRadius = 1650;
+      targetTx = 0;
+      targetTy = BOX_H / 2;
+      targetTz = 0;
+    } else if (mode === "lateral") {
+      // Lateral View: Fața Laterală fix lângă Sus: NT · NF · ST · SF (Vertical la X = -hw)
+      targetTheta = -Math.PI / 2; // Privire din stânga spre fața laterală
+      targetPhi = 0;
+      targetRadius = 1650;
+      targetTx = -BOX_W / 2;
+      targetTy = 0;
+      targetTz = 0;
     }
 
     this.animateCameraTo({
       theta: targetTheta,
       phi: targetPhi,
       radius: targetRadius,
-      tx: 0,
-      ty: targetY,
-      tz: 0
+      tx: targetTx,
+      ty: targetTy,
+      tz: targetTz
     });
   }
 
@@ -1432,19 +1488,20 @@ export class SpectrumController {
       panel.style.display = "none";
     }
 
-    const defaultTy = this.activeView === "bottom" ? -BOX_H / 2 : (this.activeView === "top" ? BOX_H / 2 : 0);
+    const defaultTx = this.activeView === "lateral" ? -BOX_W / 2 : 0;
+    const defaultTy = this.activeView === "top" ? BOX_H / 2 : 0;
 
     if (flyBack) {
       this.animateCameraTo({
         theta: this.camera.theta,
         phi: this.camera.phi,
-        radius: 1750,
-        tx: 0,
+        radius: 1800,
+        tx: defaultTx,
         ty: defaultTy,
         tz: 0
       }, 350);
     } else {
-      this.camera.target = { x: 0, y: defaultTy, z: 0 };
+      this.camera.target = { x: defaultTx, y: defaultTy, z: 0 };
     }
 
     this.requestFrame();
