@@ -448,7 +448,11 @@ export class SpectrumController {
     const dist = radius - z2;
     if (dist < 80) return null; // Behind camera
 
-    const fov = 1150;
+    // Mobile-adaptive dynamic FOV:
+    // Scale FOV on narrow screens so the 3D cross, cardinal labels, and corners fit cleanly with margin
+    const w = this.wrap ? this.wrap.clientWidth : 1000;
+    const mobileFactor = Math.min(1, Math.max(0.58, w / 740));
+    const fov = 1150 * mobileFactor;
     const scale = fov / dist;
 
     return {
@@ -733,6 +737,13 @@ export class SpectrumController {
     ctx.save();
     ctx.font = "800 13px Sora, sans-serif";
     ctx.textAlign = "center";
+    // =========================================================================
+    // 4. WATERMARK QUADRANT TAGS FOR BOTH PLANES
+    // =========================================================================
+    const isMobile = w < 640;
+    ctx.save();
+    ctx.font = isMobile ? "800 10.5px Sora, sans-serif" : "800 13px Sora, sans-serif";
+    ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
     const planeTags = [
@@ -774,7 +785,7 @@ export class SpectrumController {
     cardinalLabels.forEach(cl => {
       if (!cl.p) return;
       ctx.save();
-      const fs = Math.max(9, Math.min(13, 11 * cl.p.scale));
+      const fs = Math.max(isMobile ? 7.5 : 9, Math.min(isMobile ? 10.5 : 13, (isMobile ? 8.5 : 11) * cl.p.scale));
       ctx.font = `800 ${fs}px Sora, sans-serif`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
@@ -791,20 +802,20 @@ export class SpectrumController {
       // Glowing dual ring
       ctx.fillStyle = "#10b981";
       ctx.beginPath();
-      ctx.arc(pCenter.sx, pCenter.sy, 4.5, 0, Math.PI * 2);
+      ctx.arc(pCenter.sx, pCenter.sy, isMobile ? 3.5 : 4.5, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.strokeStyle = "rgba(16, 185, 129, 0.55)";
-      ctx.lineWidth = 1.8;
+      ctx.lineWidth = isMobile ? 1.4 : 1.8;
       ctx.beginPath();
-      ctx.arc(pCenter.sx, pCenter.sy, 9, 0, Math.PI * 2);
+      ctx.arc(pCenter.sx, pCenter.sy, isMobile ? 7 : 9, 0, Math.PI * 2);
       ctx.stroke();
 
-      ctx.font = "700 10px Poppins, sans-serif";
+      ctx.font = `700 ${isMobile ? 8.5 : 10}px Poppins, sans-serif`;
       ctx.textAlign = "center";
       ctx.textBaseline = "top";
       ctx.fillStyle = isDark ? "rgba(255,255,255,0.7)" : "rgba(16,16,16,0.7)";
-      ctx.fillText("50% Echilibru (0,0,0)", pCenter.sx, pCenter.sy + 12);
+      ctx.fillText("50% Echilibru (0,0,0)", pCenter.sx, pCenter.sy + (isMobile ? 9 : 12));
       ctx.restore();
     }
 
@@ -849,25 +860,25 @@ export class SpectrumController {
     if (pINTJ) {
       ctx.fillStyle = "#6366f1";
       ctx.beginPath();
-      ctx.arc(pINTJ.sx, pINTJ.sy, 5.5, 0, Math.PI * 2);
+      ctx.arc(pINTJ.sx, pINTJ.sy, isMobile ? 4 : 5.5, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.strokeStyle = "rgba(99, 102, 241, 0.4)";
-      ctx.lineWidth = 2;
+      ctx.lineWidth = isMobile ? 1.5 : 2;
       ctx.beginPath();
-      ctx.arc(pINTJ.sx, pINTJ.sy, 10, 0, Math.PI * 2);
+      ctx.arc(pINTJ.sx, pINTJ.sy, isMobile ? 7.5 : 10, 0, Math.PI * 2);
       ctx.stroke();
 
-      const fs = Math.max(10, Math.min(14, 12 * pINTJ.scale));
+      const fs = Math.max(isMobile ? 8.5 : 10, Math.min(isMobile ? 11.5 : 14, (isMobile ? 9.5 : 12) * pINTJ.scale));
       ctx.font = `800 ${fs}px Sora, sans-serif`;
       ctx.textAlign = "left";
       ctx.textBaseline = "middle";
       ctx.fillStyle = "#6366f1";
-      ctx.fillText("COLȚUL NT · IJ", pINTJ.sx + 14, pINTJ.sy - 8);
+      ctx.fillText(isMobile ? "COLȚUL NT·IJ" : "COLȚUL NT · IJ", pINTJ.sx + (isMobile ? 9 : 14), pINTJ.sy - (isMobile ? 5 : 8));
 
-      ctx.font = `600 ${Math.max(9, fs - 2)}px Poppins, sans-serif`;
+      ctx.font = `600 ${Math.max(isMobile ? 7.5 : 9, fs - 2)}px Poppins, sans-serif`;
       ctx.fillStyle = isDark ? "rgba(255,255,255,0.85)" : "rgba(16,16,16,0.85)";
-      ctx.fillText("INTJ 100% (I · N · T · J)", pINTJ.sx + 14, pINTJ.sy + 8);
+      ctx.fillText(isMobile ? "INTJ 100%" : "INTJ 100% (I · N · T · J)", pINTJ.sx + (isMobile ? 9 : 14), pINTJ.sy + (isMobile ? 6 : 8));
     }
     ctx.restore();
 
@@ -929,10 +940,12 @@ export class SpectrumController {
       const isHovered = index === hovered;
       const isSelected = index === selected;
 
-      // Generous, clearly visible radius scaling in 3D
-      const baseR = 19;
-      let r = Math.max(12, Math.min(42, baseR * scale));
-      if (isHovered || isSelected) r += 5;
+      // Radius scaling in 3D (optimized for mobile to prevent dense clumping)
+      const baseR = isMobile ? 14 : 19;
+      const minR = isMobile ? 7 : 11;
+      const maxR = isMobile ? 24 : 42;
+      let r = Math.max(minR, Math.min(maxR, baseR * scale));
+      if (isHovered || isSelected) r += isMobile ? 3 : 5;
 
       const alpha = matchesFilter ? 1.0 : 0.15;
       ctx.save();
@@ -952,7 +965,7 @@ export class SpectrumController {
 
         // Calm static border
         ctx.strokeStyle = isSelected || isHovered ? node.style.color : node.color;
-        ctx.lineWidth = isSelected || isHovered ? 3.5 : 2;
+        ctx.lineWidth = isSelected || isHovered ? (isMobile ? 2.5 : 3.5) : (isMobile ? 1.5 : 2);
         ctx.beginPath();
         ctx.arc(sx, sy, r, 0, Math.PI * 2);
         ctx.stroke();
@@ -964,10 +977,10 @@ export class SpectrumController {
         ctx.fill();
 
         ctx.strokeStyle = isSelected || isHovered ? node.style.color : node.color;
-        ctx.lineWidth = isSelected || isHovered ? 3 : 1.5;
+        ctx.lineWidth = isSelected || isHovered ? (isMobile ? 2.5 : 3) : 1.5;
         ctx.stroke();
 
-        if (r >= 12) {
+        if (r >= 9) {
           ctx.fillStyle = "#ffffff";
           ctx.font = `700 ${Math.round(r * 0.85)}px Sora, sans-serif`;
           ctx.textAlign = "center";
@@ -979,9 +992,9 @@ export class SpectrumController {
       // Calm static highlight ring when hovered or selected (NO pulsing)
       if (isHovered || isSelected) {
         ctx.strokeStyle = node.style.color;
-        ctx.lineWidth = 2.5;
+        ctx.lineWidth = isMobile ? 1.8 : 2.5;
         ctx.beginPath();
-        ctx.arc(sx, sy, r + 5, 0, Math.PI * 2);
+        ctx.arc(sx, sy, r + (isMobile ? 3.5 : 5), 0, Math.PI * 2);
         ctx.stroke();
 
         // Subtle drop line to XY cross plane (Z = 0) to anchor 3D depth
@@ -1011,7 +1024,7 @@ export class SpectrumController {
         const tx = sx + r + 6;
         const ty = sy;
 
-        const fontSize = Math.max(10, Math.min(14, 12 * Math.max(0.85, scale)));
+        const fontSize = Math.max(isMobile ? 9 : 10, Math.min(isMobile ? 12 : 14, (isMobile ? 10.5 : 12) * Math.max(0.85, scale)));
         ctx.font = isHovered || isSelected ? `700 ${fontSize}px Poppins, sans-serif` : `600 ${fontSize}px Poppins, sans-serif`;
         ctx.textAlign = "left";
         ctx.textBaseline = "middle";
@@ -1036,9 +1049,9 @@ export class SpectrumController {
       const isUserHovered = this.userHovered;
       const isUserSelected = this.userSelected;
 
-      const baseUserR = 19;
-      let userR = Math.max(14, Math.min(38, baseUserR * uScale));
-      if (isUserHovered || isUserSelected) userR += 4;
+      const baseUserR = isMobile ? 15 : 19;
+      let userR = Math.max(isMobile ? 10 : 14, Math.min(isMobile ? 26 : 38, baseUserR * uScale));
+      if (isUserHovered || isUserSelected) userR += isMobile ? 2.5 : 4;
 
       ctx.save();
       ctx.shadowColor = "rgba(0, 0, 0, 0.45)";
@@ -1076,10 +1089,11 @@ export class SpectrumController {
       return { x: e.clientX - rect.left, y: e.clientY - rect.top };
     };
 
-    // 3D Hit Detection
+    // 3D Hit Detection (strictly optimized for mobile to prevent accidental clicks)
     const findHitNode3D = (mx, my) => {
       const cx = wrap.clientWidth / 2;
       const cy = wrap.clientHeight / 2;
+      const isMobile = wrap.clientWidth < 640;
       const userData = this.getUserData();
 
       // 1. Check User node first
@@ -1087,17 +1101,22 @@ export class SpectrumController {
         const uCoords = this.getUserCoords(userData);
         const uProj = this.project3D(uCoords.x, uCoords.y, uCoords.z, cx, cy);
         if (uProj) {
-          const userR = Math.max(14, Math.min(38, 19 * uProj.scale));
-          if (Math.hypot(uProj.sx - mx, uProj.sy - my) <= userR + 8) {
+          const userR = Math.max(isMobile ? 10 : 14, Math.min(isMobile ? 26 : 38, (isMobile ? 15 : 19) * uProj.scale));
+          if (Math.hypot(uProj.sx - mx, uProj.sy - my) <= userR + (isMobile ? 3 : 6)) {
             return "user";
           }
         }
       }
 
-      // 2. Check all nodes from closest to furthest
+      // 2. Check all nodes from closest to furthest, strictly respecting active filter
       const projected = [];
       for (let i = 0; i < this.nodes.length; i++) {
         const n = this.nodes[i];
+        if (this.activeFilter !== "ALL") {
+          if (["EJ", "EP", "IJ", "IP"].includes(this.activeFilter) && n.style.code !== this.activeFilter) continue;
+          if (["NT", "NF", "SF", "ST"].includes(this.activeFilter) && n.temp.code !== this.activeFilter) continue;
+        }
+
         const coords = this.getNodeCoords(n);
         const proj = this.project3D(coords.x, coords.y, coords.z, cx, cy);
         if (proj) {
@@ -1107,9 +1126,11 @@ export class SpectrumController {
 
       projected.sort((a, b) => b.zDepth - a.zDepth);
 
+      const baseR = isMobile ? 14 : 19;
+      const hitTolerance = isMobile ? 2.5 : 5;
       for (const item of projected) {
-        const r = Math.max(12, Math.min(42, 19 * item.scale));
-        if (Math.hypot(item.sx - mx, item.sy - my) <= r + 8) {
+        const r = Math.max(isMobile ? 7 : 11, Math.min(isMobile ? 24 : 42, baseR * item.scale));
+        if (Math.hypot(item.sx - mx, item.sy - my) <= r + hitTolerance) {
           return item.index;
         }
       }
@@ -1129,9 +1150,12 @@ export class SpectrumController {
         this.dragStart = { x: p.x, y: p.y, theta: this.camera.theta, phi: this.camera.phi };
         this.lastPointer = { x: p.x, y: p.y };
         this.dragDistance = 0;
+        this.maxDragDistance = 0;
+        this.dragStartTime = performance.now();
         this.velTheta = 0;
         this.velPhi = 0;
       } else if (this.pointers.size === 2) {
+        this.isDragging = false;
         const pts = Array.from(this.pointers.values());
         this.pinchStart = {
           dist: Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y),
@@ -1161,17 +1185,22 @@ export class SpectrumController {
       if (this.isDragging && this.pointers.size === 1) {
         const dx = p.x - this.dragStart.x;
         const dy = p.y - this.dragStart.y;
-        this.dragDistance = Math.hypot(dx, dy);
+        const currentDist = Math.hypot(dx, dy);
+        this.dragDistance = currentDist;
+        if (currentDist > this.maxDragDistance) {
+          this.maxDragDistance = currentDist;
+        }
 
-        this.camera.theta = this.dragStart.theta - dx * 0.0055;
-        this.camera.phi = Math.max(-1.42, Math.min(1.42, this.dragStart.phi + dy * 0.0055));
+        const sensitivity = e.pointerType === "touch" ? 0.0062 : 0.0055;
+        this.camera.theta = this.dragStart.theta - dx * sensitivity;
+        this.camera.phi = Math.max(-1.42, Math.min(1.42, this.dragStart.phi + dy * sensitivity));
 
         // Smooth frame-to-frame delta velocity for subtle, calm inertia upon release
         if (this.lastPointer) {
           const instDx = p.x - this.lastPointer.x;
           const instDy = p.y - this.lastPointer.y;
-          this.velTheta = -instDx * 0.002;
-          this.velPhi = instDy * 0.002;
+          this.velTheta = -instDx * 0.0018;
+          this.velPhi = instDy * 0.0018;
         }
         this.lastPointer = { x: p.x, y: p.y };
 
@@ -1190,12 +1219,20 @@ export class SpectrumController {
       }
     });
 
-    // Pointer Up
-    canvas.addEventListener("pointerup", (e) => {
+    // Pointer Up & Cancel
+    const handlePointerEnd = (e) => {
       this.pointers.delete(e.pointerId);
 
-      // Only treat as click/selection if drag was negligible (< 6px)
-      if (this.isDragging && this.dragDistance < 6) {
+      const isTouch = e.pointerType === "touch";
+      const elapsed = performance.now() - (this.dragStartTime || 0);
+
+      // Distinct intentional tap detection:
+      // - Must not have moved more than 6px (mouse) or 8px (touch) throughout the entire gesture
+      // - For touch, must be a quick tap (< 300ms). If finger was held down, it's dragging/scanning!
+      const isQuickTap = !isTouch || elapsed < 300;
+      const isTap = this.isDragging && this.maxDragDistance < (isTouch ? 8 : 6) && isQuickTap;
+
+      if (isTap) {
         const p = getPos(e);
         const hit = findHitNode3D(p.x, p.y);
         if (hit === "user") {
@@ -1210,7 +1247,17 @@ export class SpectrumController {
 
       if (this.pointers.size === 0) {
         this.isDragging = false;
+        this.maxDragDistance = 0;
         canvas.style.cursor = "grab";
+      }
+    };
+
+    canvas.addEventListener("pointerup", handlePointerEnd);
+    canvas.addEventListener("pointercancel", (e) => {
+      this.pointers.delete(e.pointerId);
+      if (this.pointers.size === 0) {
+        this.isDragging = false;
+        this.maxDragDistance = 0;
       }
     });
 

@@ -5989,5 +5989,74 @@ a {
   }
 }
 
+@media (max-width: 640px) {
+  .tree-page .tree-canvas {
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .tree-page .tree-3d-controls {
+    bottom: 12px;
+    gap: 6px;
+    max-width: calc(100vw - 16px);
+    width: auto;
+  }
+
+  .tree-page .tree-3d-btn-group,
+  .tree-page .tree-3d-filter-group {
+    padding: 3px 6px;
+    gap: 3px;
+    max-width: calc(100vw - 20px);
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.35);
+  }
+
+  .tree-page .tree-3d-btn-group::-webkit-scrollbar,
+  .tree-page .tree-3d-filter-group::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tree-page .tree-3d-btn {
+    padding: 4px 8px;
+    font-size: 10px;
+    gap: 4px;
+  }
+
+  .tree-page .tree-filter-pill {
+    padding: 3px 7px;
+    font-size: 10px;
+  }
+
+  .tree-page .tree-hint-3d {
+    top: 66px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    padding: 3px 10px;
+    white-space: nowrap;
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  }
+
+  .tree-page .tree-panel {
+    height: 75vh;
+    border-radius: 24px 24px 0 0;
+  }
+
+  .tree-page .tree-panel-header {
+    padding: 1.15rem;
+  }
+
+  .tree-page .tree-panel-body {
+    padding: 1rem;
+    gap: 1rem;
+  }
+}
+
 
 
