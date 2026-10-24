@@ -263,42 +263,22 @@ export function calculateBestMbtiType(percentages, axisScoresOrPercentages = nul
   const axisPcts = getAxisPercentagesForMatching(percentages, axisScoresOrPercentages);
 
   // -------------------------------------------------------------------
-  // Rank-Based Function Stack Matching
+  // Weighted Cognitive Stack Fit Matching (60% Stack Fit + 40% Axis Match)
+  // Weights: Dominant (1.0), Auxiliary (0.75), Tertiary (0.5), Inferior (0.25)
   // -------------------------------------------------------------------
-  // Step 1: Rank the user's 8 functions by score (rank 1 = highest score).
-  // Step 2: For each MBTI type, compare the user's function ranking against
-  //         the type's theoretical function ranking (stack[0-3] + shadow[0-3]).
-  // Step 3: Score = position-weighted match. Top positions matter most.
-  //         A 1-position swap near the top costs much more than one at the bottom.
-  // -------------------------------------------------------------------
-  const ALL_FUNCS_ORDERED = ["Ne", "Ni", "Se", "Si", "Te", "Ti", "Fe", "Fi"];
 
-  // Build user's rank map: f -> rank (1-indexed, 1 = highest percentage)
-  const funcScoresSorted = ALL_FUNCS_ORDERED
-    .map(f => ({ f, score: percentages[f] ?? 50 }))
-    .sort((a, b) => b.score - a.score);
-
-  const userRankMap = {};
-  funcScoresSorted.forEach((item, idx) => { userRankMap[item.f] = idx + 1; });
-
-  // Position weights: dominant is critical, shadow functions penalise minimally
-  const POSITION_WEIGHTS = [5, 4, 2, 1, 0.5, 0.5, 0.25, 0.25]; // sum = 13.5
-  const W_TOTAL = POSITION_WEIGHTS.reduce((a, b) => a + b, 0);
+  const W = [1.0, 0.75, 0.5, 0.25]; // Sum = 2.5
+  const W_SUM = 2.5;
 
   const scores = Object.entries(MBTI_TYPES).map(([typeKey, typeData]) => {
-    // Full 8-function order for this type: dom(1) -> aux(2) -> tert(3) -> inf(4) -> shadows(5-8)
-    const typeOrder = [...typeData.stack, ...typeData.shadow];
+    // 1. Stack fit: Weighted sum of 4 conscious functions in Jungian stack
+    const stackFitRaw = typeData.stack.reduce((s, funcName, idx) => {
+      const score = percentages[funcName] ?? 50;
+      return s + W[idx] * score;
+    }, 0);
+    const stackFitPct = Math.max(0, Math.min(100, stackFitRaw / W_SUM));
 
-    let rankScore = 0;
-    typeOrder.forEach((funcName, idx) => {
-      const typeRank = idx + 1;                        // where this function sits in the type's ideal stack
-      const userRank = userRankMap[funcName] ?? 8;     // where the user placed this function
-      const rankDiff = Math.abs(userRank - typeRank);
-      rankScore += POSITION_WEIGHTS[idx] * (1 - rankDiff / 7);
-    });
-    const rankScorePct = Math.max(0, Math.min(100, (rankScore / W_TOTAL) * 100));
-
-    // Axis alignment (how strongly the 4 MBTI letters are favoured)
+    // 2. Axis alignment (how strongly the 4 MBTI letters are favoured)
     const letters = typeKey.split("");
     const axisMatch = (
       (axisPcts[letters[0]] ?? 50) +
@@ -307,9 +287,9 @@ export function calculateBestMbtiType(percentages, axisScoresOrPercentages = nul
       (axisPcts[letters[3]] ?? 50)
     ) / 4.0;
 
-    // Composite: 60% rank-based stack coherence + 40% axis alignment
-    const compositeRaw = 0.60 * rankScorePct + 0.40 * axisMatch;
-    const matchPercentage = Math.min(100, Math.max(30, Math.round(compositeRaw)));
+    // 3. Composite: 60% function stack fit + 40% axis alignment
+    const compositeRaw = 0.60 * stackFitPct + 0.40 * axisMatch;
+    const matchPercentage = Math.min(100, Math.max(10, Math.round(compositeRaw)));
     const temp = getTypeTemperament(typeKey);
 
     return {
@@ -320,9 +300,10 @@ export function calculateBestMbtiType(percentages, axisScoresOrPercentages = nul
       temperamentColor: temp.color,
       temperamentBg: temp.colorBg,
       temperamentBorder: temp.colorBorder,
-      functionMatch: Math.round(rankScorePct),
+      functionMatch: Math.round(stackFitPct),
       axisMatch: Math.round(axisMatch),
-      matchPercentage
+      matchPercentage,
+      rawComposite: compositeRaw
     };
   });
 

@@ -181,8 +181,42 @@ export const LIKERT_SCORE_MAP = {
   STRONGLY_DISAGREE: 0
 };
 
+export const COGNITIVE_STACKS = {
+  INTJ: ['Ni', 'Te', 'Fi', 'Se'],
+  INTP: ['Ti', 'Ne', 'Si', 'Fe'],
+  ENTJ: ['Te', 'Ni', 'Se', 'Fi'],
+  ENTP: ['Ne', 'Ti', 'Fe', 'Si'],
+  INFJ: ['Ni', 'Fe', 'Ti', 'Se'],
+  INFP: ['Fi', 'Ne', 'Si', 'Te'],
+  ENFJ: ['Fe', 'Ni', 'Se', 'Ti'],
+  ENFP: ['Ne', 'Fi', 'Te', 'Si'],
+  ISTJ: ['Si', 'Te', 'Fi', 'Ne'],
+  ISFJ: ['Si', 'Fe', 'Ti', 'Ne'],
+  ESTJ: ['Te', 'Si', 'Ne', 'Fi'],
+  ESFJ: ['Fe', 'Si', 'Ne', 'Ti'],
+  ISTP: ['Ti', 'Se', 'Ni', 'Fe'],
+  ISFP: ['Fi', 'Se', 'Ni', 'Te'],
+  ESTP: ['Se', 'Ti', 'Fe', 'Si'],
+  ESFP: ['Se', 'Fi', 'Te', 'Si']
+};
+
+export const STACK_WEIGHTS = [1.0, 0.75, 0.5, 0.25];
+
+export function calculateStackFit(type, functionPercentages) {
+  const stack = COGNITIVE_STACKS[type];
+  if (!stack) return 50;
+  const weightedSum = stack.reduce((s, fn, idx) => s + STACK_WEIGHTS[idx] * (functionPercentages[fn] ?? 50), 0);
+  return weightedSum / 2.5; // normalized 0..100
+}
+
 /**
  * Calculates axis dichotomy scores (Raport Real Normalizat) and 8 cognitive functions (Scor Likert 0-100%).
+ * Features:
+ * 1. Strict unipolar scoring for cognitive functions (no cross-function pollution).
+ * 2. Separate measurement channels (axis items, function items, combination items).
+ * 3. Reduced-weight disagreement mirroring on axes (55%) to prevent 4/3 item asymmetry.
+ * 4. Grand-mean respondent centering to eliminate acquiescence ("agreeing to everything") bias.
+ * 5. Weighted Jungian stack fit matching (60% stack fit + 40% axis letters fit).
  */
 export function calculateScores(questions, answers) {
   let answeredCount = 0;
@@ -190,13 +224,45 @@ export function calculateScores(questions, answers) {
   let disagreeCount = 0;
   let neutralCount = 0;
 
-  // Track raw Likert scores for cognitive functions (0 to 100)
+  // Track raw Likert ratings across all answered items for personal baseline centering
+  const allLikertValues = [];
+  questions.forEach(q => {
+    const ansKey = answers[q.id];
+    if (ansKey === undefined || ansKey === null) return;
+    if (q.format !== "wouldYouRather" && q.format !== "direct") {
+      let val = 50;
+      if (typeof ansKey === "number") {
+        if (ansKey >= -1.0 && ansKey <= 1.0) val = Math.max(0, Math.min(100, ((ansKey + 1.0) / 2.0) * 100.0));
+        else val = Math.max(0, Math.min(100, ansKey));
+      } else {
+        val = LIKERT_SCORE_MAP[ansKey] ?? 50;
+      }
+      allLikertValues.push(val);
+    }
+  });
+
+  const userMean = allLikertValues.length > 0
+    ? (allLikertValues.reduce((a, b) => a + b, 0) / allLikertValues.length)
+    : 50.0;
+
+  // Apply personal mean-centering on cognitive functions when at least 4 Likert items were answered
+  const userCenteringOffset = allLikertValues.length >= 4 ? (userMean - 50.0) : 0.0;
+
+  // Pre-count axis questions per pole to calibrate 4/3 item balance
+  const axisItemCounts = { E: 0, I: 0, N: 0, S: 0, T: 0, F: 0, J: 0, P: 0 };
+  questions.forEach(q => {
+    if (q.category === "axis" && q.target && axisItemCounts[q.target] !== undefined) {
+      axisItemCounts[q.target]++;
+    }
+  });
+
+  // Track raw weighted scores for cognitive functions (0 to 100)
   const functionScores = {};
   FUNCTIONS_LIST.forEach(f => {
     functionScores[f] = [];
   });
 
-  // Track raw Likert scores for axis poles (0 to 100)
+  // Track raw weighted scores for axis poles (0 to 100)
   const axisPoles = { E: [], I: [], N: [], S: [], T: [], F: [], J: [], P: [] };
 
   // Combination tracking (NT, NF, ST, SF, IJ, IP, EP, EJ)
@@ -218,14 +284,18 @@ export function calculateScores(questions, answers) {
       const unselPole = isA ? optB?.pole : (isB ? optA?.pole : null);
 
       if (q.category === "axis" || ["E", "I", "N", "S", "T", "F", "J", "P"].includes(selPole)) {
-        if (selPole && axisPoles[selPole]) axisPoles[selPole].push(100);
-        if (unselPole && axisPoles[unselPole]) axisPoles[unselPole].push(0);
+        if (selPole && axisPoles[selPole]) axisPoles[selPole].push({ score: 100, weight: 1.0 });
+        if (unselPole && axisPoles[unselPole]) axisPoles[unselPole].push({ score: 0, weight: 0.55 });
       } else if (q.category === "function" || FUNCTIONS_LIST.includes(selPole)) {
-        if (selPole && functionScores[selPole]) functionScores[selPole].push(100);
-        if (unselPole && functionScores[unselPole]) functionScores[unselPole].push(0);
+        // WYR for functions acts as a lightweight tie-breaker (weight 0.5); unselected pole is not penalized
+        if (selPole && functionScores[selPole]) functionScores[selPole].push({ score: 100, weight: 0.5 });
       } else if (q.category === "combination" || comboScores[selPole]) {
-        if (selPole && comboScores[selPole]) comboScores[selPole].push(100);
-        if (unselPole && comboScores[unselPole]) comboScores[unselPole].push(0);
+        if (selPole && comboScores[selPole]) comboScores[selPole].push({ score: 100, weight: 0.5 });
+        if (selPole && typeof selPole === "string" && selPole.length === 2) {
+          const [l1, l2] = selPole.split("");
+          if (axisPoles[l1]) axisPoles[l1].push({ score: 100, weight: 0.5 });
+          if (axisPoles[l2]) axisPoles[l2].push({ score: 100, weight: 0.5 });
+        }
       }
     } else {
       // 5-point Likert scale (0 - 100%)
@@ -240,8 +310,6 @@ export function calculateScores(questions, answers) {
         scoreTarget = LIKERT_SCORE_MAP[ansKey] ?? 50;
       }
 
-      const scoreOpp = 100 - scoreTarget;
-
       if (scoreTarget > 50) agreeCount++;
       else if (scoreTarget < 50) disagreeCount++;
       else neutralCount++;
@@ -250,19 +318,57 @@ export function calculateScores(questions, answers) {
       const opp = q.oppositePole || q.opposite;
 
       if (q.category === "axis" || ["E", "I", "N", "S", "T", "F", "J", "P"].includes(target)) {
-        if (target && axisPoles[target]) axisPoles[target].push(scoreTarget);
-        if (opp && axisPoles[opp]) axisPoles[opp].push(scoreOpp);
+        // Channel: Axis items score only axis letters
+        // 4/3 pole balancing: balance weight so poles with 4 items vs 3 items have identical total weight
+        const dimId = q.dimension || (["E", "I"].includes(target) ? "EI" : ["N", "S"].includes(target) ? "NS" : ["T", "F"].includes(target) ? "TF" : "JP");
+        const dimConfig = AXIS_DIMENSIONS.find(d => d.id === dimId);
+        let poleWeight = 1.0;
+        if (dimConfig) {
+          const countTarget = axisItemCounts[target] || 1;
+          const countOpp = axisItemCounts[opp] || 1;
+          if (countTarget !== countOpp && countTarget > 0 && countOpp > 0) {
+            poleWeight = 3.5 / countTarget;
+          }
+        }
+
+        if (target && axisPoles[target]) {
+          axisPoles[target].push({ score: scoreTarget, weight: poleWeight });
+        }
+        if (opp && axisPoles[opp]) {
+          const oppScore = 100 - scoreTarget;
+          // Agreement mirrors at full weight; disagreement mirrors at reduced weight (55%)
+          const oppWeight = scoreTarget >= 50 ? poleWeight : (poleWeight * 0.55);
+          axisPoles[opp].push({ score: oppScore, weight: oppWeight });
+        }
       } else if (q.category === "function" || FUNCTIONS_LIST.includes(target)) {
-        if (target && functionScores[target]) functionScores[target].push(scoreTarget);
-        if (opp && functionScores[opp]) functionScores[opp].push(scoreOpp);
+        // Channel: Function items are STRICTLY UNIPOLAR.
+        // Agreement raises target function, disagreement lowers it.
+        // Opposite function receives NOTHING (eliminates Si inflation on Ne disagreement).
+        if (target && functionScores[target]) {
+          functionScores[target].push({ score: scoreTarget, weight: 1.0 });
+        }
       } else if (q.category === "combination" || comboScores[target]) {
-        if (target && comboScores[target]) comboScores[target].push(scoreTarget);
-        if (opp && comboScores[opp]) comboScores[opp].push(scoreOpp);
+        // Channel: Combinations score combination track and contribute 50% each to constituent letters
+        if (target && comboScores[target]) {
+          comboScores[target].push({ score: scoreTarget, weight: 1.0 });
+        }
+        if (target && typeof target === "string" && target.length === 2) {
+          const [l1, l2] = target.split("");
+          if (axisPoles[l1]) axisPoles[l1].push({ score: scoreTarget, weight: 0.5 });
+          if (axisPoles[l2]) axisPoles[l2].push({ score: scoreTarget, weight: 0.5 });
+        }
+        if (opp && typeof opp === "string" && opp.length === 2) {
+          const [ol1, ol2] = opp.split("");
+          const oppScore = 100 - scoreTarget;
+          const oppW = scoreTarget >= 50 ? 0.5 : (0.5 * 0.55);
+          if (axisPoles[ol1]) axisPoles[ol1].push({ score: oppScore, weight: oppW });
+          if (axisPoles[ol2]) axisPoles[ol2].push({ score: oppScore, weight: oppW });
+        }
       }
     }
   });
 
-  // 1. Calculate cognitive function percentages (Scor Likert direct 0-100%)
+  // 1. Calculate cognitive function percentages (unipolar + respondent centering)
   const percentages = {};
   const precisePercentages = {};
   const insufficientData = {};
@@ -273,13 +379,15 @@ export function calculateScores(questions, answers) {
   FUNCTIONS_LIST.forEach(f => {
     const list = functionScores[f] || [];
     if (list.length > 0) {
-      const mean = list.reduce((a, b) => a + b, 0) / list.length;
-      precisePercentages[f] = Math.max(0, Math.min(100, mean));
+      const totalW = list.reduce((a, b) => a + b.weight, 0);
+      const rawMean = list.reduce((a, b) => a + b.score * b.weight, 0) / (totalW || 1);
+      const centered = rawMean - userCenteringOffset;
+      precisePercentages[f] = Math.max(0, Math.min(100, centered));
       percentages[f] = Math.round(precisePercentages[f]);
       insufficientData[f] = false;
-      functionSums[f] = list.reduce((a, b) => a + b, 0);
+      functionSums[f] = list.reduce((a, b) => a + b.score, 0);
       functionWeights[f] = list.length;
-      functionDirectPoints[f] = mean;
+      functionDirectPoints[f] = rawMean;
     } else {
       precisePercentages[f] = 50.0;
       percentages[f] = 50;
@@ -299,8 +407,11 @@ export function calculateScores(questions, answers) {
     const listA = axisPoles[poleA] || [];
     const listB = axisPoles[poleB] || [];
 
-    const rawMeanA = listA.length > 0 ? (listA.reduce((a, b) => a + b, 0) / listA.length) : 50.0;
-    const rawMeanB = listB.length > 0 ? (listB.reduce((a, b) => a + b, 0) / listB.length) : 50.0;
+    const totalWA = listA.reduce((a, b) => a + b.weight, 0);
+    const totalWB = listB.reduce((a, b) => a + b.weight, 0);
+
+    const rawMeanA = listA.length > 0 ? (listA.reduce((a, b) => a + b.score * b.weight, 0) / totalWA) : 50.0;
+    const rawMeanB = listB.length > 0 ? (listB.reduce((a, b) => a + b.score * b.weight, 0) / totalWB) : 50.0;
 
     const sumMeans = rawMeanA + rawMeanB;
     let pctA = 50.0;
@@ -338,8 +449,31 @@ export function calculateScores(questions, answers) {
     axisPercentages[poleB] = roundB;
   });
 
-  // 3. Derived 4-letter type directly from the 4 axis dimensions
-  const derivedType = `${axisScores.EI.dominant}${axisScores.NS.dominant}${axisScores.TF.dominant}${axisScores.JP.dominant}`;
+  // 3. Derived 4-letter type determined via weighted stack fit + axis alignment
+  // 60% function stack fit + 40% axis letters alignment
+  const typeRankings = Object.keys(COGNITIVE_STACKS).map(typeKey => {
+    const stackFit = calculateStackFit(typeKey, percentages);
+    const letters = typeKey.split("");
+    const axisMatch = (
+      (axisPercentages[letters[0]] ?? 50) +
+      (axisPercentages[letters[1]] ?? 50) +
+      (axisPercentages[letters[2]] ?? 50) +
+      (axisPercentages[letters[3]] ?? 50)
+    ) / 4.0;
+    const rawFinalScore = 0.60 * stackFit + 0.40 * axisMatch;
+    return {
+      type: typeKey,
+      stackFit: Math.round(stackFit),
+      axisMatch: Math.round(axisMatch),
+      finalScore: Math.round(rawFinalScore),
+      rawFinalScore
+    };
+  });
+  typeRankings.sort((a, b) => b.rawFinalScore - a.rawFinalScore);
+
+  const derivedType = answeredCount > 0
+    ? typeRankings[0].type
+    : `${axisScores.EI.dominant}${axisScores.NS.dominant}${axisScores.TF.dominant}${axisScores.JP.dominant}`;
 
   // Response bias checks
   let acquiescenceWarning = null;
@@ -375,6 +509,7 @@ export function calculateScores(questions, answers) {
     axisScores,
     axisPercentages,
     derivedType,
+    typeRankings,
     rawScores: percentages,
     functionSums,
     functionWeights,
@@ -383,6 +518,7 @@ export function calculateScores(questions, answers) {
     precisePercentages,
     insufficientData,
     acquiescenceWarning,
+    userMeanLikert: Math.round(userMean),
     answeredCount,
     totalQuestions: questions.length,
     isComplete
