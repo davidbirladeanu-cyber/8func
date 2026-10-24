@@ -1590,14 +1590,16 @@ class App {
               </div>
             </section>
 
-            <!-- Spectrum (Minimalist Single Compass: Mind & Nature, Poza 2 style) -->
-            <section class="e-panel" id="spectrum-compass">
+            <!-- Spectrum (Cross Compass: N/S + F/T on XY, E/I + J/P on YZ - all in one) -->
+            <section class="e-panel spectrum-cross-panel" id="spectrum-compass" role="button" tabindex="0" aria-label="${lang === 'ro' ? 'Deschide Spectrul 3D' : 'Open 3D Spectrum'}" style="cursor: pointer; transition: box-shadow 0.2s, transform 0.2s;">
               <div class="e-sec-head" style="margin-bottom: 2rem;">
                 <h2 class="e-sec-title">${lang === "ro" ? "Spectru" : "Spectrum"}</h2>
+                <span class="spectrum-open-hint">${lang === "ro" ? "Deschide 3D →" : "Open 3D →"}</span>
               </div>
-              
-              <div class="spectrum-single-wrap">
-                <div class="spectrum-compass-wrap">
+
+              <div class="spectrum-cross-wrap">
+                <!-- Plane 1: Mind & Nature (N/S × F/T) -->
+                <div class="spectrum-cross-plane-wrap">
                   <div class="spectrum-cardinal-lbl spectrum-lbl-top">${s1Top}</div>
                   <div class="spectrum-center-row">
                     <div class="spectrum-cardinal-lbl spectrum-lbl-left">${s1Left}</div>
@@ -1608,23 +1610,36 @@ class App {
                       <div class="spectrum-quadrant quad-br" title="ST"></div>
                       <div class="spectrum-crosshair-h"></div>
                       <div class="spectrum-crosshair-v"></div>
-
-                      <div class="spectrum-plot-dot" style="left: ${compassX}%; top: ${compassY}%;" title="${lang === 'ro' ? 'Tu' : 'You'} (${topMbti.type})"></div>
+                      <div class="spectrum-plot-dot" style="left: ${compassX}%; top: ${compassY}%;" title="${lang === 'ro' ? 'Tu' : 'You'} (${topMbti.type}) — ${s1Coords}"></div>
                     </div>
                     <div class="spectrum-cardinal-lbl spectrum-lbl-right">${s1Right}</div>
                   </div>
                   <div class="spectrum-cardinal-lbl spectrum-lbl-bottom">${s1Bottom}</div>
+                  <div class="spectrum-bottom-bar" style="margin-top: 0.85rem;">
+                    <span class="spectrum-coord-lbl">${s1Coords}</span>
+                  </div>
                 </div>
 
-                <div class="spectrum-bottom-bar">
-                  <span class="spectrum-coord-lbl">${s1Coords}</span>
-                </div>
-                <div style="margin-top: 1.5rem; text-align: center;">
-                  <button class="e-btn e-btn-primary" type="button" id="btn-results-open-spectrum" style="font-weight: 700; gap: 0.5rem; padding: 0.6rem 1.4rem; box-shadow: 0 4px 14px rgba(0,0,0,0.12);">
-                    ${ICONS.compass}
-                    <span>${t('exploreSpectrumBtn', {}, lang)}</span>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 14px; height: 14px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                  </button>
+                <!-- Plane 2: Energy & Tactics (E/I × J/P) -->
+                <div class="spectrum-cross-plane-wrap">
+                  <div class="spectrum-cardinal-lbl spectrum-lbl-top">${s2Top}</div>
+                  <div class="spectrum-center-row">
+                    <div class="spectrum-cardinal-lbl spectrum-lbl-left">${s2Left}</div>
+                    <div class="spectrum-quadrant-plane spectrum-quadrant-plane-blue">
+                      <div class="spectrum-quadrant quad-ej" title="EJ"></div>
+                      <div class="spectrum-quadrant quad-ep" title="EP"></div>
+                      <div class="spectrum-quadrant quad-ij" title="IJ"></div>
+                      <div class="spectrum-quadrant quad-ip" title="IP"></div>
+                      <div class="spectrum-crosshair-h"></div>
+                      <div class="spectrum-crosshair-v"></div>
+                      <div class="spectrum-plot-dot" style="left: ${compass2X}%; top: ${compass2Y}%;" title="${lang === 'ro' ? 'Tu' : 'You'} (${topMbti.type}) — ${s2Coords}"></div>
+                    </div>
+                    <div class="spectrum-cardinal-lbl spectrum-lbl-right">${s2Right}</div>
+                  </div>
+                  <div class="spectrum-cardinal-lbl spectrum-lbl-bottom">${s2Bottom}</div>
+                  <div class="spectrum-bottom-bar" style="margin-top: 0.85rem;">
+                    <span class="spectrum-coord-lbl">${s2Coords}</span>
+                  </div>
                 </div>
               </div>
             </section>
@@ -2292,9 +2307,13 @@ class App {
       });
     }
 
-    const openSpectrumBtn = document.getElementById("btn-results-open-spectrum");
-    if (openSpectrumBtn) {
-      openSpectrumBtn.addEventListener("click", () => this.state.showSpectrum());
+    const openSpectrumSection = document.getElementById("spectrum-compass");
+    if (openSpectrumSection) {
+      const navigateToSpectrum = () => this.state.showSpectrum();
+      openSpectrumSection.addEventListener("click", navigateToSpectrum);
+      openSpectrumSection.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigateToSpectrum(); }
+      });
     }
   }
 
