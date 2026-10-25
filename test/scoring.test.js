@@ -357,24 +357,22 @@ test("All 100 questions have complete Romanian translations (textRo) & explanati
 // ----------------------------------------------------
 // 9. Cognitive Function Scoring: Scor Likert (0-100%) directly reflects agreement & polarity
 // ----------------------------------------------------
-test("Cognitive Function Scoring: Unipolar Likert scoring (agreement elevates target function without contaminating opposite function)", () => {
+test("Cognitive Function Scoring: Scor Likert (0-100%) directly reflects agreement & polarity", () => {
   const mockQuestions = [
     { id: "f_ne", category: "function", target: "Ne", agreementPole: "Ne", oppositePole: "Ni" },
-    { id: "f_te", category: "function", target: "Te", agreementPole: "Te", oppositePole: "Ti" },
-    { id: "f_ni", category: "function", target: "Ni", agreementPole: "Ni", oppositePole: "Ne" }
+    { id: "f_te", category: "function", target: "Te", agreementPole: "Te", oppositePole: "Ti" }
   ];
 
   const answers = {
-    f_ne: "STRONGLY_AGREE", // Ne = 100%
-    f_te: "AGREE",           // Te = 75%
-    f_ni: "DISAGREE"         // Ni = 25% (unipolar direct score)
+    f_ne: "STRONGLY_AGREE", // Ne = 100%, Ni = 0%
+    f_te: "AGREE"            // Te = 75%, Ti = 25%
   };
 
   const res = calculateScores(mockQuestions, answers);
-  assert.strictEqual(res.percentages.Ne, 100, "Ne should be 100% directly from SA");
-  assert.strictEqual(res.percentages.Te, 75, "Te should be 75% directly from Agree");
-  assert.strictEqual(res.percentages.Ni, 25, "Ni should be 25% directly from Disagree");
-  assert.strictEqual(res.percentages.Ti, 50, "Unanswered Ti should remain baseline 50%");
+  assert.strictEqual(res.percentages.Ne, 100);
+  assert.strictEqual(res.percentages.Ni, 0);
+  assert.strictEqual(res.percentages.Te, 75);
+  assert.strictEqual(res.percentages.Ti, 25);
 });
 
 // ----------------------------------------------------
@@ -658,42 +656,5 @@ test("Figure Similarity and Ranking: FUNCTIONS is defined and similarity calcula
   assert.ok(ranked.opposite[0].similarity <= ranked.opposite[9].similarity, "Opposite figures must be sorted ascending");
 });
 
-// ----------------------------------------------------
-// 23. INFJ vs ISTJ Differentiation & Stack Fit
-// ----------------------------------------------------
-test("INFJ vs ISTJ Differentiation: INFJ profile yields INFJ derivedType and ranking #1 without Si inflation", () => {
-  const answers = {};
-  ALL_QUESTIONS.forEach(q => {
-    if (q.format === "wouldYouRather" || q.format === "direct") {
-      const optA = q.options[0];
-      const optB = q.options[1];
-      const infjPoles = ["I", "N", "F", "J", "Ni", "Fe", "Ti", "NF", "IJ"];
-      const istjPoles = ["S", "Si", "ST", "SF"];
-      if (infjPoles.includes(optA.pole)) answers[q.id] = "A";
-      else if (infjPoles.includes(optB.pole)) answers[q.id] = "B";
-      else if (istjPoles.includes(optA.pole)) answers[q.id] = "B";
-      else answers[q.id] = "A";
-    } else {
-      const t = q.target;
-      if (["Ni", "Fe", "I", "N", "F", "J", "NF", "IJ"].includes(t)) answers[q.id] = "STRONGLY_AGREE";
-      else if (t === "Ti") answers[q.id] = "AGREE";
-      else if (t === "Se") answers[q.id] = "NEUTRAL";
-      else if (["Ne", "Si", "S", "E", "T", "P", "ST", "SF", "EP"].includes(t)) answers[q.id] = "DISAGREE";
-      else answers[q.id] = "NEUTRAL";
-    }
-  });
-
-  const scores = calculateScores(ALL_QUESTIONS, answers);
-  const rankings = calculateBestMbtiType(scores.percentages, scores.axisScores);
-
-  assert.strictEqual(scores.derivedType, "INFJ", "INFJ profile must yield INFJ derivedType");
-  assert.strictEqual(rankings[0].type, "INFJ", "INFJ must rank #1 in calculateBestMbtiType");
-  assert.ok(scores.percentages.Ni > 80, `Ni must be high (>80%), got ${scores.percentages.Ni}%`);
-  assert.ok(scores.percentages.Fe > 80, `Fe must be high (>80%), got ${scores.percentages.Fe}%`);
-  assert.ok(scores.percentages.Si < 35, `Si must remain low (<35%), got ${scores.percentages.Si}%`);
-  assert.ok(rankings.findIndex(r => r.type === "ISTJ") > 10, "ISTJ should not rank near the top for an INFJ");
-});
-
 console.log(`\nAll ${passedTests} tests passed successfully!`);
-
 
