@@ -115,7 +115,7 @@ export class SpectrumController {
 
     // Active filter: "ALL" | "EJ" | "EP" | "IJ" | "IP" | "NT" | "NF" | "SF" | "ST"
     this.activeFilter = "ALL";
-    this.activeView = "orbit";
+    this.activeView = "dual2d";
 
     // Interaction state
     this.hoveredIndex = -1;
@@ -328,23 +328,27 @@ export class SpectrumController {
           <div class="tree-3d-controls" id="tree-3d-controls">
             <!-- View Mode Presets -->
             <div class="tree-3d-btn-group">
-              <button type="button" class="tree-3d-btn active" data-view="orbit" id="btn-view-orbit" title="${lang === 'ro' ? 'Vedere 3D Cruce liberă' : 'Free 3D Cross View'}">
+              <button type="button" class="tree-3d-btn ${this.activeView === 'dual2d' ? 'active' : ''}" data-view="dual2d" id="btn-view-dual2d" title="${lang === 'ro' ? 'Vizualizare Duală 2D: Planul 1 + Planul 2 (Sistemul 4D Complet)' : 'Dual 2D View: Plane 1 + Plane 2 (Full 4D System)'}">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="8" height="18" rx="1.5"></rect><rect x="13" y="3" width="8" height="18" rx="1.5"></rect></svg>
+                <span>Dual 2D (4D)</span>
+              </button>
+              <button type="button" class="tree-3d-btn ${this.activeView === 'plane1' ? 'active' : ''}" data-view="plane1" id="btn-view-plane1" title="${lang === 'ro' ? 'Planul 1: Spectrul Temperamentelor (NT · NF · ST · SF)' : 'Plane 1: Temperaments (NT · NF · ST · SF)'}">
+                <span>Planul NT · SF</span>
+              </button>
+              <button type="button" class="tree-3d-btn ${this.activeView === 'plane2' ? 'active' : ''}" data-view="plane2" id="btn-view-plane2" title="${lang === 'ro' ? 'Planul 2: Stiluri de Interacțiune (EJ · EP · IJ · IP)' : 'Plane 2: Interaction Styles (EJ · EP · IJ · IP)'}">
+                <span>Planul EJ · IP</span>
+              </button>
+              <button type="button" class="tree-3d-btn ${this.activeView === 'orbit' ? 'active' : ''}" data-view="orbit" id="btn-view-orbit" title="${lang === 'ro' ? 'Cub 3D cu cameră liberă (Orbită sferică)' : '3D Cube with Free Camera'}">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-                <span>3D Cruce</span>
-              </button>
-              <button type="button" class="tree-3d-btn" data-view="front" id="btn-view-front" title="${lang === 'ro' ? 'Planul X Y: N/S × F/T (NT · NF · ST · SF)' : 'Plane X Y: N/S × F/T (NT · NF · ST · SF)'}">
-                <span>Față: N/S × F/T</span>
-              </button>
-              <button type="button" class="tree-3d-btn" data-view="side" id="btn-view-side" title="${lang === 'ro' ? 'Planul Y Z: E/I × P/J (EJ · EP · IJ · IP)' : 'Plane Y Z: E/I × P/J (EJ · EP · IJ · IP)'}">
-                <span>Profil: E/I × P/J</span>
+                <span>3D Orbit</span>
               </button>
               ${userData.hasScores ? `
-                <button type="button" class="tree-3d-btn" id="tree-3d-focus-user" title="${lang === 'ro' ? 'Centrează pe poziția ta' : 'Focus on you'}">
+                <button type="button" class="tree-3d-btn" id="tree-3d-focus-user" title="${lang === 'ro' ? 'Selectează poziția ta' : 'Focus on you'}">
                   <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#ffffff; box-shadow:0 0 5px #10b981;"></span>
                   <span>TU</span>
                 </button>
               ` : ''}
-              <button type="button" class="tree-3d-btn tree-3d-btn-icon" id="tree-3d-reset" title="${lang === 'ro' ? 'Resetează camera' : 'Reset Camera'}">
+              <button type="button" class="tree-3d-btn tree-3d-btn-icon" id="tree-3d-reset" title="${lang === 'ro' ? 'Resetează vizualizarea' : 'Reset view'}">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
               </button>
             </div>
@@ -463,6 +467,283 @@ export class SpectrumController {
     };
   }
 
+  roundRect(ctx, x, y, w, h, r) {
+    if (w < 2 * r) r = w / 2;
+    if (h < 2 * r) r = h / 2;
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  getViewports(w, h) {
+    const isMobile = w < 840;
+    const bottomPadding = 110;
+    const lang = this.app.state.lang || "ro";
+
+    if (this.activeView === "plane1") {
+      const margin = 20;
+      const vpH = h - margin - bottomPadding;
+      const vpW = w - margin * 2;
+      return [{
+        plane: 1,
+        x: margin,
+        y: margin,
+        w: vpW,
+        h: vpH,
+        cx: margin + vpW / 2,
+        cy: margin + vpH / 2,
+        radius: Math.min(vpW * 0.42, vpH * 0.40),
+        title: lang === "ro" ? "Planul 1: Spectrul Temperamentelor" : "Plane 1: Temperaments",
+        subtitle: lang === "ro" ? "Axa X: Sentiment (-10) ↔ Gândire (+10)  ·  Axa Y: Senzorial (-10) ↔ Intuiție (+10)" : "X: Feeling (-10) ↔ Thinking (+10)  ·  Y: Sensing (-10) ↔ Intuition (+10)",
+        badgeText: "NT · NF · ST · SF",
+        badgeBg: "rgba(149, 99, 126, 0.22)",
+        badgeColor: "#d8b4e2"
+      }];
+    }
+
+    if (this.activeView === "plane2") {
+      const margin = 20;
+      const vpH = h - margin - bottomPadding;
+      const vpW = w - margin * 2;
+      return [{
+        plane: 2,
+        x: margin,
+        y: margin,
+        w: vpW,
+        h: vpH,
+        cx: margin + vpW / 2,
+        cy: margin + vpH / 2,
+        radius: Math.min(vpW * 0.42, vpH * 0.40),
+        title: lang === "ro" ? "Planul 2: Stiluri de Interacțiune" : "Plane 2: Interaction Styles",
+        subtitle: lang === "ro" ? "Axa X: Introversiune (-10) ↔ Extraversiune (+10)  ·  Axa Y: Percepție (-10) ↔ Judecată (+10)" : "X: Introversion (-10) ↔ Extraversion (+10)  ·  Y: Prospecting (-10) ↔ Judging (+10)",
+        badgeText: "EJ · EP · IJ · IP",
+        badgeBg: "rgba(99, 102, 241, 0.22)",
+        badgeColor: "#a5b4fc"
+      }];
+    }
+
+    // Default: dual2d (both planes side-by-side or stacked on mobile)
+    if (isMobile) {
+      const margin = 12;
+      const gap = 14;
+      const vpH = Math.max(220, (h - margin * 2 - gap - bottomPadding) / 2);
+      const vpW = w - margin * 2;
+      return [
+        {
+          plane: 1,
+          x: margin,
+          y: margin,
+          w: vpW,
+          h: vpH,
+          cx: margin + vpW / 2,
+          cy: margin + vpH / 2,
+          radius: Math.min(vpW * 0.38, vpH * 0.36),
+          title: "Planul 1 · NT/SF",
+          subtitle: "X: F ↔ T  ·  Y: S ↔ N",
+          badgeText: "Temperamente",
+          badgeBg: "rgba(149, 99, 126, 0.22)",
+          badgeColor: "#d8b4e2"
+        },
+        {
+          plane: 2,
+          x: margin,
+          y: margin + vpH + gap,
+          w: vpW,
+          h: vpH,
+          cx: margin + vpW / 2,
+          cy: margin + vpH + gap + vpH / 2,
+          radius: Math.min(vpW * 0.38, vpH * 0.36),
+          title: "Planul 2 · EJ/IP",
+          subtitle: "X: I ↔ E  ·  Y: P ↔ J",
+          badgeText: "Stiluri",
+          badgeBg: "rgba(99, 102, 241, 0.22)",
+          badgeColor: "#a5b4fc"
+        }
+      ];
+    }
+
+    // Desktop Dual side-by-side
+    const margin = 20;
+    const gap = 20;
+    const vpH = h - margin - bottomPadding;
+    const vpW = (w - margin * 2 - gap) / 2;
+    return [
+      {
+        plane: 1,
+        x: margin,
+        y: margin,
+        w: vpW,
+        h: vpH,
+        cx: margin + vpW / 2,
+        cy: margin + vpH / 2,
+        radius: Math.min(vpW * 0.42, vpH * 0.40),
+        title: lang === "ro" ? "Planul 1: Spectrul Temperamentelor" : "Plane 1: Temperaments",
+        subtitle: lang === "ro" ? "Axa X: Sentiment (-10) ↔ Gândire (+10)  ·  Axa Y: Senzorial (-10) ↔ Intuiție (+10)" : "X: Feeling (-10) ↔ Thinking (+10)  ·  Y: Sensing (-10) ↔ Intuition (+10)",
+        badgeText: "NT · NF · ST · SF",
+        badgeBg: "rgba(149, 99, 126, 0.22)",
+        badgeColor: "#d8b4e2"
+      },
+      {
+        plane: 2,
+        x: margin + vpW + gap,
+        y: margin,
+        w: vpW,
+        h: vpH,
+        cx: margin + vpW + gap + vpW / 2,
+        cy: margin + vpH / 2,
+        radius: Math.min(vpW * 0.42, vpH * 0.40),
+        title: lang === "ro" ? "Planul 2: Stiluri de Interacțiune" : "Plane 2: Interaction Styles",
+        subtitle: lang === "ro" ? "Axa X: Introversiune (-10) ↔ Extraversiune (+10)  ·  Axa Y: Percepție (-10) ↔ Judecată (+10)" : "X: Introversion (-10) ↔ Extraversion (+10)  ·  Y: Prospecting (-10) ↔ Judging (+10)",
+        badgeText: "EJ · EP · IJ · IP",
+        badgeBg: "rgba(99, 102, 241, 0.22)",
+        badgeColor: "#a5b4fc"
+      }
+    ];
+  }
+
+  getNode2DPos(node, vp) {
+    let x10 = 0;
+    let y10 = 0;
+    if (vp.plane === 1) {
+      x10 = (node.tPct - 50) / 5;
+      y10 = (node.nPct - 50) / 5;
+    } else {
+      x10 = (node.ePct - 50) / 5;
+      y10 = (node.jPct - 50) / 5;
+    }
+    return {
+      sx: vp.cx + (x10 / 10) * vp.radius,
+      sy: vp.cy - (y10 / 10) * vp.radius,
+      x10,
+      y10
+    };
+  }
+
+  getUser2DPos(userData, vp) {
+    if (!userData || !userData.hasScores) return null;
+    let x10 = 0;
+    let y10 = 0;
+    if (vp.plane === 1) {
+      x10 = (userData.tPct - 50) / 5;
+      y10 = (userData.nPct - 50) / 5;
+    } else {
+      x10 = (userData.ePct - 50) / 5;
+      y10 = (userData.jPct - 50) / 5;
+    }
+    return {
+      sx: vp.cx + (x10 / 10) * vp.radius,
+      sy: vp.cy - (y10 / 10) * vp.radius,
+      x10,
+      y10
+    };
+  }
+
+  findHitNode3D(mx, my) {
+    const wrap = this.wrap;
+    if (!wrap) return -1;
+    const cx = wrap.clientWidth / 2;
+    const cy = wrap.clientHeight / 2;
+    const isMobile = wrap.clientWidth < 640;
+    const userData = this.getUserData();
+
+    // 1. Check User node first
+    if (userData.hasScores) {
+      const uCoords = this.getUserCoords(userData);
+      const uProj = this.project3D(uCoords.x, uCoords.y, uCoords.z, cx, cy);
+      if (uProj) {
+        const userR = Math.max(isMobile ? 10 : 14, Math.min(isMobile ? 26 : 38, (isMobile ? 15 : 19) * uProj.scale));
+        if (Math.hypot(uProj.sx - mx, uProj.sy - my) <= userR + (isMobile ? 3 : 6)) {
+          return "user";
+        }
+      }
+    }
+
+    // 2. Check all nodes from closest to furthest
+    const projected = [];
+    for (let i = 0; i < this.nodes.length; i++) {
+      const n = this.nodes[i];
+      if (this.activeFilter !== "ALL") {
+        if (["EJ", "EP", "IJ", "IP"].includes(this.activeFilter) && n.style.code !== this.activeFilter) continue;
+        if (["NT", "NF", "SF", "ST"].includes(this.activeFilter) && n.temp.code !== this.activeFilter) continue;
+      }
+
+      const coords = this.getNodeCoords(n);
+      const proj = this.project3D(coords.x, coords.y, coords.z, cx, cy);
+      if (proj) {
+        projected.push({ index: i, sx: proj.sx, sy: proj.sy, scale: proj.scale, zDepth: proj.zDepth });
+      }
+    }
+
+    projected.sort((a, b) => b.zDepth - a.zDepth);
+
+    const baseR = isMobile ? 14 : 19;
+    const hitTolerance = isMobile ? 2.5 : 5;
+    for (const item of projected) {
+      const r = Math.max(isMobile ? 7 : 11, Math.min(isMobile ? 24 : 42, baseR * item.scale));
+      if (Math.hypot(item.sx - mx, item.sy - my) <= r + hitTolerance) {
+        return item.index;
+      }
+    }
+
+    return -1;
+  }
+
+  findHitNode2D(mx, my) {
+    const wrap = this.wrap;
+    if (!wrap) return -1;
+    const w = wrap.clientWidth;
+    const h = wrap.clientHeight;
+    const viewports = this.getViewports(w, h);
+    const userData = this.getUserData();
+
+    // Check user on each viewport
+    if (userData.hasScores) {
+      for (const vp of viewports) {
+        const uPos = this.getUser2DPos(userData, vp);
+        if (uPos && Math.hypot(uPos.sx - mx, uPos.sy - my) <= 18) {
+          return "user";
+        }
+      }
+    }
+
+    // Check figure nodes
+    for (const vp of viewports) {
+      if (mx >= vp.x && mx <= vp.x + vp.w && my >= vp.y && my <= vp.y + vp.h) {
+        let bestDist = Infinity;
+        let bestIdx = -1;
+        const hitRadius = Math.max(12, Math.min(22, vp.radius * 0.08));
+
+        for (let i = 0; i < this.nodes.length; i++) {
+          const n = this.nodes[i];
+          if (this.activeFilter !== "ALL") {
+            if (["EJ", "EP", "IJ", "IP"].includes(this.activeFilter) && n.style.code !== this.activeFilter) continue;
+            if (["NT", "NF", "SF", "ST"].includes(this.activeFilter) && n.temp.code !== this.activeFilter) continue;
+          }
+          const pos = this.getNode2DPos(n, vp);
+          const dist = Math.hypot(pos.sx - mx, pos.sy - my);
+          if (dist <= hitRadius && dist < bestDist) {
+            bestDist = dist;
+            bestIdx = i;
+          }
+        }
+        if (bestIdx !== -1) return bestIdx;
+      }
+    }
+
+    return -1;
+  }
+
+  findHitNode(mx, my) {
+    if (this.activeView === "orbit") {
+      return this.findHitNode3D(mx, my);
+    }
+    return this.findHitNode2D(mx, my);
+  }
+
   draw() {
     const ctx = this.ctx;
     const canvas = this.canvas;
@@ -471,11 +752,356 @@ export class SpectrumController {
 
     const w = wrap.clientWidth;
     const h = wrap.clientHeight;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const isDark = this.app.state.theme === "dark";
+
+    // Reset transform to DPR
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    // Canvas background
+    ctx.fillStyle = isDark ? "#0d0f12" : "#F4F1E8";
+    ctx.fillRect(0, 0, w, h);
+
+    if (this.activeView === "dual2d") {
+      this.drawDual2D(ctx, w, h, isDark, dpr);
+    } else if (this.activeView === "plane1") {
+      this.drawSinglePlane(ctx, w, h, isDark, dpr, 1);
+    } else if (this.activeView === "plane2") {
+      this.drawSinglePlane(ctx, w, h, isDark, dpr, 2);
+    } else {
+      this.drawOrbit3D(ctx, w, h, isDark, dpr);
+    }
+  }
+
+  drawDual2D(ctx, w, h, isDark, dpr) {
+    const viewports = this.getViewports(w, h);
+    const userData = this.getUserData();
+    viewports.forEach(vp => {
+      this.drawPlane2D(ctx, vp, isDark, dpr, userData);
+    });
+  }
+
+  drawSinglePlane(ctx, w, h, isDark, dpr, planeNum) {
+    const viewports = this.getViewports(w, h);
+    const userData = this.getUserData();
+    if (viewports[0]) {
+      this.drawPlane2D(ctx, viewports[0], isDark, dpr, userData);
+    }
+  }
+
+  drawPlane2D(ctx, vp, isDark, dpr, userData) {
+    const { cx, cy, radius } = vp;
+
+    ctx.save();
+    // Rounded glass card
+    this.roundRect(ctx, vp.x, vp.y, vp.w, vp.h, 16);
+    ctx.fillStyle = isDark ? "rgba(18, 21, 26, 0.78)" : "rgba(255, 255, 255, 0.88)";
+    ctx.fill();
+    ctx.strokeStyle = isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(16, 16, 16, 0.08)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.clip(); // Keep graphics strictly within card
+
+    // Card Header
+    const headPad = 14;
+    ctx.save();
+    ctx.font = "800 10.5px Sora, sans-serif";
+    const badgeW = ctx.measureText(vp.badgeText).width + 16;
+    ctx.fillStyle = vp.badgeBg;
+    this.roundRect(ctx, vp.x + headPad, vp.y + headPad, badgeW, 20, 10);
+    ctx.fill();
+    ctx.fillStyle = vp.badgeColor;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(vp.badgeText, vp.x + headPad + badgeW / 2, vp.y + headPad + 10);
+
+    ctx.font = "700 13px Poppins, sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillStyle = isDark ? "#ffffff" : "#101010";
+    ctx.fillText(vp.title, vp.x + headPad + badgeW + 10, vp.y + headPad + 10);
+
+    ctx.font = "500 10.5px Poppins, sans-serif";
+    ctx.fillStyle = isDark ? "rgba(255,255,255,0.45)" : "rgba(16,16,16,0.55)";
+    ctx.fillText(vp.subtitle, vp.x + headPad, vp.y + headPad + 28);
+    ctx.restore();
+
+    // Quadrant Fills inside Graph
+    ctx.save();
+    // Top-Right (+X, +Y)
+    ctx.fillStyle = vp.plane === 1 ? (isDark ? "rgba(149, 99, 126, 0.12)" : "rgba(149, 99, 126, 0.09)") : (isDark ? "rgba(225, 29, 72, 0.12)" : "rgba(225, 29, 72, 0.09)");
+    ctx.fillRect(cx, cy - radius, radius, radius);
+
+    // Top-Left (-X, +Y)
+    ctx.fillStyle = vp.plane === 1 ? (isDark ? "rgba(154, 194, 98, 0.12)" : "rgba(154, 194, 98, 0.09)") : (isDark ? "rgba(99, 102, 241, 0.12)" : "rgba(99, 102, 241, 0.09)");
+    ctx.fillRect(cx - radius, cy - radius, radius, radius);
+
+    // Bottom-Left (-X, -Y)
+    ctx.fillStyle = vp.plane === 1 ? (isDark ? "rgba(229, 199, 39, 0.12)" : "rgba(229, 199, 39, 0.09)") : (isDark ? "rgba(16, 185, 129, 0.12)" : "rgba(16, 185, 129, 0.09)");
+    ctx.fillRect(cx - radius, cy, radius, radius);
+
+    // Bottom-Right (+X, -Y)
+    ctx.fillStyle = vp.plane === 1 ? (isDark ? "rgba(114, 204, 205, 0.12)" : "rgba(114, 204, 205, 0.09)") : (isDark ? "rgba(245, 158, 11, 0.12)" : "rgba(245, 158, 11, 0.09)");
+    ctx.fillRect(cx, cy, radius, radius);
+
+    // Outer Graph border
+    ctx.strokeStyle = isDark ? "rgba(255, 255, 255, 0.12)" : "rgba(16, 16, 16, 0.12)";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(cx - radius, cy - radius, radius * 2, radius * 2);
+
+    // Sub-grid lines (every 2 units)
+    ctx.strokeStyle = isDark ? "rgba(255, 255, 255, 0.04)" : "rgba(16, 16, 16, 0.04)";
+    for (let u = -8; u <= 8; u += 2) {
+      if (u === 0) continue;
+      const off = (u / 10) * radius;
+      ctx.beginPath();
+      ctx.moveTo(cx + off, cy - radius);
+      ctx.lineTo(cx + off, cy + radius);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(cx - radius, cy + off);
+      ctx.lineTo(cx + radius, cy + off);
+      ctx.stroke();
+    }
+
+    // Main Crosshairs (X = 0, Y = 0)
+    ctx.strokeStyle = isDark ? "rgba(255, 255, 255, 0.32)" : "rgba(16, 16, 16, 0.32)";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(cx - radius, cy);
+    ctx.lineTo(cx + radius, cy);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - radius);
+    ctx.lineTo(cx, cy + radius);
+    ctx.stroke();
+    ctx.restore();
+
+    // Corner Quadrant Watermarks
+    ctx.save();
+    ctx.font = "800 20px Sora, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    const tagOffset = radius * 0.72;
+
+    if (vp.plane === 1) {
+      ctx.fillStyle = "rgba(149, 99, 126, 0.35)";
+      ctx.fillText("NT", cx + tagOffset, cy - tagOffset);
+      ctx.fillStyle = "rgba(154, 194, 98, 0.35)";
+      ctx.fillText("NF", cx - tagOffset, cy - tagOffset);
+      ctx.fillStyle = "rgba(229, 199, 39, 0.35)";
+      ctx.fillText("SF", cx - tagOffset, cy + tagOffset);
+      ctx.fillStyle = "rgba(114, 204, 205, 0.35)";
+      ctx.fillText("ST", cx + tagOffset, cy + tagOffset);
+    } else {
+      ctx.fillStyle = "rgba(225, 29, 72, 0.35)";
+      ctx.fillText("EJ", cx + tagOffset, cy - tagOffset);
+      ctx.fillStyle = "rgba(99, 102, 241, 0.35)";
+      ctx.fillText("IJ", cx - tagOffset, cy - tagOffset);
+      ctx.fillStyle = "rgba(16, 185, 129, 0.35)";
+      ctx.fillText("IP", cx - tagOffset, cy + tagOffset);
+      ctx.fillStyle = "rgba(245, 158, 11, 0.35)";
+      ctx.fillText("EP", cx + tagOffset, cy + tagOffset);
+    }
+    ctx.restore();
+
+    // Axis Labels
+    ctx.save();
+    ctx.font = "700 11px Sora, sans-serif";
+    ctx.fillStyle = isDark ? "#ffffff" : "#101010";
+
+    if (vp.plane === 1) {
+      ctx.textAlign = "right";
+      ctx.textBaseline = "middle";
+      ctx.fillText("Gândire (T) +10", cx + radius - 6, cy - 12);
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillText("-10 Sentiment (F)", cx - radius + 6, cy - 12);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "top";
+      ctx.fillText("Intuiție (N) +10", cx, cy - radius + 6);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "bottom";
+      ctx.fillText("Senzorial (S) -10", cx, cy + radius - 6);
+    } else {
+      ctx.textAlign = "right";
+      ctx.textBaseline = "middle";
+      ctx.fillText("Extraversiune (E) +10", cx + radius - 6, cy - 12);
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillText("-10 Introversiune (I)", cx - radius + 6, cy - 12);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "top";
+      ctx.fillText("Judecată (J) +10", cx, cy - radius + 6);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "bottom";
+      ctx.fillText("Percepție (P) -10", cx, cy + radius - 6);
+    }
+    ctx.restore();
+
+    // Personality Nodes
+    const baseR = Math.max(7, Math.min(13, radius * 0.052));
+
+    for (let i = 0; i < this.nodes.length; i++) {
+      const n = this.nodes[i];
+      let matchesFilter = true;
+      if (this.activeFilter !== "ALL") {
+        if (["EJ", "EP", "IJ", "IP"].includes(this.activeFilter) && n.style.code !== this.activeFilter) matchesFilter = false;
+        if (["NT", "NF", "SF", "ST"].includes(this.activeFilter) && n.temp.code !== this.activeFilter) matchesFilter = false;
+      }
+
+      const pos = this.getNode2DPos(n, vp);
+      const isHovered = (this.hoveredIndex === i);
+      const isSelected = (this.selectedIndex === i);
+
+      ctx.save();
+      ctx.globalAlpha = matchesFilter ? 1 : 0.12;
+
+      let r = baseR;
+      if (isHovered || isSelected) r += 3.5;
+
+      // Circle fill
+      ctx.fillStyle = n.color;
+      ctx.beginPath();
+      ctx.arc(pos.sx, pos.sy, r, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Circle border
+      ctx.strokeStyle = isHovered || isSelected ? "#ffffff" : "rgba(0, 0, 0, 0.4)";
+      ctx.lineWidth = isHovered || isSelected ? 2.5 : 1.2;
+      ctx.stroke();
+
+      // Avatar letter
+      if (r >= 7) {
+        ctx.fillStyle = "#ffffff";
+        ctx.font = `800 ${Math.round(r * 0.9)}px Sora, sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(n.avatar || n.name.charAt(0), pos.sx, pos.sy + 0.5);
+      }
+
+      // If Hovered or Selected: Glow ring + droplines + tag
+      if (isHovered || isSelected) {
+        // Droplines to X and Y axes
+        ctx.save();
+        ctx.strokeStyle = isDark ? "rgba(255, 255, 255, 0.35)" : "rgba(0, 0, 0, 0.35)";
+        ctx.lineWidth = 1.2;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        ctx.moveTo(pos.sx, pos.sy);
+        ctx.lineTo(pos.sx, cy);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(pos.sx, pos.sy);
+        ctx.lineTo(cx, pos.sy);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.restore();
+
+        // Dropline coordinate pill badges
+        ctx.save();
+        ctx.font = "800 9.5px Sora, sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        const xText = `x: ${formatCoord(pos.x10)}/10`;
+        const xTextW = ctx.measureText(xText).width + 8;
+        ctx.fillStyle = isDark ? "#1f242d" : "#e2ddcf";
+        ctx.fillRect(pos.sx - xTextW / 2, cy - 8, xTextW, 16);
+        ctx.fillStyle = isDark ? "#ffffff" : "#101010";
+        ctx.fillText(xText, pos.sx, cy);
+
+        const yText = `y: ${formatCoord(pos.y10)}/10`;
+        const yTextW = ctx.measureText(yText).width + 8;
+        ctx.fillStyle = isDark ? "#1f242d" : "#e2ddcf";
+        ctx.fillRect(cx - yTextW / 2, pos.sy - 8, yTextW, 16);
+        ctx.fillStyle = isDark ? "#ffffff" : "#101010";
+        ctx.fillText(yText, cx, pos.sy);
+        ctx.restore();
+
+        // Hover Tag Billboard
+        const tagText = `${n.name} · ${n.mbti} (${n.style.code})`;
+        ctx.save();
+        ctx.font = "700 12px Poppins, sans-serif";
+        ctx.textAlign = "left";
+        ctx.textBaseline = "middle";
+        const tagTx = pos.sx + r + 8;
+        const tagTy = pos.sy;
+
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = isDark ? "rgba(13,15,18,0.95)" : "rgba(244,241,232,0.95)";
+        ctx.strokeText(tagText, tagTx, tagTy);
+        ctx.fillStyle = isDark ? "#ffffff" : "#101010";
+        ctx.fillText(tagText, tagTx, tagTy);
+        ctx.restore();
+      }
+
+      ctx.restore();
+    }
+
+    // User Node "TU"
+    if (userData && userData.hasScores) {
+      const uPos = this.getUser2DPos(userData, vp);
+      if (uPos) {
+        const isUserH = this.userHovered;
+        const isUserS = this.userSelected;
+        let uR = Math.max(10, Math.min(16, radius * 0.065));
+        if (isUserH || isUserS) uR += 4;
+
+        ctx.save();
+        if (isUserH || isUserS) {
+          ctx.strokeStyle = "rgba(16, 185, 129, 0.75)";
+          ctx.lineWidth = 1.4;
+          ctx.setLineDash([3, 3]);
+          ctx.beginPath();
+          ctx.moveTo(uPos.sx, uPos.sy);
+          ctx.lineTo(uPos.sx, cy);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(uPos.sx, uPos.sy);
+          ctx.lineTo(cx, uPos.sy);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.arc(uPos.sx, uPos.sy, uR, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = "#10b981";
+        ctx.lineWidth = isUserH || isUserS ? 3.5 : 2.5;
+        ctx.stroke();
+
+        ctx.font = "900 11px Sora, sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = "#102e24";
+        ctx.fillText("TU", uPos.sx, uPos.sy + 0.5);
+
+        if (isUserH || isUserS) {
+          ctx.save();
+          ctx.font = "800 12px Poppins, sans-serif";
+          ctx.textAlign = "left";
+          ctx.textBaseline = "middle";
+          const uLabel = `TU (${userData.userType}) · x: ${formatCoord(uPos.x10)}/10, y: ${formatCoord(uPos.y10)}/10`;
+          ctx.lineWidth = 4;
+          ctx.strokeStyle = isDark ? "rgba(13,15,18,0.95)" : "rgba(244,241,232,0.95)";
+          ctx.strokeText(uLabel, uPos.sx + uR + 8, uPos.sy);
+          ctx.fillStyle = "#10b981";
+          ctx.fillText(uLabel, uPos.sx + uR + 8, uPos.sy);
+          ctx.restore();
+        }
+
+        ctx.restore();
+      }
+    }
+
+    ctx.restore(); // Restore clip
+  }
+
+  drawOrbit3D(ctx, w, h, isDark, dpr) {
     const cx = w / 2;
     const cy = h / 2;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const now = performance.now();
-    const isDark = this.app.state.theme === "dark";
 
     // Calm camera inertia settling
     if (!this.isDragging) {
@@ -1058,55 +1684,6 @@ export class SpectrumController {
       return { x: e.clientX - rect.left, y: e.clientY - rect.top };
     };
 
-    // 3D Hit Detection (strictly optimized for mobile to prevent accidental clicks)
-    const findHitNode3D = (mx, my) => {
-      const cx = wrap.clientWidth / 2;
-      const cy = wrap.clientHeight / 2;
-      const isMobile = wrap.clientWidth < 640;
-      const userData = this.getUserData();
-
-      // 1. Check User node first
-      if (userData.hasScores) {
-        const uCoords = this.getUserCoords(userData);
-        const uProj = this.project3D(uCoords.x, uCoords.y, uCoords.z, cx, cy);
-        if (uProj) {
-          const userR = Math.max(isMobile ? 10 : 14, Math.min(isMobile ? 26 : 38, (isMobile ? 15 : 19) * uProj.scale));
-          if (Math.hypot(uProj.sx - mx, uProj.sy - my) <= userR + (isMobile ? 3 : 6)) {
-            return "user";
-          }
-        }
-      }
-
-      // 2. Check all nodes from closest to furthest, strictly respecting active filter
-      const projected = [];
-      for (let i = 0; i < this.nodes.length; i++) {
-        const n = this.nodes[i];
-        if (this.activeFilter !== "ALL") {
-          if (["EJ", "EP", "IJ", "IP"].includes(this.activeFilter) && n.style.code !== this.activeFilter) continue;
-          if (["NT", "NF", "SF", "ST"].includes(this.activeFilter) && n.temp.code !== this.activeFilter) continue;
-        }
-
-        const coords = this.getNodeCoords(n);
-        const proj = this.project3D(coords.x, coords.y, coords.z, cx, cy);
-        if (proj) {
-          projected.push({ index: i, sx: proj.sx, sy: proj.sy, scale: proj.scale, zDepth: proj.zDepth });
-        }
-      }
-
-      projected.sort((a, b) => b.zDepth - a.zDepth);
-
-      const baseR = isMobile ? 14 : 19;
-      const hitTolerance = isMobile ? 2.5 : 5;
-      for (const item of projected) {
-        const r = Math.max(isMobile ? 7 : 11, Math.min(isMobile ? 24 : 42, baseR * item.scale));
-        if (Math.hypot(item.sx - mx, item.sy - my) <= r + hitTolerance) {
-          return item.index;
-        }
-      }
-
-      return -1;
-    };
-
     // Pointer Down (Mouse drag or touch start)
     canvas.addEventListener("pointerdown", (e) => {
       canvas.setPointerCapture(e.pointerId);
@@ -1133,7 +1710,7 @@ export class SpectrumController {
       }
     });
 
-    // Pointer Move (Smooth, calm 3D Orbit)
+    // Pointer Move (Smooth, calm 3D Orbit or 2D Drag)
     canvas.addEventListener("pointermove", (e) => {
       const p = getPos(e);
       if (this.pointers.has(e.pointerId)) {
@@ -1141,7 +1718,7 @@ export class SpectrumController {
       }
 
       // Pinch zoom
-      if (this.pointers.size === 2 && this.pinchStart) {
+      if (this.pointers.size === 2 && this.pinchStart && this.activeView === "orbit") {
         const pts = Array.from(this.pointers.values());
         const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
         const ratio = this.pinchStart.dist / dist;
@@ -1150,7 +1727,7 @@ export class SpectrumController {
         return;
       }
 
-      // One-pointer drag orbit
+      // One-pointer drag
       if (this.isDragging && this.pointers.size === 1) {
         const dx = p.x - this.dragStart.x;
         const dy = p.y - this.dragStart.y;
@@ -1160,29 +1737,29 @@ export class SpectrumController {
           this.maxDragDistance = currentDist;
         }
 
-        const sensitivity = e.pointerType === "touch" ? 0.0062 : 0.0055;
-        this.camera.theta = this.dragStart.theta - dx * sensitivity;
-        this.camera.phi = Math.max(-1.42, Math.min(1.42, this.dragStart.phi + dy * sensitivity));
+        if (this.activeView === "orbit") {
+          const sensitivity = e.pointerType === "touch" ? 0.0062 : 0.0055;
+          this.camera.theta = this.dragStart.theta - dx * sensitivity;
+          this.camera.phi = Math.max(-1.42, Math.min(1.42, this.dragStart.phi + dy * sensitivity));
 
-        // Smooth frame-to-frame delta velocity for subtle, calm inertia upon release
-        if (this.lastPointer) {
-          const instDx = p.x - this.lastPointer.x;
-          const instDy = p.y - this.lastPointer.y;
-          this.velTheta = -instDx * 0.0018;
-          this.velPhi = instDy * 0.0018;
+          if (this.lastPointer) {
+            const instDx = p.x - this.lastPointer.x;
+            const instDy = p.y - this.lastPointer.y;
+            this.velTheta = -instDx * 0.0018;
+            this.velPhi = instDy * 0.0018;
+          }
+          this.lastPointer = { x: p.x, y: p.y };
+          this.requestFrame();
         }
-        this.lastPointer = { x: p.x, y: p.y };
-
-        this.requestFrame();
       } else if (e.pointerType === "mouse") {
-        const hit = findHitNode3D(p.x, p.y);
+        const hit = this.findHitNode(p.x, p.y);
         const hitIsUser = hit === "user";
         const hitIdx = hitIsUser ? -1 : hit;
 
         if (hitIsUser !== this.userHovered || hitIdx !== this.hoveredIndex) {
           this.userHovered = hitIsUser;
           this.hoveredIndex = hitIdx;
-          canvas.style.cursor = (hitIsUser || hitIdx >= 0) ? "pointer" : "grab";
+          canvas.style.cursor = (hitIsUser || hitIdx >= 0) ? "pointer" : (this.activeView === "orbit" ? "grab" : "default");
           this.requestFrame();
         }
       }
@@ -1195,21 +1772,17 @@ export class SpectrumController {
       const isTouch = e.pointerType === "touch";
       const elapsed = performance.now() - (this.dragStartTime || 0);
 
-      // Distinct intentional tap detection:
-      // - Must not have moved more than 6px (mouse) or 8px (touch) throughout the entire gesture
-      // - For touch, must be a quick tap (< 300ms). If finger was held down, it's dragging/scanning!
       const isQuickTap = !isTouch || elapsed < 300;
       const isTap = this.isDragging && this.maxDragDistance < (isTouch ? 8 : 6) && isQuickTap;
 
       if (isTap) {
         const p = getPos(e);
-        const hit = findHitNode3D(p.x, p.y);
+        const hit = this.findHitNode(p.x, p.y);
         if (hit === "user") {
           this.selectUser();
         } else if (typeof hit === "number" && hit >= 0) {
-          this.selectNode(hit, true);
+          this.selectNode(hit, this.activeView === "orbit");
         } else {
-          // Deselect without moving or animating camera
           this.deselectNode(false);
         }
       }
@@ -1263,7 +1836,14 @@ export class SpectrumController {
 
     const resetBtn = document.getElementById("tree-3d-reset");
     if (resetBtn) {
-      resetBtn.addEventListener("click", () => this.setViewMode("orbit"));
+      resetBtn.addEventListener("click", () => {
+        if (this.activeView === "orbit") {
+          this.setViewMode("orbit");
+        } else {
+          this.deselectNode(false);
+          this.setViewMode("dual2d");
+        }
+      });
     }
 
     const focusUserBtn = document.getElementById("tree-3d-focus-user");
@@ -1373,30 +1953,18 @@ export class SpectrumController {
       b.classList.toggle("active", b.getAttribute("data-view") === mode);
     });
 
-    let targetTheta = 0.58;
-    let targetPhi = 0.38;
-    let targetRadius = 1850;
-
-    if (mode === "front") {
-      // Vedere frontală directă spre Planul XY (N/S × F/T: NT, NF, ST, SF)
-      targetTheta = 0;
-      targetPhi = 0;
-      targetRadius = 1680;
-    } else if (mode === "side") {
-      // Vedere laterală directă spre Planul YZ (E/I × P/J: EJ, EP, IJ, IP)
-      targetTheta = -Math.PI / 2;
-      targetPhi = 0;
-      targetRadius = 1680;
+    if (mode === "orbit") {
+      this.animateCameraTo({
+        theta: 0.58,
+        phi: 0.38,
+        radius: 1850,
+        tx: 0,
+        ty: 0,
+        tz: 0
+      });
+    } else {
+      this.requestFrame();
     }
-
-    this.animateCameraTo({
-      theta: targetTheta,
-      phi: targetPhi,
-      radius: targetRadius,
-      tx: 0,
-      ty: 0,
-      tz: 0
-    });
   }
 
   animateCameraTo(target, duration = 400) {
@@ -1423,7 +1991,7 @@ export class SpectrumController {
     const node = this.nodes[idx];
     const coords = this.getNodeCoords(node);
 
-    if (flyTo) {
+    if (flyTo && this.activeView === "orbit") {
       this.animateCameraTo({
         theta: this.camera.theta,
         phi: this.camera.phi,
@@ -1446,14 +2014,16 @@ export class SpectrumController {
     this.selectedIndex = -1;
     const coords = this.getUserCoords(userData);
 
-    this.animateCameraTo({
-      theta: this.camera.theta,
-      phi: this.camera.phi,
-      radius: Math.max(900, this.camera.radius * 0.75),
-      tx: coords.x,
-      ty: coords.y,
-      tz: coords.z
-    });
+    if (this.activeView === "orbit") {
+      this.animateCameraTo({
+        theta: this.camera.theta,
+        phi: this.camera.phi,
+        radius: Math.max(900, this.camera.radius * 0.75),
+        tx: coords.x,
+        ty: coords.y,
+        tz: coords.z
+      });
+    }
 
     this.renderUserSidePanel(userData);
     this.requestFrame();
