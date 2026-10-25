@@ -326,29 +326,6 @@ export class SpectrumController {
 
           <!-- 3D Floating Stage Controls & Filter Toolbar -->
           <div class="tree-3d-controls" id="tree-3d-controls">
-            <!-- View Mode Presets -->
-            <div class="tree-3d-btn-group">
-              <button type="button" class="tree-3d-btn active" data-view="orbit" id="btn-view-orbit" title="${lang === 'ro' ? 'Vedere 3D Cruce liberă (Orbită sferică)' : 'Free 3D Cross View'}">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-                <span>3D Cruce</span>
-              </button>
-              <button type="button" class="tree-3d-btn" data-view="front" id="btn-view-front" title="${lang === 'ro' ? 'Planul XY: N/S × F/T (NT · NF · ST · SF)' : 'Plane XY: N/S × F/T (NT · NF · ST · SF)'}">
-                <span>Față: N/S × F/T</span>
-              </button>
-              <button type="button" class="tree-3d-btn" data-view="side" id="btn-view-side" title="${lang === 'ro' ? 'Planul YZ: N/S × J/P (Axa Z pură Judecată/Percepție)' : 'Plane YZ: N/S × J/P (Pure Z Axis Judging/Perceiving)'}">
-                <span>Profil: N/S × J/P</span>
-              </button>
-              ${userData.hasScores ? `
-                <button type="button" class="tree-3d-btn" id="tree-3d-focus-user" title="${lang === 'ro' ? 'Centrează pe poziția ta' : 'Focus on you'}">
-                  <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#ffffff; box-shadow:0 0 5px #10b981;"></span>
-                  <span>TU</span>
-                </button>
-              ` : ''}
-              <button type="button" class="tree-3d-btn tree-3d-btn-icon" id="tree-3d-reset" title="${lang === 'ro' ? 'Resetează camera' : 'Reset Camera'}">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
-              </button>
-            </div>
-
             <!-- Style & Temperament Filter Pills -->
             <div class="tree-3d-filter-group">
               <button type="button" class="tree-filter-pill active" data-filter="ALL">${lang === 'ro' ? 'Toți' : 'All'}</button>
@@ -463,7 +440,7 @@ export class SpectrumController {
     };
   }
 
-  findHitNode3D(mx, my) {
+  findHitNode(mx, my) {
     const wrap = this.wrap;
     if (!wrap) return -1;
     const cx = wrap.clientWidth / 2;
@@ -476,8 +453,9 @@ export class SpectrumController {
       const uCoords = this.getUserCoords(userData);
       const uProj = this.project3D(uCoords.x, uCoords.y, uCoords.z, cx, cy);
       if (uProj) {
-        const userR = Math.max(isMobile ? 10 : 14, Math.min(isMobile ? 26 : 38, (isMobile ? 15 : 19) * uProj.scale));
-        if (Math.hypot(uProj.sx - mx, uProj.sy - my) <= userR + (isMobile ? 3 : 6)) {
+        const baseUserR = isMobile ? 15 : 19;
+        const userR = Math.max(isMobile ? 10 : 14, Math.min(isMobile ? 26 : 38, baseUserR * uProj.scale));
+        if (Math.hypot(uProj.sx - mx, uProj.sy - my) <= userR + (isMobile ? 6 : 8)) {
           return "user";
         }
       }
@@ -502,7 +480,7 @@ export class SpectrumController {
     projected.sort((a, b) => b.zDepth - a.zDepth);
 
     const baseR = isMobile ? 14 : 19;
-    const hitTolerance = isMobile ? 2.5 : 5;
+    const hitTolerance = isMobile ? 6 : 8;
     for (const item of projected) {
       const r = Math.max(isMobile ? 7 : 11, Math.min(isMobile ? 24 : 42, baseR * item.scale));
       if (Math.hypot(item.sx - mx, item.sy - my) <= r + hitTolerance) {
@@ -511,6 +489,10 @@ export class SpectrumController {
     }
 
     return -1;
+  }
+
+  findHitNode3D(mx, my) {
+    return this.findHitNode(mx, my);
   }
 
   draw() {
@@ -1194,8 +1176,8 @@ export class SpectrumController {
       const isTouch = e.pointerType === "touch";
       const elapsed = performance.now() - (this.dragStartTime || 0);
 
-      const isQuickTap = !isTouch || elapsed < 300;
-      const isTap = this.isDragging && this.maxDragDistance < (isTouch ? 8 : 6) && isQuickTap;
+      const isQuickTap = !isTouch || elapsed < 450;
+      const isTap = this.isDragging && this.maxDragDistance < (isTouch ? 12 : 8) && isQuickTap;
 
       if (isTap) {
         const p = getPos(e);
