@@ -28,6 +28,13 @@ const BOX_D = 1000; // Z: Perceiving (+) vs Judging (-) on top; Feeling (+) vs T
 
 const FUNCTIONS_LIST = ["Ne", "Ni", "Se", "Si", "Te", "Ti", "Fe", "Fi"];
 
+export function formatCoord(val) {
+  const rounded = Math.round(val * 10) / 10;
+  if (Math.abs(rounded) < 0.05) return "0";
+  const str = Number.isInteger(rounded) ? rounded.toString() : rounded.toFixed(1);
+  return rounded > 0 ? `+${str}` : str;
+}
+
 export const INTERACTION_STYLES = {
   EJ: {
     code: "EJ",
@@ -152,12 +159,10 @@ export class SpectrumController {
 
       // Planul 1 (XY): F stânga (-hw) / T dreapta (+hw)
       const wx = ((t - 50) / 50) * hw;
-      // Planul 2 (YZ): P stânga (-hd) / J dreapta (+hd)
-      const wz = ((j - 50) / 50) * hd;
-      // Axa Y: N sus (+), S jos (-), combinat armonios cu E/I (E sus +, I jos -)
-      // La 50% peste tot: wx = 0, wy = 0, wz = 0 -> (0, 0, 0)
-      // Pentru INTJ (N=100%, T=100%, I=100%, J=100%): wx = +hw, wy = +hh, wz = +hd -> colțul NT IJ!
-      const wy = (((n - s) / 100) * 0.65 + ((i - e) / 100) * 0.35) * hh;
+      // Planul 2 (YZ): Inversat J și P conform cerinței (J stânga -hd / P dreapta +hd)
+      const wz = ((p - 50) / 50) * hd;
+      // Axa Y: N sus (+hh), S jos (-hh) [pur N vs S, fără alterare E/I]
+      const wy = ((n - 50) / 50) * hh;
 
       const style = getInteractionStyle(fig.mbti);
       const temp = getTypeTemperament(fig.mbti);
@@ -236,10 +241,10 @@ export class SpectrumController {
 
     // Planul 1 (XY): F stânga (-hw) / T dreapta (+hw)
     const wx = ((t - 50) / 50) * hw;
-    // Planul 2 (YZ): P stânga (-hd) / J dreapta (+hd)
-    const wz = ((j - 50) / 50) * hd;
-    // Axa Y: N sus (+), S jos (-), combinat armonios cu E/I (E sus +, I jos -)
-    const wy = (((n - s) / 100) * 0.65 + ((i - e) / 100) * 0.35) * hh;
+    // Planul 2 (YZ): Inversat J și P conform cerinței (J stânga -hd / P dreapta +hd)
+    const wz = ((p - 50) / 50) * hd;
+    // Axa Y: N sus (+hh), S jos (-hh) [pur N vs S, fără alterare E/I]
+    const wy = ((n - 50) / 50) * hh;
 
     return {
       hasScores: true,
@@ -318,11 +323,6 @@ export class SpectrumController {
             <canvas class="tree-canvas" id="tree-canvas" aria-label="3D Spectrum"></canvas>
           </div>
 
-          <!-- 3D Hint -->
-          <div class="tree-hint-3d">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
-            <span>${lang === 'ro' ? 'Trage pentru rotire 3D · Scroll pentru zoom' : 'Drag to rotate 3D · Scroll to zoom'}</span>
-          </div>
 
           <!-- 3D Floating Stage Controls & Filter Toolbar -->
           <div class="tree-3d-controls" id="tree-3d-controls">
@@ -618,56 +618,57 @@ export class SpectrumController {
 
     // =========================================================================
     // 2. PLANE 2: AXA Y Z (Energy & Tactics: E/I × P/J la X = 0)
-    // E sus (+Y), I jos (-Y), P stânga (-Z), J dreapta (+Z)
+    // E sus (+Y), I jos (-Y); Inversat: J stânga (-Z), P dreapta (+Z)
     // =========================================================================
-    // Top-Right: EJ (E sus +Y, J dreapta +Z)
-    const pEJ_J = this.project3D(0, 0, hd, cx, cy);
-    const pEJ_Corner = this.project3D(0, hh, hd, cx, cy);
-    if (pCenter && pEJ_J && pEJ_Corner && pNT_N) {
+    const p_J = this.project3D(0, 0, -hd, cx, cy);
+    const p_P = this.project3D(0, 0, hd, cx, cy);
+
+    // Top-Left: EJ (E sus +Y, J stânga -Z)
+    const pEJ_Corner = this.project3D(0, hh, -hd, cx, cy);
+    if (pCenter && p_J && pEJ_Corner && pNT_N) {
       ctx.fillStyle = isDark ? "rgba(57, 82, 150, 0.08)" : "rgba(57, 82, 150, 0.09)";
       ctx.beginPath();
       ctx.moveTo(pCenter.sx, pCenter.sy);
-      ctx.lineTo(pEJ_J.sx, pEJ_J.sy);
+      ctx.lineTo(p_J.sx, p_J.sy);
       ctx.lineTo(pEJ_Corner.sx, pEJ_Corner.sy);
       ctx.lineTo(pNT_N.sx, pNT_N.sy);
       ctx.closePath();
       ctx.fill();
     }
 
-    // Top-Left: EP (E sus +Y, P stânga -Z)
-    const pEP_P = this.project3D(0, 0, -hd, cx, cy);
-    const pEP_Corner = this.project3D(0, hh, -hd, cx, cy);
-    if (pCenter && pEP_P && pEP_Corner && pNT_N) {
+    // Top-Right: EP (E sus +Y, P dreapta +Z)
+    const pEP_Corner = this.project3D(0, hh, hd, cx, cy);
+    if (pCenter && p_P && pEP_Corner && pNT_N) {
       ctx.fillStyle = isDark ? "rgba(67, 97, 171, 0.08)" : "rgba(67, 97, 171, 0.09)";
       ctx.beginPath();
       ctx.moveTo(pCenter.sx, pCenter.sy);
-      ctx.lineTo(pEP_P.sx, pEP_P.sy);
+      ctx.lineTo(p_P.sx, p_P.sy);
       ctx.lineTo(pEP_Corner.sx, pEP_Corner.sy);
       ctx.lineTo(pNT_N.sx, pNT_N.sy);
       ctx.closePath();
       ctx.fill();
     }
 
-    // Bottom-Left: IP (I jos -Y, P stânga -Z)
-    const pIP_Corner = this.project3D(0, -hh, -hd, cx, cy);
-    if (pCenter && pEP_P && pIP_Corner && pS_Node) {
+    // Bottom-Right: IP (I jos -Y, P dreapta +Z)
+    const pIP_Corner = this.project3D(0, -hh, hd, cx, cy);
+    if (pCenter && p_P && pIP_Corner && pS_Node) {
       ctx.fillStyle = isDark ? "rgba(85, 115, 199, 0.08)" : "rgba(85, 115, 199, 0.09)";
       ctx.beginPath();
       ctx.moveTo(pCenter.sx, pCenter.sy);
-      ctx.lineTo(pEP_P.sx, pEP_P.sy);
+      ctx.lineTo(p_P.sx, p_P.sy);
       ctx.lineTo(pIP_Corner.sx, pIP_Corner.sy);
       ctx.lineTo(pS_Node.sx, pS_Node.sy);
       ctx.closePath();
       ctx.fill();
     }
 
-    // Bottom-Right: IJ (I jos -Y, J dreapta +Z)
-    const pIJ_Corner = this.project3D(0, -hh, hd, cx, cy);
-    if (pCenter && pEJ_J && pIJ_Corner && pS_Node) {
+    // Bottom-Left: IJ (I jos -Y, J stânga -Z)
+    const pIJ_Corner = this.project3D(0, -hh, -hd, cx, cy);
+    if (pCenter && p_J && pIJ_Corner && pS_Node) {
       ctx.fillStyle = isDark ? "rgba(77, 105, 186, 0.08)" : "rgba(77, 105, 186, 0.09)";
       ctx.beginPath();
       ctx.moveTo(pCenter.sx, pCenter.sy);
-      ctx.lineTo(pEJ_J.sx, pEJ_J.sy);
+      ctx.lineTo(p_J.sx, p_J.sy);
       ctx.lineTo(pIJ_Corner.sx, pIJ_Corner.sy);
       ctx.lineTo(pS_Node.sx, pS_Node.sy);
       ctx.closePath();
@@ -721,22 +722,16 @@ export class SpectrumController {
       ctx.stroke();
     }
 
-    // Plane 2 Crosshairs: Z (P-J) and Y (E-I)
-    if (pEP_P && pEJ_J) {
-      ctx.strokeStyle = "rgba(99, 102, 241, 0.65)"; // P - J
+    // Plane 2 Crosshairs: Z (J-P) and Y (E-I)
+    if (p_J && p_P) {
+      ctx.strokeStyle = "rgba(99, 102, 241, 0.65)"; // J - P
       ctx.beginPath();
-      ctx.moveTo(pEP_P.sx, pEP_P.sy);
-      ctx.lineTo(pEJ_J.sx, pEJ_J.sy);
+      ctx.moveTo(p_J.sx, p_J.sy);
+      ctx.lineTo(p_P.sx, p_P.sy);
       ctx.stroke();
     }
     ctx.restore();
 
-    // =========================================================================
-    // 4. WATERMARK QUADRANT TAGS FOR BOTH PLANES
-    // =========================================================================
-    ctx.save();
-    ctx.font = "800 13px Sora, sans-serif";
-    ctx.textAlign = "center";
     // =========================================================================
     // 4. WATERMARK QUADRANT TAGS FOR BOTH PLANES
     // =========================================================================
@@ -752,11 +747,11 @@ export class SpectrumController {
       { p: this.project3D(-hw * 0.52, hh * 0.52, 0, cx, cy), tag: "NF", color: "rgba(154, 194, 98, 0.65)" },
       { p: this.project3D(-hw * 0.52, -hh * 0.52, 0, cx, cy), tag: "SF", color: "rgba(229, 199, 39, 0.65)" },
       { p: this.project3D(hw * 0.52, -hh * 0.52, 0, cx, cy), tag: "ST", color: "rgba(114, 204, 205, 0.65)" },
-      // Plane 2 (YZ): Interaction Styles
-      { p: this.project3D(0, hh * 0.52, hd * 0.52, cx, cy), tag: "EJ", color: "rgba(57, 82, 150, 0.65)" },
-      { p: this.project3D(0, hh * 0.52, -hd * 0.52, cx, cy), tag: "EP", color: "rgba(67, 97, 171, 0.65)" },
-      { p: this.project3D(0, -hh * 0.52, -hd * 0.52, cx, cy), tag: "IP", color: "rgba(85, 115, 199, 0.65)" },
-      { p: this.project3D(0, -hh * 0.52, hd * 0.52, cx, cy), tag: "IJ", color: "rgba(77, 105, 186, 0.65)" }
+      // Plane 2 (YZ): Interaction Styles (J stânga -hd, P dreapta +hd)
+      { p: this.project3D(0, hh * 0.52, -hd * 0.52, cx, cy), tag: "EJ", color: "rgba(57, 82, 150, 0.65)" },
+      { p: this.project3D(0, hh * 0.52, hd * 0.52, cx, cy), tag: "EP", color: "rgba(67, 97, 171, 0.65)" },
+      { p: this.project3D(0, -hh * 0.52, hd * 0.52, cx, cy), tag: "IP", color: "rgba(85, 115, 199, 0.65)" },
+      { p: this.project3D(0, -hh * 0.52, -hd * 0.52, cx, cy), tag: "IJ", color: "rgba(77, 105, 186, 0.65)" }
     ];
 
     planeTags.forEach(t => {
@@ -775,11 +770,11 @@ export class SpectrumController {
       { p: this.project3D(0, -hh - 45, 0, cx, cy), text: "S (Senzorial)", color: "#e5c727" },
       { p: this.project3D(-hw - 55, 0, 0, cx, cy), text: "F (Sentiment)", color: "#9ac262" },
       { p: this.project3D(hw + 55, 0, 0, cx, cy), text: "T (Gândire)", color: "#72cccd" },
-      // Plane 2 (YZ): Energy & Tactics
+      // Plane 2 (YZ): Energy & Tactics (J stânga -hd, P dreapta +hd)
       { p: this.project3D(0, hh + 45, 120, cx, cy), text: "E (Extraversie)", color: "#f59e0b" },
       { p: this.project3D(0, -hh - 45, -120, cx, cy), text: "I (Introversie)", color: "#6366f1" },
-      { p: this.project3D(0, 0, -hd - 55, cx, cy), text: "P (Percepție)", color: "#10b981" },
-      { p: this.project3D(0, 0, hd + 55, cx, cy), text: "J (Judecată)", color: "#e11d48" }
+      { p: this.project3D(0, 0, -hd - 55, cx, cy), text: "J (Judecată)", color: "#e11d48" },
+      { p: this.project3D(0, 0, hd + 55, cx, cy), text: "P (Percepție)", color: "#10b981" }
     ];
 
     cardinalLabels.forEach(cl => {
@@ -820,7 +815,7 @@ export class SpectrumController {
     }
 
     // =========================================================================
-    // 7. 3D WIREFRAME BOUNDING BOX & KEY CORNER: COLȚUL NT · IJ (INTJ 100%)
+    // 7. 3D WIREFRAME BOUNDING BOX
     // =========================================================================
     const corners = [
       { x: -hw, y: -hh, z: -hd }, // 0
@@ -829,7 +824,7 @@ export class SpectrumController {
       { x: -hw, y: hh, z: -hd },  // 3
       { x: -hw, y: -hh, z: hd },  // 4
       { x: hw, y: -hh, z: hd },   // 5
-      { x: hw, y: hh, z: hd },    // 6: COLȚUL NT · IJ (INTJ 100%)
+      { x: hw, y: hh, z: hd },    // 6
       { x: -hw, y: hh, z: hd }    // 7
     ];
 
@@ -854,32 +849,6 @@ export class SpectrumController {
         ctx.stroke();
       }
     });
-
-    // Special Corner Badge: (+hw, +hh, +hd) = NT (T 100%, N 100%) + IJ (I 100%, J 100%) -> INTJ 100%
-    const pINTJ = projectedCorners[6];
-    if (pINTJ) {
-      ctx.fillStyle = "#6366f1";
-      ctx.beginPath();
-      ctx.arc(pINTJ.sx, pINTJ.sy, isMobile ? 4 : 5.5, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.strokeStyle = "rgba(99, 102, 241, 0.4)";
-      ctx.lineWidth = isMobile ? 1.5 : 2;
-      ctx.beginPath();
-      ctx.arc(pINTJ.sx, pINTJ.sy, isMobile ? 7.5 : 10, 0, Math.PI * 2);
-      ctx.stroke();
-
-      const fs = Math.max(isMobile ? 8.5 : 10, Math.min(isMobile ? 11.5 : 14, (isMobile ? 9.5 : 12) * pINTJ.scale));
-      ctx.font = `800 ${fs}px Sora, sans-serif`;
-      ctx.textAlign = "left";
-      ctx.textBaseline = "middle";
-      ctx.fillStyle = "#6366f1";
-      ctx.fillText(isMobile ? "COLȚUL NT·IJ" : "COLȚUL NT · IJ", pINTJ.sx + (isMobile ? 9 : 14), pINTJ.sy - (isMobile ? 5 : 8));
-
-      ctx.font = `600 ${Math.max(isMobile ? 7.5 : 9, fs - 2)}px Poppins, sans-serif`;
-      ctx.fillStyle = isDark ? "rgba(255,255,255,0.85)" : "rgba(16,16,16,0.85)";
-      ctx.fillText(isMobile ? "INTJ 100%" : "INTJ 100% (I · N · T · J)", pINTJ.sx + (isMobile ? 9 : 14), pINTJ.sy + (isMobile ? 6 : 8));
-    }
     ctx.restore();
 
     // 7. Project and Render all 347 Personalities + User ("TU")
@@ -1689,6 +1658,40 @@ export class SpectrumController {
             `).join("")}
           </ul>
         </div>
+
+        <!-- Coordonate Spațiale 3D & Axe (X · Y · Z) -->
+        <div class="fig-modal-sec">
+          <h4 class="fig-modal-sec-title">${lang === 'ro' ? 'Coordonate Spațiale (X · Y · Z)' : 'Spatial Coordinates (X · Y · Z)'}</h4>
+          <div class="fig-modal-coords-box">
+            <div class="fig-modal-coords-grid">
+              <div class="fig-modal-coord-item">
+                <span class="fig-modal-coord-axis">X</span>
+                <span class="fig-modal-coord-num">${formatCoord((figT - 50) / 5)}/10</span>
+                <span class="fig-modal-coord-label">${figT >= 50 ? (lang === 'ro' ? 'Gândire' : 'Thinking') : (lang === 'ro' ? 'Sentiment' : 'Feeling')} ${figT >= 50 ? figT : figF}%</span>
+              </div>
+              <div class="fig-modal-coord-item">
+                <span class="fig-modal-coord-axis">Y</span>
+                <span class="fig-modal-coord-num">${formatCoord((figN - 50) / 5)}/10</span>
+                <span class="fig-modal-coord-label">${figN >= 50 ? (lang === 'ro' ? 'Intuiție' : 'Intuition') : (lang === 'ro' ? 'Senzorial' : 'Sensing')} ${figN >= 50 ? figN : figS}%</span>
+              </div>
+              <div class="fig-modal-coord-item">
+                <span class="fig-modal-coord-axis">Z</span>
+                <span class="fig-modal-coord-num">${formatCoord((figP - 50) / 5)}/10</span>
+                <span class="fig-modal-coord-label">${figP >= 50 ? (lang === 'ro' ? 'Percepție' : 'Perceiving') : (lang === 'ro' ? 'Judecată' : 'Judging')} ${figP >= 50 ? figP : figJ}%</span>
+              </div>
+            </div>
+            <div class="fig-modal-planes-coords">
+              <div class="fig-modal-plane-line">
+                <span class="plane-tag-badge">Planul NT · SF</span>
+                <span class="plane-coords-text">x: <b>${formatCoord((figT - 50) / 5)}/10</b> &nbsp;·&nbsp; y: <b>${formatCoord((figN - 50) / 5)}/10</b></span>
+              </div>
+              <div class="fig-modal-plane-line">
+                <span class="plane-tag-badge">Planul EJ · IP</span>
+                <span class="plane-coords-text">x: <b>${formatCoord((figE - 50) / 5)}/10</b> &nbsp;·&nbsp; y: <b>${formatCoord((figP - 50) / 5)}/10</b></span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     `;
 
@@ -1856,6 +1859,40 @@ export class SpectrumController {
               </li>
             `).join("")}
           </ul>
+        </div>
+
+        <!-- Coordonate Spațiale 3D & Axe (X · Y · Z) -->
+        <div class="fig-modal-sec">
+          <h4 class="fig-modal-sec-title">${lang === 'ro' ? 'Coordonate Spațiale (X · Y · Z)' : '3D Coordinates (X · Y · Z)'}</h4>
+          <div class="fig-modal-coords-box">
+            <div class="fig-modal-coords-grid">
+              <div class="fig-modal-coord-item">
+                <span class="fig-modal-coord-axis">X</span>
+                <span class="fig-modal-coord-num">${formatCoord((userData.tPct - 50) / 5)}/10</span>
+                <span class="fig-modal-coord-label">${userData.tPct >= 50 ? (lang === 'ro' ? 'Gândire' : 'Thinking') : (lang === 'ro' ? 'Sentiment' : 'Feeling')} ${userData.tPct >= 50 ? userData.tPct : userData.fPct}%</span>
+              </div>
+              <div class="fig-modal-coord-item">
+                <span class="fig-modal-coord-axis">Y</span>
+                <span class="fig-modal-coord-num">${formatCoord((userData.nPct - 50) / 5)}/10</span>
+                <span class="fig-modal-coord-label">${userData.nPct >= 50 ? (lang === 'ro' ? 'Intuiție' : 'Intuition') : (lang === 'ro' ? 'Senzorial' : 'Sensing')} ${userData.nPct >= 50 ? userData.nPct : userData.sPct}%</span>
+              </div>
+              <div class="fig-modal-coord-item">
+                <span class="fig-modal-coord-axis">Z</span>
+                <span class="fig-modal-coord-num">${formatCoord((userData.pPct - 50) / 5)}/10</span>
+                <span class="fig-modal-coord-label">${userData.pPct >= 50 ? (lang === 'ro' ? 'Percepție' : 'Perceiving') : (lang === 'ro' ? 'Judecată' : 'Judging')} ${userData.pPct >= 50 ? userData.pPct : userData.jPct}%</span>
+              </div>
+            </div>
+            <div class="fig-modal-planes-coords">
+              <div class="fig-modal-plane-line">
+                <span class="plane-tag-badge">Planul NT · SF</span>
+                <span class="plane-coords-text">x: <b>${formatCoord((userData.tPct - 50) / 5)}/10</b> &nbsp;·&nbsp; y: <b>${formatCoord((userData.nPct - 50) / 5)}/10</b></span>
+              </div>
+              <div class="fig-modal-plane-line">
+                <span class="plane-tag-badge">Planul EJ · IP</span>
+                <span class="plane-coords-text">x: <b>${formatCoord((userData.ePct - 50) / 5)}/10</b> &nbsp;·&nbsp; y: <b>${formatCoord((userData.pPct - 50) / 5)}/10</b></span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     `;
