@@ -3,7 +3,7 @@
  */
 
 import { getQuestionsForMode, TEST_MODES } from "../data/questions.js";
-import { calculateScores, parseResultsUrlPath } from "./scoring.js";
+import { calculateScores, parseResultsUrlPath, parseComparisonInputLink } from "./scoring.js";
 
 const STORAGE_KEYS = {
   MODE: "8func_mode_v2",
@@ -69,7 +69,16 @@ export class AppState {
     // Screen state & URL results check
     const isFiguresPath = window.location.pathname.includes("/figures") || window.location.hash === "#figures" || window.location.pathname.includes("/personalitati");
     const isSpectrumPath = window.location.pathname.includes("/spectrum") || window.location.hash === "#spectrum" || window.location.pathname.includes("/spectru");
-    const parsedUrlScores = parseResultsUrlPath(window.location.pathname) || parseResultsUrlPath(window.location.hash);
+    let parsedUrlScores = parseResultsUrlPath(window.location.pathname) || parseResultsUrlPath(window.location.hash);
+    if (!parsedUrlScores && typeof window !== "undefined" && window.location.search) {
+      try {
+        const searchParams = new URLSearchParams(window.location.search);
+        const aParam = searchParams.get("a");
+        if (aParam) {
+          parsedUrlScores = parseComparisonInputLink(aParam);
+        }
+      } catch (e) {}
+    }
     if (parsedUrlScores) {
       this.screen = "results";
       this.urlResultsScores = parsedUrlScores;

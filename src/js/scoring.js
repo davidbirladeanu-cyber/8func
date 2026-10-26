@@ -447,6 +447,8 @@ export function parseResultsUrlPath(pathname) {
   const pP = data.JP !== undefined ? data.JP : (data.P ?? 50);
   const pJ = data.JP !== undefined ? (100 - data.JP) : (data.J ?? 50);
 
+  const derivedType = `${pE >= pI ? "E" : "I"}${pN >= pS ? "N" : "S"}${pT >= pF ? "T" : "F"}${pJ >= pP ? "J" : "P"}`;
+
   return {
     ...data,
     EI: pI,
@@ -476,6 +478,173 @@ export function parseResultsUrlPath(pathname) {
       NS: { dimension: "NS", poleA: "N", poleB: "S", pctA: pN, pctB: pS, roundA: pN, roundB: pS, dominant: pN >= pS ? "N" : "S" },
       TF: { dimension: "TF", poleA: "T", poleB: "F", pctA: pT, pctB: pF, roundA: pT, roundB: pF, dominant: pT >= pF ? "T" : "F" },
       JP: { dimension: "JP", poleA: "J", poleB: "P", pctA: pJ, pctB: pP, roundA: pJ, roundB: pP, dominant: pJ >= pP ? "J" : "P" }
-    }
+    },
+    derivedType
   };
 }
+
+/**
+ * Builds normalized score structures from axis numbers and function percentages
+ */
+function buildComparisonScores(pI, pS, pF, pP, percentages = {}) {
+  const pE = 100 - pI;
+  const pN = 100 - pS;
+  const pT = 100 - pF;
+  const pJ = 100 - pP;
+  const axisScores = {
+    EI: { dimension: "EI", poleA: "E", poleB: "I", pctA: pE, pctB: pI, roundA: pE, roundB: pI, dominant: pE >= pI ? "E" : "I" },
+    NS: { dimension: "NS", poleA: "N", poleB: "S", pctA: pN, pctB: pS, roundA: pN, roundB: pS, dominant: pN >= pS ? "N" : "S" },
+    TF: { dimension: "TF", poleA: "T", poleB: "F", pctA: pT, pctB: pF, roundA: pT, roundB: pF, dominant: pT >= pF ? "T" : "F" },
+    JP: { dimension: "JP", poleA: "J", poleB: "P", pctA: pJ, pctB: pP, roundA: pJ, roundB: pP, dominant: pJ >= pP ? "J" : "P" }
+  };
+  const derivedType = `${axisScores.EI.dominant}${axisScores.NS.dominant}${axisScores.TF.dominant}${axisScores.JP.dominant}`;
+  return {
+    EI: pI,
+    NS: pS,
+    TF: pF,
+    JP: pP,
+    I: pI,
+    E: pE,
+    S: pS,
+    N: pN,
+    F: pF,
+    T: pT,
+    P: pP,
+    J: pJ,
+    percentages: {
+      Ne: percentages?.Ne ?? 50,
+      Ni: percentages?.Ni ?? 50,
+      Se: percentages?.Se ?? 50,
+      Si: percentages?.Si ?? 50,
+      Te: percentages?.Te ?? 50,
+      Ti: percentages?.Ti ?? 50,
+      Fe: percentages?.Fe ?? 50,
+      Fi: percentages?.Fi ?? 50
+    },
+    axisScores,
+    derivedType
+  };
+}
+
+function buildComparisonFromDict(data) {
+  const pI = data.EI !== undefined ? data.EI : (data.I ?? 50);
+  const pS = data.NS !== undefined ? data.NS : (data.S ?? 50);
+  const pF = data.TF !== undefined ? data.TF : (data.F ?? 50);
+  const pP = data.JP !== undefined ? data.JP : (data.P ?? 50);
+  return buildComparisonScores(pI, pS, pF, pP, {
+    Ne: data.Ne ?? 50,
+    Ni: data.Ni ?? 50,
+    Se: data.Se ?? 50,
+    Si: data.Si ?? 50,
+    Te: data.Te ?? 50,
+    Ti: data.Ti ?? 50,
+    Fe: data.Fe ?? 50,
+    Fi: data.Fi ?? 50
+  });
+}
+
+/**
+ * Robustly parses another person's result link or vector.
+ * Supports:
+ * 1. 8Func standard results URL /results/EI=../NS=../
+ * 2. 12Axes result URLs (?est=..&rep=.. or /compare/people?a=..&b=..)
+ * 3. Comma-separated 12-value lists
+ * 4. Query string or segment parameters (EI=..&NS=..)
+ */
+export function parseComparisonInputLink(linkStr) {
+  if (!linkStr) return null;
+  const decoded = decodeURIComponent(String(linkStr).trim());
+
+  // 1. Direct standard 8Func path check
+  const standard = parseResultsUrlPath(decoded);
+  if (standard) return standard;
+
+  // 2. URL parsing (handling query params, hashes, 12Axes URLs, nested b= or a= params)
+  const urlObj = (() => {
+    try {
+      return new URL(decoded, "https://8func.com");
+    } catch (e) {
+      return null;
+    }
+  })();
+
+  if (urlObj) {
+    const p = urlObj.searchParams;
+
+    // Check if b= or a= is present (nested URL or comma list from 12Axes compare)
+    const nested = p.get("b") || p.get("a");
+    if (nested && nested !== decoded) {
+      const nestedParsed = parseComparisonInputLink(nested);
+      if (nestedParsed) return nestedParsed;
+    }
+
+    // Check 12Axes standard query params (est, rep, pod, imi, dip, int, eco, con, com, rel, mor, tec)
+    if (p.has("est") || p.has("rep") || p.has("eco") || p.has("pod")) {
+      const pEI = Math.max(0, Math.min(100, Math.round(parseFloat(p.get("est") || 50))));
+      const pNS = Math.max(0, Math.min(100, Math.round(parseFloat(p.get("rep") || 50))));
+      const pTF = Math.max(0, Math.min(100, Math.round(parseFloat(p.get("pod") || 50))));
+      const pJP = Math.max(0, Math.min(100, Math.round(parseFloat(p.get("imi") || 50))));
+      return buildComparisonScores(pEI, pNS, pTF, pJP, {
+        Ne: Math.max(0, Math.min(100, Math.round(parseFloat(p.get("dip") || 50)))),
+        Ni: Math.max(0, Math.min(100, Math.round(parseFloat(p.get("int") || 50)))),
+        Se: Math.max(0, Math.min(100, Math.round(parseFloat(p.get("eco") || 50)))),
+        Si: Math.max(0, Math.min(100, Math.round(parseFloat(p.get("con") || 50)))),
+        Te: Math.max(0, Math.min(100, Math.round(parseFloat(p.get("com") || 50)))),
+        Ti: Math.max(0, Math.min(100, Math.round(parseFloat(p.get("rel") || 50)))),
+        Fe: Math.max(0, Math.min(100, Math.round(parseFloat(p.get("mor") || 50)))),
+        Fi: Math.max(0, Math.min(100, Math.round(parseFloat(p.get("tec") || 50))))
+      });
+    }
+
+    // Check query params with EI=, NS=, etc.
+    if (p.has("EI") || p.has("NS") || p.has("I") || p.has("E")) {
+      const data = {};
+      for (const [k, v] of p.entries()) {
+        const n = parseFloat(v);
+        if (!isNaN(n)) data[k] = Math.max(0, Math.min(100, Math.round(n)));
+      }
+      return buildComparisonFromDict(data);
+    }
+  }
+
+  // 3. Comma-separated numerical values (12 numbers)
+  if (decoded.includes(",")) {
+    const nums = decoded.split(",").map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+    if (nums.length >= 4) {
+      const pEI = Math.max(0, Math.min(100, Math.round(nums[0] ?? 50)));
+      const pNS = Math.max(0, Math.min(100, Math.round(nums[1] ?? 50)));
+      const pTF = Math.max(0, Math.min(100, Math.round(nums[2] ?? 50)));
+      const pJP = Math.max(0, Math.min(100, Math.round(nums[3] ?? 50)));
+      const funcs = {
+        Ne: Math.max(0, Math.min(100, Math.round(nums[4] ?? 50))),
+        Ni: Math.max(0, Math.min(100, Math.round(nums[5] ?? 50))),
+        Se: Math.max(0, Math.min(100, Math.round(nums[6] ?? 50))),
+        Si: Math.max(0, Math.min(100, Math.round(nums[7] ?? 50))),
+        Te: Math.max(0, Math.min(100, Math.round(nums[8] ?? 50))),
+        Ti: Math.max(0, Math.min(100, Math.round(nums[9] ?? 50))),
+        Fe: Math.max(0, Math.min(100, Math.round(nums[10] ?? 50))),
+        Fi: Math.max(0, Math.min(100, Math.round(nums[11] ?? 50)))
+      };
+      return buildComparisonScores(pEI, pNS, pTF, pJP, funcs);
+    }
+  }
+
+  // 4. Raw key-value segments like EI=60/NS=40/... without leading /results/
+  if (decoded.includes("=") && (decoded.includes("EI=") || decoded.includes("NS="))) {
+    const parts = decoded.split(/[\/\s&]+/).filter(Boolean);
+    const data = {};
+    parts.forEach(p => {
+      const [k, v] = p.split("=");
+      if (k && v !== undefined) {
+        const num = parseFloat(v);
+        if (!isNaN(num)) data[k] = Math.max(0, Math.min(100, Math.round(num)));
+      }
+    });
+    if (Object.keys(data).length >= 4) {
+      return buildComparisonFromDict(data);
+    }
+  }
+
+  return null;
+}
+

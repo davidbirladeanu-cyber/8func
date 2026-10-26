@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import { TEST_MODES, getQuestionsForMode, ALL_QUESTIONS, QUESTIONS_100, getQuestionText, getQuestionDescription, getQuestionExplanations } from "../src/data/questions.js";
-import { calculateScores, ANSWER_OPTIONS, ANSWER_VALUE_MAP, AXIS_DIMENSIONS, getAnswerOptions, buildResultsUrlPath, parseResultsUrlPath } from "../src/js/scoring.js";
+import { calculateScores, ANSWER_OPTIONS, ANSWER_VALUE_MAP, AXIS_DIMENSIONS, getAnswerOptions, buildResultsUrlPath, parseResultsUrlPath, parseComparisonInputLink } from "../src/js/scoring.js";
 import { FUNCTIONS_LIST } from "../src/data/functions.js";
 import { MBTI_TYPES, getTypeTemperament, calculateBestMbtiType } from "../src/data/mbtiTypes.js";
 import { t } from "../src/data/translations.js";
@@ -656,5 +656,43 @@ test("Figure Similarity and Ranking: FUNCTIONS is defined and similarity calcula
   assert.ok(ranked.opposite[0].similarity <= ranked.opposite[9].similarity, "Opposite figures must be sorted ascending");
 });
 
+// ----------------------------------------------------
+// 23. Comparative Analysis Input Link Parser
+// ----------------------------------------------------
+test("Comparative Analysis Input Link Parser: parses 8Func and 12Axes formats accurately", () => {
+  // Test 8Func standard URL
+  const link8Func = "https://8func.com/results/EI=60/NS=40/TF=50/JP=45/Ne=67/Ni=42/Se=58/Si=33/Te=25/Ti=58/Fe=50/Fi=67/";
+  const res8Func = parseComparisonInputLink(link8Func);
+  assert.ok(res8Func, "Must parse 8Func standard results URL");
+  assert.strictEqual(res8Func.derivedType, "INTJ");
+  assert.strictEqual(res8Func.axisScores.EI.roundB, 60);
+  assert.strictEqual(res8Func.percentages.Ne, 67);
+
+  // Test 12Axes result URL (from user snippet)
+  const link12Axes = "https://12axes.vercel.app/results?est=79&rep=97&pod=7&imi=11&dip=7.2&int=55&eco=93&con=85&com=40.7&rel=94&mor=90&tec=25.8#bussola";
+  const res12Axes = parseComparisonInputLink(link12Axes);
+  assert.ok(res12Axes, "Must parse 12Axes result URL");
+  assert.strictEqual(res12Axes.derivedType, "ISTJ");
+  assert.strictEqual(res12Axes.axisScores.EI.roundB, 79);
+  assert.strictEqual(res12Axes.axisScores.NS.roundB, 97);
+
+  // Test 12Axes compare URL
+  const linkCompare = "https://12axes.vercel.app/compare/people?an=You&a=79%2C97%2C7%2C11%2C7.2%2C55%2C93%2C85%2C40.7%2C94%2C90%2C25.8&bn=da&b=79%2C97%2C7%2C11%2C7.2%2C55%2C93%2C85%2C40.7%2C94%2C90%2C25.8";
+  const resCompare = parseComparisonInputLink(linkCompare);
+  assert.ok(resCompare, "Must parse 12Axes compare people URL");
+  assert.strictEqual(resCompare.derivedType, "ISTJ");
+
+  // Test direct comma list
+  const linkComma = "79,97,7,11,7.2,55,93,85,40.7,94,90,25.8";
+  const resComma = parseComparisonInputLink(linkComma);
+  assert.ok(resComma, "Must parse comma-separated 12-value vector");
+  assert.strictEqual(resComma.derivedType, "ISTJ");
+
+  // Invalid links return null
+  assert.strictEqual(parseComparisonInputLink(""), null);
+  assert.strictEqual(parseComparisonInputLink("https://google.com"), null);
+});
+
 console.log(`\nAll ${passedTests} tests passed successfully!`);
+
 

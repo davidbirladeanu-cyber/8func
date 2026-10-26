@@ -6,7 +6,7 @@
 import { AppState } from "./state.js";
 import { COGNITIVE_FUNCTIONS, FUNCTIONS_LIST } from "../data/functions.js";
 import { TEST_MODES, getQuestionText, ALL_QUESTIONS, getQuestionsForMode } from "../data/questions.js";
-import { ANSWER_OPTIONS, ANSWER_VALUE_MAP, getAnswerOptions, calculateScores, buildResultsUrlPath } from "./scoring.js";
+import { ANSWER_OPTIONS, ANSWER_VALUE_MAP, getAnswerOptions, calculateScores, buildResultsUrlPath, parseComparisonInputLink } from "./scoring.js";
 import { MBTI_TYPES, calculateBestMbtiType, getTypeTemperament } from "../data/mbtiTypes.js";
 import { NOTABLE_FIGURES, getRankedFigures, calculateFigureSimilarity, getFigureRole } from "../data/figures.js";
 import { ICONS } from "./icons.js";
@@ -183,11 +183,60 @@ class App {
     // Setup global keyboard shortcuts
     this.bindKeyboardShortcuts();
 
-    // Initialize secret vault triggers (Ctrl+Shift+S, logo 5-click, #vault)
-    initVaultTriggers();
+    // Compare with someone else state
+    this.customComparisonPerson = null;
+    this.comparisonPersonA_Name = "";
+    this.comparisonPersonB_Name = "";
+    this.comparisonPersonB_Link = "";
+
+    // Parse compare URL parameters if present (e.g. ?an=..&bn=..&b=..)
+    this.initCompareParams();
 
     // Initial render
     this.render();
+  }
+
+  initCompareParams() {
+    try {
+      if (typeof window === "undefined" || !window.location.search) return;
+      const urlParams = new URLSearchParams(window.location.search);
+      const anParam = urlParams.get("an");
+      const bnParam = urlParams.get("bn");
+      const bParam = urlParams.get("b");
+
+      if (anParam) this.comparisonPersonA_Name = anParam;
+      if (bnParam) this.comparisonPersonB_Name = bnParam;
+      if (bParam) {
+        this.comparisonPersonB_Link = bParam;
+        const parsed = parseComparisonInputLink(bParam);
+        if (parsed) {
+          const bName = bnParam || (this.state.lang === "ro" ? "Persoană" : "Person");
+          const temp = getTypeTemperament(parsed.derivedType);
+          this.customComparisonPerson = {
+            id: "custom_person",
+            name: bName,
+            mbti: parsed.derivedType,
+            role: this.state.lang === "ro" ? "Rezultat personalizat" : "Custom result",
+            avatar: bName.charAt(0).toUpperCase() || "P",
+            temperament: temp,
+            axes: {
+              I: parsed.axisScores.EI.roundB,
+              E: parsed.axisScores.EI.roundA,
+              S: parsed.axisScores.NS.roundB,
+              N: parsed.axisScores.NS.roundA,
+              F: parsed.axisScores.TF.roundB,
+              T: parsed.axisScores.TF.roundA,
+              P: parsed.axisScores.JP.roundB,
+              J: parsed.axisScores.JP.roundA
+            },
+            scores: parsed.percentages,
+            percentages: parsed.percentages,
+            axisScores: parsed.axisScores
+          };
+          this.selectedFigureId = "custom_person";
+        }
+      }
+    } catch (e) {}
   }
 
   bindKeyboardShortcuts() {
@@ -1270,10 +1319,15 @@ class App {
     this.allFigures = allFigures;
     const displayedFigures = this.figuresTab === "similar" ? similarFigures : oppositeFigures;
 
-    let currentComparisonFigure = allFigures.find(f => f.id === this.selectedFigureId);
-    if (!currentComparisonFigure) {
-      currentComparisonFigure = similarFigures[0] || allFigures[0];
-      this.selectedFigureId = currentComparisonFigure.id;
+    let currentComparisonFigure;
+    if (this.selectedFigureId === "custom_person" && this.customComparisonPerson) {
+      currentComparisonFigure = this.customComparisonPerson;
+    } else {
+      currentComparisonFigure = allFigures.find(f => f.id === this.selectedFigureId);
+      if (!currentComparisonFigure) {
+        currentComparisonFigure = similarFigures[0] || allFigures[0];
+        this.selectedFigureId = currentComparisonFigure.id;
+      }
     }
 
     // 4 Spectrum Coordinates
@@ -1423,9 +1477,14 @@ class App {
     }).join("");
 
     // Comparative Analysis Sliders (Image 2 style with Colored Boxes)
+    const isCustomPerson = this.selectedFigureId === "custom_person" && this.customComparisonPerson;
     const currentFigTemp = getTypeTemperament(currentComparisonFigure.mbti);
     const figSim = calculateFigureSimilarity(percentages, axisScores, currentComparisonFigure);
-    const compCleanRole = getFigureRole(currentComparisonFigure, lang);
+    const compCleanRole = isCustomPerson
+      ? (lang === "ro" ? "Comparație personalizată" : "Custom comparison")
+      : getFigureRole(currentComparisonFigure, lang);
+    const userA_Name = this.comparisonPersonA_Name || (lang === "ro" ? "Tu" : "You");
+    const userB_Name = isCustomPerson ? this.customComparisonPerson.name : currentComparisonFigure.name;
 
     const compAxesData = [
       {
@@ -1482,13 +1541,13 @@ class App {
           </div>
           <div class="comp-v2-track">
             <!-- White Dot (User: "punctele necolorate albe esti tu") -->
-            <div class="comp-v2-dot-user" style="left: ${ax.uPos}%;" title="${lang === 'ro' ? 'Tu' : 'You'}"></div>
-            <!-- Colored Dot (Figure: "punctele colorate vor lua imaginea omului cand o voi adauga") -->
-            <div class="comp-v2-dot-fig" style="left: ${ax.fPos}%; border-color: rgba(255,255,255,0.6);" title="${currentComparisonFigure.name}">
+            <div class="comp-v2-dot-user" style="left: ${ax.uPos}%;" title="${userA_Name}"></div>
+            <!-- Colored Dot (Figure or Person B) -->
+            <div class="comp-v2-dot-fig" style="left: ${ax.fPos}%; border-color: rgba(255,255,255,0.6);" title="${userB_Name}">
               ${currentComparisonFigure.photo ? `
-                <img src="${currentComparisonFigure.photo}" alt="${currentComparisonFigure.name}" />
+                <img src="${currentComparisonFigure.photo}" alt="${userB_Name}" />
               ` : `
-                <span>${currentComparisonFigure.avatar || currentComparisonFigure.name.charAt(0)}</span>
+                <span>${currentComparisonFigure.avatar || userB_Name.charAt(0)}</span>
               `}
             </div>
           </div>
@@ -1756,18 +1815,123 @@ class App {
                 <div id="figure-autocomplete-list" class="figure-autocomplete-dropdown" style="display: none;"></div>
               </div>
 
+              <!-- Compare with someone else (12Axes inspired) -->
+              <section class="e-ppl-wrapper" id="comparar-pessoa">
+                <div class="e-ppl-intro">
+                  <span class="e-ppl-duo" aria-hidden="true"><i></i><i></i></span>
+                  <div class="e-ppl-intro-text">
+                    <h3>${t('comparePeopleTitle', {}, lang)}</h3>
+                    <p class="e-lead e-cmp-lead">${t('comparePeopleLead', {}, lang)}</p>
+                  </div>
+                </div>
+
+                <form class="e-ppl-form" id="ppl-compare-form" novalidate>
+                  <div class="e-ppl-grid">
+                    <!-- Left Column: Your Profile -->
+                    <div class="e-ppl-side e-ppl-side-left">
+                      <div class="e-ppl-side-badge">
+                        <span class="e-ppl-dot-indicator dot-you"></span>
+                        <span>${t('yourProfileBadge', {}, lang)}</span>
+                      </div>
+                      <label class="e-ppl-field">
+                        <span class="e-ppl-cap">${t('yourNameLabel', {}, lang)}</span>
+                        <span class="e-ppl-control">
+                          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="8" r="4"></circle>
+                            <path d="M4 20c0-3.5 3.6-6 8-6s8 2.5 8 6"></path>
+                          </svg>
+                          <input type="text" id="ppl-name-a" aria-label="${t('yourNameLabel', {}, lang)}" placeholder="${t('youLabel', {}, lang)}" maxlength="40" autocomplete="off" value="${userA_Name}">
+                        </span>
+                      </label>
+                      <label class="e-ppl-field">
+                        <span class="e-ppl-cap">${t('yourLinkLabel', {}, lang)}</span>
+                        <span class="e-ppl-control">
+                          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"></path>
+                            <path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3A4.5 4.5 0 0 0 11 19.4l1-1"></path>
+                          </svg>
+                          <input type="text" id="ppl-link-a" inputmode="url" aria-label="${t('yourLinkLabel', {}, lang)}" autocomplete="off" spellcheck="false" value="${userFullResultUrl}" readonly>
+                          <button class="e-ppl-paste" id="ppl-copy-a" type="button" title="${t('copyLinkBtn', {}, lang)}">
+                            <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            <span>${t('copyLinkBtn', {}, lang)}</span>
+                          </button>
+                        </span>
+                      </label>
+                    </div>
+
+                    <!-- Right Column: Other Person's Profile -->
+                    <div class="e-ppl-side e-ppl-side-right">
+                      <div class="e-ppl-side-badge">
+                        <span class="e-ppl-dot-indicator dot-other"></span>
+                        <span>${t('otherPersonBadge', {}, lang)}</span>
+                      </div>
+                      <label class="e-ppl-field">
+                        <span class="e-ppl-cap">${t('otherNameLabel', {}, lang)}</span>
+                        <span class="e-ppl-control">
+                          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="8" r="4"></circle>
+                            <path d="M4 20c0-3.5 3.6-6 8-6s8 2.5 8 6"></path>
+                          </svg>
+                          <input type="text" id="ppl-name-b" aria-label="${t('otherNameLabel', {}, lang)}" placeholder="${lang === 'ro' ? 'ex. Alex sau Maria' : 'e.g. John'}" maxlength="40" autocomplete="off" value="${this.comparisonPersonB_Name || ''}">
+                        </span>
+                      </label>
+                      <label class="e-ppl-field">
+                        <span class="e-ppl-cap">${t('otherLinkLabel', {}, lang)}</span>
+                        <span class="e-ppl-control">
+                          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"></path>
+                            <path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3A4.5 4.5 0 0 0 11 19.4l1-1"></path>
+                          </svg>
+                          <input type="text" id="ppl-link-b" inputmode="url" aria-label="${t('otherLinkLabel', {}, lang)}" placeholder="${lang === 'ro' ? 'Lipește linkul aici' : 'Paste the link here'}" autocomplete="off" autocapitalize="off" spellcheck="false" value="${this.comparisonPersonB_Link || ''}">
+                          <button class="e-ppl-paste" id="ppl-paste-b" type="button" title="${t('pasteLinkBtn', {}, lang)}">
+                            <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                              <rect x="8" y="3" width="8" height="4" rx="1"></rect>
+                              <path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"></path>
+                            </svg>
+                            <span>${t('pasteLinkBtn', {}, lang)}</span>
+                          </button>
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <!-- Status / error feedback container -->
+                  <div id="ppl-error-box" class="e-ppl-msg" style="display: none;"></div>
+
+                  <!-- Action buttons -->
+                  <div class="e-ppl-foot">
+                    <button class="e-btn e-btn-primary e-ppl-submit" type="submit" id="ppl-submit-btn">
+                      <span>${t('compareBtn', {}, lang)}</span>
+                      <svg class="e-arr" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
+                    </button>
+                    ${isCustomPerson ? `
+                      <button class="e-btn e-btn-outline e-ppl-reset" type="button" id="ppl-reset-btn">
+                        <span>${t('backToFiguresBtn', {}, lang)}</span>
+                      </button>
+                      <button class="e-btn e-btn-outline e-ppl-share" type="button" id="ppl-share-btn" title="${t('shareCompareBtn', {}, lang)}">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                        <span>${t('shareCompareBtn', {}, lang)}</span>
+                      </button>
+                    ` : ''}
+                  </div>
+                </form>
+              </section>
+
               <!-- Comparison Card (Image 2 style) -->
               <div class="comp-card-v2">
                 <div class="comp-v2-header" id="comp-figure-header-trigger" style="cursor: pointer;" title="${lang === 'ro' ? 'Apasă pentru detalii complete' : 'Click to inspect spectrum'}" data-id="${currentComparisonFigure.id}">
                   ${currentComparisonFigure.photo ? `
-                    <img class="comp-v2-avatar" src="${currentComparisonFigure.photo}" alt="${currentComparisonFigure.name}" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                    <div class="comp-v2-avatar comp-v2-avatar-fallback" style="display:none; background:${currentFigTemp.color};">${currentComparisonFigure.avatar || currentComparisonFigure.name.charAt(0)}</div>
+                    <img class="comp-v2-avatar" src="${currentComparisonFigure.photo}" alt="${userB_Name}" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                    <div class="comp-v2-avatar comp-v2-avatar-fallback" style="display:none; background:${currentFigTemp.color};">${currentComparisonFigure.avatar || userB_Name.charAt(0)}</div>
                   ` : `
-                    <div class="comp-v2-avatar comp-v2-avatar-fallback" style="background:${currentFigTemp.color}26; border: 2px solid ${currentFigTemp.color};">${currentComparisonFigure.avatar || currentComparisonFigure.name.charAt(0)}</div>
+                    <div class="comp-v2-avatar comp-v2-avatar-fallback" style="background:${currentFigTemp.color}26; border: 2px solid ${currentFigTemp.color};">${currentComparisonFigure.avatar || userB_Name.charAt(0)}</div>
                   `}
                   <div class="comp-v2-header-info">
                     <div class="comp-v2-top-row">
-                      <h3 class="comp-v2-name">${currentComparisonFigure.name}</h3>
+                      <h3 class="comp-v2-name">${userB_Name}</h3>
                       <span class="comp-v2-pct" style="color: ${currentFigTemp.color};">${figSim}%</span>
                     </div>
                     <div class="comp-v2-subtitle">${compCleanRole} · <b style="color: ${currentFigTemp.color};">${currentComparisonFigure.mbti}</b></div>
@@ -2148,6 +2312,198 @@ class App {
       document.addEventListener("click", (evt) => {
         if (!searchInput.contains(evt.target) && !dropdown.contains(evt.target)) {
           dropdown.style.display = "none";
+        }
+      });
+    }
+
+    // ========================================================
+    // Compare with Someone Else (.e-ppl) Events
+    // ========================================================
+    const pplForm = document.getElementById("ppl-compare-form");
+    const nameAInput = document.getElementById("ppl-name-a");
+    const linkAInput = document.getElementById("ppl-link-a");
+    const copyABtn = document.getElementById("ppl-copy-a");
+    const nameBInput = document.getElementById("ppl-name-b");
+    const linkBInput = document.getElementById("ppl-link-b");
+    const pasteBBtn = document.getElementById("ppl-paste-b");
+    const errorBox = document.getElementById("ppl-error-box");
+    const resetBtn = document.getElementById("ppl-reset-btn");
+    const shareBtn = document.getElementById("ppl-share-btn");
+
+    const showPplMsg = (text, type = "error") => {
+      if (!errorBox) return;
+      errorBox.className = `e-ppl-msg ${type}`;
+      errorBox.textContent = text;
+      errorBox.style.display = "block";
+    };
+
+    const hidePplMsg = () => {
+      if (errorBox) errorBox.style.display = "none";
+    };
+
+    if (nameAInput) {
+      nameAInput.addEventListener("input", (e) => {
+        this.comparisonPersonA_Name = e.target.value.trim();
+        // Update user dot titles dynamically
+        document.querySelectorAll(".comp-v2-dot-user").forEach(dot => {
+          dot.title = this.comparisonPersonA_Name || (lang === "ro" ? "Tu" : "You");
+        });
+      });
+    }
+
+    if (nameBInput) {
+      nameBInput.addEventListener("input", (e) => {
+        this.comparisonPersonB_Name = e.target.value.trim();
+      });
+    }
+
+    if (copyABtn && linkAInput) {
+      copyABtn.addEventListener("click", async () => {
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(linkAInput.value);
+          } else {
+            linkAInput.select();
+            document.execCommand("copy");
+          }
+          const span = copyABtn.querySelector("span");
+          const orig = span ? span.textContent : "";
+          if (span) span.textContent = t("copiedToast", {}, lang);
+          copyABtn.classList.add("copied");
+          setTimeout(() => {
+            if (span) span.textContent = orig;
+            copyABtn.classList.remove("copied");
+          }, 2000);
+        } catch (err) {
+          linkAInput.select();
+          document.execCommand("copy");
+        }
+      });
+    }
+
+    if (pasteBBtn && linkBInput) {
+      pasteBBtn.addEventListener("click", async () => {
+        hidePplMsg();
+        try {
+          if (navigator.clipboard && navigator.clipboard.readText) {
+            const clipText = await navigator.clipboard.readText();
+            if (clipText && clipText.trim()) {
+              linkBInput.value = clipText.trim();
+              this.comparisonPersonB_Link = clipText.trim();
+              showPplMsg(t("linkPastedToast", {}, lang), "success");
+              setTimeout(hidePplMsg, 2500);
+              return;
+            }
+          }
+          linkBInput.focus();
+          linkBInput.select();
+        } catch (err) {
+          linkBInput.focus();
+          linkBInput.select();
+        }
+      });
+    }
+
+    if (pplForm) {
+      pplForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        hidePplMsg();
+
+        const aName = nameAInput ? (nameAInput.value.trim() || (lang === "ro" ? "Tu" : "You")) : (lang === "ro" ? "Tu" : "You");
+        const bName = nameBInput ? (nameBInput.value.trim() || (lang === "ro" ? "Persoană" : "Person")) : (lang === "ro" ? "Persoană" : "Person");
+        const bLink = linkBInput ? linkBInput.value.trim() : "";
+
+        if (!bLink) {
+          showPplMsg(t("invalidLinkError", {}, lang), "error");
+          if (linkBInput) linkBInput.focus();
+          return;
+        }
+
+        const parsed = parseComparisonInputLink(bLink);
+        if (!parsed) {
+          showPplMsg(t("invalidLinkError", {}, lang), "error");
+          if (linkBInput) linkBInput.focus();
+          return;
+        }
+
+        this.comparisonPersonA_Name = aName;
+        this.comparisonPersonB_Name = bName;
+        this.comparisonPersonB_Link = bLink;
+
+        const temp = getTypeTemperament(parsed.derivedType);
+        this.customComparisonPerson = {
+          id: "custom_person",
+          name: bName,
+          mbti: parsed.derivedType,
+          role: lang === "ro" ? "Rezultat personalizat" : "Custom result",
+          avatar: bName.charAt(0).toUpperCase() || "P",
+          temperament: temp,
+          axes: {
+            I: parsed.axisScores.EI.roundB,
+            E: parsed.axisScores.EI.roundA,
+            S: parsed.axisScores.NS.roundB,
+            N: parsed.axisScores.NS.roundA,
+            F: parsed.axisScores.TF.roundB,
+            T: parsed.axisScores.TF.roundA,
+            P: parsed.axisScores.JP.roundB,
+            J: parsed.axisScores.JP.roundA
+          },
+          scores: parsed.percentages,
+          percentages: parsed.percentages,
+          axisScores: parsed.axisScores
+        };
+
+        this.selectedFigureId = "custom_person";
+
+        // Update URL query parameters for sharing/bookmarking comparison
+        try {
+          const origin = window.location.origin;
+          const pathname = window.location.pathname;
+          const search = new URLSearchParams(window.location.search);
+          search.set("an", aName);
+          search.set("bn", bName);
+          search.set("b", bLink);
+          history.replaceState(null, "", `${pathname}?${search.toString()}${window.location.hash || ''}`);
+        } catch (e) {}
+
+        this.renderResults();
+
+        const compTarget = document.getElementById("comparar");
+        if (compTarget) compTarget.scrollIntoView({ behavior: "smooth" });
+      });
+    }
+
+    if (resetBtn) {
+      resetBtn.addEventListener("click", () => {
+        this.customComparisonPerson = null;
+        this.selectedFigureId = null;
+        this.comparisonPersonB_Link = "";
+        try {
+          const search = new URLSearchParams(window.location.search);
+          search.delete("bn");
+          search.delete("b");
+          const searchStr = search.toString() ? `?${search.toString()}` : "";
+          history.replaceState(null, "", `${window.location.pathname}${searchStr}${window.location.hash || ''}`);
+        } catch (e) {}
+        this.renderResults();
+        const compTarget = document.getElementById("comparar");
+        if (compTarget) compTarget.scrollIntoView({ behavior: "smooth" });
+      });
+    }
+
+    if (shareBtn) {
+      shareBtn.addEventListener("click", async () => {
+        try {
+          const shareUrl = window.location.href;
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(shareUrl);
+          } else {
+            prompt(t("comparisonLinkCopiedToast", {}, lang), shareUrl);
+          }
+          showPplMsg(t("comparisonLinkCopiedToast", {}, lang), "success");
+          setTimeout(hidePplMsg, 3000);
+        } catch (err) {
+          prompt(t("comparisonLinkCopiedToast", {}, lang), window.location.href);
         }
       });
     }
@@ -2802,7 +3158,10 @@ class App {
   }
 
   openFigureDetailModal(figureId, hasUserScores) {
-    const fig = NOTABLE_FIGURES.find(f => f.id === figureId);
+    let fig = NOTABLE_FIGURES.find(f => f.id === figureId);
+    if (!fig && figureId === "custom_person" && this.customComparisonPerson) {
+      fig = this.customComparisonPerson;
+    }
     if (!fig) return;
 
     const lang = this.state.lang || "ro";
