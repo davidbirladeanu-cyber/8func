@@ -488,6 +488,8 @@ class App {
       this.renderFiguresDirectory();
     } else if (this.state.screen === "spectrum") {
       this.renderSpectrum();
+    } else if (this.state.screen === "compare") {
+      this.renderCompare();
     } else {
       this.renderQuiz();
     }
@@ -552,6 +554,12 @@ class App {
             ${this.state.screen === "results" ? `
               <button class="e-btn e-btn-primary e-btn-sm" type="button" id="nav-retake-btn">
                 <span>${t('retakeQuiz', {}, lang)}</span>
+                <svg class="e-arr" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2;"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
+              </button>
+            ` : ""}
+            ${this.state.screen === "compare" ? `
+              <button class="e-btn e-btn-primary e-btn-sm" type="button" id="nav-results-btn">
+                <span>${t('compareNavBack', {}, lang)}</span>
                 <svg class="e-arr" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2;"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
               </button>
             ` : ""}
@@ -1194,6 +1202,56 @@ class App {
     `;
   }
 
+  getUserScores() {
+    let percentages = null;
+    let axisScores = null;
+    let derivedType = "INTJ";
+
+    if (this.state.urlResultsScores) {
+      const u = this.state.urlResultsScores;
+      percentages = {
+        Ne: u.Ne ?? 50,
+        Ni: u.Ni ?? 50,
+        Se: u.Se ?? 50,
+        Si: u.Si ?? 50,
+        Te: u.Te ?? 50,
+        Ti: u.Ti ?? 50,
+        Fe: u.Fe ?? 50,
+        Fi: u.Fi ?? 50
+      };
+      axisScores = {
+        EI: { dimension: "EI", poleA: "E", poleB: "I", pctA: u.E ?? 50, pctB: u.I ?? 50, roundA: u.E ?? 50, roundB: u.I ?? 50, dominant: (u.E ?? 50) >= (u.I ?? 50) ? "E" : "I" },
+        NS: { dimension: "NS", poleA: "N", poleB: "S", pctA: u.N ?? 50, pctB: u.S ?? 50, roundA: u.N ?? 50, roundB: u.S ?? 50, dominant: (u.N ?? 50) >= (u.S ?? 50) ? "N" : "S" },
+        TF: { dimension: "TF", poleA: "T", poleB: "F", pctA: u.T ?? 50, pctB: u.F ?? 50, roundA: u.T ?? 50, roundB: u.F ?? 50, dominant: (u.T ?? 50) >= (u.F ?? 50) ? "T" : "F" },
+        JP: { dimension: "JP", poleA: "J", poleB: "P", pctA: u.J ?? 50, pctB: u.P ?? 50, roundA: u.J ?? 50, roundB: u.P ?? 50, dominant: (u.J ?? 50) >= (u.P ?? 50) ? "J" : "P" }
+      };
+      derivedType = `${axisScores.EI.dominant}${axisScores.NS.dominant}${axisScores.TF.dominant}${axisScores.JP.dominant}`;
+    } else if (this.state.lastUserResults && this.state.lastUserResults.percentages && this.state.lastUserResults.axisScores) {
+      percentages = this.state.lastUserResults.percentages;
+      axisScores = this.state.lastUserResults.axisScores;
+      derivedType = `${axisScores.EI.dominant}${axisScores.NS.dominant}${axisScores.TF.dominant}${axisScores.JP.dominant}`;
+    } else {
+      const calc = calculateScores(this.state.questions, this.state.answers);
+      percentages = calc.percentages;
+      axisScores = calc.axisScores;
+      derivedType = calc.derivedType || `${axisScores.EI.dominant}${axisScores.NS.dominant}${axisScores.TF.dominant}${axisScores.JP.dominant}`;
+    }
+
+    const typeData = MBTI_TYPES[derivedType] || MBTI_TYPES["INTJ"];
+    const temp = getTypeTemperament(derivedType);
+    const topMbti = {
+      type: derivedType,
+      title: this.state.lang === "ro" ? (typeData?.titleRo || typeData?.title || derivedType) : (typeData?.title || derivedType),
+      temperamentName: temp?.name || "Rațional",
+      temperamentColor: temp?.color || "#95637e",
+      temperamentBg: temp?.bg || "rgba(149, 99, 126, 0.12)",
+      quote: this.state.lang === "ro" ? (typeData?.quoteRo || typeData?.quote || "") : (typeData?.quote || ""),
+      stack: typeData?.stack || ["Ni", "Te", "Fi", "Se"]
+    };
+
+    return { percentages, axisScores, derivedType, topMbti };
+  }
+
   renderResults() {
     const lang = this.state.lang || "ro";
     const modeConfig = this.state.getModeConfig();
@@ -1819,111 +1877,6 @@ class App {
                 <div id="figure-autocomplete-list" class="figure-autocomplete-dropdown" style="display: none;"></div>
               </div>
 
-              <!-- Compare with someone else (12Axes inspired) -->
-              <section class="e-ppl-wrapper" id="comparar-pessoa">
-                <div class="e-ppl-intro">
-                  <span class="e-ppl-duo" aria-hidden="true"><i></i><i></i></span>
-                  <div class="e-ppl-intro-text">
-                    <h3>${t('comparePeopleTitle', {}, lang)}</h3>
-                    <p class="e-lead e-cmp-lead">${t('comparePeopleLead', {}, lang)}</p>
-                  </div>
-                </div>
-
-                <form class="e-ppl-form" id="ppl-compare-form" novalidate>
-                  <div class="e-ppl-grid">
-                    <!-- Left Column: Your Profile -->
-                    <div class="e-ppl-side e-ppl-side-left">
-                      <div class="e-ppl-side-badge">
-                        <span class="e-ppl-dot-indicator dot-you"></span>
-                        <span>${t('yourProfileBadge', {}, lang)}</span>
-                      </div>
-                      <label class="e-ppl-field">
-                        <span class="e-ppl-cap">${t('yourNameLabel', {}, lang)}</span>
-                        <span class="e-ppl-control">
-                          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="8" r="4"></circle>
-                            <path d="M4 20c0-3.5 3.6-6 8-6s8 2.5 8 6"></path>
-                          </svg>
-                          <input type="text" id="ppl-name-a" aria-label="${t('yourNameLabel', {}, lang)}" placeholder="${t('youLabel', {}, lang)}" maxlength="40" autocomplete="off" value="${userA_Name}">
-                        </span>
-                      </label>
-                      <label class="e-ppl-field">
-                        <span class="e-ppl-cap">${t('yourLinkLabel', {}, lang)}</span>
-                        <span class="e-ppl-control">
-                          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"></path>
-                            <path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3A4.5 4.5 0 0 0 11 19.4l1-1"></path>
-                          </svg>
-                          <input type="text" id="ppl-link-a" inputmode="url" aria-label="${t('yourLinkLabel', {}, lang)}" autocomplete="off" spellcheck="false" value="${userFullResultUrl}" readonly>
-                          <button class="e-ppl-paste" id="ppl-copy-a" type="button" title="${t('copyLinkBtn', {}, lang)}">
-                            <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                            <span>${t('copyLinkBtn', {}, lang)}</span>
-                          </button>
-                        </span>
-                      </label>
-                    </div>
-
-                    <!-- Right Column: Other Person's Profile -->
-                    <div class="e-ppl-side e-ppl-side-right">
-                      <div class="e-ppl-side-badge">
-                        <span class="e-ppl-dot-indicator dot-other"></span>
-                        <span>${t('otherPersonBadge', {}, lang)}</span>
-                      </div>
-                      <label class="e-ppl-field">
-                        <span class="e-ppl-cap">${t('otherNameLabel', {}, lang)}</span>
-                        <span class="e-ppl-control">
-                          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="8" r="4"></circle>
-                            <path d="M4 20c0-3.5 3.6-6 8-6s8 2.5 8 6"></path>
-                          </svg>
-                          <input type="text" id="ppl-name-b" aria-label="${t('otherNameLabel', {}, lang)}" placeholder="${lang === 'ro' ? 'ex. Alex sau Maria' : 'e.g. John'}" maxlength="40" autocomplete="off" value="${this.comparisonPersonB_Name || ''}">
-                        </span>
-                      </label>
-                      <label class="e-ppl-field">
-                        <span class="e-ppl-cap">${t('otherLinkLabel', {}, lang)}</span>
-                        <span class="e-ppl-control">
-                          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"></path>
-                            <path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3A4.5 4.5 0 0 0 11 19.4l1-1"></path>
-                          </svg>
-                          <input type="text" id="ppl-link-b" inputmode="url" aria-label="${t('otherLinkLabel', {}, lang)}" placeholder="${lang === 'ro' ? 'Lipește linkul aici' : 'Paste the link here'}" autocomplete="off" autocapitalize="off" spellcheck="false" value="${this.comparisonPersonB_Link || ''}">
-                          <button class="e-ppl-paste" id="ppl-paste-b" type="button" title="${t('pasteLinkBtn', {}, lang)}">
-                            <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                              <rect x="8" y="3" width="8" height="4" rx="1"></rect>
-                              <path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"></path>
-                            </svg>
-                            <span>${t('pasteLinkBtn', {}, lang)}</span>
-                          </button>
-                        </span>
-                      </label>
-                    </div>
-                  </div>
-
-                  <!-- Status / error feedback container -->
-                  <div id="ppl-error-box" class="e-ppl-msg" style="display: none;"></div>
-
-                  <!-- Action buttons -->
-                  <div class="e-ppl-foot">
-                    <button class="e-btn e-btn-primary e-ppl-submit" type="submit" id="ppl-submit-btn">
-                      <span>${t('compareBtn', {}, lang)}</span>
-                      <svg class="e-arr" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
-                    </button>
-                    ${isCustomPerson ? `
-                      <button class="e-btn e-btn-outline e-ppl-reset" type="button" id="ppl-reset-btn">
-                        <span>${t('backToFiguresBtn', {}, lang)}</span>
-                      </button>
-                      <button class="e-btn e-btn-outline e-ppl-share" type="button" id="ppl-share-btn" title="${t('shareCompareBtn', {}, lang)}">
-                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-                        <span>${t('shareCompareBtn', {}, lang)}</span>
-                      </button>
-                    ` : ''}
-                  </div>
-                </form>
-              </section>
-
               <!-- Comparison Card (Image 2 style) -->
               <div class="comp-card-v2">
                 <div class="comp-v2-header" id="comp-figure-header-trigger" style="cursor: pointer;" title="${lang === 'ro' ? 'Apasă pentru detalii complete' : 'Click to inspect spectrum'}" data-id="${currentComparisonFigure.id}">
@@ -1949,6 +1902,111 @@ class App {
                   ${compAxesHtml}
                 </div>
               </div>
+            </section>
+
+            <!-- Compare with someone else (Sub Analiză Comparativă) -->
+            <section class="e-ppl-wrapper" id="comparar-pessoa">
+              <div class="e-ppl-intro">
+                <span class="e-ppl-duo" aria-hidden="true"><i></i><i></i></span>
+                <div class="e-ppl-intro-text">
+                  <h3>${t('comparePeopleTitle', {}, lang)}</h3>
+                  <p class="e-lead e-cmp-lead">${t('comparePeopleLead', {}, lang)}</p>
+                </div>
+              </div>
+
+              <form class="e-ppl-form" id="ppl-compare-form" novalidate>
+                <div class="e-ppl-grid">
+                  <!-- Left Column: Your Profile -->
+                  <div class="e-ppl-side e-ppl-side-left">
+                    <div class="e-ppl-side-badge">
+                      <span class="e-ppl-dot-indicator dot-you"></span>
+                      <span>${t('yourProfileBadge', {}, lang)}</span>
+                    </div>
+                    <label class="e-ppl-field">
+                      <span class="e-ppl-cap">${t('yourNameLabel', {}, lang)}</span>
+                      <span class="e-ppl-control">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="12" cy="8" r="4"></circle>
+                          <path d="M4 20c0-3.5 3.6-6 8-6s8 2.5 8 6"></path>
+                        </svg>
+                        <input type="text" id="ppl-name-a" aria-label="${t('yourNameLabel', {}, lang)}" placeholder="${t('youLabel', {}, lang)}" maxlength="40" autocomplete="off" value="${userA_Name}">
+                      </span>
+                    </label>
+                    <label class="e-ppl-field">
+                      <span class="e-ppl-cap">${t('yourLinkLabel', {}, lang)}</span>
+                      <span class="e-ppl-control">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"></path>
+                          <path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3A4.5 4.5 0 0 0 11 19.4l1-1"></path>
+                        </svg>
+                        <input type="text" id="ppl-link-a" inputmode="url" aria-label="${t('yourLinkLabel', {}, lang)}" autocomplete="off" spellcheck="false" value="${userFullResultUrl}">
+                        <button class="e-ppl-paste" id="ppl-copy-a" type="button" title="${t('copyLinkBtn', {}, lang)}">
+                          <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                          </svg>
+                          <span>${t('copyLinkBtn', {}, lang)}</span>
+                        </button>
+                      </span>
+                    </label>
+                  </div>
+
+                  <!-- Right Column: Other Person's Profile -->
+                  <div class="e-ppl-side e-ppl-side-right">
+                    <div class="e-ppl-side-badge">
+                      <span class="e-ppl-dot-indicator dot-other"></span>
+                      <span>${t('otherPersonBadge', {}, lang)}</span>
+                    </div>
+                    <label class="e-ppl-field">
+                      <span class="e-ppl-cap">${t('otherNameLabel', {}, lang)}</span>
+                      <span class="e-ppl-control">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="12" cy="8" r="4"></circle>
+                          <path d="M4 20c0-3.5 3.6-6 8-6s8 2.5 8 6"></path>
+                        </svg>
+                        <input type="text" id="ppl-name-b" aria-label="${t('otherNameLabel', {}, lang)}" placeholder="" maxlength="40" autocomplete="off" value="${this.comparisonPersonB_Name || ''}">
+                      </span>
+                    </label>
+                    <label class="e-ppl-field">
+                      <span class="e-ppl-cap">${t('otherLinkLabel', {}, lang)}</span>
+                      <span class="e-ppl-control">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"></path>
+                          <path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3A4.5 4.5 0 0 0 11 19.4l1-1"></path>
+                        </svg>
+                        <input type="text" id="ppl-link-b" inputmode="url" aria-label="${t('otherLinkLabel', {}, lang)}" placeholder="" autocomplete="off" autocapitalize="off" spellcheck="false" value="${this.comparisonPersonB_Link || ''}">
+                        <button class="e-ppl-paste" id="ppl-paste-b" type="button" title="${t('pasteLinkBtn', {}, lang)}">
+                          <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="8" y="3" width="8" height="4" rx="1"></rect>
+                            <path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"></path>
+                          </svg>
+                          <span>${t('pasteLinkBtn', {}, lang)}</span>
+                        </button>
+                      </span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Status / error feedback container -->
+                <div id="ppl-error-box" class="e-ppl-msg" style="display: none;"></div>
+
+                <!-- Action buttons -->
+                <div class="e-ppl-foot">
+                  <button class="e-btn e-btn-primary e-ppl-submit" type="submit" id="ppl-submit-btn">
+                    <span>${t('compareBtn', {}, lang)}</span>
+                    <svg class="e-arr" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
+                  </button>
+                  ${isCustomPerson ? `
+                    <button class="e-btn e-btn-outline e-ppl-reset" type="button" id="ppl-reset-btn">
+                      <span>${t('backToFiguresBtn', {}, lang)}</span>
+                    </button>
+                    <button class="e-btn e-btn-outline e-ppl-share" type="button" id="ppl-share-btn" title="${t('shareCompareBtn', {}, lang)}">
+                      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                      <span>${t('shareCompareBtn', {}, lang)}</span>
+                    </button>
+                  ` : ''}
+                </div>
+              </form>
             </section>
 
             <!-- Generate Image CTA Button (After Comparative Analysis) -->
@@ -2414,6 +2472,7 @@ class App {
         hidePplMsg();
 
         const aName = nameAInput ? (nameAInput.value.trim() || (lang === "ro" ? "Tu" : "You")) : (lang === "ro" ? "Tu" : "You");
+        const aLink = linkAInput ? linkAInput.value.trim() : "";
         const bName = nameBInput ? (nameBInput.value.trim() || (lang === "ro" ? "Persoană" : "Person")) : (lang === "ro" ? "Persoană" : "Person");
         const bLink = linkBInput ? linkBInput.value.trim() : "";
 
@@ -2423,41 +2482,46 @@ class App {
           return;
         }
 
-        const parsed = parseComparisonInputLink(bLink);
-        if (!parsed) {
+        const parsedB = parseComparisonInputLink(bLink);
+        if (!parsedB) {
           showPplMsg(t("invalidLinkError", {}, lang), "error");
           if (linkBInput) linkBInput.focus();
           return;
         }
 
+        let parsedA = null;
+        if (aLink && aLink !== userFullResultUrl) {
+          parsedA = parseComparisonInputLink(aLink);
+        }
+
+        const scoresA = parsedA ? parsedA.percentages : percentages;
+        const axesA = parsedA ? parsedA.axisScores : axisScores;
+        const typeA = parsedA ? parsedA.derivedType : derivedType;
+
         this.comparisonPersonA_Name = aName;
+        this.comparisonPersonA_Link = aLink || userFullResultUrl;
         this.comparisonPersonB_Name = bName;
         this.comparisonPersonB_Link = bLink;
 
-        const temp = getTypeTemperament(parsed.derivedType);
-        this.customComparisonPerson = {
-          id: "custom_person",
-          name: bName,
-          mbti: parsed.derivedType,
-          role: lang === "ro" ? "Rezultat personalizat" : "Custom result",
-          avatar: bName.charAt(0).toUpperCase() || "P",
-          temperament: temp,
-          axes: {
-            I: parsed.axisScores.EI.roundB,
-            E: parsed.axisScores.EI.roundA,
-            S: parsed.axisScores.NS.roundB,
-            N: parsed.axisScores.NS.roundA,
-            F: parsed.axisScores.TF.roundB,
-            T: parsed.axisScores.TF.roundA,
-            P: parsed.axisScores.JP.roundB,
-            J: parsed.axisScores.JP.roundA
-          },
-          scores: parsed.percentages,
-          percentages: parsed.percentages,
-          axisScores: parsed.axisScores
+        this.comparisonPersonA = {
+          name: aName,
+          percentages: scoresA,
+          axisScores: axesA,
+          derivedType: typeA,
+          link: aLink || userFullResultUrl,
+          temperament: getTypeTemperament(typeA),
+          archetype: MBTI_TYPES[typeA] || MBTI_TYPES["INTJ"]
         };
 
-        this.selectedFigureId = "custom_person";
+        this.comparisonPersonB = {
+          name: bName,
+          percentages: parsedB.percentages,
+          axisScores: parsedB.axisScores,
+          derivedType: parsedB.derivedType,
+          link: bLink,
+          temperament: getTypeTemperament(parsedB.derivedType),
+          archetype: MBTI_TYPES[parsedB.derivedType] || MBTI_TYPES["ENFP"]
+        };
 
         // Update URL query parameters for sharing/bookmarking comparison
         try {
@@ -2467,13 +2531,15 @@ class App {
           search.set("an", aName);
           search.set("bn", bName);
           search.set("b", bLink);
-          history.replaceState(null, "", `${pathname}?${search.toString()}${window.location.hash || ''}`);
+          if (aLink && aLink !== userFullResultUrl) {
+            search.set("a", aLink);
+          }
+          history.pushState(null, "", `${pathname}?${search.toString()}#compare`);
         } catch (e) {}
 
-        this.renderResults();
-
-        const compTarget = document.getElementById("comparar");
-        if (compTarget) compTarget.scrollIntoView({ behavior: "smooth" });
+        this.state.screen = "compare";
+        this.render();
+        window.scrollTo({ top: 0, behavior: "smooth" });
       });
     }
 
@@ -2675,6 +2741,793 @@ class App {
         if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigateToSpectrum(); }
       });
     }
+  }
+
+  // ==========================================================================
+  // Dedicated Comparison Screen (Inspired by 12Axes & 8Func Results Layout)
+  // ==========================================================================
+
+  renderCompare() {
+    const lang = this.state.lang || "ro";
+    const defaultUser = this.getUserScores();
+
+    // Check query params if available
+    let aName = this.comparisonPersonA_Name || (this.state.compareParams && this.state.compareParams.an) || (lang === "ro" ? "Tu" : "You");
+    let bName = this.comparisonPersonB_Name || (this.state.compareParams && this.state.compareParams.bn) || (lang === "ro" ? "Persoană" : "Person");
+    let aLink = this.comparisonPersonA_Link || (this.state.compareParams && this.state.compareParams.a);
+    let bLink = this.comparisonPersonB_Link || (this.state.compareParams && this.state.compareParams.b);
+
+    // Person A
+    let personA = this.comparisonPersonA;
+    if (!personA) {
+      let parsedA = null;
+      if (aLink) {
+        parsedA = parseComparisonInputLink(aLink);
+      }
+      const scoresA = parsedA ? parsedA.percentages : defaultUser.percentages;
+      const axesA = parsedA ? parsedA.axisScores : defaultUser.axisScores;
+      const typeA = parsedA ? parsedA.derivedType : defaultUser.derivedType;
+      personA = {
+        name: aName,
+        percentages: scoresA,
+        axisScores: axesA,
+        derivedType: typeA,
+        temperament: getTypeTemperament(typeA),
+        archetype: MBTI_TYPES[typeA] || MBTI_TYPES["INTJ"],
+        link: aLink || ""
+      };
+      this.comparisonPersonA = personA;
+    }
+
+    // Person B
+    let personB = this.comparisonPersonB;
+    if (!personB && bLink) {
+      const parsedB = parseComparisonInputLink(bLink);
+      if (parsedB) {
+        const typeB = parsedB.derivedType;
+        personB = {
+          name: bName,
+          percentages: parsedB.percentages,
+          axisScores: parsedB.axisScores,
+          derivedType: typeB,
+          temperament: getTypeTemperament(typeB),
+          archetype: MBTI_TYPES[typeB] || MBTI_TYPES["ENFP"],
+          link: bLink
+        };
+        this.comparisonPersonB = personB;
+      }
+    }
+
+    // Fallback if Person B is missing
+    if (!personB) {
+      this.root.innerHTML = `
+        <div class="app-shell" data-screen="compare">
+          <a class="skip-link" href="#conteudo-principal">${t('skipLink', {}, lang)}</a>
+          ${this.renderNavbar()}
+          <main class="ed e-res e-cmpp" id="conteudo-principal" tabindex="-1">
+            <div class="e-panel" style="max-width: 600px; margin: 3rem auto; text-align: center; padding: 2.5rem 1.5rem;">
+              <h2>${lang === 'ro' ? 'Nicio comparație activă' : 'No active comparison'}</h2>
+              <p style="color: var(--text-muted); margin: 1rem 0 1.5rem;">
+                ${lang === 'ro' 
+                  ? 'Introdu linkul de rezultate al persoanei cu care dorești să te compari.' 
+                  : 'Enter the result link of the person you want to compare with.'}
+              </p>
+              <button class="e-btn e-btn-primary" type="button" id="cmpp-fallback-btn">
+                <span>${t('compareBtn', {}, lang)}</span>
+              </button>
+            </div>
+          </main>
+        </div>
+      `;
+      this.attachNavEvents();
+      const fbBtn = document.getElementById("cmpp-fallback-btn");
+      if (fbBtn) {
+        fbBtn.addEventListener("click", () => {
+          this.state.screen = "results";
+          this.render();
+          setTimeout(() => {
+            const el = document.getElementById("comparar-pessoa");
+            if (el) el.scrollIntoView({ behavior: "smooth" });
+          }, 100);
+        });
+      }
+      return;
+    }
+
+    // Similarity & Dynamics
+    const simFigureObj = {
+      axes: {
+        I: personB.axisScores.EI.roundB,
+        E: personB.axisScores.EI.roundA,
+        S: personB.axisScores.NS.roundB,
+        N: personB.axisScores.NS.roundA,
+        F: personB.axisScores.TF.roundB,
+        T: personB.axisScores.TF.roundA,
+        P: personB.axisScores.JP.roundB,
+        J: personB.axisScores.JP.roundA
+      },
+      scores: personB.percentages,
+      mbti: personB.derivedType
+    };
+    const matchPct = calculateFigureSimilarity(personA.percentages, personA.axisScores, simFigureObj);
+    const ringDash = ((matchPct / 100) * 283.5).toFixed(1);
+
+    const tempA = personA.temperament || getTypeTemperament(personA.derivedType);
+    const tempB = personB.temperament || getTypeTemperament(personB.derivedType);
+    const archA = personA.archetype || MBTI_TYPES[personA.derivedType] || MBTI_TYPES["INTJ"];
+    const archB = personB.archetype || MBTI_TYPES[personB.derivedType] || MBTI_TYPES["ENFP"];
+
+    const titleA = lang === "ro" ? (archA.titleRo || archA.title) : archA.title;
+    const titleB = lang === "ro" ? (archB.titleRo || archB.title) : archB.title;
+    const descA = lang === "ro" ? (archA.descRo || archA.description) : archA.description;
+    const descB = lang === "ro" ? (archB.descRo || archB.description) : archB.description;
+    const quoteA = lang === "ro" ? (archA.quoteRo || archA.quote) : archA.quote;
+    const quoteB = lang === "ro" ? (archB.quoteRo || archB.quote) : archB.quote;
+
+    // Commonality analysis
+    const lettersA = personA.derivedType.split("");
+    const lettersB = personB.derivedType.split("");
+    const commonLetters = lettersA.filter((l, i) => l === lettersB[i]);
+
+    let commonSummaryTitle = "";
+    let commonSummaryText = "";
+    let commonDetailed = "";
+
+    if (personA.derivedType === personB.derivedType) {
+      commonSummaryTitle = `${personA.derivedType} · ${titleA}`;
+      commonSummaryText = lang === "ro"
+        ? `Împărtășiți aceeași tipologie (${personA.derivedType})! Amândoi aveți aceleași preferințe primare, aceleași funcții cognitive dominante și același mod natural de a evalua lumea.`
+        : `You share the exact same typology (${personA.derivedType})! Both of you share the same cognitive preferences, dominant cognitive functions, and natural way of assessing the world.`;
+      commonDetailed = lang === "ro"
+        ? `Această aliniere perfectă creează o rezonanță imediată: vă înțelegeți gândurile fără efort, aveți stiluri de lucru identice și ajungeți la aceleași decizii. Fiți atenți însă la aceleași capcane și puncte slabe comune profilului ${personA.derivedType}.`
+        : `This complete alignment creates immediate resonance: you understand each other effortlessly, have identical working styles, and arrive at similar decisions. Be mindful of the shared blind spots characteristic of the ${personA.derivedType} profile.`;
+    } else if (commonLetters.length >= 2) {
+      commonSummaryTitle = lang === "ro"
+        ? `Afinitate Cognitivă (${commonLetters.join(" · ")})`
+        : `Cognitive Affinity (${commonLetters.join(" · ")})`;
+      commonSummaryText = lang === "ro"
+        ? `Aveți în comun ${commonLetters.length} dimensiuni cognitive esențiale (${commonLetters.join(" · ")}). Această suprapunere asigură o comunicare fluidă și încredere reciprocă, în timp ce dimensiunile diferite aduc perspective proaspete și valoroase.`
+        : `You share ${commonLetters.length} essential cognitive dimensions (${commonLetters.join(" · ")}). This overlap ensures smooth communication and mutual trust, while differing dimensions provide fresh, valuable insights.`;
+      commonDetailed = lang === "ro"
+        ? `Dimensiunile voastre comune (${commonLetters.join("")}) vă oferă un limbaj comun solid. În ariile în care vă deosebiți, fiecare aduce abilități complementare care pot îmbunătăți orice proiect sau relație.`
+        : `Your shared dimensions (${commonLetters.join("")}) establish a strong common ground. In areas where you differ, each partner contributes complementary strengths that enrich your dynamic.`;
+    } else {
+      commonSummaryTitle = lang === "ro" ? "Dinamism & Echilibru Complementar" : "Complementary Balance & Dynamics";
+      commonSummaryText = lang === "ro"
+        ? `Profiluri cu contraste puternice și valoroase! ${personA.name} (${personA.derivedType}) și ${personB.name} (${personB.derivedType}) oferă un echilibru remarcabil prin perspective cognitive complementare.`
+        : `Profiles with strong, valuable contrast! ${personA.name} (${personA.derivedType}) and ${personB.name} (${personB.derivedType}) provide remarkable balance through complementary cognitive perspectives.`;
+      commonDetailed = lang === "ro"
+        ? `Diferențele dintre voi sunt exact ceea ce vă poate face o echipă imbatabilă: gândirea strategică, energia și intuiția se combină pentru a acoperi toate aspectele unei provocări.`
+        : `Your cognitive differences are precisely what can make you an unbeatable team: strategic thinking, energy, and intuition combine to cover all aspects of any challenge.`;
+    }
+
+    // 4 Axes comparison
+    const axesCompData = [
+      {
+        id: "energy",
+        name: lang === "ro" ? "Energie & Focus (E / I)" : "Energy & Focus (E / I)",
+        poleLeft: lang === "ro" ? "Extraversie" : "Extraversion",
+        poleRight: lang === "ro" ? "Introversie" : "Introversion",
+        posA: personA.axisScores.EI.roundB, // I%
+        posB: personB.axisScores.EI.roundB, // I%
+        scoreA_left: personA.axisScores.EI.roundA,
+        scoreA_right: personA.axisScores.EI.roundB,
+        scoreB_left: personB.axisScores.EI.roundA,
+        scoreB_right: personB.axisScores.EI.roundB,
+        color: "#2F6DC0"
+      },
+      {
+        id: "mind",
+        name: lang === "ro" ? "Informație & Percepție (N / S)" : "Information & Perception (N / S)",
+        poleLeft: lang === "ro" ? "Intuiție" : "Intuition",
+        poleRight: lang === "ro" ? "Senzorial" : "Sensing",
+        posA: personA.axisScores.NS.roundB, // S%
+        posB: personB.axisScores.NS.roundB, // S%
+        scoreA_left: personA.axisScores.NS.roundA,
+        scoreA_right: personA.axisScores.NS.roundB,
+        scoreB_left: personB.axisScores.NS.roundA,
+        scoreB_right: personB.axisScores.NS.roundB,
+        color: "#95637E"
+      },
+      {
+        id: "nature",
+        name: lang === "ro" ? "Decizie & Natură (T / F)" : "Decision & Nature (T / F)",
+        poleLeft: lang === "ro" ? "Gândire" : "Thinking",
+        poleRight: lang === "ro" ? "Sentiment" : "Feeling",
+        posA: personA.axisScores.TF.roundB, // F%
+        posB: personB.axisScores.TF.roundB, // F%
+        scoreA_left: personA.axisScores.TF.roundA,
+        scoreA_right: personA.axisScores.TF.roundB,
+        scoreB_left: personB.axisScores.TF.roundA,
+        scoreB_right: personB.axisScores.TF.roundB,
+        color: "#72CCCD"
+      },
+      {
+        id: "tactics",
+        name: lang === "ro" ? "Stil de viață & Tactică (J / P)" : "Lifestyle & Tactics (J / P)",
+        poleLeft: lang === "ro" ? "Judecată" : "Judging",
+        poleRight: lang === "ro" ? "Percepție" : "Perceiving",
+        posA: personA.axisScores.JP.roundB, // P%
+        posB: personB.axisScores.JP.roundB, // P%
+        scoreA_left: personA.axisScores.JP.roundA,
+        scoreA_right: personA.axisScores.JP.roundB,
+        scoreB_left: personB.axisScores.JP.roundA,
+        scoreB_right: personB.axisScores.JP.roundB,
+        color: "#4361AB"
+      }
+    ];
+
+    // Find biggest difference, biggest agreement, and opposite sides
+    let maxDiffAxis = axesCompData[0];
+    let maxDiff = -1;
+    let minDiffAxis = axesCompData[0];
+    let minDiff = 999;
+    const oppositeSidesList = [];
+
+    axesCompData.forEach(ax => {
+      const diff = Math.abs(ax.posA - ax.posB);
+      if (diff > maxDiff) {
+        maxDiff = diff;
+        maxDiffAxis = ax;
+      }
+      if (diff < minDiff) {
+        minDiff = diff;
+        minDiffAxis = ax;
+      }
+      const aRight = ax.posA > 50;
+      const bRight = ax.posB > 50;
+      if (aRight !== bRight && Math.abs(ax.posA - 50) >= 3 && Math.abs(ax.posB - 50) >= 3) {
+        oppositeSidesList.push({
+          axis: ax,
+          aPole: aRight ? ax.poleRight : ax.poleLeft,
+          bPole: bRight ? ax.poleRight : ax.poleLeft,
+          aPct: aRight ? ax.posA : (100 - ax.posA),
+          bPct: bRight ? ax.posB : (100 - ax.posB)
+        });
+      }
+    });
+
+    // 8 Functions comparison
+    const funcsCompData = FUNCTIONS_LIST.map(f => {
+      const fInfo = COGNITIVE_FUNCTIONS[f];
+      const fName = lang === "ro" ? (fInfo?.nameRo || fInfo?.name || f) : (fInfo?.name || f);
+      const pA = personA.percentages[f] ?? 50;
+      const pB = personB.percentages[f] ?? 50;
+      const delta = Math.abs(pA - pB);
+      const fColor = getFuncTileColors(f).bg;
+      let deltaText = "";
+      if (delta <= 6) deltaText = lang === "ro" ? "Aproape identic" : "Nearly identical";
+      else if (delta <= 18) deltaText = lang === "ro" ? "Apropiat" : "Close match";
+      else deltaText = lang === "ro" ? "Diferență notabilă" : "Noticeable delta";
+
+      return {
+        code: f,
+        name: fName,
+        color: fColor,
+        pA,
+        pB,
+        delta,
+        deltaText
+      };
+    });
+
+    // Closest figures
+    const rankedFiguresA = getRankedFigures(personA.percentages, personA.axisScores, "similar");
+    const rankedFiguresB = getRankedFigures(personB.percentages, personB.axisScores, "similar");
+    const topFigA = rankedFiguresA[0] || NOTABLE_FIGURES[0];
+    const topFigB = rankedFiguresB[0] || NOTABLE_FIGURES[1];
+    const simFigA = calculateFigureSimilarity(personA.percentages, personA.axisScores, topFigA);
+    const simFigB = calculateFigureSimilarity(personB.percentages, personB.axisScores, topFigB);
+
+    const top10IdsA = new Set(rankedFiguresA.slice(0, 10).map(f => f.id));
+    const mutualFigures = rankedFiguresB.slice(0, 10).filter(f => top10IdsA.has(f.id));
+
+    this.root.innerHTML = `
+      <div class="app-shell" data-screen="compare">
+        <a class="skip-link" href="#conteudo-principal">${t('skipLink', {}, lang)}</a>
+        ${this.renderNavbar()}
+
+        <main class="ed e-res e-cmpp" id="conteudo-principal" tabindex="-1">
+          <div class="e-wrap e-res-grid">
+            <div class="e-res-main">
+              <header class="e-res-head">
+                <h1>${t('compareHeading', {}, lang)}</h1>
+                <div class="e-actions e-ppl-share">
+                  <button class="e-btn e-btn-primary" type="button" id="cmpp-share-top-btn">
+                    <span>${t('shareCompareBtn', {}, lang)}</span>
+                    <svg class="e-arr" viewBox="0 0 24 24" aria-hidden="true" style="fill: currentcolor; stroke: none;"><path d="M22.71 6.29a1 1 0 0 0-1.42 0L20 7.59V2a1 1 0 0 0-2 0v5.59l-1.29-1.3a1 1 0 0 0-1.42 1.42l3 3a1 1 0 0 0 .33.21a.94.94 0 0 0 .76 0a1 1 0 0 0 .33-.21l3-3a1 1 0 0 0 0-1.42M19 13a1 1 0 0 0-1 1v.38l-1.48-1.48a2.79 2.79 0 0 0-3.93 0l-.7.7l-2.48-2.48a2.85 2.85 0 0 0-3.93 0L4 12.6V7a1 1 0 0 1 1-1h8a1 1 0 0 0 0-2H5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3v-5a1 1 0 0 0-1-1M5 20a1 1 0 0 1-1-1v-3.57l2.9-2.9a.79.79 0 0 1 1.09 0l3.17 3.17l4.3 4.3Zm13-1a.9.9 0 0 1-.18.53L13.31 15l.7-.7a.77.77 0 0 1 1.1 0L18 17.21Z"></path></svg>
+                  </button>
+                  <button class="e-btn e-btn-outline" type="button" id="cmpp-edit-top-btn">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    <span>${lang === 'ro' ? 'Editează comparația' : 'Edit comparison'}</span>
+                  </button>
+                </div>
+              </header>
+
+              <!-- People Profiles -->
+              <section class="e-panel" id="cmp-perfis">
+                <h2>${t('comparePeopleSection', {}, lang)}</h2>
+                <ul class="e-cp-cards">
+                  <li class="e-cp-card">
+                    <span class="e-cp-face">
+                      <span class="e-avatar e-cmp-dot" style="background: ${tempA.color};">${personA.name.charAt(0).toUpperCase()}</span>
+                    </span>
+                    <div class="e-cp-text">
+                      <span class="e-ppl-nameline">
+                        <strong>${personA.name}</strong>
+                        <button class="e-ppl-edit" id="cmpp-rename-a-btn" type="button" title="${t('editNameTitle', {}, lang)}">
+                          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 16l-1 4l4-1L19.586 7.414a2 2 0 0 0 0-2.828l-.172-.172a2 2 0 0 0-2.828 0zM15 6l3 3m-5 11h8"></path></svg>
+                        </button>
+                      </span>
+                      <span class="e-cp-type-badge">
+                        <span class="e-cp-type-pill" style="background: ${tempA.color};">${personA.derivedType}</span>
+                        <span>${titleA} (${tempA.name})</span>
+                      </span>
+                    </div>
+                  </li>
+                  <li class="e-cp-card">
+                    <span class="e-cp-face">
+                      <span class="e-avatar e-cmp-dot" style="background: ${tempB.color};">${personB.name.charAt(0).toUpperCase()}</span>
+                    </span>
+                    <div class="e-cp-text">
+                      <span class="e-ppl-nameline">
+                        <strong>${personB.name}</strong>
+                        <button class="e-ppl-edit" id="cmpp-rename-b-btn" type="button" title="${t('editNameTitle', {}, lang)}">
+                          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 16l-1 4l4-1L19.586 7.414a2 2 0 0 0 0-2.828l-.172-.172a2 2 0 0 0-2.828 0zM15 6l3 3m-5 11h8"></path></svg>
+                        </button>
+                      </span>
+                      <span class="e-cp-type-badge">
+                        <span class="e-cp-type-pill" style="background: ${tempB.color};">${personB.derivedType}</span>
+                        <span>${titleB} (${tempB.name})</span>
+                      </span>
+                    </div>
+                  </li>
+                </ul>
+              </section>
+
+              <!-- Cognitive Match & In Common -->
+              <section class="e-panel" id="cmp-ideologia">
+                <h2>${t('compareMatchSection', {}, lang)}</h2>
+                <article class="e-cp-common">
+                  <div class="e-cp-common-text">
+                    <span class="e-tag e-tag-hero" style="background: var(--accent); color: #ffffff; border-radius: 999px;">${t('compareInCommonTag', {}, lang)}</span>
+                    <h3>${commonSummaryTitle}</h3>
+                    <p>${commonSummaryText}</p>
+                    <details class="e-more" style="margin-top: 0.75rem;">
+                      <summary style="cursor: pointer; font-weight: 700; color: var(--accent);">${lang === 'ro' ? 'Află mai multe despre dinamica cognitivă' : 'Learn more about cognitive dynamics'}</summary>
+                      <p style="margin-top: 0.65rem; line-height: 1.6; color: var(--text-muted);">${commonDetailed}</p>
+                    </details>
+                  </div>
+                  <div class="e-ring" role="img" aria-label="Compatibility: ${matchPct} percent" style="width: 108px; height: 108px; flex-shrink: 0;">
+                    <svg viewBox="0 0 104 104">
+                      <circle cx="52" cy="52" r="47.5" fill="none" stroke="var(--line)" stroke-width="7"></circle>
+                      <circle class="e-ring-arc" cx="52" cy="52" r="47.5" fill="none" stroke="var(--accent)" stroke-width="7" stroke-linecap="round" stroke-dasharray="${ringDash} 298.5"></circle>
+                    </svg>
+                    <div><strong>${matchPct}%</strong><small>${t('compareMatchLabel', {}, lang)}</small></div>
+                  </div>
+                </article>
+
+                <ul class="e-cp-near">
+                  <li class="e-cp-near-col">
+                    <p class="e-cp-near-who">
+                      <span class="e-close-face" style="background: ${tempA.color};">${personA.name.charAt(0).toUpperCase()}</span>
+                      <span>${lang === 'ro' ? 'Arhetipul lui ' + personA.name : 'Closest to ' + personA.name}</span>
+                    </p>
+                    <article class="e-ocard" style="border-top: 3.5px solid ${tempA.color};">
+                      <span class="e-tag" style="background: ${tempA.bg}; color: ${tempA.color}; font-weight: 800;">${tempA.name}</span>
+                      <h3>${titleA} <span style="color: ${tempA.color}; font-weight: 800;">(${personA.derivedType})</span></h3>
+                      <p class="e-ocard-text">${descA || quoteA}</p>
+                    </article>
+                  </li>
+                  <li class="e-cp-near-col">
+                    <p class="e-cp-near-who">
+                      <span class="e-close-face" style="background: ${tempB.color};">${personB.name.charAt(0).toUpperCase()}</span>
+                      <span>${lang === 'ro' ? 'Arhetipul lui ' + personB.name : 'Closest to ' + personB.name}</span>
+                    </p>
+                    <article class="e-ocard" style="border-top: 3.5px solid ${tempB.color};">
+                      <span class="e-tag" style="background: ${tempB.bg}; color: ${tempB.color}; font-weight: 800;">${tempB.name}</span>
+                      <h3>${titleB} <span style="color: ${tempB.color}; font-weight: 800;">(${personB.derivedType})</span></h3>
+                      <p class="e-ocard-text">${descB || quoteB}</p>
+                    </article>
+                  </li>
+                </ul>
+              </section>
+
+              <!-- 4 MBTI Axes -->
+              <section class="e-panel" id="cmp-eixos">
+                <h2>${t('compareAxesSection', {}, lang)}</h2>
+                <ul class="e-cp-legend" aria-hidden="true">
+                  <li><span class="e-close-face" style="background: var(--accent);">${personA.name.charAt(0).toUpperCase()}</span>${personA.name}</li>
+                  <li><span class="e-close-face" style="background: #e0682b;">${personB.name.charAt(0).toUpperCase()}</span>${personB.name}</li>
+                </ul>
+
+                <ul class="e-cp-axes">
+                  ${axesCompData.map(ax => {
+                    const diff = Math.abs(ax.posA - ax.posB);
+                    const isBoth = diff <= 4;
+                    const minPos = Math.min(ax.posA, ax.posB);
+                    const maxPos = Math.max(ax.posA, ax.posB);
+                    const connectorWidth = Math.max(0, maxPos - minPos);
+                    return `
+                      <li class="e-cp-axis">
+                        <div class="e-axis-row-head">
+                          <h3>${ax.name}</h3>
+                          <span class="e-axis-diff-badge">${diff === 0 ? (lang === 'ro' ? 'Identic' : 'Identical') : `Δ ${diff} pct`}</span>
+                        </div>
+                        <div class="e-cp-track" role="img" aria-label="${ax.name}: ${personA.name} ${ax.posA}%, ${personB.name} ${ax.posB}%">
+                          <span class="e-amid"></span>
+                          ${isBoth ? `
+                            <span class="e-cp-pin is-both" style="left: ${ax.posA}%;">
+                              <span>${t('compareBothLabel', {}, lang)} · ${ax.posA}%</span>
+                            </span>
+                          ` : `
+                            <span class="e-cp-connector" style="left: ${minPos}%; width: ${connectorWidth}%;"></span>
+                            <span class="e-cp-pin" style="left: ${ax.posA}%; background: var(--accent);">
+                              <span>${personA.name}: ${ax.posA}%</span>
+                            </span>
+                            <span class="e-cp-pin" style="left: ${ax.posB}%; background: #e0682b;">
+                              <span>${personB.name}: ${ax.posB}%</span>
+                            </span>
+                          `}
+                        </div>
+                        <div class="e-axis-poles">
+                          <div class="e-pole e-left">
+                            <b>${ax.poleLeft}</b>
+                            <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700;">
+                              (${ax.scoreA_left}% · ${ax.scoreB_left}%)
+                            </span>
+                          </div>
+                          <div class="e-pole e-right">
+                            <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700;">
+                              (${ax.scoreA_right}% · ${ax.scoreB_right}%)
+                            </span>
+                            <b>${ax.poleRight}</b>
+                          </div>
+                        </div>
+                      </li>
+                    `;
+                  }).join("")}
+                </ul>
+              </section>
+
+              <!-- 8 Cognitive Functions -->
+              <section class="e-panel" id="cmp-functii">
+                <h2>${t('compareFuncsSection', {}, lang)}</h2>
+                <div class="e-cp-funcs-grid">
+                  ${funcsCompData.map(fn => {
+                    return `
+                      <div class="e-cp-func-card">
+                        <div class="e-cp-func-head">
+                          <div class="e-cp-func-title">
+                            <span class="e-func-badge" style="background: ${fn.color};">${fn.code}</span>
+                            <span class="e-cp-func-name">${fn.name}</span>
+                          </div>
+                          <span class="e-cp-func-delta" title="${fn.deltaText}">Δ ${fn.delta}% · ${fn.deltaText}</span>
+                        </div>
+                        <div class="e-cp-func-bars">
+                          <div class="e-cp-func-row">
+                            <span class="e-cp-func-person">
+                              <span class="e-close-face" style="background: var(--accent); width: 16px; height: 16px; font-size: 0.6rem;">${personA.name.charAt(0).toUpperCase()}</span>
+                              <span>${personA.name}</span>
+                            </span>
+                            <div class="e-cp-func-track">
+                              <div class="e-cp-func-fill" style="width: ${fn.pA}%; background: var(--accent);"></div>
+                            </div>
+                            <span class="e-cp-func-val">${fn.pA}%</span>
+                          </div>
+                          <div class="e-cp-func-row">
+                            <span class="e-cp-func-person">
+                              <span class="e-close-face" style="background: #e0682b; width: 16px; height: 16px; font-size: 0.6rem;">${personB.name.charAt(0).toUpperCase()}</span>
+                              <span>${personB.name}</span>
+                            </span>
+                            <div class="e-cp-func-track">
+                              <div class="e-cp-func-fill" style="width: ${fn.pB}%; background: #e0682b;"></div>
+                            </div>
+                            <span class="e-cp-func-val">${fn.pB}%</span>
+                          </div>
+                        </div>
+                      </div>
+                    `;
+                  }).join("")}
+                </div>
+              </section>
+
+              <!-- What Sets You Apart & Where You Meet -->
+              <section class="e-panel" id="cmp-assinatura">
+                <div class="e-sec-head">
+                  <h2 class="e-sec-title">${t('compareDistinctionSection', {}, lang)}</h2>
+                </div>
+                <div class="e-dist">
+                  <article class="e-dcard">
+                    <div class="e-dcard-head">
+                      <span class="e-tag" style="background: rgba(224, 104, 43, 0.15); color: #e0682b; font-weight: 800; border-radius: 999px;">${t('compareDifferMost', {}, lang)}</span>
+                      <h3>${maxDiffAxis.name}</h3>
+                    </div>
+                    <div class="e-dcard-body">
+                      <p class="e-big">${maxDiff}<small>pts</small></p>
+                      <p class="e-cap">
+                        ${lang === 'ro'
+                          ? `${personA.name} și ${personB.name} au o diferență de ${maxDiff} puncte pe această axă.`
+                          : `${personA.name} and ${personB.name} differ by ${maxDiff} points on this axis.`}
+                      </p>
+                    </div>
+                    <div class="e-mbar" aria-hidden="true">
+                      <span class="e-mfill" style="left: ${Math.min(maxDiffAxis.posA, maxDiffAxis.posB)}%; width: ${maxDiff}%;"></span>
+                      <span class="e-myou" style="left: ${maxDiffAxis.posA}%; border-color: var(--accent);" title="${personA.name}"></span>
+                      <span class="e-myou" style="left: ${maxDiffAxis.posB}%; border-color: #e0682b;" title="${personB.name}"></span>
+                    </div>
+                    <div class="e-mlab">
+                      <span>${maxDiffAxis.poleLeft}</span>
+                      <span>${maxDiffAxis.poleRight}</span>
+                    </div>
+                  </article>
+
+                  <article class="e-dcard">
+                    <div class="e-dcard-head">
+                      <span class="e-tag" style="background: rgba(16, 185, 129, 0.15); color: #059669; font-weight: 800; border-radius: 999px;">${t('compareAgreeMost', {}, lang)}</span>
+                      <h3>${minDiffAxis.name}</h3>
+                    </div>
+                    <div class="e-dcard-body">
+                      <p class="e-big">${minDiff}<small>pts</small></p>
+                      <p class="e-cap">
+                        ${lang === 'ro'
+                          ? `Aici vă întâlniți: doar ${minDiff} puncte diferență între profilurile voastre.`
+                          : `This is where you meet: only ${minDiff} points apart on this dimension.`}
+                      </p>
+                    </div>
+                    <div class="e-mbar" aria-hidden="true">
+                      <span class="e-mfill" style="left: ${Math.min(minDiffAxis.posA, minDiffAxis.posB)}%; width: ${minDiff}%;"></span>
+                      <span class="e-myou" style="left: ${minDiffAxis.posA}%; border-color: var(--accent);" title="${personA.name}"></span>
+                      <span class="e-myou" style="left: ${minDiffAxis.posB}%; border-color: #e0682b;" title="${personB.name}"></span>
+                    </div>
+                    <div class="e-mlab">
+                      <span>${minDiffAxis.poleLeft}</span>
+                      <span>${minDiffAxis.poleRight}</span>
+                    </div>
+                  </article>
+
+                  <article class="e-tension">
+                    <div class="e-cp-tension-head">
+                      <span class="e-tag" style="background: var(--paper); border: 1px solid var(--line); font-weight: 800; border-radius: 999px;">${t('compareOppositeSides', {}, lang)}</span>
+                      <div class="e-pair">
+                        <span style="color: var(--accent); font-weight: 800;">${personA.name}</span>
+                        <span style="color: var(--text-muted);">×</span>
+                        <span style="color: #e0682b; font-weight: 800;">${personB.name}</span>
+                      </div>
+                    </div>
+                    ${oppositeSidesList.length > 0 ? `
+                      <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+                        ${oppositeSidesList.map(op => `
+                          <div style="font-size: 0.88rem; line-height: 1.45; color: var(--text-strong); padding: 0.5rem 0.65rem; background: var(--paper); border-radius: 8px;">
+                            <b>${op.axis.name}</b>: ${personA.name} (${op.aPole} ${op.aPct}%) vs ${personB.name} (${op.bPole} ${op.bPct}%).
+                          </div>
+                        `).join("")}
+                      </div>
+                    ` : `
+                      <p><b>${t('compareNoOpposite', {}, lang)}</b></p>
+                    `}
+                  </article>
+                </div>
+              </section>
+
+              <!-- Closest Personalities -->
+              <section class="e-panel" id="cmp-personalidades">
+                <h2>${t('compareFiguresSection', {}, lang)}</h2>
+                <ul class="e-cp-near">
+                  <li class="e-cp-near-col">
+                    <p class="e-cp-near-who">
+                      <span class="e-close-face" style="background: var(--accent);">${personA.name.charAt(0).toUpperCase()}</span>
+                      <span>${lang === 'ro' ? 'Cea mai apropiată de ' + personA.name : 'Closest to ' + personA.name}</span>
+                    </p>
+                    <article class="e-ocard" style="display: flex; align-items: center; gap: 1.25rem;">
+                      ${topFigA.photo ? `
+                        <img src="${topFigA.photo}" alt="${topFigA.name}" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; flex-shrink: 0;" />
+                      ` : `
+                        <div class="e-avatar e-cmp-dot" style="background: var(--accent); width: 64px; height: 64px; font-size: 1.6rem; flex-shrink: 0;">${topFigA.avatar || topFigA.name.charAt(0)}</div>
+                      `}
+                      <div style="flex: 1; min-width: 0;">
+                        <span class="e-tag" style="background: var(--paper); border: 1px solid var(--line); font-weight: 800; border-radius: 999px;">${simFigA}% ${t('compareMatchLabel', {}, lang)}</span>
+                        <h3 style="margin: 0.35rem 0 0.2rem;">${topFigA.name}</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">${getFigureRole(topFigA, lang)} · <b style="color: var(--accent);">${topFigA.mbti}</b></p>
+                      </div>
+                    </article>
+                  </li>
+                  <li class="e-cp-near-col">
+                    <p class="e-cp-near-who">
+                      <span class="e-close-face" style="background: #e0682b;">${personB.name.charAt(0).toUpperCase()}</span>
+                      <span>${lang === 'ro' ? 'Cea mai apropiată de ' + personB.name : 'Closest to ' + personB.name}</span>
+                    </p>
+                    <article class="e-ocard" style="display: flex; align-items: center; gap: 1.25rem;">
+                      ${topFigB.photo ? `
+                        <img src="${topFigB.photo}" alt="${topFigB.name}" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; flex-shrink: 0;" />
+                      ` : `
+                        <div class="e-avatar e-cmp-dot" style="background: #e0682b; width: 64px; height: 64px; font-size: 1.6rem; flex-shrink: 0;">${topFigB.avatar || topFigB.name.charAt(0)}</div>
+                      `}
+                      <div style="flex: 1; min-width: 0;">
+                        <span class="e-tag" style="background: var(--paper); border: 1px solid var(--line); font-weight: 800; border-radius: 999px;">${simFigB}% ${t('compareMatchLabel', {}, lang)}</span>
+                        <h3 style="margin: 0.35rem 0 0.2rem;">${topFigB.name}</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">${getFigureRole(topFigB, lang)} · <b style="color: #e0682b;">${topFigB.mbti}</b></p>
+                      </div>
+                    </article>
+                  </li>
+                </ul>
+
+                ${mutualFigures.length > 0 ? `
+                  <div style="margin-top: 1.25rem; padding: 1rem 1.25rem; background: var(--paper); border: 1px solid var(--line); border-radius: 14px;">
+                    <strong style="font-size: 0.9rem; color: var(--text-strong); display: block; margin-bottom: 0.5rem;">
+                      ${lang === 'ro' ? 'Figuri comune în Top 10:' : 'Mutual figures in Top 10:'}
+                    </strong>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.65rem;">
+                      ${mutualFigures.map(mf => `
+                        <span class="e-tag" style="background: var(--card-bg); border: 1px solid var(--line); font-weight: 700;">
+                          ${mf.name} (${mf.mbti})
+                        </span>
+                      `).join("")}
+                    </div>
+                  </div>
+                ` : ''}
+              </section>
+
+              <!-- Compatibility Between You -->
+              <section class="e-panel" id="cmp-pares">
+                <h2>${t('compareCompatibilitySection', {}, lang)}</h2>
+                <ul class="e-cp-pairs">
+                  <li class="e-cp-pair">
+                    <span class="e-cp-duo">
+                      <span class="e-avatar e-cmp-dot" style="background: var(--accent);">${personA.name.charAt(0).toUpperCase()}</span>
+                      <span class="e-avatar e-cmp-dot" style="background: #e0682b;">${personB.name.charAt(0).toUpperCase()}</span>
+                    </span>
+                    <div class="e-cp-pair-main">
+                      <strong>${personA.name} <span aria-hidden="true" style="opacity: 0.6; font-weight: 400;">×</span> ${personB.name}</strong>
+                      <span class="e-cp-meter" role="img" aria-label="Compatibility: ${matchPct} percent">
+                        <i style="width: ${matchPct}%; background: linear-gradient(90deg, var(--accent), #e0682b);"></i>
+                      </span>
+                      <p style="font-size: 0.9rem; color: var(--text-muted); margin: 0.25rem 0 0;">
+                        ${matchPct >= 80 
+                          ? (lang === 'ro' ? 'Compatibilitate cognitivă excepțională: vă sincronizați natural în gândire și acțiune.' : 'Exceptional cognitive compatibility: natural synchronization in thought and action.')
+                          : (matchPct >= 60 
+                            ? (lang === 'ro' ? 'Compatibilitate dinamică echilibrată: asemănări suficiente pentru înțelegere și diferențe constructive.' : 'Balanced dynamic compatibility: enough similarity for mutual trust and constructive differences.')
+                            : (lang === 'ro' ? 'Contrast stimulativ: unghiuri de vedere diferite ce favorizează învățarea și completarea reciprocă.' : 'Stimulating contrast: differing perspectives that promote growth and complement each other.'))}
+                      </p>
+                    </div>
+                    <p class="e-cp-pair-pct">${matchPct}<small>%</small></p>
+                  </li>
+                </ul>
+              </section>
+
+              <!-- Actions -->
+              <div class="e-actions">
+                <button class="e-btn e-btn-primary" type="button" id="cmpp-share-bottom-btn">
+                  <span>${t('shareCompareBtn', {}, lang)}</span>
+                  <svg class="e-arr" viewBox="0 0 24 24" aria-hidden="true" style="fill: currentcolor; stroke: none;"><path d="M22.71 6.29a1 1 0 0 0-1.42 0L20 7.59V2a1 1 0 0 0-2 0v5.59l-1.29-1.3a1 1 0 0 0-1.42 1.42l3 3a1 1 0 0 0 .33.21a.94.94 0 0 0 .76 0a1 1 0 0 0 .33-.21l3-3a1 1 0 0 0 0-1.42M19 13a1 1 0 0 0-1 1v.38l-1.48-1.48a2.79 2.79 0 0 0-3.93 0l-.7.7l-2.48-2.48a2.85 2.85 0 0 0-3.93 0L4 12.6V7a1 1 0 0 1 1-1h8a1 1 0 0 0 0-2H5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3v-5a1 1 0 0 0-1-1M5 20a1 1 0 0 1-1-1v-3.57l2.9-2.9a.79.79 0 0 1 1.09 0l3.17 3.17l4.3 4.3Zm13-1a.9.9 0 0 1-.18.53L13.31 15l.7-.7a.77.77 0 0 1 1.1 0L18 17.21Z"></path></svg>
+                </button>
+                <button class="e-btn e-btn-outline" type="button" id="cmpp-edit-bottom-btn">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  <span>${lang === 'ro' ? 'Editează comparația' : 'Edit comparison'}</span>
+                </button>
+                <button class="e-btn e-btn-outline" type="button" id="cmpp-back-bottom-btn">
+                  <span>${t('compareNavBack', {}, lang)}</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Sidebar Table of Contents -->
+            <aside class="e-side" aria-label="${lang === 'ro' ? 'Pe această pagină' : 'On this page'}">
+              <nav class="e-panel e-toc" aria-label="${lang === 'ro' ? 'Cuprins comparație' : 'Comparison table of contents'}">
+                <p>${lang === 'ro' ? 'Pe această pagină' : 'On this page'}</p>
+                <a href="#cmp-perfis" class="e-on"><span>01</span>${t('comparePeopleSection', {}, lang)}</a>
+                <a href="#cmp-ideologia"><span>02</span>${t('compareMatchSection', {}, lang)}</a>
+                <a href="#cmp-eixos"><span>03</span>${t('compareAxesSection', {}, lang)}</a>
+                <a href="#cmp-functii"><span>04</span>${t('compareFuncsSection', {}, lang)}</a>
+                <a href="#cmp-assinatura"><span>05</span>${t('compareDistinctionSection', {}, lang)}</a>
+                <a href="#cmp-personalidades"><span>06</span>${t('compareFiguresSection', {}, lang)}</a>
+                <a href="#cmp-pares"><span>07</span>${t('compareCompatibilitySection', {}, lang)}</a>
+              </nav>
+            </aside>
+          </div>
+        </main>
+      </div>
+    `;
+
+    this.attachCompareEvents(personA, personB);
+  }
+
+  attachCompareEvents(personA, personB) {
+    this.attachNavEvents();
+    const lang = this.state.lang || "ro";
+
+    const copyComparisonUrl = async () => {
+      try {
+        const url = window.location.href;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(url);
+        } else {
+          prompt(t("comparisonLinkCopiedToast", {}, lang), url);
+        }
+        alert(t("comparisonLinkCopiedToast", {}, lang));
+      } catch (err) {
+        prompt(t("comparisonLinkCopiedToast", {}, lang), window.location.href);
+      }
+    };
+
+    const goToEdit = () => {
+      this.state.screen = "results";
+      this.render();
+      setTimeout(() => {
+        const el = document.getElementById("comparar-pessoa");
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    };
+
+    const shareTop = document.getElementById("cmpp-share-top-btn");
+    const shareBottom = document.getElementById("cmpp-share-bottom-btn");
+    if (shareTop) shareTop.addEventListener("click", copyComparisonUrl);
+    if (shareBottom) shareBottom.addEventListener("click", copyComparisonUrl);
+
+    const editTop = document.getElementById("cmpp-edit-top-btn");
+    const editBottom = document.getElementById("cmpp-edit-bottom-btn");
+    if (editTop) editTop.addEventListener("click", goToEdit);
+    if (editBottom) editBottom.addEventListener("click", goToEdit);
+
+    const backBottom = document.getElementById("cmpp-back-bottom-btn");
+    if (backBottom) {
+      backBottom.addEventListener("click", () => {
+        this.state.screen = "results";
+        this.render();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    }
+
+    const renameABtn = document.getElementById("cmpp-rename-a-btn");
+    if (renameABtn) {
+      renameABtn.addEventListener("click", () => {
+        const val = prompt(lang === "ro" ? "Introdu numele pentru persoana 1:" : "Enter name for person 1:", personA.name);
+        if (val && val.trim()) {
+          personA.name = val.trim();
+          this.comparisonPersonA_Name = personA.name;
+          try {
+            const search = new URLSearchParams(window.location.search);
+            search.set("an", personA.name);
+            history.replaceState(null, "", `${window.location.pathname}?${search.toString()}#compare`);
+          } catch(e) {}
+          this.render();
+        }
+      });
+    }
+
+    const renameBBtn = document.getElementById("cmpp-rename-b-btn");
+    if (renameBBtn) {
+      renameBBtn.addEventListener("click", () => {
+        const val = prompt(lang === "ro" ? "Introdu numele pentru persoana 2:" : "Enter name for person 2:", personB.name);
+        if (val && val.trim()) {
+          personB.name = val.trim();
+          this.comparisonPersonB_Name = personB.name;
+          try {
+            const search = new URLSearchParams(window.location.search);
+            search.set("bn", personB.name);
+            history.replaceState(null, "", `${window.location.pathname}?${search.toString()}#compare`);
+          } catch(e) {}
+          this.render();
+        }
+      });
+    }
+
+    // Smooth scroll for TOC links
+    const tocLinks = document.querySelectorAll(".e-toc a");
+    tocLinks.forEach(link => {
+      link.addEventListener("click", (e) => {
+        const targetId = link.getAttribute("href");
+        if (targetId && targetId.startsWith("#")) {
+          const targetEl = document.querySelector(targetId);
+          if (targetEl) {
+            e.preventDefault();
+            tocLinks.forEach(l => l.classList.remove("e-on"));
+            link.classList.add("e-on");
+            targetEl.scrollIntoView({ behavior: "smooth" });
+          }
+        }
+      });
+    });
   }
 
   // ==========================================================================

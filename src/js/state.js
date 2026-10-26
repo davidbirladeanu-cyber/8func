@@ -69,17 +69,38 @@ export class AppState {
     // Screen state & URL results check
     const isFiguresPath = window.location.pathname.includes("/figures") || window.location.hash === "#figures" || window.location.pathname.includes("/personalitati");
     const isSpectrumPath = window.location.pathname.includes("/spectrum") || window.location.hash === "#spectrum" || window.location.pathname.includes("/spectru");
+    const isComparePath = window.location.pathname.includes("/compare") || window.location.hash.startsWith("#compare") || window.location.pathname.includes("/compara");
     let parsedUrlScores = parseResultsUrlPath(window.location.pathname) || parseResultsUrlPath(window.location.hash);
-    if (!parsedUrlScores && typeof window !== "undefined" && window.location.search) {
+    let compareParams = null;
+    if (typeof window !== "undefined" && window.location.search) {
       try {
         const searchParams = new URLSearchParams(window.location.search);
         const aParam = searchParams.get("a");
+        const bParam = searchParams.get("b");
+        const anParam = searchParams.get("an");
+        const bnParam = searchParams.get("bn");
         if (aParam) {
           parsedUrlScores = parseComparisonInputLink(aParam);
         }
+        if (bParam || isComparePath) {
+          compareParams = {
+            a: aParam,
+            b: bParam,
+            an: anParam,
+            bn: bnParam
+          };
+        }
       } catch (e) {}
     }
-    if (parsedUrlScores) {
+    this.compareParams = compareParams;
+
+    if (compareParams && (compareParams.b || isComparePath)) {
+      this.screen = "compare";
+      if (parsedUrlScores) {
+        this.urlResultsScores = parsedUrlScores;
+        this.lastUserResults = { percentages: parsedUrlScores.percentages, axisScores: parsedUrlScores.axisScores };
+      }
+    } else if (parsedUrlScores) {
       this.screen = "results";
       this.urlResultsScores = parsedUrlScores;
       this.lastUserResults = { percentages: parsedUrlScores.percentages, axisScores: parsedUrlScores.axisScores };
@@ -103,7 +124,9 @@ export class AppState {
         } catch (e) {}
       }
 
-      if (savedScreen === "spectrum") {
+      if (savedScreen === "compare") {
+        this.screen = "compare";
+      } else if (savedScreen === "spectrum") {
         this.screen = "spectrum";
       } else if (savedScreen === "figures") {
         this.screen = "figures";
@@ -303,6 +326,11 @@ export class AppState {
 
   showResults() {
     this.screen = "results";
+    this.notify();
+  }
+
+  showCompare() {
+    this.screen = "compare";
     this.notify();
   }
 
