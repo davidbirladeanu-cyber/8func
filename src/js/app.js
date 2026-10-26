@@ -1485,6 +1485,10 @@ class App {
       : getFigureRole(currentComparisonFigure, lang);
     const userA_Name = this.comparisonPersonA_Name || (lang === "ro" ? "Tu" : "You");
     const userB_Name = isCustomPerson ? this.customComparisonPerson.name : currentComparisonFigure.name;
+    const origin = (typeof window !== "undefined" && window.location.origin && window.location.origin !== "null" && !window.location.origin.startsWith("file"))
+      ? window.location.origin
+      : "https://8func.com";
+    const userFullResultUrl = `${origin}${fullResultsPath}`;
 
     const compAxesData = [
       {
