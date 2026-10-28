@@ -181,8 +181,27 @@ export const LIKERT_SCORE_MAP = {
   STRONGLY_DISAGREE: 0
 };
 
+export const LIKERT_RAW = {
+  STRONGLY_AGREE: 1.0,
+  AGREE: 0.75,
+  NEUTRAL: 0.5,
+  DISAGREE: 0.25,
+  STRONGLY_DISAGREE: 0.0
+};
+
+export const ACQ_STRENGTH = 0.7;   // cât din tendința de a zice „da” la tot se scade
+export const AXIS_STRETCH = 1.3;   // decompresie bare axe
+export const FN_STRETCH = 1.6;     // decompresie bare funcții
+export const W_AXIS = 1, W_FORCED_CROSS = 0.5, W_COMBO_FORCED = 0.5, W_COMBO_LIKERT = 0.25;
+
+export const FN_LETTER = { Ne: 'N', Ni: 'N', Se: 'S', Si: 'S', Te: 'T', Ti: 'T', Fe: 'F', Fi: 'F' };
+
+const clamp = (x, lo = 0, hi = 100) => Math.max(lo, Math.min(hi, x));
+const clamp01 = (x) => Math.max(0, Math.min(1, x));
+const mean = (a) => (a.length ? a.reduce((s, x) => s + x, 0) / a.length : 0.5);
+
 /**
- * Calculates axis dichotomy scores (Raport Real Normalizat) and 8 cognitive functions (Scor Likert 0-100%).
+ * Calculates axis dichotomy scores (Raport Real Normalizat) and 8 cognitive functions (Scor Likert unipolar + stretch).
  */
 export function calculateScores(questions, answers) {
   let answeredCount = 0;
@@ -190,148 +209,165 @@ export function calculateScores(questions, answers) {
   let disagreeCount = 0;
   let neutralCount = 0;
 
-  // Track raw Likert scores for cognitive functions (0 to 100)
-  const functionScores = {};
+  // Track raw Likert scores for cognitive functions
+  const fnS = {};
   FUNCTIONS_LIST.forEach(f => {
-    functionScores[f] = [];
+    fnS[f] = [];
   });
 
-  // Track raw Likert scores for axis poles (0 to 100)
-  const axisPoles = { E: [], I: [], N: [], S: [], T: [], F: [], J: [], P: [] };
+  // Track weighted scores for axes
+  const axS = {
+    EI: [],
+    NS: [],
+    TF: [],
+    JP: []
+  };
 
-  // Combination tracking (NT, NF, ST, SF, IJ, IP, EP, EJ)
-  const comboScores = { NT: [], NF: [], ST: [], SF: [], IJ: [], IP: [], EP: [], EJ: [] };
+  const addAxis = (letter, valTowardLetter, w) => {
+    const dim = AXIS_DIMENSIONS.find(d => d.poleA === letter || d.poleB === letter);
+    if (!dim) return;
+    const toA = letter === dim.poleA ? valTowardLetter : (1.0 - valTowardLetter);
+    axS[dim.id].push({ v: toA, w });
+  };
+
+  // Acquiescence bias calculation across Likert answers (requires at least 8 Likert items to establish a baseline)
+  const likValues = [];
+  questions.forEach(q => {
+    const ansKey = answers[q.id];
+    if (ansKey !== undefined && ansKey !== null && LIKERT_RAW[ansKey] !== undefined) {
+      likValues.push(LIKERT_RAW[ansKey]);
+    }
+  });
+  const acq = likValues.length >= 8 ? (mean(likValues) - 0.5) * ACQ_STRENGTH : 0;
 
   questions.forEach(q => {
     const ansKey = answers[q.id];
     if (ansKey === undefined || ansKey === null) return;
     answeredCount++;
 
-    if (q.format === "wouldYouRather" || q.format === "direct") {
+    const forced = q.format === "wouldYouRather" || q.format === "direct";
+    let v = 0.5;
+
+    if (forced) {
       agreeCount++;
       const optA = q.options?.[0];
-      const optB = q.options?.[1];
-      const isA = (ansKey === optA?.id);
-      const isB = (ansKey === optB?.id);
-
-      const selPole = isA ? optA?.pole : (isB ? optB?.pole : null);
-      const unselPole = isA ? optB?.pole : (isB ? optA?.pole : null);
-
-      if (q.category === "axis" || ["E", "I", "N", "S", "T", "F", "J", "P"].includes(selPole)) {
-        if (selPole && axisPoles[selPole]) axisPoles[selPole].push(100);
-        if (unselPole && axisPoles[unselPole]) axisPoles[unselPole].push(0);
-      } else if (q.category === "function" || FUNCTIONS_LIST.includes(selPole)) {
-        if (selPole && functionScores[selPole]) functionScores[selPole].push(100);
-        if (unselPole && functionScores[unselPole]) functionScores[unselPole].push(0);
-      } else if (q.category === "combination" || comboScores[selPole]) {
-        if (selPole && comboScores[selPole]) comboScores[selPole].push(100);
-        if (unselPole && comboScores[unselPole]) comboScores[unselPole].push(0);
-      }
+      const isA = (ansKey === optA?.id || ansKey === "A");
+      v = isA ? 1.0 : 0.0;
     } else {
-      // 5-point Likert scale (0 - 100%)
-      let scoreTarget = 50;
+      let rawVal = 0.5;
       if (typeof ansKey === "number") {
         if (ansKey >= -1.0 && ansKey <= 1.0) {
-          scoreTarget = Math.max(0, Math.min(100, ((ansKey + 1.0) / 2.0) * 100.0));
+          rawVal = (ansKey + 1.0) / 2.0;
         } else {
-          scoreTarget = Math.max(0, Math.min(100, ansKey));
+          rawVal = ansKey / 100.0;
         }
       } else {
-        scoreTarget = LIKERT_SCORE_MAP[ansKey] ?? 50;
+        rawVal = LIKERT_RAW[ansKey] ?? 0.5;
       }
 
-      const scoreOpp = 100 - scoreTarget;
-
-      if (scoreTarget > 50) agreeCount++;
-      else if (scoreTarget < 50) disagreeCount++;
+      if (rawVal > 0.5) agreeCount++;
+      else if (rawVal < 0.5) disagreeCount++;
       else neutralCount++;
 
-      const target = q.agreementPole || q.target;
-      const opp = q.oppositePole || q.opposite;
+      v = clamp01(rawVal - acq);
+    }
 
-      if (q.category === "axis" || ["E", "I", "N", "S", "T", "F", "J", "P"].includes(target)) {
-        if (target && axisPoles[target]) axisPoles[target].push(scoreTarget);
-        if (opp && axisPoles[opp]) axisPoles[opp].push(scoreOpp);
-      } else if (q.category === "function" || FUNCTIONS_LIST.includes(target)) {
-        if (target && functionScores[target]) functionScores[target].push(scoreTarget);
-        if (opp && functionScores[opp]) functionScores[opp].push(scoreOpp);
-      } else if (q.category === "combination" || comboScores[target]) {
-        if (target && comboScores[target]) comboScores[target].push(scoreTarget);
-        if (opp && comboScores[opp]) comboScores[opp].push(scoreOpp);
+    const target = q.target || q.agreementPole || q.options?.[0]?.pole;
+    const opp = q.opposite || q.oppositePole || q.options?.[1]?.pole;
+
+    if (q.category === "axis") {
+      if (target) addAxis(target, v, W_AXIS);
+    } else if (q.category === "function") {
+      if (forced) {
+        if (target && fnS[target]) fnS[target].push(v);
+        if (opp && fnS[opp]) fnS[opp].push(1.0 - v);
+        const lt = target ? FN_LETTER[target] : null;
+        const lo = opp ? FN_LETTER[opp] : null;
+        if (lt && lo && lt !== lo) addAxis(lt, v, W_FORCED_CROSS);
+      } else {
+        // Unipolar: opusul NU primeste nimic
+        if (target && fnS[target]) fnS[target].push(v);
+      }
+    } else if (q.category === "combination") {
+      const t = (target || "").split("");
+      const o = (opp || "").split("");
+      if (forced) {
+        t.forEach((l, i) => {
+          if (l !== o[i]) addAxis(l, v, W_COMBO_FORCED);
+        });
+      } else {
+        t.forEach((l) => {
+          addAxis(l, v, W_COMBO_LIKERT);
+        });
       }
     }
   });
 
-  // 1. Calculate cognitive function percentages (Scor Likert direct 0-100%)
-  const percentages = {};
-  const precisePercentages = {};
+  // 1. Calculate cognitive function percentages (Scor Likert unipolar cu decompresie)
+  const raw = {};
   const insufficientData = {};
-  const functionSums = {};
   const functionWeights = {};
+  const functionSums = {};
   const functionDirectPoints = {};
 
   FUNCTIONS_LIST.forEach(f => {
-    const list = functionScores[f] || [];
+    const list = fnS[f] || [];
+    functionWeights[f] = list.length;
+    functionSums[f] = list.reduce((a, b) => a + b, 0);
     if (list.length > 0) {
-      const mean = list.reduce((a, b) => a + b, 0) / list.length;
-      precisePercentages[f] = Math.max(0, Math.min(100, mean));
-      percentages[f] = Math.round(precisePercentages[f]);
+      raw[f] = list.reduce((a, b) => a + b, 0) / list.length;
       insufficientData[f] = false;
-      functionSums[f] = list.reduce((a, b) => a + b, 0);
-      functionWeights[f] = list.length;
-      functionDirectPoints[f] = mean;
+      functionDirectPoints[f] = raw[f] * 100;
     } else {
-      precisePercentages[f] = 50.0;
-      percentages[f] = 50;
+      raw[f] = 0.5;
       insufficientData[f] = true;
-      functionSums[f] = 0;
-      functionWeights[f] = 0;
       functionDirectPoints[f] = 50;
     }
   });
 
-  // 2. Calculate 4 MBTI Spectrum axes via Raport Real Normalizat
+  const mu = mean(Object.values(raw));
+
+  const percentages = {};
+  const precisePercentages = {};
+  FUNCTIONS_LIST.forEach(f => {
+    const val = clamp(50 + (raw[f] - mu) * 100 * FN_STRETCH);
+    precisePercentages[f] = val;
+    percentages[f] = Math.round(val);
+  });
+
+  const ranking = [...FUNCTIONS_LIST].sort((a, b) => (raw[b] ?? 0.5) - (raw[a] ?? 0.5));
+
+  // 2. Calculate 4 MBTI Spectrum axes
   const axisScores = {};
   const axisPercentages = {};
 
   AXIS_DIMENSIONS.forEach(dim => {
     const { poleA, poleB, id } = dim;
-    const listA = axisPoles[poleA] || [];
-    const listB = axisPoles[poleB] || [];
-
-    const rawMeanA = listA.length > 0 ? (listA.reduce((a, b) => a + b, 0) / listA.length) : 50.0;
-    const rawMeanB = listB.length > 0 ? (listB.reduce((a, b) => a + b, 0) / listB.length) : 50.0;
-
-    const sumMeans = rawMeanA + rawMeanB;
-    let pctA = 50.0;
-    let pctB = 50.0;
-
-    if (sumMeans > 0) {
-      pctA = (rawMeanA / sumMeans) * 100.0;
-      pctB = 100.0 - pctA;
-    }
-
-    const roundA = Math.round(pctA);
+    const s = axS[id];
+    const wsum = s.reduce((acc, curr) => acc + curr.w, 0);
+    const m = wsum > 0 ? (s.reduce((acc, curr) => acc + curr.v * curr.w, 0) / wsum) : 0.5;
+    const pa = clamp(50 + (m - 0.5) * 100 * AXIS_STRETCH);
+    const roundA = Math.round(pa);
     const roundB = 100 - roundA;
 
     axisScores[id] = {
       dimension: id,
       poleA,
       poleB,
-      pctA,
-      pctB,
+      pctA: pa,
+      pctB: 100.0 - pa,
       roundA,
       roundB,
-      dominant: (pctA >= pctB) ? poleA : poleB,
+      dominant: (roundA >= roundB) ? poleA : poleB,
       directPctA: roundA,
       directPctB: roundB,
       funcPctA: roundA,
       funcPctB: roundB,
-      rawMeanA: Math.round(rawMeanA),
-      rawMeanB: Math.round(rawMeanB),
-      directPointsA: rawMeanA,
-      directPointsB: rawMeanB,
-      totalWeight: listA.length + listB.length
+      rawMeanA: Math.round(m * 100),
+      rawMeanB: Math.round((1.0 - m) * 100),
+      directPointsA: m * 100,
+      directPointsB: (1.0 - m) * 100,
+      totalWeight: wsum
     };
 
     axisPercentages[poleA] = roundA;
@@ -385,7 +421,8 @@ export function calculateScores(questions, answers) {
     acquiescenceWarning,
     answeredCount,
     totalQuestions: questions.length,
-    isComplete
+    isComplete,
+    ranking
   };
 }
 

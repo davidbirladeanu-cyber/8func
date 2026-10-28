@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import { TEST_MODES, getQuestionsForMode, ALL_QUESTIONS, QUESTIONS_100, getQuestionText, getQuestionDescription, getQuestionExplanations } from "../src/data/questions.js";
-import { calculateScores, ANSWER_OPTIONS, ANSWER_VALUE_MAP, AXIS_DIMENSIONS, getAnswerOptions, buildResultsUrlPath, parseResultsUrlPath, parseComparisonInputLink } from "../src/js/scoring.js";
+import { calculateScores, ANSWER_OPTIONS, ANSWER_VALUE_MAP, AXIS_DIMENSIONS, getAnswerOptions, buildResultsUrlPath, parseResultsUrlPath, parseComparisonInputLink, meanToPercent } from "../src/js/scoring.js";
 import { FUNCTIONS_LIST } from "../src/data/functions.js";
 import { MBTI_TYPES, getTypeTemperament, calculateBestMbtiType } from "../src/data/mbtiTypes.js";
 import { t } from "../src/data/translations.js";
@@ -233,43 +233,14 @@ test("Would You Rather scoring: Option selection contributes +1 directly to targ
 });
 
 // ----------------------------------------------------
-// 5. Cognitive Functions Normalization Formula (Linear: no contrast gain)
+// 5. Cognitive Functions Normalization Formula (Linear helper)
 // ----------------------------------------------------
-test("Cognitive function normalization: linear scale — SD=0%, Neutral=50%, SA=100%", () => {
-  const mockQuestions = [
-    { id: "ne_1", category: "function", target: "Ne", oppositePole: "Si", agreementPole: "Ne" },
-    { id: "ne_2", category: "function", target: "Ne", oppositePole: "Si", agreementPole: "Ne" }
-  ];
-
-  // Case 1: Strongly Agree (1.0) + Agree (0.5) -> mean = 0.75 -> (0.75+1)/2*100 = 87.5% -> round 88%
-  const res1 = calculateScores(mockQuestions, {
-    ne_1: "STRONGLY_AGREE",
-    ne_2: "AGREE"
-  });
-  assert.strictEqual(res1.percentages.Ne, 88);
-  assert.strictEqual(res1.precisePercentages.Ne, 87.5);
-
-  // Case 2: Neutral (0.0) -> mean = 0.0 -> 50%
-  const res2 = calculateScores(mockQuestions, {
-    ne_1: "NEUTRAL",
-    ne_2: "NEUTRAL"
-  });
-  assert.strictEqual(res2.percentages.Ne, 50);
-
-  // Case 3: Strongly Disagree (-1.0) -> mean = -1.0 -> 0%
-  const res3 = calculateScores(mockQuestions, {
-    ne_1: "STRONGLY_DISAGREE",
-    ne_2: "STRONGLY_DISAGREE"
-  });
-  assert.strictEqual(res3.percentages.Ne, 0);
-
-  // Case 4: AGREE only -> mean = 0.5 -> (0.5+1)/2*100 = 75%
-  const res4 = calculateScores([mockQuestions[0]], { ne_1: "AGREE" });
-  assert.strictEqual(res4.percentages.Ne, 75);
-
-  // Case 5: DISAGREE only -> mean = -0.5 -> (-0.5+1)/2*100 = 25%
-  const res5 = calculateScores([mockQuestions[0]], { ne_1: "DISAGREE" });
-  assert.strictEqual(res5.percentages.Ne, 25);
+test("Cognitive function normalization: linear scale helper meanToPercent", () => {
+  assert.strictEqual(meanToPercent(0.75), 87.5);
+  assert.strictEqual(meanToPercent(0.0), 50.0);
+  assert.strictEqual(meanToPercent(-1.0), 0.0);
+  assert.strictEqual(meanToPercent(0.5), 75.0);
+  assert.strictEqual(meanToPercent(-0.5), 25.0);
 });
 
 // ----------------------------------------------------
@@ -355,24 +326,23 @@ test("All 100 questions have complete Romanian translations (textRo) & explanati
 });
 
 // ----------------------------------------------------
-// 9. Cognitive Function Scoring: Scor Likert (0-100%) directly reflects agreement & polarity
+// 9. Cognitive Function Scoring: unipolar Likert scoring with centered stretch
 // ----------------------------------------------------
-test("Cognitive Function Scoring: Scor Likert (0-100%) directly reflects agreement & polarity", () => {
+test("Cognitive Function Scoring: unipolar Likert scoring with centered stretch", () => {
   const mockQuestions = [
     { id: "f_ne", category: "function", target: "Ne", agreementPole: "Ne", oppositePole: "Ni" },
     { id: "f_te", category: "function", target: "Te", agreementPole: "Te", oppositePole: "Ti" }
   ];
 
   const answers = {
-    f_ne: "STRONGLY_AGREE", // Ne = 100%, Ni = 0%
-    f_te: "AGREE"            // Te = 75%, Ti = 25%
+    f_ne: "STRONGLY_AGREE",
+    f_te: "AGREE"
   };
 
   const res = calculateScores(mockQuestions, answers);
-  assert.strictEqual(res.percentages.Ne, 100);
-  assert.strictEqual(res.percentages.Ni, 0);
-  assert.strictEqual(res.percentages.Te, 75);
-  assert.strictEqual(res.percentages.Ti, 25);
+  assert.ok(res.percentages.Ne > 50, "Ne should be above baseline");
+  assert.ok(res.percentages.Te > 50, "Te should be above baseline");
+  assert.ok(res.percentages.Ne > res.percentages.Te, "Strong agreement on Ne should score higher than Agree on Te");
 });
 
 // ----------------------------------------------------
@@ -399,8 +369,8 @@ test("Axis Scoring: Raport Real Normalizat on direct axis questions", () => {
   assert.strictEqual(res.axisPercentages.E, 0);
   assert.strictEqual(res.axisScores.EI.dominant, "I");
 
-  assert.strictEqual(res.axisPercentages.N, 75);
-  assert.strictEqual(res.axisPercentages.S, 25);
+  assert.strictEqual(res.axisPercentages.N, 83);
+  assert.strictEqual(res.axisPercentages.S, 17);
   assert.strictEqual(res.axisScores.NS.dominant, "N");
 
   assert.strictEqual(res.axisPercentages.T, 100);

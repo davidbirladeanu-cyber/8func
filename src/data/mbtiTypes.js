@@ -282,21 +282,19 @@ export function calculateBestMbtiType(percentages, axisScoresOrPercentages = nul
   funcScoresSorted.forEach((item, idx) => { userRankMap[item.f] = idx + 1; });
 
   // Position weights: dominant is critical, shadow functions penalise minimally
-  const POSITION_WEIGHTS = [5, 4, 2, 1, 0.5, 0.5, 0.25, 0.25]; // sum = 13.5
-  const W_TOTAL = POSITION_WEIGHTS.reduce((a, b) => a + b, 0);
+  const POSITION_WEIGHTS = [5, 4, 2, 1, 0.5, 0.5, 0.25, 0.25];
 
   const scores = Object.entries(MBTI_TYPES).map(([typeKey, typeData]) => {
     // Full 8-function order for this type: dom(1) -> aux(2) -> tert(3) -> inf(4) -> shadows(5-8)
     const typeOrder = [...typeData.stack, ...typeData.shadow];
 
-    let rankScore = 0;
+    let pen = 0, maxPen = 0;
     typeOrder.forEach((funcName, idx) => {
-      const typeRank = idx + 1;                        // where this function sits in the type's ideal stack
-      const userRank = userRankMap[funcName] ?? 8;     // where the user placed this function
-      const rankDiff = Math.abs(userRank - typeRank);
-      rankScore += POSITION_WEIGHTS[idx] * (1 - rankDiff / 7);
+      const userRank0 = (userRankMap[funcName] ?? 8) - 1;
+      pen += POSITION_WEIGHTS[idx] * Math.abs(userRank0 - idx);
+      maxPen += POSITION_WEIGHTS[idx] * Math.max(idx, 7 - idx);
     });
-    const rankScorePct = Math.max(0, Math.min(100, (rankScore / W_TOTAL) * 100));
+    const rankScorePct = Math.max(0, Math.min(100, 100 * (1 - pen / maxPen)));
 
     // Axis alignment (how strongly the 4 MBTI letters are favoured)
     const letters = typeKey.split("");
