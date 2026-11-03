@@ -400,6 +400,18 @@ class App {
       `;
     }
 
+    if (modalCloseBtn) {
+      modalCloseBtn.onclick = () => this.closeModal();
+    }
+    const modalOkBtn = modal.querySelector("#modal-ok-btn");
+    if (modalOkBtn) {
+      modalOkBtn.textContent = lang === "ro" ? "Am înțeles" : "Understood";
+      modalOkBtn.onclick = () => this.closeModal();
+    }
+    modal.onclick = (e) => {
+      if (e.target === modal) this.closeModal();
+    };
+
     modal.classList.add("active");
   }
 
@@ -4496,7 +4508,7 @@ class App {
           <nav class="e-edit-axes" role="tablist" aria-label="Sections">
             ${activeSections.map(sec => {
               const firstIdx = steps.findIndex(s => s.group === sec.id);
-              const sName = lang === "ro" ? (sec.nameRo || sec.name) : sec.name;
+              const sFullName = lang === "ro" ? (sec.nameRo || sec.name) : sec.name;
               return `
                 <button
                   type="button"
@@ -4505,10 +4517,10 @@ class App {
                   data-group="${sec.id}"
                   data-first="${firstIdx}"
                   style="--gc: ${sec.color};"
-                  title="${sName}"
+                  title="${sFullName}"
                 >
                   ${sec.icon}
-                  <span>${sName}</span>
+                  <span class="e-axis-code">${sec.id}</span>
                   <span class="e-edit-badge" id="badge-${sec.id}" style="display: none;">0</span>
                 </button>
               `;
@@ -4589,82 +4601,84 @@ class App {
       const gName = lang === "ro" ? (groupDef?.nameRo || groupDef?.name || currentGroup) : (groupDef?.name || currentGroup);
       counterEl.textContent = `${gName} · ${inGroupIndex + 1}/${groupSteps.length}`;
 
-      // Render cards: inGroupIndex - 1 to inGroupIndex + 2
-      let cardsHtml = "";
-      groupSteps.forEach((s, idx) => {
-        const pos = idx - inGroupIndex;
-        if (pos < -1 || pos > 2) return;
-        const dataPos = pos < 0 ? "out" : String(pos);
-        const q = s.question;
-        const isChanged = draftAnswers[q.id] !== initialAnswers[q.id];
-        const currentAnswer = draftAnswers[q.id];
-        const qNumStr = String(questions.indexOf(q) + 1).padStart(2, "0");
-        const qText = getQuestionText(q, lang);
+      // Single fixed active card (No data-pos ghost cards)
+      const q = currentStep.question;
+      const isChanged = draftAnswers[q.id] !== initialAnswers[q.id];
+      const currentAnswer = draftAnswers[q.id];
+      const qNumStr = String(questions.indexOf(q) + 1).padStart(2, "0");
+      const qText = getQuestionText(q, lang);
 
-        let answersContentHtml = "";
-        if ((q.format === "wouldYouRather" || q.format === "direct") && q.options) {
-          answersContentHtml = `
-            <div class="wyr-options-grid" role="radiogroup">
-              ${q.options.map(opt => {
-                const isSelected = currentAnswer === opt.id;
-                const optText = (lang === "ro" && opt.textRo) ? opt.textRo : opt.text;
-                return `
-                  <button type="button" class="answer-button ${isSelected ? 'selected' : ''}" data-answer="${opt.id}" data-qid="${q.id}" role="radio" aria-checked="${isSelected}">
-                    <span class="answer-icon" aria-hidden="true">${opt.id}</span>
-                    <span class="answer-label">${optText}</span>
-                    <span class="answer-radio" aria-hidden="true"><span class="answer-radio-dot"></span></span>
-                  </button>
-                `;
-              }).join("")}
-            </div>
-          `;
-        } else {
-          const options = getAnswerOptions(lang);
-          answersContentHtml = `
-            <div class="answer-grid" role="radiogroup">
-              ${options.map((opt) => {
-                const isSelected = currentAnswer === opt.key;
-                let iconSvg = ICONS.check;
-                if (opt.key === "NEUTRAL") iconSvg = ICONS.minus;
-                else if (opt.key === "DISAGREE" || opt.key === "STRONGLY_DISAGREE") iconSvg = ICONS.cross;
-                return `
-                  <button class="answer-button answer-${opt.classSuffix} ${isSelected ? 'selected' : ''}" data-answer="${opt.key}" data-qid="${q.id}" type="button" role="radio" aria-checked="${isSelected}">
-                    <span class="answer-icon" aria-hidden="true">${iconSvg}</span>
-                    <span class="answer-label">${opt.label}</span>
-                    <span class="answer-radio" aria-hidden="true"><span class="answer-radio-dot"></span></span>
-                  </button>
-                `;
-              }).join("")}
-            </div>
-          `;
-        }
+      let answersContentHtml = "";
+      if ((q.format === "wouldYouRather" || q.format === "direct") && q.options) {
+        answersContentHtml = `
+          <div class="wyr-options-grid" role="radiogroup">
+            ${q.options.map(opt => {
+              const isSelected = currentAnswer === opt.id;
+              const optText = (lang === "ro" && opt.textRo) ? opt.textRo : opt.text;
+              return `
+                <button type="button" class="answer-button ${isSelected ? 'selected' : ''}" data-answer="${opt.id}" data-qid="${q.id}" role="radio" aria-checked="${isSelected}">
+                  <span class="answer-icon" aria-hidden="true">${opt.id}</span>
+                  <span class="answer-label">${optText}</span>
+                  <span class="answer-radio" aria-hidden="true"><span class="answer-radio-dot"></span></span>
+                </button>
+              `;
+            }).join("")}
+          </div>
+        `;
+      } else {
+        const options = getAnswerOptions(lang);
+        answersContentHtml = `
+          <div class="answer-grid" role="radiogroup">
+            ${options.map((opt) => {
+              const isSelected = currentAnswer === opt.key;
+              let iconSvg = ICONS.check;
+              if (opt.key === "NEUTRAL") iconSvg = ICONS.minus;
+              else if (opt.key === "DISAGREE" || opt.key === "STRONGLY_DISAGREE") iconSvg = ICONS.cross;
+              return `
+                <button class="answer-button answer-${opt.classSuffix} ${isSelected ? 'selected' : ''}" data-answer="${opt.key}" data-qid="${q.id}" type="button" role="radio" aria-checked="${isSelected}">
+                  <span class="answer-icon" aria-hidden="true">${iconSvg}</span>
+                  <span class="answer-label">${opt.label}</span>
+                  <span class="answer-radio" aria-hidden="true"><span class="answer-radio-dot"></span></span>
+                </button>
+              `;
+            }).join("")}
+          </div>
+        `;
+      }
 
-        cardsHtml += `
-          <div
-            class="e-edit-card ${isChanged ? 'is-changed' : ''}"
-            data-pos="${dataPos}"
-            data-qid="${q.id}"
-            ${pos !== 0 ? 'inert aria-hidden="true"' : ''}
-          >
-            <article class="question-card">
-              <span class="question-number" aria-hidden="true">${qNumStr}</span>
-              <header class="question-card-header">
+      deckContainer.innerHTML = `
+        <div class="e-edit-card ${isChanged ? 'is-changed' : ''}" data-qid="${q.id}">
+          <article class="question-card">
+            <span class="question-number" aria-hidden="true">${qNumStr}</span>
+            <header class="question-card-header">
+              <div class="question-header-top">
                 <div class="question-axis-tag">
                   <i class="question-axis-tag-ico-wrap" aria-hidden="true">${groupDef?.icon || ''}</i>
                   <span>${gName.toUpperCase()}</span>
                 </div>
-                <h2>${qText}</h2>
-              </header>
-              ${answersContentHtml}
-            </article>
-          </div>
-        `;
+                <button class="question-help-btn" id="edit-q-help-btn" type="button" aria-label="${lang === 'ro' ? 'Despre această întrebare' : 'About this question'}" title="${lang === 'ro' ? 'Despre această întrebare' : 'About this question'}">
+                  <span class="q-help-icon" aria-hidden="true">?</span>
+                </button>
+              </div>
+              <h2>
+                ${qText}
+                <button class="question-help-btn-inline" type="button" aria-label="${lang === 'ro' ? 'Despre această întrebare' : 'About this question'}" title="${lang === 'ro' ? 'Despre această întrebare' : 'About this question'}">?</button>
+              </h2>
+            </header>
+            ${answersContentHtml}
+          </article>
+        </div>
+      `;
+
+      // Help button click opens the exact modal specified
+      deckContainer.querySelectorAll(".question-help-btn, .question-help-btn-inline").forEach(btn => {
+        btn.addEventListener("click", () => {
+          this.showQuestionInfoModal(q);
+        });
       });
 
-      deckContainer.innerHTML = cardsHtml;
-
-      // Attach answer selection event on active card (data-pos="0")
-      const activeCard = deckContainer.querySelector('.e-edit-card[data-pos="0"]');
+      // Attach answer selection event on card
+      const activeCard = deckContainer.querySelector('.e-edit-card');
       if (activeCard) {
         activeCard.querySelectorAll("[data-answer]").forEach(btn => {
           btn.addEventListener("click", () => {
@@ -4711,6 +4725,11 @@ class App {
     });
 
     const closeModal = () => {
+      const activeModal = document.querySelector(".modal-overlay.active");
+      if (activeModal) {
+        this.closeModal();
+        return;
+      }
       if (countChanges() > 0) {
         if (!window.confirm(t('editAnswersDiscardConfirm', {}, lang))) return;
       }
@@ -4719,6 +4738,11 @@ class App {
     };
 
     const handleKeyDown = (e) => {
+      const activeModal = document.querySelector(".modal-overlay.active");
+      if (activeModal) {
+        if (e.key === "Escape") this.closeModal();
+        return;
+      }
       if (e.key === "ArrowLeft") goTo(currentStepIndex - 1);
       else if (e.key === "ArrowRight") goTo(currentStepIndex + 1);
       else if (e.key === "Escape") closeModal();

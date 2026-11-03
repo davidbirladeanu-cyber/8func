@@ -1,5 +1,5 @@
-# Ghid de Calibrare INTJ (100 de Întrebări) — 8Func Test
 
+# Ghid de Calibrare INTJ (100 de Întrebări) — 8Func Test
 Acest document analizează toate cele 100 de întrebări ale testului, comparând răspunsurile tale actuale cu profilul de referință **INTJ Pur** (97-100% potrivire).
 
 ---

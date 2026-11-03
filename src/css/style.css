@@ -2948,7 +2948,7 @@ a {
   background: rgba(16, 16, 16, 0.65);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  z-index: 1000;
+  z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -7488,10 +7488,15 @@ a {
   border: 1.5px solid #E2DDCF;
   border-radius: 14px;
   background: #FFFFFF;
-  font: 600 12.5px var(--font-body, system-ui, sans-serif);
+  font: 700 13px var(--font-body, system-ui, sans-serif);
   color: #101010;
   cursor: pointer;
   transition: background .15s, border-color .15s, color .15s;
+}
+.e-edit-axis .e-axis-code {
+  font-size: 13.5px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
 }
 .e-edit-axis > span:not(.e-edit-badge) {
   min-width: 0;
@@ -7555,52 +7560,27 @@ a {
 .e-deck-edit {
   position: relative;
   flex: 1;
+  display: flex;
+  flex-direction: column;
   min-height: 300px;
 }
 .e-edit-card {
-  position: absolute;
-  inset: 0 0 10px 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
   border-radius: 24px;
-  transform-origin: 50% 100%;
-  transition: transform .45s cubic-bezier(.16, .84, .28, 1), opacity .3s ease;
-}
-.e-edit-card[data-pos="0"] {
-  z-index: 10;
-  transform: none;
-  pointer-events: auto;
-}
-.e-edit-card[data-pos="1"] {
-  z-index: 9;
-  transform: translate(12px, 14px) rotate(1.5deg) scale(.98);
-  pointer-events: none;
-}
-.e-edit-card[data-pos="2"] {
-  z-index: 8;
-  transform: translate(-10px, 26px) rotate(-1.8deg) scale(.95);
-  opacity: .85;
-  pointer-events: none;
-}
-.e-edit-card[data-pos="out"] {
-  z-index: 11;
-  transform: translate(-70%, -4%) rotate(-12deg);
-  opacity: 0;
-  pointer-events: none;
-}
-.e-edit-card .question-card > * {
-  transition: opacity .3s ease .05s;
-}
-.e-edit-card:not([data-pos="0"]) .question-card > * {
-  opacity: 0;
-  transition-delay: 0s;
 }
 .e-edit-card .question-card {
   margin: 0;
   width: 100%;
   max-width: none;
-  min-height: 100%;
-  gap: 14px;
+  height: 100%;
+  flex: 1;
+  gap: 16px;
   padding: 26px 30px;
   box-shadow: 0 14px 30px -18px rgba(16, 16, 16, 0.22);
   border: 1px solid #E2DDCF;
@@ -7609,6 +7589,7 @@ a {
   display: flex;
   flex-direction: column;
   position: relative;
+  box-sizing: border-box;
 }
 .e-edit-card .question-number {
   position: absolute;
@@ -7628,6 +7609,12 @@ a {
   flex-direction: column;
   gap: 8px;
   z-index: 2;
+}
+.e-edit-card .question-header-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
 }
 .e-edit-card .question-axis-tag {
   display: inline-flex;
@@ -7662,6 +7649,56 @@ a {
   text-transform: uppercase;
   color: #102E24;
 }
+.e-edit-card .question-help-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  min-height: 26px;
+  border-radius: 50%;
+  background: #EAE6DC;
+  border: 1.5px solid #D8D4C7;
+  color: #102E24;
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  transition: all .15s ease;
+  padding: 0;
+  flex-shrink: 0;
+}
+.e-edit-card .question-help-btn:hover,
+.e-edit-card .question-help-btn-inline:hover {
+  background: #102E24;
+  border-color: #102E24;
+  color: #FFFFFF;
+  transform: scale(1.12);
+}
+.e-edit-card .question-help-btn-inline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  min-height: 22px;
+  margin-left: 8px;
+  border-radius: 50%;
+  background: #EAE6DC;
+  border: 1.5px solid #D8D4C7;
+  color: #102E24;
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  vertical-align: middle;
+  cursor: pointer;
+  transition: all .15s ease;
+  padding: 0;
+}
 .e-edit-card .question-card h2 {
   max-width: 82%;
   font-size: 21px;
@@ -7675,75 +7712,87 @@ a {
 .e-edit-card .wyr-options-grid {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
   width: 100%;
-  margin-top: 4px;
+  margin-top: 8px;
+  height: auto !important;
+  justify-content: flex-start !important;
 }
 .e-edit-card .answer-button {
   position: relative;
   display: grid;
-  grid-template-columns: 26px 1fr 20px;
-  gap: 14px;
+  grid-template-columns: 32px 1fr 22px;
+  gap: 16px;
   align-items: center;
   width: 100%;
-  min-height: 48px;
-  padding: 10px 18px 10px 14px;
-  border-radius: 14px;
+  min-height: 56px;
+  padding: 13px 20px 13px 16px;
+  border-radius: 16px;
   border: 1.5px solid #E5E2D9;
   background: #F5F3EC;
   color: #101010;
   font-family: var(--font-body, system-ui, sans-serif);
   font-weight: 600;
-  font-size: 15px;
+  font-size: 16px;
+  line-height: 1.35;
   letter-spacing: -0.01em;
   text-align: left;
   cursor: pointer;
   transition: all 0.15s ease;
+  box-sizing: border-box;
 }
 .e-edit-card .answer-button:hover:not(.selected) {
   background: #EFECE3;
   border-color: #D8D4C7;
+  transform: translateY(-1px);
 }
 .e-edit-card .answer-button .answer-icon {
   display: grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
   border-radius: 50%;
   background: #E5E2D9;
   color: #101010;
   flex-shrink: 0;
+  aspect-ratio: 1;
   border: none;
 }
 .e-edit-card .answer-button .answer-icon svg {
-  width: 13px;
-  height: 13px;
+  width: 16px !important;
+  height: 16px !important;
   fill: none;
   stroke: currentColor;
-  stroke-width: 2.5;
+  stroke-width: 2.6;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 .e-edit-card .answer-button .answer-label {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   color: inherit;
   text-align: left;
+  line-height: 1.35;
 }
 .e-edit-card .answer-button .answer-radio {
   display: grid;
   place-items: center;
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  min-height: 22px;
   border-radius: 50%;
-  border: 1.5px solid #C7C2B4;
+  border: 2px solid #C7C2B4;
   background: transparent;
   justify-self: end;
+  flex-shrink: 0;
   transition: all 0.15s ease;
 }
 .e-edit-card .answer-button .answer-radio .answer-radio-dot {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: transparent;
   transition: all 0.15s ease;
@@ -7754,10 +7803,10 @@ a {
   background: #102E24 !important;
   border-color: #102E24 !important;
   color: #FFFFFF !important;
-  box-shadow: 0 8px 20px -6px rgba(16, 46, 36, 0.4);
+  box-shadow: 0 8px 24px -6px rgba(16, 46, 36, 0.4);
 }
 .e-edit-card .answer-button.selected .answer-icon {
-  background: rgba(255, 255, 255, 0.18) !important;
+  background: rgba(255, 255, 255, 0.2) !important;
   color: #FFFFFF !important;
 }
 .e-edit-card .answer-button.selected .answer-radio {
