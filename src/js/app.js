@@ -4403,14 +4403,14 @@ class App {
       { id: "P", name: "Perceiving", nameRo: "Percepție", color: "#d97706", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>` },
 
       // 2. Cognitive Functions (8)
-      { id: "Ne", name: "Ne · Intuition", nameRo: "Ne · Intuiție", color: "#8A3AA0", icon: COGNITIVE_FUNCTIONS.Ne?.icon || `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>` },
-      { id: "Ni", name: "Ni · Synthesis", nameRo: "Ni · Sinteză", color: "#3B49DF", icon: COGNITIVE_FUNCTIONS.Ni?.icon || `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>` },
-      { id: "Se", name: "Se · Action", nameRo: "Se · Acțiune", color: "#DC2626", icon: COGNITIVE_FUNCTIONS.Se?.icon || `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>` },
-      { id: "Si", name: "Si · Memory", nameRo: "Si · Memorie", color: "#B45309", icon: COGNITIVE_FUNCTIONS.Si?.icon || `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>` },
-      { id: "Te", name: "Te · Structure", nameRo: "Te · Structură", color: "#0284C7", icon: COGNITIVE_FUNCTIONS.Te?.icon || `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>` },
-      { id: "Ti", name: "Ti · Precision", nameRo: "Ti · Precizie", color: "#0D9488", icon: COGNITIVE_FUNCTIONS.Ti?.icon || `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>` },
-      { id: "Fe", name: "Fe · Harmony", nameRo: "Fe · Armonie", color: "#16A34A", icon: COGNITIVE_FUNCTIONS.Fe?.icon || `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>` },
-      { id: "Fi", name: "Fi · Values", nameRo: "Fi · Valori", color: "#EA580C", icon: COGNITIVE_FUNCTIONS.Fi?.icon || `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>` },
+      { id: "Ne", name: "Ne · Intuition", nameRo: "Ne · Intuiție", color: "#8A3AA0", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>` },
+      { id: "Ni", name: "Ni · Synthesis", nameRo: "Ni · Sinteză", color: "#3B49DF", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>` },
+      { id: "Se", name: "Se · Action", nameRo: "Se · Acțiune", color: "#DC2626", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>` },
+      { id: "Si", name: "Si · Memory", nameRo: "Si · Memorie", color: "#B45309", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>` },
+      { id: "Te", name: "Te · Structure", nameRo: "Te · Structură", color: "#0284C7", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>` },
+      { id: "Ti", name: "Ti · Precision", nameRo: "Ti · Precizie", color: "#0D9488", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>` },
+      { id: "Fe", name: "Fe · Harmony", nameRo: "Fe · Armonie", color: "#16A34A", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>` },
+      { id: "Fi", name: "Fi · Values", nameRo: "Fi · Valori", color: "#EA580C", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>` },
 
       // 3. Lifestyle / Energy Combinations (4)
       { id: "EJ", name: "EJ · Executive", nameRo: "EJ · Directiv", color: "#395296", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>` },
@@ -4488,7 +4488,7 @@ class App {
         <header class="e-edit-head">
           <h3 id="e-edit-title">${t('editAnswersTitle', {}, lang)}</h3>
           <span class="e-edit-count" id="edit-change-count" aria-live="polite">${t('editAnswersNoChanges', {}, lang)}</span>
-          <button class="e-btn e-btn-primary e-btn-sm e-edit-save" id="edit-save-btn" type="button" disabled>
+          <button class="e-edit-save" id="edit-save-btn" type="button" disabled>
             ${t('editAnswersSave', {}, lang)}
           </button>
         </header>
@@ -4517,14 +4517,12 @@ class App {
           <section class="e-edit-stage" aria-label="Questions Deck">
             <div class="e-deck-edit" id="edit-deck-container"></div>
             <nav class="e-edit-foot" aria-label="Navigation">
-              <button class="e-btn e-btn-ghost e-btn-sm" id="edit-back-btn" type="button" disabled>
-                <svg class="e-arr" viewBox="0 0 24 24" aria-hidden="true" style="transform: rotate(180deg); width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2;"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
-                <span>${t('back', {}, lang)}</span>
+              <button class="e-edit-nav-btn" id="edit-back-btn" type="button" disabled>
+                ← ${t('back', {}, lang)}
               </button>
-              <span class="e-edit-counter" id="edit-counter-lbl">1 / 1</span>
-              <button class="e-btn e-btn-ghost e-btn-sm" id="edit-next-btn" type="button">
-                <span>${t('next', {}, lang)}</span>
-                <svg class="e-arr" viewBox="0 0 24 24" aria-hidden="true" style="width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2;"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
+              <span class="e-edit-counter" id="edit-counter-lbl">1/1</span>
+              <button class="e-edit-nav-btn" id="edit-next-btn" type="button">
+                ${t('next', {}, lang)} →
               </button>
             </nav>
           </section>
@@ -4547,7 +4545,7 @@ class App {
         countEl.textContent = t('editAnswersNoChanges', {}, lang);
         saveBtn.disabled = true;
       } else {
-        const word = lang === "ro" ? (changes === 1 ? "modificare" : "modificări") : (changes === 1 ? "change" : "changes");
+        const word = lang === "ro" ? (changes === 1 ? "răspuns modificat" : "răspunsuri modificate") : (changes === 1 ? "answer changed" : "answers changed");
         countEl.textContent = `${changes} ${word}`;
         saveBtn.disabled = false;
       }
@@ -4589,7 +4587,7 @@ class App {
 
       const groupDef = activeSections.find(s => s.id === currentGroup);
       const gName = lang === "ro" ? (groupDef?.nameRo || groupDef?.name || currentGroup) : (groupDef?.name || currentGroup);
-      counterEl.textContent = `${gName} · ${inGroupIndex + 1} / ${groupSteps.length}`;
+      counterEl.textContent = `${gName} · ${inGroupIndex + 1}/${groupSteps.length}`;
 
       // Render cards: inGroupIndex - 1 to inGroupIndex + 2
       let cardsHtml = "";
@@ -4611,9 +4609,10 @@ class App {
                 const isSelected = currentAnswer === opt.id;
                 const optText = (lang === "ro" && opt.textRo) ? opt.textRo : opt.text;
                 return `
-                  <button type="button" class="wyr-option-card ${isSelected ? 'selected' : ''}" data-answer="${opt.id}" data-qid="${q.id}" role="radio" aria-checked="${isSelected}">
-                    <span class="wyr-card-tag">${lang === 'ro' ? 'OPȚIUNEA' : 'OPTION'} ${opt.id}</span>
-                    <span class="wyr-card-text">${optText}</span>
+                  <button type="button" class="answer-button ${isSelected ? 'selected' : ''}" data-answer="${opt.id}" data-qid="${q.id}" role="radio" aria-checked="${isSelected}">
+                    <span class="answer-icon" aria-hidden="true">${opt.id}</span>
+                    <span class="answer-label">${optText}</span>
+                    <span class="answer-radio" aria-hidden="true"><span class="answer-radio-dot"></span></span>
                   </button>
                 `;
               }).join("")}
@@ -4623,7 +4622,7 @@ class App {
           const options = getAnswerOptions(lang);
           answersContentHtml = `
             <div class="answer-grid" role="radiogroup">
-              ${options.map((opt, i) => {
+              ${options.map((opt) => {
                 const isSelected = currentAnswer === opt.key;
                 let iconSvg = ICONS.check;
                 if (opt.key === "NEUTRAL") iconSvg = ICONS.minus;
@@ -4632,7 +4631,7 @@ class App {
                   <button class="answer-button answer-${opt.classSuffix} ${isSelected ? 'selected' : ''}" data-answer="${opt.key}" data-qid="${q.id}" type="button" role="radio" aria-checked="${isSelected}">
                     <span class="answer-icon" aria-hidden="true">${iconSvg}</span>
                     <span class="answer-label">${opt.label}</span>
-                    <span class="answer-key-hint" aria-hidden="true">${i + 1}</span>
+                    <span class="answer-radio" aria-hidden="true"><span class="answer-radio-dot"></span></span>
                   </button>
                 `;
               }).join("")}
@@ -4650,6 +4649,10 @@ class App {
             <article class="question-card">
               <span class="question-number" aria-hidden="true">${qNumStr}</span>
               <header class="question-card-header">
+                <div class="question-axis-tag">
+                  <i class="question-axis-tag-ico-wrap" aria-hidden="true">${groupDef?.icon || ''}</i>
+                  <span>${gName.toUpperCase()}</span>
+                </div>
                 <h2>${qText}</h2>
               </header>
               ${answersContentHtml}
