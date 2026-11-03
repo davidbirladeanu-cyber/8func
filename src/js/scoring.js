@@ -685,3 +685,132 @@ export function parseComparisonInputLink(linkStr) {
   return null;
 }
 
+/**
+ * Calculates the percentage impact (delta) of a question's answer on the targeted
+ * cognitive function, axis, or combination, relative to a neutral / baseline response.
+ *
+ * @param {Object} question - The question object
+ * @param {Object} answers - Current answers dictionary (e.g. draftAnswers)
+ * @param {Array} questions - All questions in the test
+ * @param {string} lang - Language ('ro' or 'en')
+ * @returns {Object|null} Impact metrics and formatted display values
+ */
+export function calculateQuestionImpact(question, answers, questions, lang = "ro") {
+  if (!question || !answers || !questions || questions.length === 0) {
+    return null;
+  }
+
+  const currentAns = answers[question.id];
+  if (currentAns === undefined || currentAns === null) {
+    return null;
+  }
+
+  const target = question.target || question.agreementPole || (question.options && question.options[0]?.pole) || question.dimension || "Ne";
+  const cat = question.category;
+  const isForced = question.format === "wouldYouRather" || question.format === "direct";
+
+  // Calculate score with current answers
+  const sCurrent = calculateScores(questions, answers);
+
+  // Baseline answers:
+  // For Likert: baseline is "NEUTRAL"
+  // For Forced choice (dilemma): baseline is without this question
+  let sBase;
+  if (isForced) {
+    const ansWithout = { ...answers };
+    delete ansWithout[question.id];
+    sBase = calculateScores(questions, ansWithout);
+  } else {
+    const ansNeut = { ...answers, [question.id]: "NEUTRAL" };
+    sBase = calculateScores(questions, ansNeut);
+  }
+
+  let delta = 0;
+  let userTotal = 50;
+
+  if (cat === "function") {
+    const pCurrent = sCurrent.precisePercentages?.[target] ?? sCurrent.percentages[target] ?? 50;
+    const pBase = sBase.precisePercentages?.[target] ?? sBase.percentages[target] ?? 50;
+    delta = pCurrent - pBase;
+    userTotal = sCurrent.percentages[target] ?? Math.round(pCurrent);
+  } else if (cat === "axis") {
+    const dimId = question.dimension || (target === "E" || target === "I" ? "EI" : target === "N" || target === "S" ? "NS" : target === "T" || target === "F" ? "TF" : "JP");
+    const dimCurr = sCurrent.axisScores[dimId];
+    const dimBase = sBase.axisScores[dimId];
+    if (dimCurr && dimBase) {
+      const pCurrent = (target === dimCurr.poleA) ? dimCurr.pctA : dimCurr.pctB;
+      const pBase = (target === dimBase.poleA) ? dimBase.pctA : dimBase.pctB;
+      delta = pCurrent - pBase;
+      userTotal = Math.round(pCurrent);
+    }
+  } else if (cat === "combination") {
+    const letters = (target || "").split("");
+    const diffs = letters.map(l => {
+      const dimId = (l === "E" || l === "I") ? "EI" : (l === "N" || l === "S") ? "NS" : (l === "T" || l === "F") ? "TF" : "JP";
+      const dimCurr = sCurrent.axisScores[dimId];
+      const dimBase = sBase.axisScores[dimId];
+      if (dimCurr && dimBase) {
+        const pCurrent = (l === dimCurr.poleA) ? dimCurr.pctA : dimCurr.pctB;
+        const pBase = (l === dimBase.poleA) ? dimBase.pctA : dimBase.pctB;
+        return pCurrent - pBase;
+      }
+      return 0;
+    });
+    delta = diffs.length > 0 ? (diffs.reduce((a, b) => a + b, 0) / diffs.length) : 0;
+    userTotal = Math.round(letters.reduce((acc, l) => {
+      const dimId = (l === "E" || l === "I") ? "EI" : (l === "N" || l === "S") ? "NS" : (l === "T" || l === "F") ? "TF" : "JP";
+      const dim = sCurrent.axisScores[dimId];
+      return acc + (dim ? (l === dim.poleA ? dim.pctA : dim.pctB) : 50);
+    }, 0) / (letters.length || 1));
+  } else {
+    if (sCurrent.percentages[target] !== undefined) {
+      const pCurrent = sCurrent.precisePercentages?.[target] ?? sCurrent.percentages[target];
+      const pBase = sBase.precisePercentages?.[target] ?? sBase.percentages[target];
+      delta = pCurrent - pBase;
+      userTotal = sCurrent.percentages[target];
+    }
+  }
+
+  let deltaRound = Math.round(delta);
+  if (Object.is(deltaRound, -0) || deltaRound === 0) deltaRound = 0;
+
+  const isPositive = deltaRound > 0;
+  const isNegative = deltaRound < 0;
+  const isNeutral = deltaRound === 0;
+
+  const sign = isPositive ? "+" : "";
+  const text = `${sign}${deltaRound}% ${target}`;
+
+  let tooltip = "";
+  if (lang === "ro") {
+    if (isPositive) {
+      tooltip = `Acest răspuns adaugă +${deltaRound}% la scorul tău de ${target} (Scor total: ${userTotal}% ${target}).`;
+    } else if (isNegative) {
+      tooltip = `Acest răspuns scade ${Math.abs(deltaRound)}% din scorul tău de ${target} (Scor total: ${userTotal}% ${target}).`;
+    } else {
+      tooltip = `Răspuns neutru: impact 0% asupra scorului tău de ${target} (Scor total: ${userTotal}% ${target}).`;
+    }
+  } else {
+    if (isPositive) {
+      tooltip = `This answer adds +${deltaRound}% to your ${target} score (Total score: ${userTotal}% ${target}).`;
+    } else if (isNegative) {
+      tooltip = `This answer subtracts ${Math.abs(deltaRound)}% from your ${target} score (Total score: ${userTotal}% ${target}).`;
+    } else {
+      tooltip = `Neutral answer: 0% impact on your ${target} score (Total score: ${userTotal}% ${target}).`;
+    }
+  }
+
+  return {
+    delta,
+    deltaRound,
+    target,
+    userTotal,
+    text,
+    tooltip,
+    isPositive,
+    isNegative,
+    isNeutral,
+    className: isPositive ? "is-pos" : isNegative ? "is-neg" : "is-zero"
+  };
+}
+

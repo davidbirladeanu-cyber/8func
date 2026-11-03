@@ -6,7 +6,7 @@
 import { AppState } from "./state.js";
 import { COGNITIVE_FUNCTIONS, FUNCTIONS_LIST } from "../data/functions.js";
 import { TEST_MODES, getQuestionText, ALL_QUESTIONS, getQuestionsForMode } from "../data/questions.js";
-import { ANSWER_OPTIONS, ANSWER_VALUE_MAP, getAnswerOptions, calculateScores, buildResultsUrlPath, parseComparisonInputLink } from "./scoring.js";
+import { ANSWER_OPTIONS, ANSWER_VALUE_MAP, getAnswerOptions, calculateScores, calculateQuestionImpact, buildResultsUrlPath, parseComparisonInputLink } from "./scoring.js";
 import { MBTI_TYPES, calculateBestMbtiType, getTypeTemperament } from "../data/mbtiTypes.js";
 import { NOTABLE_FIGURES, getRankedFigures, calculateFigureSimilarity, getFigureRole } from "../data/figures.js";
 import { ICONS } from "./icons.js";
@@ -358,7 +358,7 @@ class App {
     }, 2500);
   }
 
-  showQuestionInfoModal(question) {
+  showQuestionInfoModal(question, currentAnswers = null) {
     const lang = this.state.lang || "ro";
     const modal = document.getElementById("function-modal");
     if (!modal || !question) return;
@@ -374,17 +374,34 @@ class App {
       ? (lang === "ro" ? "Dilemă (Alegere A / B)" : "Would You Rather (A / B Choice)")
       : (question.format === "deep" ? (lang === "ro" ? "Întrebare Aprofundată" : "Deep Question") : (lang === "ro" ? "Întrebare Scurtă" : "Short Question"));
 
-    // Only keep category pill (removed format pill per specification)
+    const answersToUse = currentAnswers || this.state.answers || {};
+    const impact = calculateQuestionImpact(question, answersToUse, this.state.questions, lang);
+
+    // Header with category pill and live impact pill
     modalTitle.innerHTML = `
       <div style="font-size: 1.15rem; font-weight: 800; color: var(--text-strong); margin-bottom: 0.35rem;">
         ${lang === "ro" ? "Despre această întrebare" : "About this question"}
       </div>
-      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+      <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
         <span class="info-pill info-pill-category">${categoryLabel}</span>
+        ${impact ? `<span class="e-impact-pill ${impact.className}" title="${impact.tooltip}">${impact.text}</span>` : ''}
       </div>
     `;
 
     const description = (lang === "ro" && question.descriptionRo) ? question.descriptionRo : (question.description || "");
+
+    const impactSectionHtml = impact ? `
+      <div class="info-section">
+        <h4>${lang === "ro" ? "Contribuție la scor:" : "Contribution to score:"}</h4>
+        <div class="info-impact-card" style="background: var(--paper-warm); border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 14px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <span class="e-impact-pill ${impact.className}">${impact.text}</span>
+            <strong style="font-size: 0.95rem; color: var(--text-strong);">${lang === "ro" ? "Scor curent:" : "Current score:"} ${impact.userTotal}% ${impact.target}</strong>
+          </div>
+          <p style="margin: 0; font-size: 0.88rem; color: var(--text-muted); line-height: 1.4;">${impact.tooltip}</p>
+        </div>
+      </div>
+    ` : '';
 
     if (question.format === "wouldYouRather" || question.format === "direct") {
       const opts = question.options || [];
@@ -404,6 +421,7 @@ class App {
       }).join("");
 
       modalBody.innerHTML = `
+        ${impactSectionHtml}
         <div class="info-section">
           <h4>${lang === "ro" ? "Ce măsoară:" : "What it measures:"}</h4>
           <p>${description}</p>
@@ -435,6 +453,7 @@ class App {
       const cleanDisagree = cleanPrefix(disagreeExpl);
 
       modalBody.innerHTML = `
+        ${impactSectionHtml}
         <div class="info-section">
           <h4>${lang === "ro" ? "Ce măsoară:" : "What it measures:"}</h4>
           <p>${description}</p>
@@ -4666,6 +4685,8 @@ class App {
         `;
       }
 
+      const impact = calculateQuestionImpact(q, draftAnswers, questions, lang);
+
       deckContainer.innerHTML = `
         <div class="e-edit-card ${isChanged ? 'is-changed' : ''}" data-qid="${q.id}">
           <article class="question-card">
@@ -4679,6 +4700,11 @@ class App {
                 <button class="inline-axis-info e-axis-info" id="edit-q-help-btn" type="button" aria-label="${t('inspectQuestion', {}, lang)}" title="${t('infoClickHint', {}, lang)}">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                 </button>
+                ${impact ? `
+                  <span class="e-impact-pill ${impact.className}" id="edit-q-impact-pill" title="${impact.tooltip}">
+                    ${impact.text}
+                  </span>
+                ` : ''}
               </div>
               <h2>${qText}</h2>
             </header>
@@ -4688,9 +4714,9 @@ class App {
       `;
 
       // Help button click opens the exact modal specified
-      deckContainer.querySelectorAll(".e-axis-info, .question-axis-tag").forEach(btn => {
+      deckContainer.querySelectorAll(".e-axis-info, .question-axis-tag, #edit-q-impact-pill").forEach(btn => {
         btn.addEventListener("click", () => {
-          this.showQuestionInfoModal(q);
+          this.showQuestionInfoModal(q, draftAnswers);
         });
       });
 
@@ -4712,6 +4738,15 @@ class App {
               b.classList.toggle("selected", isSel);
               b.setAttribute("aria-checked", String(isSel));
             });
+
+            // Dynamically recalculate and update impact pill in real time
+            const newImpact = calculateQuestionImpact(q, draftAnswers, questions, lang);
+            const impactEl = activeCard.querySelector("#edit-q-impact-pill");
+            if (impactEl && newImpact) {
+              impactEl.className = `e-impact-pill ${newImpact.className}`;
+              impactEl.textContent = newImpact.text;
+              impactEl.title = newImpact.tooltip;
+            }
 
             if (draftAnswers[qId] !== initialAnswers[qId]) {
               activeCard.classList.add("is-changed");
