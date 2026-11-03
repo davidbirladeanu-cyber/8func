@@ -1709,6 +1709,12 @@ class App {
               <div class="minimal-axes-grid">
                 ${mbtiAxesRowsHtml}
               </div>
+              <div class="e-axes-edit">
+                <button class="e-axes-edit-btn" id="open-edit-answers-btn" type="button">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 16l-1 4l4-1L19.586 7.414a2 2 0 0 0 0-2.828l-.172-.172a2 2 0 0 0-2.828 0zM15 6l3 3m-5 11h8"></path></svg>
+                  <span>${t('editAnswersBtn', {}, lang)}</span>
+                </button>
+              </div>
             </section>
 
             <!-- Spectrum (Cross Compass: N/S + F/T on XY, E/I + J/P on YZ - all in one) -->
@@ -2163,13 +2169,17 @@ class App {
       });
     }
 
+    const openEditBtn = document.getElementById("open-edit-answers-btn");
+    if (openEditBtn) {
+      openEditBtn.addEventListener("click", () => {
+        this.openEditAnswersModal();
+      });
+    }
+
     const reviewBtn = document.getElementById("review-answers-btn");
     if (reviewBtn) {
       reviewBtn.addEventListener("click", () => {
-        const targetSec = document.getElementById("question-breakdown");
-        if (targetSec) {
-          targetSec.scrollIntoView({ behavior: "smooth" });
-        }
+        this.openEditAnswersModal();
       });
     }
 
@@ -2901,13 +2911,15 @@ class App {
         : `Your cognitive differences are precisely what can make you an unbeatable team: strategic thinking, energy, and intuition combine to cover all aspects of any challenge.`;
     }
 
-    // 4 Axes comparison
+    // 4 Axes comparison with icons
     const axesCompData = [
       {
         id: "energy",
         name: lang === "ro" ? "Energie & Focus (E / I)" : "Energy & Focus (E / I)",
         poleLeft: lang === "ro" ? "Extraversie" : "Extraversion",
         poleRight: lang === "ro" ? "Introversie" : "Introversion",
+        poleLeftIcon: `<svg class="e-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`,
+        poleRightIcon: `<svg class="e-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3h.393a7.5 7.5 0 0 0 7.92 12.446A9 9 0 1 1 12 2.992z"/></svg>`,
         posA: personA.axisScores.EI.roundB, // I%
         posB: personB.axisScores.EI.roundB, // I%
         scoreA_left: personA.axisScores.EI.roundA,
@@ -2921,6 +2933,8 @@ class App {
         name: lang === "ro" ? "Informație & Percepție (N / S)" : "Information & Perception (N / S)",
         poleLeft: lang === "ro" ? "Intuiție" : "Intuition",
         poleRight: lang === "ro" ? "Senzorial" : "Sensing",
+        poleLeftIcon: `<svg class="e-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>`,
+        poleRightIcon: `<svg class="e-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
         posA: personA.axisScores.NS.roundB, // S%
         posB: personB.axisScores.NS.roundB, // S%
         scoreA_left: personA.axisScores.NS.roundA,
@@ -2934,6 +2948,8 @@ class App {
         name: lang === "ro" ? "Decizie & Natură (T / F)" : "Decision & Nature (T / F)",
         poleLeft: lang === "ro" ? "Gândire" : "Thinking",
         poleRight: lang === "ro" ? "Sentiment" : "Feeling",
+        poleLeftIcon: `<svg class="e-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>`,
+        poleRightIcon: `<svg class="e-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
         posA: personA.axisScores.TF.roundB, // F%
         posB: personB.axisScores.TF.roundB, // F%
         scoreA_left: personA.axisScores.TF.roundA,
@@ -2947,6 +2963,8 @@ class App {
         name: lang === "ro" ? "Stil de viață & Tactică (J / P)" : "Lifestyle & Tactics (J / P)",
         poleLeft: lang === "ro" ? "Judecată" : "Judging",
         poleRight: lang === "ro" ? "Percepție" : "Perceiving",
+        poleLeftIcon: `<svg class="e-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+        poleRightIcon: `<svg class="e-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>`,
         posA: personA.axisScores.JP.roundB, // P%
         posB: personB.axisScores.JP.roundB, // P%
         scoreA_left: personA.axisScores.JP.roundA,
@@ -3022,6 +3040,29 @@ class App {
     const top10IdsA = new Set(rankedFiguresA.slice(0, 10).map(f => f.id));
     const mutualFigures = rankedFiguresB.slice(0, 10).filter(f => top10IdsA.has(f.id));
 
+    // Spectrum coordinates for both profiles
+    const s1Top = lang === "ro" ? "INTUIȚIE" : "INTUITION";
+    const s1Bottom = lang === "ro" ? "SENZORIAL" : "SENSING";
+    const s1Left = lang === "ro" ? "SENTIMENT" : "FEELING";
+    const s1Right = lang === "ro" ? "GÂNDIRE" : "THINKING";
+
+    const s2Top = lang === "ro" ? "EXTRAVERSIE" : "EXTRAVERSION";
+    const s2Bottom = lang === "ro" ? "INTROVERSIE" : "INTROVERSION";
+    const s2Left = lang === "ro" ? "JUDECĂTĂ" : "JUDGING";
+    const s2Right = lang === "ro" ? "PERCEPȚIE" : "PERCEIVING";
+
+    // Person A coordinates (Plane 1: T right, S bottom; Plane 2: P right, I bottom)
+    const compassX_A = Math.max(10, Math.min(90, personA.axisScores.TF.roundA));
+    const compassY_A = Math.max(10, Math.min(90, personA.axisScores.NS.roundB));
+    const compass2X_A = Math.max(10, Math.min(90, personA.axisScores.JP.roundB));
+    const compass2Y_A = Math.max(10, Math.min(90, personA.axisScores.EI.roundB));
+
+    // Person B coordinates
+    const compassX_B = Math.max(10, Math.min(90, personB.axisScores.TF.roundA));
+    const compassY_B = Math.max(10, Math.min(90, personB.axisScores.NS.roundB));
+    const compass2X_B = Math.max(10, Math.min(90, personB.axisScores.JP.roundB));
+    const compass2Y_B = Math.max(10, Math.min(90, personB.axisScores.EI.roundB));
+
     this.root.innerHTML = `
       <div class="app-shell" data-screen="compare">
         <a class="skip-link" href="#conteudo-principal">${t('skipLink', {}, lang)}</a>
@@ -3048,36 +3089,36 @@ class App {
               <section class="e-panel" id="cmp-perfis">
                 <h2>${t('comparePeopleSection', {}, lang)}</h2>
                 <ul class="e-cp-cards">
-                  <li class="e-cp-card">
-                    <span class="e-cp-face">
-                      <span class="e-avatar e-cmp-dot" style="background: ${tempA.color};">${personA.name.charAt(0).toUpperCase()}</span>
+                  <li class="e-cp-card" style="--pc: ${tempA.color};">
+                    <span class="e-cmpp-ring e-cp-face">
+                      <span class="e-avatar e-cmp-dot" style="background: var(--pc);">${personA.name.charAt(0).toUpperCase()}</span>
                     </span>
                     <div class="e-cp-text">
                       <span class="e-ppl-nameline">
                         <strong>${personA.name}</strong>
-                        <button class="e-ppl-edit" id="cmpp-rename-a-btn" type="button" title="${t('editNameTitle', {}, lang)}">
+                        <button class="e-ppl-edit" id="cmpp-rename-a-btn" type="button" title="${t('editNameTitle', {}, lang)}" aria-label="${t('editNameTitle', {}, lang)}">
                           <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 16l-1 4l4-1L19.586 7.414a2 2 0 0 0 0-2.828l-.172-.172a2 2 0 0 0-2.828 0zM15 6l3 3m-5 11h8"></path></svg>
                         </button>
                       </span>
                       <span class="e-cp-type-badge">
-                        <span class="e-cp-type-pill" style="background: ${tempA.color};">${personA.derivedType}</span>
+                        <span class="e-cp-type-pill" style="background: var(--pc);">${personA.derivedType}</span>
                         <span>${titleA} (${tempA.name})</span>
                       </span>
                     </div>
                   </li>
-                  <li class="e-cp-card">
-                    <span class="e-cp-face">
-                      <span class="e-avatar e-cmp-dot" style="background: ${tempB.color};">${personB.name.charAt(0).toUpperCase()}</span>
+                  <li class="e-cp-card" style="--pc: ${tempB.color};">
+                    <span class="e-cmpp-ring e-cp-face">
+                      <span class="e-avatar e-cmp-dot" style="background: var(--pc);">${personB.name.charAt(0).toUpperCase()}</span>
                     </span>
                     <div class="e-cp-text">
                       <span class="e-ppl-nameline">
                         <strong>${personB.name}</strong>
-                        <button class="e-ppl-edit" id="cmpp-rename-b-btn" type="button" title="${t('editNameTitle', {}, lang)}">
+                        <button class="e-ppl-edit" id="cmpp-rename-b-btn" type="button" title="${t('editNameTitle', {}, lang)}" aria-label="${t('editNameTitle', {}, lang)}">
                           <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 16l-1 4l4-1L19.586 7.414a2 2 0 0 0 0-2.828l-.172-.172a2 2 0 0 0-2.828 0zM15 6l3 3m-5 11h8"></path></svg>
                         </button>
                       </span>
                       <span class="e-cp-type-badge">
-                        <span class="e-cp-type-pill" style="background: ${tempB.color};">${personB.derivedType}</span>
+                        <span class="e-cp-type-pill" style="background: var(--pc);">${personB.derivedType}</span>
                         <span>${titleB} (${tempB.name})</span>
                       </span>
                     </div>
@@ -3148,6 +3189,7 @@ class App {
                     const minPos = Math.min(ax.posA, ax.posB);
                     const maxPos = Math.max(ax.posA, ax.posB);
                     const connectorWidth = Math.max(0, maxPos - minPos);
+                    const clampTag = (val) => Math.max(6, Math.min(94, val));
                     return `
                       <li class="e-cp-axis">
                         <div class="e-axis-row-head">
@@ -3157,31 +3199,33 @@ class App {
                         <div class="e-cp-track" role="img" aria-label="${ax.name}: ${personA.name} ${ax.posA}%, ${personB.name} ${ax.posB}%">
                           <span class="e-amid"></span>
                           ${isBoth ? `
-                            <span class="e-cp-pin is-both" style="left: ${ax.posA}%;">
+                            <span class="e-cp-pin e-cp-tag is-both" style="left: ${clampTag((ax.posA + ax.posB) / 2)}%;">
                               <span>${t('compareBothLabel', {}, lang)} · ${ax.posA}%</span>
                             </span>
                           ` : `
                             <span class="e-cp-connector" style="left: ${minPos}%; width: ${connectorWidth}%;"></span>
-                            <span class="e-cp-pin" style="left: ${ax.posA}%; background: var(--accent);">
-                              <span>${personA.name}: ${ax.posA}%</span>
+                            <span class="e-cp-pin e-cp-tag" style="left: ${clampTag(ax.posA)}%; --pc: var(--accent);">
+                              <span>${personA.name} · ${ax.posA}%</span>
                             </span>
-                            <span class="e-cp-pin" style="left: ${ax.posB}%; background: #e0682b;">
-                              <span>${personB.name}: ${ax.posB}%</span>
+                            <span class="e-cp-pin e-cp-tag" style="left: ${clampTag(ax.posB)}%; --pc: #e0682b;">
+                              <span>${personB.name} · ${ax.posB}%</span>
                             </span>
                           `}
                         </div>
                         <div class="e-axis-poles">
-                          <div class="e-pole e-left">
+                          <div class="e-pole e-left e-win">
+                            ${ax.poleLeftIcon || ''}
                             <b>${ax.poleLeft}</b>
                             <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700;">
                               (${ax.scoreA_left}% · ${ax.scoreB_left}%)
                             </span>
                           </div>
-                          <div class="e-pole e-right">
+                          <div class="e-pole e-right e-win">
                             <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700;">
                               (${ax.scoreA_right}% · ${ax.scoreB_right}%)
                             </span>
                             <b>${ax.poleRight}</b>
+                            ${ax.poleRightIcon || ''}
                           </div>
                         </div>
                       </li>
@@ -3238,7 +3282,7 @@ class App {
                   <h2 class="e-sec-title">${t('compareDistinctionSection', {}, lang)}</h2>
                 </div>
                 <div class="e-dist">
-                  <article class="e-dcard">
+                  <article class="e-dcard e-strong">
                     <div class="e-dcard-head">
                       <span class="e-tag" style="background: rgba(224, 104, 43, 0.15); color: #e0682b; font-weight: 800; border-radius: 999px;">${t('compareDifferMost', {}, lang)}</span>
                       <h3>${maxDiffAxis.name}</h3>
@@ -3286,7 +3330,7 @@ class App {
                     </div>
                   </article>
 
-                  <article class="e-tension">
+                  <article class="e-tension e-cp-tension">
                     <div class="e-cp-tension-head">
                       <span class="e-tag" style="background: var(--paper); border: 1px solid var(--line); font-weight: 800; border-radius: 999px;">${t('compareOppositeSides', {}, lang)}</span>
                       <div class="e-pair">
@@ -3368,6 +3412,65 @@ class App {
                 ` : ''}
               </section>
 
+              <!-- Cognitive Spectrum & Compass Comparison -->
+              <section class="e-panel spectrum-cross-panel" id="cmp-bussola">
+                <div class="e-sec-head" style="margin-bottom: 1.5rem;">
+                  <h2 class="e-sec-title">${t('compareCompassSection', {}, lang)}</h2>
+                  <ul class="e-cp-legend" aria-hidden="true" style="margin: 0;">
+                    <li><span class="e-close-face" style="background: var(--accent);">${personA.name.charAt(0).toUpperCase()}</span>${personA.name} (${personA.derivedType})</li>
+                    <li><span class="e-close-face" style="background: #e0682b;">${personB.name.charAt(0).toUpperCase()}</span>${personB.name} (${personB.derivedType})</li>
+                  </ul>
+                </div>
+
+                <div class="spectrum-cross-wrap">
+                  <!-- Plane 1: Mind & Nature (N/S × F/T) -->
+                  <div class="spectrum-cross-plane-wrap">
+                    <div class="spectrum-cardinal-lbl spectrum-lbl-top">${s1Top}</div>
+                    <div class="spectrum-center-row">
+                      <div class="spectrum-cardinal-lbl spectrum-lbl-left">${s1Left}</div>
+                      <div class="spectrum-quadrant-plane">
+                        <div class="spectrum-quadrant quad-tl" title="NF"></div>
+                        <div class="spectrum-quadrant quad-tr" title="NT"></div>
+                        <div class="spectrum-quadrant quad-bl" title="SF"></div>
+                        <div class="spectrum-quadrant quad-br" title="ST"></div>
+                        <div class="spectrum-crosshair-h"></div>
+                        <div class="spectrum-crosshair-v"></div>
+                        <div class="spectrum-plot-dot" style="left: ${compassX_A}%; top: ${compassY_A}%; background: var(--accent); box-shadow: 0 0 0 3px #ffffff, 0 3px 8px rgba(0,0,0,0.35);" title="${personA.name} (${personA.derivedType})">${personA.name.charAt(0).toUpperCase()}</div>
+                        <div class="spectrum-plot-dot" style="left: ${compassX_B}%; top: ${compassY_B}%; background: #e0682b; box-shadow: 0 0 0 3px #ffffff, 0 3px 8px rgba(0,0,0,0.35);" title="${personB.name} (${personB.derivedType})">${personB.name.charAt(0).toUpperCase()}</div>
+                      </div>
+                      <div class="spectrum-cardinal-lbl spectrum-lbl-right">${s1Right}</div>
+                    </div>
+                    <div class="spectrum-cardinal-lbl spectrum-lbl-bottom">${s1Bottom}</div>
+                    <div class="spectrum-bottom-bar" style="margin-top: 0.85rem;">
+                      <span class="spectrum-coord-lbl">${lang === 'ro' ? 'Informație & Decizie (N/S × F/T)' : 'Information & Decision (N/S × F/T)'}</span>
+                    </div>
+                  </div>
+
+                  <!-- Plane 2: Energy & Tactics (E/I × J/P) -->
+                  <div class="spectrum-cross-plane-wrap">
+                    <div class="spectrum-cardinal-lbl spectrum-lbl-top">${s2Top}</div>
+                    <div class="spectrum-center-row">
+                      <div class="spectrum-cardinal-lbl spectrum-lbl-left">${s2Left}</div>
+                      <div class="spectrum-quadrant-plane spectrum-quadrant-plane-blue">
+                        <div class="spectrum-quadrant quad-ej" title="EJ"></div>
+                        <div class="spectrum-quadrant quad-ep" title="EP"></div>
+                        <div class="spectrum-quadrant quad-ij" title="IJ"></div>
+                        <div class="spectrum-quadrant quad-ip" title="IP"></div>
+                        <div class="spectrum-crosshair-h"></div>
+                        <div class="spectrum-crosshair-v"></div>
+                        <div class="spectrum-plot-dot" style="left: ${compass2X_A}%; top: ${compass2Y_A}%; background: var(--accent); box-shadow: 0 0 0 3px #ffffff, 0 3px 8px rgba(0,0,0,0.35);" title="${personA.name} (${personA.derivedType})">${personA.name.charAt(0).toUpperCase()}</div>
+                        <div class="spectrum-plot-dot" style="left: ${compass2X_B}%; top: ${compass2Y_B}%; background: #e0682b; box-shadow: 0 0 0 3px #ffffff, 0 3px 8px rgba(0,0,0,0.35);" title="${personB.name} (${personB.derivedType})">${personB.name.charAt(0).toUpperCase()}</div>
+                      </div>
+                      <div class="spectrum-cardinal-lbl spectrum-lbl-right">${s2Right}</div>
+                    </div>
+                    <div class="spectrum-cardinal-lbl spectrum-lbl-bottom">${s2Bottom}</div>
+                    <div class="spectrum-bottom-bar" style="margin-top: 0.85rem;">
+                      <span class="spectrum-coord-lbl">${lang === 'ro' ? 'Energie & Ritm (E/I × J/P)' : 'Energy & Rhythm (E/I × J/P)'}</span>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
               <!-- Compatibility Between You -->
               <section class="e-panel" id="cmp-pares">
                 <h2>${t('compareCompatibilitySection', {}, lang)}</h2>
@@ -3393,6 +3496,33 @@ class App {
                     <p class="e-cp-pair-pct">${matchPct}<small>%</small></p>
                   </li>
                 </ul>
+              </section>
+
+              <!-- Comparison Card Stage (3D iPhone Preview) -->
+              <section class="e-panel e-share-stage" id="cmp-cartao" style="--stage-from: rgba(57, 82, 150, 0.12); --stage-mid: rgba(224, 104, 43, 0.08); --stage-to: rgba(57, 82, 150, 0.18); --stage-screen: #0f172a;">
+                <h2>${t('compareCardSection', {}, lang)}</h2>
+                <div class="e-share-pair">
+                  <button class="e-phone" type="button" id="cmpp-phone-btn" aria-label="${t('shareCompareBtn', {}, lang)}" title="${lang === 'ro' ? 'Apasă pentru descărcare' : 'Click to download card'}">
+                    <span class="e-phone-body">
+                      <span class="e-phone-edge" aria-hidden="true"></span>
+                      <span class="e-phone-edge" aria-hidden="true"></span>
+                      <span class="e-phone-edge" aria-hidden="true"></span>
+                      <span class="e-phone-edge" aria-hidden="true"></span>
+                      <i class="e-phone-btn is-action" aria-hidden="true"></i>
+                      <i class="e-phone-btn is-vol-up" aria-hidden="true"></i>
+                      <i class="e-phone-btn is-vol-down" aria-hidden="true"></i>
+                      <i class="e-phone-btn is-power" aria-hidden="true"></i>
+                      <span class="e-phone-screen">
+                        <canvas id="cmp-phone-canvas" width="450" height="975" style="width: 100%; height: 100%; object-fit: cover;"></canvas>
+                        <i class="e-phone-island" aria-hidden="true"></i>
+                        <i class="e-phone-glare" aria-hidden="true"></i>
+                      </span>
+                    </span>
+                  </button>
+                  <button class="e-share-flat" type="button" id="cmpp-flat-btn" aria-label="${t('shareCompareBtn', {}, lang)}" title="${lang === 'ro' ? 'Apasă pentru descărcare' : 'Click to download card'}">
+                    <canvas id="cmp-flat-canvas" width="450" height="800" style="width: 100%; height: 100%; object-fit: cover;"></canvas>
+                  </button>
+                </div>
               </section>
 
               <!-- Actions -->
@@ -3421,7 +3551,9 @@ class App {
                 <a href="#cmp-functii"><span>04</span>${t('compareFuncsSection', {}, lang)}</a>
                 <a href="#cmp-assinatura"><span>05</span>${t('compareDistinctionSection', {}, lang)}</a>
                 <a href="#cmp-personalidades"><span>06</span>${t('compareFiguresSection', {}, lang)}</a>
-                <a href="#cmp-pares"><span>07</span>${t('compareCompatibilitySection', {}, lang)}</a>
+                <a href="#cmp-bussola"><span>07</span>${t('compareCompassSection', {}, lang)}</a>
+                <a href="#cmp-pares"><span>08</span>${t('compareCompatibilitySection', {}, lang)}</a>
+                <a href="#cmp-cartao"><span>09</span>${t('compareCardSection', {}, lang)}</a>
               </nav>
             </aside>
           </div>
@@ -3429,12 +3561,36 @@ class App {
       </div>
     `;
 
-    this.attachCompareEvents(personA, personB);
+    this.attachCompareEvents(personA, personB, matchPct);
   }
 
-  attachCompareEvents(personA, personB) {
+  attachCompareEvents(personA, personB, matchPct = 75) {
     this.attachNavEvents();
     const lang = this.state.lang || "ro";
+
+    // Render Preview Canvases
+    setTimeout(() => {
+      const phoneCanvas = document.getElementById("cmp-phone-canvas");
+      const flatCanvas = document.getElementById("cmp-flat-canvas");
+      if (phoneCanvas) drawComparisonPhoneCard(phoneCanvas, personA, personB, matchPct, lang);
+      if (flatCanvas) drawComparisonPhoneCard(flatCanvas, personA, personB, matchPct, lang);
+    }, 60);
+
+    const downloadComparisonCard = () => {
+      const canvas = document.getElementById("cmp-flat-canvas") || document.getElementById("cmp-phone-canvas");
+      if (!canvas) return;
+      const link = document.createElement("a");
+      link.download = `8func-compare-${personA.name}-${personB.name}.png`;
+      link.href = canvas.toDataURL("image/png");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+
+    const phoneBtn = document.getElementById("cmpp-phone-btn");
+    const flatBtn = document.getElementById("cmpp-flat-btn");
+    if (phoneBtn) phoneBtn.addEventListener("click", downloadComparisonCard);
+    if (flatBtn) flatBtn.addEventListener("click", downloadComparisonCard);
 
     const copyComparisonUrl = async () => {
       try {
@@ -4219,6 +4375,511 @@ class App {
       closeHeaderBtn.addEventListener("click", () => modal.classList.remove("active"));
     }
   }
+
+  // ==========================================================================
+  // Edit Answers Sheet & Deck (Faithfully ported from 12Axes Architecture)
+  // ==========================================================================
+
+  openEditAnswersModal() {
+    const lang = this.state.lang || "ro";
+    const questions = this.state.questions;
+    if (!questions || questions.length === 0) return;
+
+    // Remove any existing modal
+    const oldBackdrop = document.getElementById("edit-answers-backdrop");
+    if (oldBackdrop) oldBackdrop.remove();
+
+    // Groups definitions for all 8 Cognitive Functions, 4 MBTI Axes, and Archetypes
+    const GROUPS_DEF = [
+      { id: "Ne", label: "Ne", name: "Ne · Intuition", nameRo: "Ne · Intuiție", color: "#8A3AA0", icon: COGNITIVE_FUNCTIONS.Ne?.icon || `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>` },
+      { id: "Ni", label: "Ni", name: "Ni · Synthesis", nameRo: "Ni · Sinteză", color: "#3B49DF", icon: COGNITIVE_FUNCTIONS.Ni?.icon || `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>` },
+      { id: "Te", label: "Te", name: "Te · Structure", nameRo: "Te · Structură", color: "#0284C7", icon: COGNITIVE_FUNCTIONS.Te?.icon || `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>` },
+      { id: "Ti", label: "Ti", name: "Ti · Precision", nameRo: "Ti · Precizie", color: "#0D9488", icon: COGNITIVE_FUNCTIONS.Ti?.icon || `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>` },
+      { id: "Fe", label: "Fe", name: "Fe · Harmony", nameRo: "Fe · Armonie", color: "#16A34A", icon: COGNITIVE_FUNCTIONS.Fe?.icon || `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>` },
+      { id: "Fi", label: "Fi", name: "Fi · Values", nameRo: "Fi · Valori", color: "#EA580C", icon: COGNITIVE_FUNCTIONS.Fi?.icon || `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>` },
+      { id: "Se", label: "Se", name: "Se · Action", nameRo: "Se · Acțiune", color: "#DC2626", icon: COGNITIVE_FUNCTIONS.Se?.icon || `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>` },
+      { id: "Si", label: "Si", name: "Si · Memory", nameRo: "Si · Memorie", color: "#B45309", icon: COGNITIVE_FUNCTIONS.Si?.icon || `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>` },
+      { id: "EI", label: "E / I", name: "E / I · Energy", nameRo: "E / I · Energie", color: "#395296", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>` },
+      { id: "NS", label: "N / S", name: "N / S · Perception", nameRo: "N / S · Percepție", color: "#95637E", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>` },
+      { id: "TF", label: "T / F", name: "T / F · Decision", nameRo: "T / F · Decizie", color: "#72CCCD", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>` },
+      { id: "JP", label: "J / P", name: "J / P · Rhythm", nameRo: "J / P · Ritm", color: "#4361AB", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>` },
+      { id: "archetype", label: "Archetypes", name: "Archetypes", nameRo: "Arhetipuri", color: "#4A5565", isExtra: true, icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>` }
+    ];
+
+    const getQuestionGroup = (q) => {
+      if (q.category === "axis" && q.dimension) return q.dimension;
+      if (q.category === "function" && q.target) return q.target;
+      if (q.category === "combination") return "archetype";
+      return q.dimension || q.target || "Ne";
+    };
+
+    // Filter only groups that have questions in this quiz
+    const activeGroups = GROUPS_DEF.filter(g => questions.some(q => getQuestionGroup(q) === g.id));
+
+    // Steps array with group and question
+    const steps = [];
+    activeGroups.forEach(g => {
+      const gQuestions = questions.filter(q => getQuestionGroup(q) === g.id);
+      gQuestions.forEach(q => {
+        steps.push({ group: g.id, question: q });
+      });
+    });
+
+    if (steps.length === 0) return;
+
+    const initialAnswers = { ...this.state.answers };
+    const draftAnswers = { ...this.state.answers };
+    let currentStepIndex = 0;
+    let isSaving = false;
+
+    const countChanges = () => {
+      let count = 0;
+      for (const q of questions) {
+        if (draftAnswers[q.id] !== initialAnswers[q.id]) count++;
+      }
+      return count;
+    };
+
+    const countGroupChanges = (groupId) => {
+      let count = 0;
+      for (const step of steps) {
+        if (step.group === groupId && draftAnswers[step.question.id] !== initialAnswers[step.question.id]) {
+          count++;
+        }
+      }
+      return count;
+    };
+
+    // Create Modal Element
+    const backdrop = document.createElement("div");
+    backdrop.className = "e-axis-sheet-backdrop";
+    backdrop.id = "edit-answers-backdrop";
+
+    backdrop.innerHTML = `
+      <div class="e-axis-sheet e-edit-sheet" role="dialog" aria-modal="true" aria-labelledby="e-edit-title">
+        <span class="e-axis-sheet-handle" aria-hidden="true"></span>
+        <button class="e-axis-sheet-close" id="edit-sheet-close-btn" type="button" aria-label="${lang === 'ro' ? 'Închide' : 'Close'}">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+        </button>
+        <header class="e-edit-head">
+          <h3 id="e-edit-title">${t('editAnswersTitle', {}, lang)}</h3>
+          <span class="e-edit-count" id="edit-change-count" aria-live="polite">${t('editAnswersNoChanges', {}, lang)}</span>
+          <button class="e-btn e-btn-primary e-btn-sm e-edit-save" id="edit-save-btn" type="button" disabled>
+            ${t('editAnswersSave', {}, lang)}
+          </button>
+        </header>
+        <div class="e-edit-layout">
+          <nav class="e-edit-axes" role="tablist" aria-label="Groups">
+            ${activeGroups.map(g => {
+              const firstIdx = steps.findIndex(s => s.group === g.id);
+              const gName = lang === "ro" ? (g.nameRo || g.name) : g.name;
+              return `
+                <button
+                  type="button"
+                  role="tab"
+                  class="e-edit-axis ${g.id === steps[0].group ? 'e-on' : ''}"
+                  data-group="${g.id}"
+                  data-first="${firstIdx}"
+                  ${g.isExtra ? 'data-extra="archetype"' : ''}
+                  style="--gc: ${g.color};"
+                  title="${gName}"
+                >
+                  ${g.icon}
+                  <span>${gName}</span>
+                  <span class="e-edit-badge" id="badge-${g.id}" style="display: none;">0</span>
+                </button>
+              `;
+            }).join("")}
+          </nav>
+          <section class="e-edit-stage" aria-label="Questions Deck">
+            <div class="e-deck-edit" id="edit-deck-container"></div>
+            <nav class="e-edit-foot" aria-label="Navigation">
+              <button class="e-btn e-btn-ghost e-btn-sm" id="edit-back-btn" type="button" disabled>
+                <svg class="e-arr" viewBox="0 0 24 24" aria-hidden="true" style="transform: rotate(180deg); width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2;"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
+                <span>${t('back', {}, lang)}</span>
+              </button>
+              <span class="e-edit-counter" id="edit-counter-lbl">1 / 1</span>
+              <button class="e-btn e-btn-ghost e-btn-sm" id="edit-next-btn" type="button">
+                <span>${t('next', {}, lang)}</span>
+                <svg class="e-arr" viewBox="0 0 24 24" aria-hidden="true" style="width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2;"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
+              </button>
+            </nav>
+          </section>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(backdrop);
+
+    const deckContainer = backdrop.querySelector("#edit-deck-container");
+    const countEl = backdrop.querySelector("#edit-change-count");
+    const saveBtn = backdrop.querySelector("#edit-save-btn");
+    const backBtn = backdrop.querySelector("#edit-back-btn");
+    const nextBtn = backdrop.querySelector("#edit-next-btn");
+    const counterEl = backdrop.querySelector("#edit-counter-lbl");
+
+    const updateHeaderAndBadges = () => {
+      const changes = countChanges();
+      if (changes === 0) {
+        countEl.textContent = t('editAnswersNoChanges', {}, lang);
+        saveBtn.disabled = true;
+      } else {
+        const word = lang === "ro" ? (changes === 1 ? "modificare" : "modificări") : (changes === 1 ? "change" : "changes");
+        countEl.textContent = `${changes} ${word}`;
+        saveBtn.disabled = false;
+      }
+      activeGroups.forEach(g => {
+        const b = backdrop.querySelector(`#badge-${g.id}`);
+        if (b) {
+          const gChanges = countGroupChanges(g.id);
+          if (gChanges > 0) {
+            b.textContent = String(gChanges);
+            b.style.display = "grid";
+          } else {
+            b.style.display = "none";
+          }
+        }
+      });
+    };
+
+    const renderDeck = () => {
+      const currentStep = steps[currentStepIndex];
+      const currentGroup = currentStep.group;
+      const groupSteps = steps.filter(s => s.group === currentGroup);
+      const groupFirstIndex = steps.findIndex(s => s.group === currentGroup);
+      const inGroupIndex = currentStepIndex - groupFirstIndex;
+
+      // Update Group Tabs active state
+      backdrop.querySelectorAll(".e-edit-axis").forEach(tab => {
+        const gId = tab.getAttribute("data-group");
+        if (gId === currentGroup) {
+          tab.classList.add("e-on");
+          tab.setAttribute("aria-selected", "true");
+        } else {
+          tab.classList.remove("e-on");
+          tab.setAttribute("aria-selected", "false");
+        }
+      });
+
+      // Update foot navigation
+      backBtn.disabled = currentStepIndex === 0 || isSaving;
+      nextBtn.disabled = currentStepIndex >= steps.length - 1 || isSaving;
+
+      const groupDef = activeGroups.find(g => g.id === currentGroup);
+      const gName = lang === "ro" ? (groupDef?.nameRo || groupDef?.name || currentGroup) : (groupDef?.name || currentGroup);
+      counterEl.textContent = `${gName} · ${inGroupIndex + 1} / ${groupSteps.length}`;
+
+      // Render cards: inGroupIndex - 1 to inGroupIndex + 2
+      let cardsHtml = "";
+      groupSteps.forEach((s, idx) => {
+        const pos = idx - inGroupIndex;
+        if (pos < -1 || pos > 2) return;
+        const dataPos = pos < 0 ? "out" : String(pos);
+        const q = s.question;
+        const isChanged = draftAnswers[q.id] !== initialAnswers[q.id];
+        const currentAnswer = draftAnswers[q.id];
+        const qNumStr = String(questions.indexOf(q) + 1).padStart(2, "0");
+        const qText = getQuestionText(q, lang);
+
+        let answersContentHtml = "";
+        if (q.format === "wyr" && q.options) {
+          answersContentHtml = `
+            <div class="wyr-options-grid" role="radiogroup">
+              ${q.options.map(opt => {
+                const isSelected = currentAnswer === opt.id;
+                const optText = (lang === "ro" && opt.textRo) ? opt.textRo : opt.text;
+                return `
+                  <button type="button" class="wyr-option-card ${isSelected ? 'selected' : ''}" data-answer="${opt.id}" data-qid="${q.id}">
+                    <span class="wyr-card-tag">${lang === 'ro' ? 'OPȚIUNEA' : 'OPTION'} ${opt.id}</span>
+                    <span class="wyr-card-text">${optText}</span>
+                  </button>
+                `;
+              }).join("")}
+            </div>
+          `;
+        } else {
+          const options = getAnswerOptions(lang);
+          answersContentHtml = `
+            <div class="answer-grid" role="radiogroup">
+              ${options.map((opt, i) => {
+                const isSelected = currentAnswer === opt.key;
+                let iconSvg = ICONS.check;
+                if (opt.key === "NEUTRAL") iconSvg = ICONS.minus;
+                else if (opt.key === "DISAGREE" || opt.key === "STRONGLY_DISAGREE") iconSvg = ICONS.cross;
+                return `
+                  <button class="answer-button answer-${opt.classSuffix} ${isSelected ? 'selected' : ''}" data-answer="${opt.key}" data-qid="${q.id}" type="button">
+                    <span class="answer-icon" aria-hidden="true">${iconSvg}</span>
+                    <span class="answer-label">${opt.label}</span>
+                    <span class="answer-key-hint" aria-hidden="true">${i + 1}</span>
+                  </button>
+                `;
+              }).join("")}
+            </div>
+          `;
+        }
+
+        cardsHtml += `
+          <div
+            class="e-edit-card ${isChanged ? 'is-changed' : ''}"
+            data-pos="${dataPos}"
+            data-qid="${q.id}"
+            ${pos !== 0 ? 'inert aria-hidden="true"' : ''}
+          >
+            <article class="question-card">
+              <span class="question-number" aria-hidden="true">${qNumStr}</span>
+              <header class="question-card-header">
+                <h2>${qText}</h2>
+              </header>
+              ${answersContentHtml}
+            </article>
+          </div>
+        `;
+      });
+
+      deckContainer.innerHTML = cardsHtml;
+
+      // Attach answer selection event on data-pos="0"
+      const activeCard = deckContainer.querySelector('.e-edit-card[data-pos="0"]');
+      if (activeCard) {
+        activeCard.querySelectorAll("button[data-answer]").forEach(btn => {
+          btn.addEventListener("click", () => {
+            if (isSaving) return;
+            const qId = btn.getAttribute("data-qid");
+            const ansKey = btn.getAttribute("data-answer");
+            draftAnswers[qId] = ansKey;
+
+            activeCard.querySelectorAll("button[data-answer]").forEach(b => b.classList.remove("selected"));
+            btn.classList.add("selected");
+
+            if (draftAnswers[qId] !== initialAnswers[qId]) {
+              activeCard.classList.add("is-changed");
+            } else {
+              activeCard.classList.remove("is-changed");
+            }
+
+            updateHeaderAndBadges();
+
+            if (currentStepIndex < steps.length - 1) {
+              setTimeout(() => {
+                goTo(currentStepIndex + 1);
+              }, 240);
+            }
+          });
+        });
+      }
+    };
+
+    const goTo = (newIndex) => {
+      currentStepIndex = Math.max(0, Math.min(steps.length - 1, newIndex));
+      renderDeck();
+    };
+
+    backBtn.addEventListener("click", () => goTo(currentStepIndex - 1));
+    nextBtn.addEventListener("click", () => goTo(currentStepIndex + 1));
+
+    backdrop.querySelectorAll(".e-edit-axis").forEach(tab => {
+      tab.addEventListener("click", () => {
+        const firstIdx = parseInt(tab.getAttribute("data-first"), 10);
+        if (!isNaN(firstIdx)) goTo(firstIdx);
+      });
+    });
+
+    const closeModal = () => {
+      if (countChanges() > 0) {
+        if (!window.confirm(t('editAnswersDiscardConfirm', {}, lang))) return;
+      }
+      document.removeEventListener("keydown", handleKeyDown);
+      backdrop.remove();
+    };
+
+    const handleKeyDown = (e) => {
+      if (e.key === "ArrowLeft") goTo(currentStepIndex - 1);
+      else if (e.key === "ArrowRight") goTo(currentStepIndex + 1);
+      else if (e.key === "Escape") closeModal();
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    backdrop.querySelector("#edit-sheet-close-btn").addEventListener("click", closeModal);
+    backdrop.addEventListener("click", (e) => {
+      if (e.target === backdrop) closeModal();
+    });
+
+    saveBtn.addEventListener("click", () => {
+      if (isSaving) return;
+      isSaving = true;
+      saveBtn.disabled = true;
+      saveBtn.textContent = t('editAnswersSaving', {}, lang);
+
+      setTimeout(() => {
+        this.state.answers = { ...draftAnswers };
+        try {
+          localStorage.setItem("8func_answers_v2", JSON.stringify(this.state.answers));
+        } catch (e) {}
+        try {
+          if (this.state.urlResultsScores) delete this.state.urlResultsScores;
+        } catch (e) {}
+
+        document.removeEventListener("keydown", handleKeyDown);
+        backdrop.remove();
+        this.renderResults();
+        this.showToast(t('editAnswersSavedToast', {}, lang));
+      }, 150);
+    });
+
+    updateHeaderAndBadges();
+    renderDeck();
+  }
+}
+
+/**
+ * Renders high-resolution Comparison Card into phone screen & flat preview canvases
+ */
+function drawComparisonPhoneCard(canvas, personA, personB, matchPct, lang) {
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+  const w = canvas.width;
+  const h = canvas.height;
+
+  // Background gradient
+  const bgGrad = ctx.createLinearGradient(0, 0, w, h);
+  bgGrad.addColorStop(0, "#0b0f19");
+  bgGrad.addColorStop(0.5, "#151b2e");
+  bgGrad.addColorStop(1, "#1e1b4b");
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, w, h);
+
+  // Decorative glow
+  const glow = ctx.createRadialGradient(w / 2, h * 0.35, 20, w / 2, h * 0.35, w * 0.7);
+  glow.addColorStop(0, "rgba(57, 82, 150, 0.45)");
+  glow.addColorStop(0.6, "rgba(224, 104, 43, 0.2)");
+  glow.addColorStop(1, "rgba(0, 0, 0, 0)");
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, w, h);
+
+  // Header
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "800 24px system-ui, -apple-system, sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("8Func", w / 2, 60);
+
+  ctx.fillStyle = "#94a3b8";
+  ctx.font = "700 12px system-ui, -apple-system, sans-serif";
+  ctx.fillText(lang === "ro" ? "COMPARAȚIE COGNITIVĂ" : "COGNITIVE COMPARISON", w / 2, 85);
+
+  // Duo Avatars
+  const cx = w / 2;
+  const cy = 160;
+
+  // Avatar A
+  ctx.beginPath();
+  ctx.arc(cx - 38, cy, 36, 0, Math.PI * 2);
+  ctx.fillStyle = "#395296";
+  ctx.fill();
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = "#ffffff";
+  ctx.stroke();
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "800 28px system-ui, -apple-system, sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(personA.name.charAt(0).toUpperCase(), cx - 38, cy);
+
+  // Avatar B
+  ctx.beginPath();
+  ctx.arc(cx + 38, cy, 36, 0, Math.PI * 2);
+  ctx.fillStyle = "#e0682b";
+  ctx.fill();
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = "#ffffff";
+  ctx.stroke();
+  ctx.fillStyle = "#ffffff";
+  ctx.fillText(personB.name.charAt(0).toUpperCase(), cx + 38, cy);
+
+  // Names & Types
+  ctx.textBaseline = "alphabetic";
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "800 20px system-ui, -apple-system, sans-serif";
+  ctx.fillText(`${personA.name} × ${personB.name}`, w / 2, 235);
+
+  ctx.fillStyle = "#cbd5e1";
+  ctx.font = "700 14px system-ui, -apple-system, sans-serif";
+  ctx.fillText(`${personA.derivedType}  ·  ${personB.derivedType}`, w / 2, 260);
+
+  // Match Ring / Big percentage
+  ctx.beginPath();
+  ctx.arc(w / 2, 340, 52, 0, Math.PI * 2);
+  ctx.lineWidth = 8;
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(w / 2, 340, 52, -Math.PI / 2, -Math.PI / 2 + (Math.PI * 2 * (matchPct / 100)));
+  ctx.lineWidth = 8;
+  ctx.strokeStyle = "#10b981";
+  ctx.stroke();
+
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "800 34px system-ui, -apple-system, sans-serif";
+  ctx.fillText(`${matchPct}%`, w / 2, 345);
+
+  ctx.fillStyle = "#94a3b8";
+  ctx.font = "700 11px system-ui, -apple-system, sans-serif";
+  ctx.fillText(lang === "ro" ? "POTRIVIRE" : "MATCH", w / 2, 368);
+
+  // 4 Axes Mini Visualizer
+  const axesY = 430;
+  const axes = [
+    { label: "E / I", pA: personA.axisScores.EI.roundA, pB: personB.axisScores.EI.roundA },
+    { label: "N / S", pA: personA.axisScores.NS.roundA, pB: personB.axisScores.NS.roundA },
+    { label: "T / F", pA: personA.axisScores.TF.roundA, pB: personB.axisScores.TF.roundA },
+    { label: "J / P", pA: personA.axisScores.JP.roundA, pB: personB.axisScores.JP.roundA }
+  ];
+
+  axes.forEach((ax, idx) => {
+    const y = axesY + idx * 56;
+    ctx.fillStyle = "#cbd5e1";
+    ctx.font = "700 12px system-ui, -apple-system, sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillText(ax.label, 40, y);
+
+    // Track
+    ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
+    const trackX = 100;
+    const trackW = w - 140;
+    ctx.fillRect(trackX, y - 8, trackW, 8);
+
+    // Midline
+    ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
+    ctx.fillRect(trackX + trackW / 2 - 1, y - 12, 2, 16);
+
+    // Pin A
+    const pinA_X = trackX + (trackW * (ax.pA / 100));
+    ctx.beginPath();
+    ctx.arc(pinA_X, y - 4, 7, 0, Math.PI * 2);
+    ctx.fillStyle = "#395296";
+    ctx.fill();
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Pin B
+    const pinB_X = trackX + (trackW * (ax.pB / 100));
+    ctx.beginPath();
+    ctx.arc(pinB_X, y - 4, 7, 0, Math.PI * 2);
+    ctx.fillStyle = "#e0682b";
+    ctx.fill();
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  });
+
+  // Footer badge
+  ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+  ctx.font = "600 12px system-ui, -apple-system, sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("8func.org · Jungian Cognitive Assessment", w / 2, h - 35);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
