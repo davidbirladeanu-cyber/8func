@@ -444,6 +444,7 @@ class App {
       `;
     }
 
+    const modalCloseBtn = modal.querySelector("#modal-close-btn");
     if (modalCloseBtn) {
       modalCloseBtn.onclick = () => this.closeModal();
     }
