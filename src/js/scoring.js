@@ -688,6 +688,8 @@ export function parseComparisonInputLink(linkStr) {
 /**
  * Calculates the percentage impact (delta) of a question's answer on the targeted
  * cognitive function, axis, or combination, relative to a neutral / baseline response.
+ * Always expresses the impact in positive terms of what the answer INCREASES
+ * (e.g. disagreeing with N increases S: "+5% S", disagreeing with ST increases N and F: "+1% N, +1% F").
  *
  * @param {Object} question - The question object
  * @param {Object} answers - Current answers dictionary (e.g. draftAnswers)
@@ -705,112 +707,205 @@ export function calculateQuestionImpact(question, answers, questions, lang = "ro
     return null;
   }
 
-  const target = question.target || question.agreementPole || (question.options && question.options[0]?.pole) || question.dimension || "Ne";
-  const cat = question.category;
   const isForced = question.format === "wouldYouRather" || question.format === "direct";
 
-  // Calculate score with current answers
-  const sCurrent = calculateScores(questions, answers);
-
-  // Baseline answers:
-  // For Likert: baseline is "NEUTRAL"
-  // For Forced choice (dilemma): baseline is without this question
-  let sBase;
+  // 1. Forced choice dilemmas (Would You Rather / Direct)
   if (isForced) {
-    const ansWithout = { ...answers };
-    delete ansWithout[question.id];
-    sBase = calculateScores(questions, ansWithout);
-  } else {
-    const ansNeut = { ...answers, [question.id]: "NEUTRAL" };
-    sBase = calculateScores(questions, ansNeut);
-  }
+    const opts = question.options || [];
+    const isA = (currentAns === opts[0]?.id || currentAns === "A");
+    const chosenOpt = isA ? opts[0] : opts[1];
+    const otherOpt = isA ? opts[1] : opts[0];
+    const chosenPole = chosenOpt?.pole || question.target || "N";
+    const otherPole = otherOpt?.pole || question.oppositePole || "S";
 
-  let delta = 0;
-  let userTotal = 50;
+    const sCurrent = calculateScores(questions, answers);
+    const ansOpp = { ...answers, [question.id]: isA ? (opts[1]?.id || "B") : (opts[0]?.id || "A") };
+    const sOpp = calculateScores(questions, ansOpp);
 
-  if (cat === "function") {
-    const pCurrent = sCurrent.precisePercentages?.[target] ?? sCurrent.percentages[target] ?? 50;
-    const pBase = sBase.precisePercentages?.[target] ?? sBase.percentages[target] ?? 50;
-    delta = pCurrent - pBase;
-    userTotal = sCurrent.percentages[target] ?? Math.round(pCurrent);
-  } else if (cat === "axis") {
-    const dimId = question.dimension || (target === "E" || target === "I" ? "EI" : target === "N" || target === "S" ? "NS" : target === "T" || target === "F" ? "TF" : "JP");
-    const dimCurr = sCurrent.axisScores[dimId];
-    const dimBase = sBase.axisScores[dimId];
-    if (dimCurr && dimBase) {
-      const pCurrent = (target === dimCurr.poleA) ? dimCurr.pctA : dimCurr.pctB;
-      const pBase = (target === dimBase.poleA) ? dimBase.pctA : dimBase.pctB;
-      delta = pCurrent - pBase;
-      userTotal = Math.round(pCurrent);
-    }
-  } else if (cat === "combination") {
-    const letters = (target || "").split("");
-    const diffs = letters.map(l => {
-      const dimId = (l === "E" || l === "I") ? "EI" : (l === "N" || l === "S") ? "NS" : (l === "T" || l === "F") ? "TF" : "JP";
-      const dimCurr = sCurrent.axisScores[dimId];
-      const dimBase = sBase.axisScores[dimId];
-      if (dimCurr && dimBase) {
-        const pCurrent = (l === dimCurr.poleA) ? dimCurr.pctA : dimCurr.pctB;
-        const pBase = (l === dimBase.poleA) ? dimBase.pctA : dimBase.pctB;
-        return pCurrent - pBase;
+    const fns = ["Ne", "Ni", "Se", "Si", "Te", "Ti", "Fe", "Fi"];
+    if (chosenPole.length === 1 || fns.includes(chosenPole)) {
+      let delta = 0;
+      let total = 50;
+      if (sCurrent.percentages[chosenPole] !== undefined) {
+        delta = (sCurrent.precisePercentages?.[chosenPole] ?? sCurrent.percentages[chosenPole]) - (sOpp.precisePercentages?.[chosenPole] ?? sOpp.percentages[chosenPole]);
+        total = sCurrent.percentages[chosenPole];
+      } else {
+        const dimId = (chosenPole === "E" || chosenPole === "I") ? "EI" : (chosenPole === "N" || chosenPole === "S") ? "NS" : (chosenPole === "T" || chosenPole === "F") ? "TF" : "JP";
+        const dimC = sCurrent.axisScores[dimId];
+        const dimO = sOpp.axisScores[dimId];
+        if (dimC && dimO) {
+          const pC = (chosenPole === dimC.poleA) ? dimC.pctA : dimC.pctB;
+          const pO = (chosenPole === dimO.poleA) ? dimO.pctA : dimO.pctB;
+          delta = pC - pO;
+          total = Math.round(pC);
+        }
       }
-      return 0;
-    });
-    delta = diffs.length > 0 ? (diffs.reduce((a, b) => a + b, 0) / diffs.length) : 0;
-    userTotal = Math.round(letters.reduce((acc, l) => {
+      let deltaRound = Math.max(1, Math.round(Math.abs(delta)));
+      return {
+        delta: deltaRound,
+        deltaRound,
+        target: chosenPole,
+        userTotal: total,
+        text: `+${deltaRound}% ${chosenPole}`,
+        tooltip: lang === "ro"
+          ? `Opțiunea aleasă adaugă +${deltaRound}% la ${chosenPole} (Scor total: ${total}% ${chosenPole}).`
+          : `Chosen option adds +${deltaRound}% to ${chosenPole} (Total score: ${total}% ${chosenPole}).`,
+        isPositive: true,
+        isNegative: false,
+        isNeutral: false,
+        className: "is-pos"
+      };
+    } else {
+      const t = chosenPole.split("");
+      const o = otherPole.split("");
+      const differing = t.filter((l, i) => l !== o[i]);
+      const parts = [];
+      differing.forEach(l => {
+        const dimId = (l === "E" || l === "I") ? "EI" : (l === "N" || l === "S") ? "NS" : (l === "T" || l === "F") ? "TF" : "JP";
+        const dimC = sCurrent.axisScores[dimId];
+        const dimO = sOpp.axisScores[dimId];
+        if (dimC && dimO) {
+          const pC = (l === dimC.poleA) ? dimC.pctA : dimC.pctB;
+          const pO = (l === dimO.poleA) ? dimO.pctA : dimO.pctB;
+          let d = Math.round(Math.abs(pC - pO));
+          if (d <= 0) d = 1;
+          parts.push(`+${d}% ${l}`);
+        }
+      });
+      const text = parts.join(", ");
+      return {
+        delta: 1,
+        deltaRound: 1,
+        target: chosenPole,
+        userTotal: 50,
+        text,
+        tooltip: lang === "ro"
+          ? `Opțiunea aleasă adaugă ${parts.join(" și ")}.`
+          : `Chosen option adds ${parts.join(" and ")}.`,
+        isPositive: true,
+        isNegative: false,
+        isNeutral: false,
+        className: "is-pos"
+      };
+    }
+  }
+
+  // 2. Likert neutral answer
+  if (currentAns === "NEUTRAL") {
+    return {
+      delta: 0,
+      deltaRound: 0,
+      target: question.target || "Neutral",
+      userTotal: 50,
+      text: "0%",
+      tooltip: lang === "ro"
+        ? "Răspuns neutru: nu adaugă puncte la niciun pol."
+        : "Neutral answer: adds no points to any pole.",
+      isPositive: false,
+      isNegative: false,
+      isNeutral: true,
+      className: "is-zero"
+    };
+  }
+
+  const sCurrent = calculateScores(questions, answers);
+  const ansNeut = { ...answers, [question.id]: "NEUTRAL" };
+  const sNeut = calculateScores(questions, ansNeut);
+
+  const isAgree = (currentAns === "STRONGLY_AGREE" || currentAns === "AGREE");
+  const target = question.target || question.agreementPole;
+  const opp = question.oppositePole || question.opposite;
+
+  // 3. Axis dichotomies (EI, NS, TF, JP)
+  if (question.category === "axis") {
+    const dimId = question.dimension || (target === "E" || target === "I" ? "EI" : target === "N" || target === "S" ? "NS" : target === "T" || target === "F" ? "TF" : "JP");
+    const dimC = sCurrent.axisScores[dimId];
+    const dimN = sNeut.axisScores[dimId];
+
+    const activePole = isAgree ? target : opp;
+    if (dimC && dimN && activePole) {
+      const pC = (activePole === dimC.poleA) ? dimC.pctA : dimC.pctB;
+      const pN = (activePole === dimN.poleA) ? dimN.pctA : dimN.pctB;
+      let delta = Math.round(pC - pN);
+      if (delta <= 0) delta = 1;
+      const total = Math.round(pC);
+
+      return {
+        delta,
+        deltaRound: delta,
+        target: activePole,
+        userTotal: total,
+        text: `+${delta}% ${activePole}`,
+        tooltip: isAgree
+          ? (lang === "ro" ? `Acordul adaugă +${delta}% la ${activePole} (Scor total: ${total}% ${activePole}).` : `Agreement adds +${delta}% to ${activePole} (Total score: ${total}% ${activePole}).`)
+          : (lang === "ro" ? `Dezacordul favorizează polul opus: adaugă +${delta}% la ${activePole} (Scor total: ${total}% ${activePole}).` : `Disagreement favors opposite pole: adds +${delta}% to ${activePole} (Total score: ${total}% ${activePole}).`),
+        isPositive: true,
+        isNegative: false,
+        isNeutral: false,
+        className: "is-pos"
+      };
+    }
+  }
+
+  // 4. Combinations (EJ, EP, IJ, IP, NT, NF, ST, SF)
+  if (question.category === "combination") {
+    const activePair = isAgree ? target : (opp || (target === "NT" ? "SF" : target === "NF" ? "ST" : target === "ST" ? "NF" : target === "SF" ? "NT" : target === "EJ" ? "IP" : target === "EP" ? "IJ" : target === "IJ" ? "EP" : "EJ"));
+    const letters = (activePair || "").split("");
+    const parts = [];
+    letters.forEach(l => {
       const dimId = (l === "E" || l === "I") ? "EI" : (l === "N" || l === "S") ? "NS" : (l === "T" || l === "F") ? "TF" : "JP";
-      const dim = sCurrent.axisScores[dimId];
-      return acc + (dim ? (l === dim.poleA ? dim.pctA : dim.pctB) : 50);
-    }, 0) / (letters.length || 1));
-  } else {
-    if (sCurrent.percentages[target] !== undefined) {
-      const pCurrent = sCurrent.precisePercentages?.[target] ?? sCurrent.percentages[target];
-      const pBase = sBase.precisePercentages?.[target] ?? sBase.percentages[target];
-      delta = pCurrent - pBase;
-      userTotal = sCurrent.percentages[target];
-    }
+      const dimC = sCurrent.axisScores[dimId];
+      const dimN = sNeut.axisScores[dimId];
+      if (dimC && dimN) {
+        const pC = (l === dimC.poleA) ? dimC.pctA : dimC.pctB;
+        const pN = (l === dimN.poleA) ? dimN.pctA : dimN.pctB;
+        let delta = Math.round(pC - pN);
+        if (delta <= 0) delta = 1;
+        parts.push(`+${delta}% ${l}`);
+      }
+    });
+
+    const text = parts.join(", ");
+    return {
+      delta: 1,
+      deltaRound: 1,
+      target: activePair,
+      userTotal: 50,
+      text,
+      tooltip: isAgree
+        ? (lang === "ro" ? `Acest răspuns adaugă ${parts.join(" și ")}.` : `This answer adds ${parts.join(" and ")}.`)
+        : (lang === "ro" ? `Dezacordul favorizează polii opuși: adaugă ${parts.join(" și ")}.` : `Disagreement favors opposite poles: adds ${parts.join(" and ")}.`),
+      isPositive: true,
+      isNegative: false,
+      isNeutral: false,
+      className: "is-pos"
+    };
   }
 
-  let deltaRound = Math.round(delta);
-  if (Object.is(deltaRound, -0) || deltaRound === 0) deltaRound = 0;
+  // 5. Cognitive Functions (Ne, Ni, Se, Si, Te, Ti, Fe, Fi)
+  if (question.category === "function") {
+    const activeFn = isAgree ? target : (opp || target);
+    const pC = sCurrent.precisePercentages?.[target] ?? sCurrent.percentages[target] ?? 50;
+    const pN = sNeut.precisePercentages?.[target] ?? sNeut.percentages[target] ?? 50;
+    let delta = Math.max(1, Math.round(Math.abs(pC - pN)));
+    const total = sCurrent.percentages[activeFn] ?? 50;
 
-  const isPositive = deltaRound > 0;
-  const isNegative = deltaRound < 0;
-  const isNeutral = deltaRound === 0;
-
-  const sign = isPositive ? "+" : "";
-  const text = `${sign}${deltaRound}% ${target}`;
-
-  let tooltip = "";
-  if (lang === "ro") {
-    if (isPositive) {
-      tooltip = `Acest răspuns adaugă +${deltaRound}% la scorul tău de ${target} (Scor total: ${userTotal}% ${target}).`;
-    } else if (isNegative) {
-      tooltip = `Acest răspuns scade ${Math.abs(deltaRound)}% din scorul tău de ${target} (Scor total: ${userTotal}% ${target}).`;
-    } else {
-      tooltip = `Răspuns neutru: impact 0% asupra scorului tău de ${target} (Scor total: ${userTotal}% ${target}).`;
-    }
-  } else {
-    if (isPositive) {
-      tooltip = `This answer adds +${deltaRound}% to your ${target} score (Total score: ${userTotal}% ${target}).`;
-    } else if (isNegative) {
-      tooltip = `This answer subtracts ${Math.abs(deltaRound)}% from your ${target} score (Total score: ${userTotal}% ${target}).`;
-    } else {
-      tooltip = `Neutral answer: 0% impact on your ${target} score (Total score: ${userTotal}% ${target}).`;
-    }
+    return {
+      delta,
+      deltaRound: delta,
+      target: activeFn,
+      userTotal: total,
+      text: `+${delta}% ${activeFn}`,
+      tooltip: isAgree
+        ? (lang === "ro" ? `Acordul adaugă +${delta}% la ${activeFn} (Scor total: ${total}% ${activeFn}).` : `Agreement adds +${delta}% to ${activeFn} (Total score: ${total}% ${activeFn}).`)
+        : (lang === "ro" ? `Dezacordul cu ${target} favorizează polul complementar: adaugă +${delta}% spre ${activeFn} (Scor total: ${total}% ${activeFn}).` : `Disagreement with ${target} favors ${activeFn} (+${delta}%).`),
+      isPositive: true,
+      isNegative: false,
+      isNeutral: false,
+      className: "is-pos"
+    };
   }
 
-  return {
-    delta,
-    deltaRound,
-    target,
-    userTotal,
-    text,
-    tooltip,
-    isPositive,
-    isNegative,
-    isNeutral,
-    className: isPositive ? "is-pos" : isNegative ? "is-neg" : "is-zero"
-  };
+  return null;
 }
 
