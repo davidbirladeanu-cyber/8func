@@ -1240,17 +1240,17 @@ class App {
     const s2QuadColors = { EJ: "#395296", EP: "#4361ab", IJ: "#4d69ba", IP: "#5573c7" };
     const activeS2 = { code: s2QuadCode, color: s2QuadColors[s2QuadCode] || "#4361ab" };
 
-    // Minimalist Spectrum Labels & Coordinates
-    const s1Top = lang === "ro" ? "INTUIȚIE" : "INTUITION";
-    const s1Bottom = lang === "ro" ? "SENZORIAL" : "SENSING";
-    const s1Left = lang === "ro" ? "SENTIMENT" : "FEELING";
-    const s1Right = lang === "ro" ? "GÂNDIRE" : "THINKING";
+    // Minimalist Spectrum Labels & Coordinates (N, S, F, T & E, I, J, P)
+    const s1Top = "N";
+    const s1Bottom = "S";
+    const s1Left = "F";
+    const s1Right = "T";
     const s1Coords = `${pN >= pS ? pN + '% N' : pS + '% S'} · ${pF >= pT ? pF + '% F' : pT + '% T'}`;
 
-    const s2Top = lang === "ro" ? "EXTRAVERSIE" : "EXTRAVERSION";
-    const s2Bottom = lang === "ro" ? "INTROVERSIE" : "INTROVERSION";
-    const s2Left = lang === "ro" ? "JUDECĂTĂ" : "JUDGING";
-    const s2Right = lang === "ro" ? "PERCEPȚIE" : "PERCEIVING";
+    const s2Top = "E";
+    const s2Bottom = "I";
+    const s2Left = "J";
+    const s2Right = "P";
     const s2Coords = `${pE >= pI ? pE + '% E' : pI + '% I'} · ${pJ >= pP ? pJ + '% J' : pP + '% P'}`;
 
     // ========================================================
@@ -1443,6 +1443,56 @@ class App {
       `;
     }).join("");
 
+    // 8 Cognitive Functions Comparison Axes
+    const FUNCTIONS_ORDER = ["Ne", "Ni", "Se", "Si", "Te", "Ti", "Fe", "Fi"];
+    const compFuncsAxesData = FUNCTIONS_ORDER.map(f => {
+      const fnInfo = COGNITIVE_FUNCTIONS[f] || {};
+      const fName = lang === "ro" ? (fnInfo.nameRo || fnInfo.name || f) : (fnInfo.name || f);
+      const fColor = getFuncTileColors(f).bg;
+      const uPct = percentages[f] ?? 50;
+      const fPct = currentComparisonFigure.scores ? (currentComparisonFigure.scores[f] ?? 50) : 50;
+      const diff = Math.abs(uPct - fPct);
+      return {
+        id: f,
+        name: `${f} · ${fName}`,
+        color: fColor,
+        leftLabel: `${userA_Name}: ${uPct}%`,
+        rightLabel: `${userB_Name}: ${fPct}%`,
+        uPos: Math.max(5, Math.min(95, uPct)),
+        fPos: Math.max(5, Math.min(95, fPct)),
+        uPct,
+        fPct,
+        diff
+      };
+    });
+
+    const compFuncsAxesHtml = compFuncsAxesData.map(fn => {
+      return `
+        <div class="comp-v2-axis-card" style="background: ${fn.color}; color: #ffffff;">
+          <div class="comp-v2-axis-title">
+            <span>${fn.name}</span>
+            <span style="font-size: 0.78rem; opacity: 0.92; font-weight: 800; text-transform: none; letter-spacing: normal;">Δ ${fn.diff}%</span>
+          </div>
+          <div class="comp-v2-track">
+            <!-- White Dot (User) -->
+            <div class="comp-v2-dot-user" style="left: ${fn.uPos}%;" title="${userA_Name}: ${fn.uPct}%"></div>
+            <!-- Colored Dot (Figure or Person B) -->
+            <div class="comp-v2-dot-fig" style="left: ${fn.fPos}%; border-color: rgba(255,255,255,0.6);" title="${userB_Name}: ${fn.fPct}%">
+              ${currentComparisonFigure.photo ? `
+                <img src="${currentComparisonFigure.photo}" alt="${userB_Name}" />
+              ` : `
+                <span>${currentComparisonFigure.avatar || userB_Name.charAt(0)}</span>
+              `}
+            </div>
+          </div>
+          <div class="comp-v2-labels">
+            <span class="comp-v2-lbl-left">${fn.leftLabel}</span>
+            <span class="comp-v2-lbl-right">${fn.rightLabel}</span>
+          </div>
+        </div>
+      `;
+    }).join("");
+
     const figN = currentComparisonFigure.axes ? currentComparisonFigure.axes.N : (currentComparisonFigure.mbti.includes("N") ? 75 : 25);
     const figT = currentComparisonFigure.axes ? currentComparisonFigure.axes.T : (currentComparisonFigure.mbti.includes("T") ? 75 : 25);
     const figCompassX = Math.max(10, Math.min(90, figT));
@@ -1540,10 +1590,9 @@ class App {
             </section>
 
             <!-- Spectrum (Cross Compass: N/S + F/T on XY, E/I + J/P on YZ - all in one) -->
-            <section class="e-panel spectrum-cross-panel" id="spectrum-compass" role="button" tabindex="0" aria-label="${lang === 'ro' ? 'Deschide Spectrul 3D' : 'Open 3D Spectrum'}" style="cursor: pointer; transition: box-shadow 0.2s, transform 0.2s;">
+            <section class="e-panel spectrum-cross-panel" id="spectrum-compass" role="button" tabindex="0" aria-label="${lang === 'ro' ? 'Deschide Spectrul 3D' : 'Open 3D Spectrum'}" style="cursor: pointer; transition: box-shadow 0.2s;">
               <div class="e-sec-head" style="margin-bottom: 2rem;">
                 <h2 class="e-sec-title">${lang === "ro" ? "Spectru" : "Spectrum"}</h2>
-                <span class="spectrum-open-hint">${lang === "ro" ? "Deschide 3D →" : "Open 3D →"}</span>
               </div>
 
               <div class="spectrum-cross-wrap">
@@ -1726,8 +1775,18 @@ class App {
                   </div>
                 </div>
 
+                <div class="comp-v2-sec-heading" style="margin: 1.5rem 0 0.85rem; font-family: var(--font-display); font-size: 0.95rem; font-weight: 900; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-strong);">
+                  ${lang === 'ro' ? '4 Axe Spectrale' : '4 Spectrum Axes'}
+                </div>
                 <div class="comp-v2-axes-grid">
                   ${compAxesHtml}
+                </div>
+
+                <div class="comp-v2-sec-heading" style="margin: 2rem 0 0.85rem; font-family: var(--font-display); font-size: 0.95rem; font-weight: 900; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-strong);">
+                  ${lang === 'ro' ? '8 Funcții Cognitive' : '8 Cognitive Functions'}
+                </div>
+                <div class="comp-v2-axes-grid">
+                  ${compFuncsAxesHtml}
                 </div>
               </div>
             </section>
@@ -2026,12 +2085,15 @@ class App {
       });
     }
 
-    // Clicking a figure in Notable Figures opens pop out modal
+    // Clicking a figure in Notable Figures selects that figure for comparison and scrolls to comparison section
     document.querySelectorAll(".fig-list-item").forEach(item => {
       item.addEventListener("click", () => {
         const id = item.getAttribute("data-id");
         if (id) {
-          this.openFigureDetailModal(id, true);
+          this.selectedFigureId = id;
+          this.renderResults();
+          const compSection = document.getElementById("comparar");
+          if (compSection) compSection.scrollIntoView({ behavior: "smooth" });
         }
       });
     });
@@ -2805,16 +2867,16 @@ class App {
     const top10IdsA = new Set(rankedFiguresA.slice(0, 10).map(f => f.id));
     const mutualFigures = rankedFiguresB.slice(0, 10).filter(f => top10IdsA.has(f.id));
 
-    // Spectrum coordinates for both profiles
-    const s1Top = lang === "ro" ? "INTUIȚIE" : "INTUITION";
-    const s1Bottom = lang === "ro" ? "SENZORIAL" : "SENSING";
-    const s1Left = lang === "ro" ? "SENTIMENT" : "FEELING";
-    const s1Right = lang === "ro" ? "GÂNDIRE" : "THINKING";
+    // Spectrum coordinates for both profiles (N, S, F, T & E, I, J, P)
+    const s1Top = "N";
+    const s1Bottom = "S";
+    const s1Left = "F";
+    const s1Right = "T";
 
-    const s2Top = lang === "ro" ? "EXTRAVERSIE" : "EXTRAVERSION";
-    const s2Bottom = lang === "ro" ? "INTROVERSIE" : "INTROVERSION";
-    const s2Left = lang === "ro" ? "JUDECĂTĂ" : "JUDGING";
-    const s2Right = lang === "ro" ? "PERCEPȚIE" : "PERCEIVING";
+    const s2Top = "E";
+    const s2Bottom = "I";
+    const s2Left = "J";
+    const s2Right = "P";
 
     // Person A coordinates (Plane 1: T right, S bottom; Plane 2: P right, I bottom)
     const compassX_A = Math.max(10, Math.min(90, personA.axisScores.TF.roundA));

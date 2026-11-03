@@ -10431,7 +10431,30 @@ export const FUNCTIONS = ["Ne", "Ni", "Te", "Ti", "Fe", "Fi", "Se", "Si"];
 export function calculateFigureSimilarity(userScores, userAxisScores, figure) {
   if (!figure) return 50;
 
-  // 1. 4-Axis Spectrum Mean Absolute Difference (Direct Ground Truth)
+  // 1. Cognitive Function Vector Difference (Ne, Ni, Te, Ti, Fe, Fi, Se, Si)
+  let funcDiff = 0;
+  let topFuncBonus = 0;
+  if (userScores && figure.scores) {
+    FUNCTIONS.forEach(f => {
+      const u = userScores[f] ?? 50;
+      const fig = figure.scores[f] ?? 50;
+      funcDiff += Math.abs(u - fig);
+    });
+
+    // Check dominant & auxiliary function alignment
+    const userSorted = [...FUNCTIONS].sort((a, b) => (userScores[b] ?? 50) - (userScores[a] ?? 50));
+    const figSorted = [...FUNCTIONS].sort((a, b) => (figure.scores[b] ?? 50) - (figure.scores[a] ?? 50));
+
+    if (userSorted[0] === figSorted[0]) topFuncBonus += 6;
+    if (userSorted[1] === figSorted[1]) topFuncBonus += 4;
+    else if (figSorted.slice(0, 2).includes(userSorted[0]) && figSorted.slice(0, 2).includes(userSorted[1])) {
+      topFuncBonus += 4;
+    }
+  }
+  const avgFuncDiff = funcDiff / FUNCTIONS.length;
+  const funcSimilarity = Math.max(0, Math.min(100, Math.round(100 - avgFuncDiff + topFuncBonus)));
+
+  // 2. 4-Axis Spectrum Mean Absolute Difference (Direct Ground Truth)
   let axisDiff = 0;
   let axisCount = 0;
 
@@ -10464,20 +10487,8 @@ export function calculateFigureSimilarity(userScores, userAxisScores, figure) {
   const avgAxisDiff = axisCount > 0 ? (axisDiff / axisCount) : 30;
   const axisSimilarity = Math.max(0, Math.min(100, 100 - avgAxisDiff));
 
-  // 2. Cognitive Function Vector Difference
-  let funcDiff = 0;
-  if (userScores && figure.scores) {
-    FUNCTIONS.forEach(f => {
-      const u = userScores[f] ?? 50;
-      const fig = figure.scores[f] ?? 50;
-      funcDiff += Math.abs(u - fig);
-    });
-  }
-  const avgFuncDiff = funcDiff / FUNCTIONS.length;
-  const funcSimilarity = Math.max(0, Math.min(100, 100 - avgFuncDiff));
-
-  // Weighted blend: 70% axis alignment + 30% cognitive functions
-  const combined = Math.round(axisSimilarity * 0.70 + funcSimilarity * 0.30);
+  // Weighted blend: 60% cognitive functions (Ne, Ni, etc.) + 40% 4-axis spectrum
+  const combined = Math.round(funcSimilarity * 0.60 + axisSimilarity * 0.40);
   return Math.max(0, Math.min(100, combined));
 }
 
