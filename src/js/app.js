@@ -157,6 +157,50 @@ export function getMbtiTileColors(type = "") {
   return { bg: "#95637e", text: "#ffffff", border: "#7b4f65", name: "NT" };
 }
 
+// 24 Question Categories across 8 Single Poles, 8 Cognitive Functions, 4 Lifestyle, and 4 Temperament Pairs
+export const EDIT_SECTIONS = [
+  // 1. MBTI Single Poles (8)
+  { id: "E", name: "Extraversion", nameRo: "Extraversie", color: "#e0535e", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>` },
+  { id: "I", name: "Introversion", nameRo: "Introversie", color: "#0284C7", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3.5"/></svg>` },
+  { id: "N", name: "Intuition", nameRo: "Intuiție", color: "#95637e", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>` },
+  { id: "S", name: "Sensing", nameRo: "Senzorial", color: "#e5c727", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>` },
+  { id: "T", name: "Thinking", nameRo: "Gândire", color: "#3B49DF", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/></svg>` },
+  { id: "F", name: "Feeling", nameRo: "Sentiment", color: "#9ac262", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>` },
+  { id: "J", name: "Judging", nameRo: "Judecată", color: "#4361ab", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>` },
+  { id: "P", name: "Perceiving", nameRo: "Percepție", color: "#d97706", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>` },
+
+  // 2. Cognitive Functions (8)
+  { id: "Ne", name: "Ne · Intuition", nameRo: "Ne · Intuiție", color: "#8A3AA0", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>` },
+  { id: "Ni", name: "Ni · Synthesis", nameRo: "Ni · Sinteză", color: "#3B49DF", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>` },
+  { id: "Se", name: "Se · Action", nameRo: "Se · Acțiune", color: "#DC2626", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>` },
+  { id: "Si", name: "Si · Memory", nameRo: "Si · Memorie", color: "#B45309", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>` },
+  { id: "Te", name: "Te · Structure", nameRo: "Te · Structură", color: "#0284C7", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>` },
+  { id: "Ti", name: "Ti · Precision", nameRo: "Ti · Precizie", color: "#0D9488", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>` },
+  { id: "Fe", name: "Fe · Harmony", nameRo: "Fe · Armonie", color: "#16A34A", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>` },
+  { id: "Fi", name: "Fi · Values", nameRo: "Fi · Valori", color: "#EA580C", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>` },
+
+  // 3. Lifestyle / Energy Combinations (4)
+  { id: "EJ", name: "EJ · Executive", nameRo: "EJ · Directiv", color: "#395296", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>` },
+  { id: "EP", name: "EP · Explorer", nameRo: "EP · Adaptabil", color: "#4361ab", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>` },
+  { id: "IJ", name: "IJ · Conserver", nameRo: "IJ · Planificator", color: "#4d69ba", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>` },
+  { id: "IP", name: "IP · Inquirer", nameRo: "IP · Reflexiv", color: "#5573c7", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>` },
+
+  // 4. Temperament Combinations (4)
+  { id: "NT", name: "NT · Rational", nameRo: "NT · Rațional", color: "#95637e", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v12m-6-6h12"/></svg>` },
+  { id: "NF", name: "NF · Idealist", nameRo: "NF · Idealist", color: "#9ac262", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>` },
+  { id: "ST", name: "ST · Realist", nameRo: "ST · Practic", color: "#72cccd", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>` },
+  { id: "SF", name: "SF · Social", nameRo: "SF · Protector", color: "#e5c727", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>` }
+];
+
+export const getQuestionCategory = (q) => {
+  return q.target || q.agreementPole || (q.options && q.options[0]?.pole) || q.dimension || "Ne";
+};
+
+export const getQuestionGroupDef = (q) => {
+  const cat = getQuestionCategory(q);
+  return EDIT_SECTIONS.find(s => s.id === cat) || { id: cat, name: cat, nameRo: cat, color: "#102E24", icon: "" };
+};
+
 class App {
   constructor() {
     this.state = new AppState();
@@ -725,6 +769,8 @@ class App {
     const question = this.state.getCurrentQuestion();
     const totalQ = this.state.questions.length;
     const questionText = getQuestionText(question, lang);
+    const groupDef = getQuestionGroupDef(question);
+    const catName = lang === "ro" ? (groupDef.nameRo || groupDef.name) : groupDef.name;
     
     const { answeredCount } = calculateScores(
       this.state.questions,
@@ -820,12 +866,16 @@ class App {
               <span class="question-number" aria-hidden="true">${qNumberStr}</span>
               
               <header class="question-card-header">
-                <h2 id="question-title">
-                  ${questionText}
+                <div class="question-header-top">
+                  <div class="question-axis-tag">
+                    <i class="question-axis-tag-ico-wrap" aria-hidden="true">${groupDef.icon || ''}</i>
+                    <span>${catName.toUpperCase()}</span>
+                  </div>
                   <button class="inline-axis-info e-axis-info" type="button" aria-label="${t('inspectQuestion', {}, lang)}" title="${t('infoClickHint', {}, lang)}">
-                    ${ICONS.info}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                   </button>
-                </h2>
+                </div>
+                <h2 id="question-title">${questionText}</h2>
               </header>
 
               ${answersContentHtml}
@@ -903,12 +953,11 @@ class App {
       });
     });
 
-    const infoBtn = document.querySelector(".e-axis-info");
-    if (infoBtn) {
-      infoBtn.addEventListener("click", () => {
+    document.querySelectorAll(".e-axis-info, .question-axis-tag").forEach(btn => {
+      btn.addEventListener("click", () => {
         this.showQuestionInfoModal(q);
       });
-    }
+    });
 
     const modalCloseBtn = document.getElementById("modal-close-btn");
     const modalOkBtn = document.getElementById("modal-ok-btn");
@@ -4402,45 +4451,6 @@ class App {
     const oldBackdrop = document.getElementById("edit-answers-backdrop");
     if (oldBackdrop) oldBackdrop.remove();
 
-    // 24 Sections in exact requested order with authentic 12Axes colors and icons
-    const EDIT_SECTIONS = [
-      // 1. MBTI Single Poles (8)
-      { id: "E", name: "Extraversion", nameRo: "Extraversie", color: "#e0535e", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>` },
-      { id: "I", name: "Introversion", nameRo: "Introversie", color: "#0284C7", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3.5"/></svg>` },
-      { id: "N", name: "Intuition", nameRo: "Intuiție", color: "#95637e", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>` },
-      { id: "S", name: "Sensing", nameRo: "Senzorial", color: "#e5c727", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>` },
-      { id: "T", name: "Thinking", nameRo: "Gândire", color: "#3B49DF", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/></svg>` },
-      { id: "F", name: "Feeling", nameRo: "Sentiment", color: "#9ac262", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>` },
-      { id: "J", name: "Judging", nameRo: "Judecată", color: "#4361ab", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>` },
-      { id: "P", name: "Perceiving", nameRo: "Percepție", color: "#d97706", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>` },
-
-      // 2. Cognitive Functions (8)
-      { id: "Ne", name: "Ne · Intuition", nameRo: "Ne · Intuiție", color: "#8A3AA0", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>` },
-      { id: "Ni", name: "Ni · Synthesis", nameRo: "Ni · Sinteză", color: "#3B49DF", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>` },
-      { id: "Se", name: "Se · Action", nameRo: "Se · Acțiune", color: "#DC2626", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>` },
-      { id: "Si", name: "Si · Memory", nameRo: "Si · Memorie", color: "#B45309", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>` },
-      { id: "Te", name: "Te · Structure", nameRo: "Te · Structură", color: "#0284C7", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>` },
-      { id: "Ti", name: "Ti · Precision", nameRo: "Ti · Precizie", color: "#0D9488", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>` },
-      { id: "Fe", name: "Fe · Harmony", nameRo: "Fe · Armonie", color: "#16A34A", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>` },
-      { id: "Fi", name: "Fi · Values", nameRo: "Fi · Valori", color: "#EA580C", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>` },
-
-      // 3. Lifestyle / Energy Combinations (4)
-      { id: "EJ", name: "EJ · Executive", nameRo: "EJ · Directiv", color: "#395296", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>` },
-      { id: "EP", name: "EP · Explorer", nameRo: "EP · Adaptabil", color: "#4361ab", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>` },
-      { id: "IJ", name: "IJ · Conserver", nameRo: "IJ · Planificator", color: "#4d69ba", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>` },
-      { id: "IP", name: "IP · Inquirer", nameRo: "IP · Reflexiv", color: "#5573c7", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>` },
-
-      // 4. Temperament Combinations (4)
-      { id: "NT", name: "NT · Rational", nameRo: "NT · Rațional", color: "#95637e", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v12m-6-6h12"/></svg>` },
-      { id: "NF", name: "NF · Idealist", nameRo: "NF · Idealist", color: "#9ac262", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>` },
-      { id: "ST", name: "ST · Realist", nameRo: "ST · Practic", color: "#72cccd", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>` },
-      { id: "SF", name: "SF · Social", nameRo: "SF · Protector", color: "#e5c727", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>` }
-    ];
-
-    const getQuestionCategory = (q) => {
-      return q.target || q.agreementPole || (q.options && q.options[0]?.pole) || q.dimension || "Ne";
-    };
-
     // Filter only active sections that have questions in this test
     const activeSections = EDIT_SECTIONS.filter(sec =>
       questions.some(q => getQuestionCategory(q) === sec.id)
@@ -4520,7 +4530,7 @@ class App {
                   title="${sFullName}"
                 >
                   ${sec.icon}
-                  <span class="e-axis-code">${sec.id}</span>
+                  <span class="e-axis-title">${sFullName}</span>
                   <span class="e-edit-badge" id="badge-${sec.id}" style="display: none;">0</span>
                 </button>
               `;
@@ -4656,14 +4666,11 @@ class App {
                   <i class="question-axis-tag-ico-wrap" aria-hidden="true">${groupDef?.icon || ''}</i>
                   <span>${gName.toUpperCase()}</span>
                 </div>
-                <button class="question-help-btn" id="edit-q-help-btn" type="button" aria-label="${lang === 'ro' ? 'Despre această întrebare' : 'About this question'}" title="${lang === 'ro' ? 'Despre această întrebare' : 'About this question'}">
-                  <span class="q-help-icon" aria-hidden="true">?</span>
+                <button class="inline-axis-info e-axis-info" id="edit-q-help-btn" type="button" aria-label="${t('inspectQuestion', {}, lang)}" title="${t('infoClickHint', {}, lang)}">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                 </button>
               </div>
-              <h2>
-                ${qText}
-                <button class="question-help-btn-inline" type="button" aria-label="${lang === 'ro' ? 'Despre această întrebare' : 'About this question'}" title="${lang === 'ro' ? 'Despre această întrebare' : 'About this question'}">?</button>
-              </h2>
+              <h2>${qText}</h2>
             </header>
             ${answersContentHtml}
           </article>
@@ -4671,7 +4678,7 @@ class App {
       `;
 
       // Help button click opens the exact modal specified
-      deckContainer.querySelectorAll(".question-help-btn, .question-help-btn-inline").forEach(btn => {
+      deckContainer.querySelectorAll(".e-axis-info, .question-axis-tag").forEach(btn => {
         btn.addEventListener("click", () => {
           this.showQuestionInfoModal(q);
         });

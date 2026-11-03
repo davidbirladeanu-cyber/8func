@@ -7484,19 +7484,24 @@ a {
   min-width: 0;
   height: 42px;
   text-align: left;
-  padding: 0 12px;
+  padding: 0 10px;
   border: 1.5px solid #E2DDCF;
   border-radius: 14px;
   background: #FFFFFF;
-  font: 700 13px var(--font-body, system-ui, sans-serif);
+  font: 600 12.5px / 1.2 var(--font-body, system-ui, sans-serif);
   color: #101010;
   cursor: pointer;
   transition: background .15s, border-color .15s, color .15s;
 }
+.e-edit-axis .e-axis-title,
 .e-edit-axis .e-axis-code {
-  font-size: 13.5px;
-  font-weight: 800;
-  letter-spacing: 0.02em;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+  font-size: 12.5px;
+  letter-spacing: -0.01em;
 }
 .e-edit-axis > span:not(.e-edit-badge) {
   min-width: 0;
@@ -7610,12 +7615,15 @@ a {
   gap: 8px;
   z-index: 2;
 }
+.question-header-top,
 .e-edit-card .question-header-top {
   display: flex;
   align-items: center;
   gap: 10px;
   width: 100%;
+  margin-bottom: 0.65rem;
 }
+.question-axis-tag,
 .e-edit-card .question-axis-tag {
   display: inline-flex;
   align-items: center;
@@ -7624,7 +7632,15 @@ a {
   border-radius: 999px;
   padding: 4px 14px 4px 5px;
   width: fit-content;
+  cursor: pointer;
+  transition: all .15s ease;
+  user-select: none;
 }
+.question-axis-tag:hover,
+.e-edit-card .question-axis-tag:hover {
+  background: #DDD9CD;
+}
+.question-axis-tag-ico-wrap,
 .e-edit-card .question-axis-tag-ico-wrap {
   width: 22px;
   height: 22px;
@@ -7635,6 +7651,7 @@ a {
   place-items: center;
   flex-shrink: 0;
 }
+.question-axis-tag-ico-wrap svg,
 .e-edit-card .question-axis-tag-ico-wrap svg {
   width: 12px !important;
   height: 12px !important;
@@ -7642,6 +7659,7 @@ a {
   stroke: currentColor;
   stroke-width: 2.2;
 }
+.question-axis-tag span,
 .e-edit-card .question-axis-tag span {
   font-size: 11px;
   font-weight: 800;
@@ -7649,55 +7667,38 @@ a {
   text-transform: uppercase;
   color: #102E24;
 }
-.e-edit-card .question-help-btn {
+.question-header-top .inline-axis-info,
+.question-header-top .e-axis-info {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
-  min-width: 26px;
-  min-height: 26px;
-  border-radius: 50%;
-  background: #EAE6DC;
-  border: 1.5px solid #D8D4C7;
-  color: #102E24;
-  font-family: var(--font-body, system-ui, sans-serif);
-  font-size: 14px;
-  font-weight: 800;
-  line-height: 1;
-  cursor: pointer;
-  transition: all .15s ease;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
+  border: none;
+  background: transparent;
   padding: 0;
-  flex-shrink: 0;
+  margin: 0;
+  color: #5B5A55;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all .15s ease;
+  box-sizing: border-box;
 }
-.e-edit-card .question-help-btn:hover,
-.e-edit-card .question-help-btn-inline:hover {
-  background: #102E24;
-  border-color: #102E24;
-  color: #FFFFFF;
+.question-header-top .inline-axis-info:hover,
+.question-header-top .e-axis-info:hover {
+  color: #102E24;
+  background: rgba(16, 46, 36, 0.09);
   transform: scale(1.12);
 }
-.e-edit-card .question-help-btn-inline {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  min-width: 22px;
-  min-height: 22px;
-  margin-left: 8px;
-  border-radius: 50%;
-  background: #EAE6DC;
-  border: 1.5px solid #D8D4C7;
-  color: #102E24;
-  font-family: var(--font-body, system-ui, sans-serif);
-  font-size: 12px;
-  font-weight: 800;
-  line-height: 1;
-  vertical-align: middle;
-  cursor: pointer;
-  transition: all .15s ease;
-  padding: 0;
+.question-header-top .inline-axis-info svg,
+.question-header-top .e-axis-info svg {
+  display: block;
+  width: 20px !important;
+  height: 20px !important;
+  stroke: currentColor;
+  flex-shrink: 0;
 }
 .e-edit-card .question-card h2 {
   max-width: 82%;
@@ -7893,15 +7894,27 @@ a {
 [data-theme="dark"] .e-edit-card .question-number {
   color: rgba(255, 255, 255, 0.07);
 }
+[data-theme="dark"] .question-axis-tag,
 [data-theme="dark"] .e-edit-card .question-axis-tag {
   background: #232E29;
 }
+[data-theme="dark"] .question-axis-tag span,
 [data-theme="dark"] .e-edit-card .question-axis-tag span {
   color: #A3E635;
 }
+[data-theme="dark"] .question-axis-tag-ico-wrap,
 [data-theme="dark"] .e-edit-card .question-axis-tag-ico-wrap {
   background: #102E24;
   color: #A3E635;
+}
+[data-theme="dark"] .question-header-top .inline-axis-info,
+[data-theme="dark"] .question-header-top .e-axis-info {
+  color: #A09B90;
+}
+[data-theme="dark"] .question-header-top .inline-axis-info:hover,
+[data-theme="dark"] .question-header-top .e-axis-info:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.12);
 }
 [data-theme="dark"] .e-edit-card .answer-button {
   background: #19221E;
