@@ -23,12 +23,12 @@ export const AXIS_CARD_COLORS = {
   TACTICS: "#395296"  // unified royal blue
 };
 
-// Colors for the 2D Spectrum Quadrants (Mind & Nature)
+// Colors for the 2D Spectrum Quadrants (Mind & Nature: N dreapta sus #95637e, T dreapta jos #72cccd, S stanga jos #e5c727, F stanga sus #9ac262)
 export const QUADRANT_COLORS = {
-  NF: "#9ac262", // top-left (green)
-  NT: "#95637e", // top-right (purple)
-  SF: "#e5c727", // bottom-left (yellow)
-  ST: "#72cccd"  // bottom-right (cyan)
+  F: "#9ac262",  // top-left (Feeling)
+  N: "#95637e",  // top-right (Intuition)
+  S: "#e5c727",  // bottom-left (Sensing)
+  T: "#72cccd"   // bottom-right (Thinking)
 };
 
 /**
@@ -345,20 +345,20 @@ export async function generateResultsCardCanvas({
   ctx.clip();
 
   // Quadrants:
-  // Top-Left: NF (green)
-  ctx.fillStyle = QUADRANT_COLORS.NF;
+  // Top-Left: F · Feeling (green #9ac262)
+  ctx.fillStyle = QUADRANT_COLORS.F;
   ctx.fillRect(leftColX, matrixY, quadHalf, quadHalf);
 
-  // Top-Right: NT (purple)
-  ctx.fillStyle = QUADRANT_COLORS.NT;
+  // Top-Right: N · Intuition (plum #95637e)
+  ctx.fillStyle = QUADRANT_COLORS.N;
   ctx.fillRect(leftColX + quadHalf, matrixY, quadHalf, quadHalf);
 
-  // Bottom-Left: SF (yellow)
-  ctx.fillStyle = QUADRANT_COLORS.SF;
+  // Bottom-Left: S · Sensing (yellow #e5c727)
+  ctx.fillStyle = QUADRANT_COLORS.S;
   ctx.fillRect(leftColX, matrixY + quadHalf, quadHalf, quadHalf);
 
-  // Bottom-Right: ST (cyan)
-  ctx.fillStyle = QUADRANT_COLORS.ST;
+  // Bottom-Right: T · Thinking (cyan #72cccd)
+  ctx.fillStyle = QUADRANT_COLORS.T;
   ctx.fillRect(leftColX + quadHalf, matrixY + quadHalf, quadHalf, quadHalf);
 
   // Thin dividing crosshair lines
@@ -371,38 +371,30 @@ export async function generateResultsCardCanvas({
   ctx.lineTo(leftColX + quadHalf, matrixY + matrixSize);
   ctx.stroke();
 
-  // Quadrant Cardinal Labels inside
+  // Quadrant Corner Labels inside (F, N, S, T)
   ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
-  ctx.font = `800 11.5px ${FONT_FAMILY}`;
+  ctx.font = `900 16px ${FONT_FAMILY}`;
   ctx.textAlign = "center";
-
-  // Top (Intuition)
-  ctx.textBaseline = "top";
-  ctx.fillText(lang === "ro" ? "INTUIȚIE" : "INTUITION", leftColX + quadHalf, matrixY + 12);
-
-  // Bottom (Sensing)
-  ctx.textBaseline = "bottom";
-  ctx.fillText(lang === "ro" ? "SENZORIAL" : "SENSING", leftColX + quadHalf, matrixY + matrixSize - 12);
-
-  // Left (Feeling)
-  ctx.save();
-  ctx.textAlign = "left";
   ctx.textBaseline = "middle";
-  ctx.fillText(lang === "ro" ? "SENTIMENT" : "FEELING", leftColX + 14, matrixY + quadHalf);
-  ctx.restore();
 
-  // Right (Thinking)
-  ctx.save();
-  ctx.textAlign = "right";
-  ctx.textBaseline = "middle";
-  ctx.fillText(lang === "ro" ? "GÂNDIRE" : "THINKING", leftColX + matrixSize - 14, matrixY + quadHalf);
-  ctx.restore();
+  // Top-Left: F
+  ctx.fillText("F", leftColX + quadHalf / 2, matrixY + quadHalf / 2);
 
-  // User position dot (F left 0%, T right 100% / N top 0%, S bottom 100%)
+  // Top-Right: N
+  ctx.fillText("N", leftColX + quadHalf + quadHalf / 2, matrixY + quadHalf / 2);
+
+  // Bottom-Left: S
+  ctx.fillText("S", leftColX + quadHalf / 2, matrixY + quadHalf + quadHalf / 2);
+
+  // Bottom-Right: T
+  ctx.fillText("T", leftColX + quadHalf + quadHalf / 2, matrixY + quadHalf + quadHalf / 2);
+
+  // User position dot (Recalculated: X = (pN + pT)/2, Y = (pS + pT)/2)
   const pN = axisScores?.NS?.roundA ?? 50;
+  const pS = axisScores?.NS?.roundB ?? 50;
   const pT = axisScores?.TF?.roundA ?? 50;
-  const compassX = Math.max(12, Math.min(88, pT));
-  const compassY = Math.max(12, Math.min(88, 100 - pN));
+  const compassX = Math.max(12, Math.min(88, Math.round((pN + pT) / 2)));
+  const compassY = Math.max(12, Math.min(88, Math.round((pS + pT) / 2)));
 
   const dotPxX = leftColX + (compassX / 100) * matrixSize;
   const dotPxY = matrixY + (compassY / 100) * matrixSize;
@@ -430,7 +422,6 @@ export async function generateResultsCardCanvas({
 
   const pE = axisScores?.EI?.roundA ?? 50;
   const pI = axisScores?.EI?.roundB ?? 50;
-  const pS = axisScores?.NS?.roundB ?? 50;
   const pF = axisScores?.TF?.roundB ?? 50;
   const pJ = axisScores?.JP?.roundA ?? 50;
   const pP = axisScores?.JP?.roundB ?? 50;
@@ -441,14 +432,15 @@ export async function generateResultsCardCanvas({
     return Math.round(((poleB ?? 50) / sum) * 100);
   };
 
+  const energyColor = pE >= pI ? "#963939" : "#395296";
   const mindColor = pN >= pS ? "#95637e" : "#e5c727";
   const natureColor = pT >= pF ? "#72cccd" : "#9ac262";
-  const sharedBlue = "#395296";
+  const tacticsColor = pJ >= pP ? "#32d3a0" : "#e59b27";
 
   const axisData = [
     {
       title: lang === "ro" ? "ENERGIE" : "ENERGY",
-      color: sharedBlue,
+      color: energyColor,
       leftLabel: lang === "ro" ? `Extraversie ${pE}%` : `Extraversion ${pE}%`,
       rightLabel: lang === "ro" ? `${pI}% Introversie` : `${pI}% Introversion`,
       pct: calcThumbPct(pE, pI)
@@ -469,7 +461,7 @@ export async function generateResultsCardCanvas({
     },
     {
       title: lang === "ro" ? "TACTICĂ" : "TACTICS",
-      color: sharedBlue,
+      color: tacticsColor,
       leftLabel: lang === "ro" ? `Judecată ${pJ}%` : `Judging ${pJ}%`,
       rightLabel: lang === "ro" ? `${pP}% Percepție` : `${pP}% Perceiving`,
       pct: calcThumbPct(pJ, pP)

@@ -160,30 +160,30 @@ export function getMbtiTileColors(type = "") {
 // 24 Question Categories across 8 Single Poles, 8 Cognitive Functions, 4 Lifestyle, and 4 Temperament Pairs
 export const EDIT_SECTIONS = [
   // 1. MBTI Single Poles (8)
-  { id: "E", name: "Extraversion", nameRo: "Extraversie", tag: "Extraversion", tagRo: "Extraversie", color: "#e0535e", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>` },
-  { id: "I", name: "Introversion", nameRo: "Introversie", tag: "Introversion", tagRo: "Introversie", color: "#0284C7", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3.5"/></svg>` },
+  { id: "E", name: "Extraversion", nameRo: "Extraversie", tag: "Extraversion", tagRo: "Extraversie", color: "#963939", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>` },
+  { id: "I", name: "Introversion", nameRo: "Introversie", tag: "Introversion", tagRo: "Introversie", color: "#395296", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3.5"/></svg>` },
   { id: "N", name: "Intuition", nameRo: "Intuiție", tag: "Intuition", tagRo: "Intuiție", color: "#95637e", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>` },
   { id: "S", name: "Sensing", nameRo: "Senzorial", tag: "Sensing", tagRo: "Senzorial", color: "#e5c727", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>` },
-  { id: "T", name: "Thinking", nameRo: "Gândire", tag: "Thinking", tagRo: "Gândire", color: "#3B49DF", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/></svg>` },
+  { id: "T", name: "Thinking", nameRo: "Gândire", tag: "Thinking", tagRo: "Gândire", color: "#72cccd", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/></svg>` },
   { id: "F", name: "Feeling", nameRo: "Sentiment", tag: "Feeling", tagRo: "Sentiment", color: "#9ac262", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>` },
-  { id: "J", name: "Judging", nameRo: "Judecată", tag: "Judging", tagRo: "Judecată", color: "#4361ab", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>` },
-  { id: "P", name: "Perceiving", nameRo: "Percepție", tag: "Perceiving", tagRo: "Percepție", color: "#d97706", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>` },
+  { id: "J", name: "Judging", nameRo: "Judecată", tag: "Judging", tagRo: "Judecată", color: "#32d3a0", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>` },
+  { id: "P", name: "Perceiving", nameRo: "Percepție", tag: "Perceiving", tagRo: "Percepție", color: "#e59b27", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>` },
 
   // 2. Cognitive Functions (8)
-  { id: "Ne", name: "Ideation", nameRo: "Ideație", tag: "Ideation", tagRo: "Ideație", color: "#8A3AA0", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>` },
-  { id: "Ni", name: "Synthesis", nameRo: "Sinteză", tag: "Synthesis", tagRo: "Sinteză", color: "#3B49DF", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>` },
-  { id: "Se", name: "Action", nameRo: "Acțiune", tag: "Action", tagRo: "Acțiune", color: "#DC2626", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>` },
-  { id: "Si", name: "Memory", nameRo: "Memorie", tag: "Memory", tagRo: "Memorie", color: "#B45309", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>` },
-  { id: "Te", name: "Structure", nameRo: "Structură", tag: "Structure", tagRo: "Structură", color: "#0284C7", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>` },
-  { id: "Ti", name: "Precision", nameRo: "Precizie", tag: "Precision", tagRo: "Precizie", color: "#0D9488", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>` },
-  { id: "Fe", name: "Harmony", nameRo: "Armonie", tag: "Harmony", tagRo: "Armonie", color: "#16A34A", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>` },
-  { id: "Fi", name: "Values", nameRo: "Valori", tag: "Values", tagRo: "Valori", color: "#EA580C", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>` },
+  { id: "Ne", name: "Ideation", nameRo: "Ideație", tag: "Ideation", tagRo: "Ideație", color: "#95637e", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>` },
+  { id: "Ni", name: "Synthesis", nameRo: "Sinteză", tag: "Synthesis", tagRo: "Sinteză", color: "#95637e", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>` },
+  { id: "Se", name: "Action", nameRo: "Acțiune", tag: "Action", tagRo: "Acțiune", color: "#e5c727", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>` },
+  { id: "Si", name: "Memory", nameRo: "Memorie", tag: "Memory", tagRo: "Memorie", color: "#e5c727", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>` },
+  { id: "Te", name: "Structure", nameRo: "Structură", tag: "Structure", tagRo: "Structură", color: "#72cccd", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>` },
+  { id: "Ti", name: "Precision", nameRo: "Precizie", tag: "Precision", tagRo: "Precizie", color: "#72cccd", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>` },
+  { id: "Fe", name: "Harmony", nameRo: "Armonie", tag: "Harmony", tagRo: "Armonie", color: "#9ac262", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>` },
+  { id: "Fi", name: "Values", nameRo: "Valori", tag: "Values", tagRo: "Valori", color: "#9ac262", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>` },
 
   // 3. Lifestyle / Energy Combinations (4)
-  { id: "EJ", name: "Executive", nameRo: "Directiv", tag: "Executive", tagRo: "Directiv", color: "#395296", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>` },
-  { id: "EP", name: "Explorer", nameRo: "Adaptabil", tag: "Explorer", tagRo: "Adaptabil", color: "#4361ab", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>` },
-  { id: "IJ", name: "Conserver", nameRo: "Planificator", tag: "Conserver", tagRo: "Planificator", color: "#4d69ba", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>` },
-  { id: "IP", name: "Inquirer", nameRo: "Reflexiv", tag: "Inquirer", tagRo: "Reflexiv", color: "#5573c7", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>` },
+  { id: "EJ", name: "Executive", nameRo: "Directiv", tag: "Executive", tagRo: "Directiv", color: "#963939", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>` },
+  { id: "EP", name: "Explorer", nameRo: "Adaptabil", tag: "Explorer", tagRo: "Adaptabil", color: "#963939", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>` },
+  { id: "IJ", name: "Conserver", nameRo: "Planificator", tag: "Conserver", tagRo: "Planificator", color: "#95637e", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>` },
+  { id: "IP", name: "Inquirer", nameRo: "Reflexiv", tag: "Inquirer", tagRo: "Reflexiv", color: "#95637e", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>` },
 
   // 4. Temperament Combinations (4)
   { id: "NT", name: "Rational", nameRo: "Rațional", tag: "Rational", tagRo: "Rațional", color: "#95637e", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v12m-6-6h12"/></svg>` },
@@ -896,7 +896,7 @@ class App {
               
               <header class="question-card-header">
                 <div class="question-header-top">
-                  <div class="question-axis-tag">
+                  <div class="question-axis-tag" style="--tag-color: ${groupDef.color};">
                     <i class="question-axis-tag-ico-wrap" aria-hidden="true">${groupDef.icon || ''}</i>
                     <span>${tagLabel}</span>
                   </div>
@@ -1210,56 +1210,42 @@ class App {
       }
     }
 
-    // 4 Spectrum Coordinates
-    // Spectrum 1: Mind & Nature (N sus, S jos, F stanga, T dreapta)
+    // 4 Spectrum Coordinates (Recalibrated: N dreapta sus, T dreapta jos, S stanga jos, F stanga sus)
     const pN = axisScores?.NS?.roundA ?? 50; // % N (Intuiție)
     const pS = axisScores?.NS?.roundB ?? 50; // % S (Senzație)
     const pT = axisScores?.TF?.roundA ?? 50; // % T (Gândire)
     const pF = axisScores?.TF?.roundB ?? 50; // % F (Sentiment)
-    // F stanga (0%) -> T dreapta (100%)
-    const compassX = Math.max(10, Math.min(90, pT));
-    // N sus (0%) -> S jos (100%)
-    const compassY = Math.max(10, Math.min(90, 100 - pN));
+    const compassX = Math.max(8, Math.min(92, Math.round((pN + pT) / 2)));
+    const compassY = Math.max(8, Math.min(92, Math.round((pS + pT) / 2)));
 
-    // Spectrum 2: Energy & Tactics (E sus, I jos, J stanga, P dreapta)
+    // Spectrum 2: Energy & Tactics (E dreapta sus, J dreapta jos, I stanga jos, P stanga sus)
     const pE = axisScores?.EI?.roundA ?? 50; // % E (Extraversie)
     const pI = axisScores?.EI?.roundB ?? 50; // % I (Introversie)
     const pJ = axisScores?.JP?.roundA ?? 50; // % J (Judecată)
     const pP = axisScores?.JP?.roundB ?? 50; // % P (Percepție)
-    // J stanga (0%) -> P dreapta (100%)
-    const compass2X = Math.max(10, Math.min(90, pP));
-    // E sus (0%) -> I jos (100%)
-    const compass2Y = Math.max(10, Math.min(90, pI));
+    const compass2X = Math.max(8, Math.min(92, Math.round((pE + pJ) / 2)));
+    const compass2Y = Math.max(8, Math.min(92, Math.round((pI + pJ) / 2)));
 
-    // Quadrants for both Spectrums
+    // Quadrants for both Spectrums with new IE/PJ colors
     const s1QuadCode = (pN >= pS ? "N" : "S") + (pF >= pT ? "F" : "T");
     const s1QuadColors = { NF: "#9ac262", NT: "#95637e", SF: "#e5c727", ST: "#72cccd" };
     const activeS1 = { code: s1QuadCode, color: s1QuadColors[s1QuadCode] || "#95637e" };
 
     const s2QuadCode = (pE >= pI ? "E" : "I") + (pJ >= pP ? "J" : "P");
-    const s2QuadColors = { EJ: "#395296", EP: "#4361ab", IJ: "#4d69ba", IP: "#5573c7" };
-    const activeS2 = { code: s2QuadCode, color: s2QuadColors[s2QuadCode] || "#4361ab" };
+    const s2QuadColors = { EJ: "#963939", EP: "#e59b27", IJ: "#32d3a0", IP: "#395296" };
+    const activeS2 = { code: s2QuadCode, color: s2QuadColors[s2QuadCode] || "#963939" };
 
-    // Minimalist Spectrum Labels & Coordinates (N, S, F, T & E, I, J, P)
-    const s1Top = "N";
-    const s1Bottom = "S";
-    const s1Left = "F";
-    const s1Right = "T";
-    const s1Coords = `${pN >= pS ? pN + '% N' : pS + '% S'} · ${pF >= pT ? pF + '% F' : pT + '% T'}`;
-
-    const s2Top = "E";
-    const s2Bottom = "I";
-    const s2Left = "J";
-    const s2Right = "P";
+    // Coordinates descriptions
+    const s1Coords = `${pN >= pS ? pN + '% N' : pS + '% S'} · ${pT >= pF ? pT + '% T' : pF + '% F'}`;
     const s2Coords = `${pE >= pI ? pE + '% E' : pI + '% I'} · ${pJ >= pP ? pJ + '% J' : pP + '% P'}`;
 
     // ========================================================
-    // 4 Axes Minimalist Layout with Colored Boxes (like Cognitive Hierarchy)
+    // 4 Axes Minimalist Layout with Colored Boxes (Energy & Tactics dynamic colors)
     // ========================================================
-    const energyColor = "#395296";
+    const energyColor = axisScores.EI.roundA >= axisScores.EI.roundB ? "#963939" : "#395296";
     const mindColor = axisScores.NS.roundA >= axisScores.NS.roundB ? "#95637e" : "#e5c727";
     const natureColor = axisScores.TF.roundA >= axisScores.TF.roundB ? "#72cccd" : "#9ac262";
-    const tacticsColor = "#395296";
+    const tacticsColor = axisScores.JP.roundA >= axisScores.JP.roundB ? "#32d3a0" : "#e59b27";
 
     const axesData = [
       {
@@ -1596,45 +1582,37 @@ class App {
               </div>
 
               <div class="spectrum-cross-wrap">
-                <!-- Plane 1: Mind & Nature (N/S × F/T) -->
+                <!-- Plane 1: Mind & Nature (N dreapta sus, T dreapta jos, S stanga jos, F stanga sus) -->
                 <div class="spectrum-cross-plane-wrap">
-                  <div class="spectrum-cardinal-lbl spectrum-lbl-top">${s1Top}</div>
                   <div class="spectrum-center-row">
-                    <div class="spectrum-cardinal-lbl spectrum-lbl-left">${s1Left}</div>
                     <div class="spectrum-quadrant-plane">
-                      <div class="spectrum-quadrant quad-tl" title="NF"></div>
-                      <div class="spectrum-quadrant quad-tr" title="NT"></div>
-                      <div class="spectrum-quadrant quad-bl" title="SF"></div>
-                      <div class="spectrum-quadrant quad-br" title="ST"></div>
+                      <div class="spectrum-quadrant quad-tl" title="F · Feeling">F</div>
+                      <div class="spectrum-quadrant quad-tr" title="N · Intuition">N</div>
+                      <div class="spectrum-quadrant quad-bl" title="S · Sensing">S</div>
+                      <div class="spectrum-quadrant quad-br" title="T · Thinking">T</div>
                       <div class="spectrum-crosshair-h"></div>
                       <div class="spectrum-crosshair-v"></div>
                       <div class="spectrum-plot-dot" style="left: ${compassX}%; top: ${compassY}%;" title="${lang === 'ro' ? 'Tu' : 'You'} (${topMbti.type}) — ${s1Coords}"></div>
                     </div>
-                    <div class="spectrum-cardinal-lbl spectrum-lbl-right">${s1Right}</div>
                   </div>
-                  <div class="spectrum-cardinal-lbl spectrum-lbl-bottom">${s1Bottom}</div>
                   <div class="spectrum-bottom-bar" style="margin-top: 0.85rem;">
                     <span class="spectrum-coord-lbl">${s1Coords}</span>
                   </div>
                 </div>
 
-                <!-- Plane 2: Energy & Tactics (E/I × J/P) -->
+                <!-- Plane 2: Energy & Tactics (E dreapta sus, J dreapta jos, I stanga jos, P stanga sus) -->
                 <div class="spectrum-cross-plane-wrap">
-                  <div class="spectrum-cardinal-lbl spectrum-lbl-top">${s2Top}</div>
                   <div class="spectrum-center-row">
-                    <div class="spectrum-cardinal-lbl spectrum-lbl-left">${s2Left}</div>
                     <div class="spectrum-quadrant-plane spectrum-quadrant-plane-blue">
-                      <div class="spectrum-quadrant quad-ej" title="EJ"></div>
-                      <div class="spectrum-quadrant quad-ep" title="EP"></div>
-                      <div class="spectrum-quadrant quad-ij" title="IJ"></div>
-                      <div class="spectrum-quadrant quad-ip" title="IP"></div>
+                      <div class="spectrum-quadrant quad-ep" title="P · Perceiving">P</div>
+                      <div class="spectrum-quadrant quad-ej" title="E · Extraversion">E</div>
+                      <div class="spectrum-quadrant quad-ip" title="I · Introversion">I</div>
+                      <div class="spectrum-quadrant quad-ij" title="J · Judging">J</div>
                       <div class="spectrum-crosshair-h"></div>
                       <div class="spectrum-crosshair-v"></div>
                       <div class="spectrum-plot-dot" style="left: ${compass2X}%; top: ${compass2Y}%;" title="${lang === 'ro' ? 'Tu' : 'You'} (${topMbti.type}) — ${s2Coords}"></div>
                     </div>
-                    <div class="spectrum-cardinal-lbl spectrum-lbl-right">${s2Right}</div>
                   </div>
-                  <div class="spectrum-cardinal-lbl spectrum-lbl-bottom">${s2Bottom}</div>
                   <div class="spectrum-bottom-bar" style="margin-top: 0.85rem;">
                     <span class="spectrum-coord-lbl">${s2Coords}</span>
                   </div>
@@ -2878,17 +2856,17 @@ class App {
     const s2Left = "J";
     const s2Right = "P";
 
-    // Person A coordinates (Plane 1: T right, S bottom; Plane 2: P right, I bottom)
-    const compassX_A = Math.max(10, Math.min(90, personA.axisScores.TF.roundA));
-    const compassY_A = Math.max(10, Math.min(90, personA.axisScores.NS.roundB));
-    const compass2X_A = Math.max(10, Math.min(90, personA.axisScores.JP.roundB));
-    const compass2Y_A = Math.max(10, Math.min(90, personA.axisScores.EI.roundB));
+    // Person A coordinates (Recalibrated: N dreapta sus, T dreapta jos; E dreapta sus, J dreapta jos)
+    const compassX_A = Math.max(8, Math.min(92, Math.round((personA.axisScores.NS.roundA + personA.axisScores.TF.roundA) / 2)));
+    const compassY_A = Math.max(8, Math.min(92, Math.round((personA.axisScores.NS.roundB + personA.axisScores.TF.roundA) / 2)));
+    const compass2X_A = Math.max(8, Math.min(92, Math.round((personA.axisScores.EI.roundA + personA.axisScores.JP.roundA) / 2)));
+    const compass2Y_A = Math.max(8, Math.min(92, Math.round((personA.axisScores.EI.roundB + personA.axisScores.JP.roundA) / 2)));
 
     // Person B coordinates
-    const compassX_B = Math.max(10, Math.min(90, personB.axisScores.TF.roundA));
-    const compassY_B = Math.max(10, Math.min(90, personB.axisScores.NS.roundB));
-    const compass2X_B = Math.max(10, Math.min(90, personB.axisScores.JP.roundB));
-    const compass2Y_B = Math.max(10, Math.min(90, personB.axisScores.EI.roundB));
+    const compassX_B = Math.max(8, Math.min(92, Math.round((personB.axisScores.NS.roundA + personB.axisScores.TF.roundA) / 2)));
+    const compassY_B = Math.max(8, Math.min(92, Math.round((personB.axisScores.NS.roundB + personB.axisScores.TF.roundA) / 2)));
+    const compass2X_B = Math.max(8, Math.min(92, Math.round((personB.axisScores.EI.roundA + personB.axisScores.JP.roundA) / 2)));
+    const compass2Y_B = Math.max(8, Math.min(92, Math.round((personB.axisScores.EI.roundB + personB.axisScores.JP.roundA) / 2)));
 
     this.root.innerHTML = `
       <div class="app-shell" data-screen="compare">
@@ -3250,47 +3228,39 @@ class App {
                 </div>
 
                 <div class="spectrum-cross-wrap">
-                  <!-- Plane 1: Mind & Nature (N/S × F/T) -->
+                  <!-- Plane 1: Mind & Nature (N dreapta sus, T dreapta jos, S stanga jos, F stanga sus) -->
                   <div class="spectrum-cross-plane-wrap">
-                    <div class="spectrum-cardinal-lbl spectrum-lbl-top">${s1Top}</div>
                     <div class="spectrum-center-row">
-                      <div class="spectrum-cardinal-lbl spectrum-lbl-left">${s1Left}</div>
                       <div class="spectrum-quadrant-plane">
-                        <div class="spectrum-quadrant quad-tl" title="NF"></div>
-                        <div class="spectrum-quadrant quad-tr" title="NT"></div>
-                        <div class="spectrum-quadrant quad-bl" title="SF"></div>
-                        <div class="spectrum-quadrant quad-br" title="ST"></div>
+                        <div class="spectrum-quadrant quad-tl" title="F · Feeling">F</div>
+                        <div class="spectrum-quadrant quad-tr" title="N · Intuition">N</div>
+                        <div class="spectrum-quadrant quad-bl" title="S · Sensing">S</div>
+                        <div class="spectrum-quadrant quad-br" title="T · Thinking">T</div>
                         <div class="spectrum-crosshair-h"></div>
                         <div class="spectrum-crosshair-v"></div>
                         <div class="spectrum-plot-dot" style="left: ${compassX_A}%; top: ${compassY_A}%; background: var(--accent); box-shadow: 0 0 0 3px #ffffff, 0 3px 8px rgba(0,0,0,0.35);" title="${personA.name} (${personA.derivedType})">${personA.name.charAt(0).toUpperCase()}</div>
                         <div class="spectrum-plot-dot" style="left: ${compassX_B}%; top: ${compassY_B}%; background: #e0682b; box-shadow: 0 0 0 3px #ffffff, 0 3px 8px rgba(0,0,0,0.35);" title="${personB.name} (${personB.derivedType})">${personB.name.charAt(0).toUpperCase()}</div>
                       </div>
-                      <div class="spectrum-cardinal-lbl spectrum-lbl-right">${s1Right}</div>
                     </div>
-                    <div class="spectrum-cardinal-lbl spectrum-lbl-bottom">${s1Bottom}</div>
                     <div class="spectrum-bottom-bar" style="margin-top: 0.85rem;">
                       <span class="spectrum-coord-lbl">${lang === 'ro' ? 'Informație & Decizie (N/S × F/T)' : 'Information & Decision (N/S × F/T)'}</span>
                     </div>
                   </div>
 
-                  <!-- Plane 2: Energy & Tactics (E/I × J/P) -->
+                  <!-- Plane 2: Energy & Tactics (E dreapta sus, J dreapta jos, I stanga jos, P stanga sus) -->
                   <div class="spectrum-cross-plane-wrap">
-                    <div class="spectrum-cardinal-lbl spectrum-lbl-top">${s2Top}</div>
                     <div class="spectrum-center-row">
-                      <div class="spectrum-cardinal-lbl spectrum-lbl-left">${s2Left}</div>
                       <div class="spectrum-quadrant-plane spectrum-quadrant-plane-blue">
-                        <div class="spectrum-quadrant quad-ej" title="EJ"></div>
-                        <div class="spectrum-quadrant quad-ep" title="EP"></div>
-                        <div class="spectrum-quadrant quad-ij" title="IJ"></div>
-                        <div class="spectrum-quadrant quad-ip" title="IP"></div>
+                        <div class="spectrum-quadrant quad-ep" title="P · Perceiving">P</div>
+                        <div class="spectrum-quadrant quad-ej" title="E · Extraversion">E</div>
+                        <div class="spectrum-quadrant quad-ip" title="I · Introversion">I</div>
+                        <div class="spectrum-quadrant quad-ij" title="J · Judging">J</div>
                         <div class="spectrum-crosshair-h"></div>
                         <div class="spectrum-crosshair-v"></div>
                         <div class="spectrum-plot-dot" style="left: ${compass2X_A}%; top: ${compass2Y_A}%; background: var(--accent); box-shadow: 0 0 0 3px #ffffff, 0 3px 8px rgba(0,0,0,0.35);" title="${personA.name} (${personA.derivedType})">${personA.name.charAt(0).toUpperCase()}</div>
                         <div class="spectrum-plot-dot" style="left: ${compass2X_B}%; top: ${compass2Y_B}%; background: #e0682b; box-shadow: 0 0 0 3px #ffffff, 0 3px 8px rgba(0,0,0,0.35);" title="${personB.name} (${personB.derivedType})">${personB.name.charAt(0).toUpperCase()}</div>
                       </div>
-                      <div class="spectrum-cardinal-lbl spectrum-lbl-right">${s2Right}</div>
                     </div>
-                    <div class="spectrum-cardinal-lbl spectrum-lbl-bottom">${s2Bottom}</div>
                     <div class="spectrum-bottom-bar" style="margin-top: 0.85rem;">
                       <span class="spectrum-coord-lbl">${lang === 'ro' ? 'Energie & Ritm (E/I × J/P)' : 'Energy & Rhythm (E/I × J/P)'}</span>
                     </div>
@@ -4430,7 +4400,7 @@ class App {
             <span class="question-number" aria-hidden="true">${qNumStr}</span>
             <header class="question-card-header">
               <div class="question-header-top">
-                <div class="question-axis-tag">
+                <div class="question-axis-tag" style="--tag-color: ${groupDef?.color || '#102E24'};">
                   <i class="question-axis-tag-ico-wrap" aria-hidden="true">${groupDef?.icon || ''}</i>
                   <span>${getQuestionTagLabel(groupDef, lang)}</span>
                 </div>

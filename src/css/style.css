@@ -3469,41 +3469,50 @@ a {
 .spectrum-quadrant {
   width: 100%;
   height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.95);
+  letter-spacing: 0.05em;
+  user-select: none;
   transition: filter var(--transition-fast);
 }
 
-/* Plane 1: Mind & Nature (4 Axes Colors) */
+/* Plane 1: Mind & Nature (N dreapta sus #95637e, T dreapta jos #72cccd, S stanga jos #e5c727, F stanga sus #9ac262) */
 .spectrum-quadrant.quad-tl {
-  background: #9ac262; /* NF: Intuition & Feeling */
+  background: #9ac262; /* F: Feeling (colț stânga sus) */
 }
 
 .spectrum-quadrant.quad-tr {
-  background: #95637e; /* NT: Intuition & Thinking */
+  background: #95637e; /* N: Intuition (colț dreapta sus) */
 }
 
 .spectrum-quadrant.quad-bl {
-  background: #e5c727; /* SF: Sensing & Feeling */
+  background: #e5c727; /* S: Sensing (colț stânga jos) */
 }
 
 .spectrum-quadrant.quad-br {
-  background: #72cccd; /* ST: Sensing & Thinking */
+  background: #72cccd; /* T: Thinking (colț dreapta jos) */
 }
 
-/* Plane 2: Energy & Tactics (4 Axes Blues) */
-.spectrum-quadrant.quad-ej {
-  background: #395296; /* EJ: Extraversion & Judging */
-}
-
+/* Plane 2: Energy & Tactics (E dreapta sus #963939, J dreapta jos #32d3a0, I stanga jos #395296, P stanga sus #e59b27) */
 .spectrum-quadrant.quad-ep {
-  background: #4361ab; /* EP: Extraversion & Perceiving */
+  background: #e59b27; /* P: Perceiving (colț stânga sus) */
 }
 
-.spectrum-quadrant.quad-ij {
-  background: #4d69ba; /* IJ: Introversion & Judging */
+.spectrum-quadrant.quad-ej {
+  background: #963939; /* E: Extraversion (colț dreapta sus) */
 }
 
 .spectrum-quadrant.quad-ip {
-  background: #5573c7; /* IP: Introversion & Perceiving */
+  background: #395296; /* I: Introversion (colț stânga jos) */
+}
+
+.spectrum-quadrant.quad-ij {
+  background: #32d3a0; /* J: Judging (colț dreapta jos) */
 }
 
 .spectrum-crosshair-h {
@@ -7382,7 +7391,7 @@ a {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: #E8E5DD;
+  background: color-mix(in srgb, var(--tag-color, #102E24) 12%, #E8E5DD);
   border-radius: 999px;
   padding: 4px 14px 4px 5px;
   width: fit-content;
@@ -7392,14 +7401,14 @@ a {
 }
 .question-axis-tag:hover,
 .e-edit-card .question-axis-tag:hover {
-  background: #DDD9CD;
+  background: color-mix(in srgb, var(--tag-color, #102E24) 18%, #DDD9CD);
 }
 .question-axis-tag-ico-wrap,
 .e-edit-card .question-axis-tag-ico-wrap {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: #102E24;
+  background: var(--tag-color, #102E24);
   color: #FFFFFF;
   display: grid;
   place-items: center;
@@ -7419,7 +7428,7 @@ a {
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #102E24;
+  color: var(--tag-color, #102E24);
 }
 .question-header-top .inline-axis-info,
 .question-header-top .e-axis-info {
@@ -7713,16 +7722,16 @@ a {
 }
 [data-theme="dark"] .question-axis-tag,
 [data-theme="dark"] .e-edit-card .question-axis-tag {
-  background: #232E29;
+  background: color-mix(in srgb, var(--tag-color, #102E24) 22%, #181c19);
 }
 [data-theme="dark"] .question-axis-tag span,
 [data-theme="dark"] .e-edit-card .question-axis-tag span {
-  color: #A3E635;
+  color: #FFFFFF;
 }
 [data-theme="dark"] .question-axis-tag-ico-wrap,
 [data-theme="dark"] .e-edit-card .question-axis-tag-ico-wrap {
-  background: #102E24;
-  color: #A3E635;
+  background: var(--tag-color, #102E24);
+  color: #FFFFFF;
 }
 [data-theme="dark"] .question-header-top .inline-axis-info,
 [data-theme="dark"] .question-header-top .e-axis-info {
