@@ -4377,7 +4377,8 @@ class App {
   }
 
   // ==========================================================================
-  // Classic Edit Answers Modal (24 Sections: E I N S T F J P Ne Ni Se Si Te Ti Fe Fi EJ EP IJ IP NT NF ST SF)
+  // Edit Answers Sheet & 3D Deck (Authentic 12Axes Architecture & UI)
+  // Sectioned by: E I N S T F J P Ne Ni Se Si Te Ti Fe Fi EJ EP IJ IP NT NF ST SF
   // ==========================================================================
 
   openEditAnswersModal(initialSectionId = null) {
@@ -4389,57 +4390,70 @@ class App {
     const oldBackdrop = document.getElementById("edit-answers-backdrop");
     if (oldBackdrop) oldBackdrop.remove();
 
-    // 24 Sections in exact requested order
+    // 24 Sections in exact requested order with authentic 12Axes colors and icons
     const EDIT_SECTIONS = [
       // 1. MBTI Single Poles (8)
-      { id: "E", group: "poles", groupName: "Axe MBTI", groupNameEn: "MBTI Axes", name: "Extraversion", nameRo: "Extraversie", desc: "Outward focus, active engagement and social energy", descRo: "Orientare spre mediul extern, interacțiune socială și acțiune dinamică", color: "#e0535e" },
-      { id: "I", group: "poles", groupName: "Axe MBTI", groupNameEn: "MBTI Axes", name: "Introversion", nameRo: "Introversie", desc: "Inward focus, reflective depth and mental reserve", descRo: "Orientare spre lumea interioară, reflecție autonomă și concentrare profundă", color: "#0284C7" },
-      { id: "N", group: "poles", groupName: "Axe MBTI", groupNameEn: "MBTI Axes", name: "Intuition", nameRo: "Intuiție", desc: "Focus on abstract patterns, future possibilities and meanings", descRo: "Tipare abstracte, posibilități viitoare și semnificații profunde", color: "#95637e" },
-      { id: "S", group: "poles", groupName: "Axe MBTI", groupNameEn: "MBTI Axes", name: "Sensing", nameRo: "Senzorial", desc: "Focus on concrete facts, present reality and practical details", descRo: "Fapte concrete, realitate prezentă și experiențe senzoriale directe", color: "#e5c727" },
-      { id: "T", group: "poles", groupName: "Axe MBTI", groupNameEn: "MBTI Axes", name: "Thinking", nameRo: "Gândire", desc: "Objective logic, causal analysis and consistency", descRo: "Logică obiectivă, analiză critică și principii raționale", color: "#3B49DF" },
-      { id: "F", group: "poles", groupName: "Axe MBTI", groupNameEn: "MBTI Axes", name: "Feeling", nameRo: "Sentiment", desc: "Human values, empathy and interpersonal harmony", descRo: "Valori umane, armonie relațională și impact interpersonal", color: "#9ac262" },
-      { id: "J", group: "poles", groupName: "Axe MBTI", groupNameEn: "MBTI Axes", name: "Judging", nameRo: "Judecată", desc: "Structure, deliberate planning, closure and order", descRo: "Planificare ordonată, structură, decizie fermă și închidere", color: "#4361ab" },
-      { id: "P", group: "poles", groupName: "Axe MBTI", groupNameEn: "MBTI Axes", name: "Perceiving", nameRo: "Percepție", desc: "Spontaneity, open-ended flow, exploration and adaptability", descRo: "Spontaneitate, adaptabilitate, explorare deschisă și flexibilitate", color: "#d97706" },
+      { id: "E", name: "Extraversion", nameRo: "Extraversie", color: "#e0535e", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>` },
+      { id: "I", name: "Introversion", nameRo: "Introversie", color: "#0284C7", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3.5"/></svg>` },
+      { id: "N", name: "Intuition", nameRo: "Intuiție", color: "#95637e", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>` },
+      { id: "S", name: "Sensing", nameRo: "Senzorial", color: "#e5c727", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>` },
+      { id: "T", name: "Thinking", nameRo: "Gândire", color: "#3B49DF", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/></svg>` },
+      { id: "F", name: "Feeling", nameRo: "Sentiment", color: "#9ac262", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>` },
+      { id: "J", name: "Judging", nameRo: "Judecată", color: "#4361ab", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>` },
+      { id: "P", name: "Perceiving", nameRo: "Percepție", color: "#d97706", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>` },
 
       // 2. Cognitive Functions (8)
-      { id: "Ne", group: "functions", groupName: "Funcții Cognitive", groupNameEn: "Cognitive Functions", name: "Ne · Extraverted Intuition", nameRo: "Ne · Intuiție Extravertită", desc: "Novel conceptual connections, brainstorming and external possibilities", descRo: "Generare de idei noi, conexiuni neașteptate și explorarea posibilităților", color: "#8A3AA0" },
-      { id: "Ni", group: "functions", groupName: "Funcții Cognitive", groupNameEn: "Cognitive Functions", name: "Ni · Introverted Intuition", nameRo: "Ni · Intuiție Introvertită", desc: "Deep conceptual convergence, strategic foresight and singular vision", descRo: "Sinteză conceptuală profundă, previziune strategică și intuiție convergentă", color: "#3B49DF" },
-      { id: "Se", group: "functions", groupName: "Funcții Cognitive", groupNameEn: "Cognitive Functions", name: "Se · Extraverted Sensing", nameRo: "Se · Senzorial Extravertit", desc: "Present-moment immersion, physical agility and sensory alertness", descRo: "Conștientizare senzorială vie, reacție instantanee și moment prezent", color: "#DC2626" },
-      { id: "Si", group: "functions", groupName: "Funcții Cognitive", groupNameEn: "Cognitive Functions", name: "Si · Introverted Sensing", nameRo: "Si · Senzorial Introvertit", desc: "Structured recollection, continuity, method and historical precedent", descRo: "Comparație cu experiențe trecute, fidelitate față de detalii și stabilitate", color: "#B45309" },
-      { id: "Te", group: "functions", groupName: "Funcții Cognitive", groupNameEn: "Cognitive Functions", name: "Te · Extraverted Thinking", nameRo: "Te · Gândire Extravertită", desc: "Empirical organization, pragmatic systems and structured efficiency", descRo: "Organizare eficientă, sisteme pragmatice, logică aplicată și execuție", color: "#0284C7" },
-      { id: "Ti", group: "functions", groupName: "Funcții Cognitive", groupNameEn: "Cognitive Functions", name: "Ti · Introverted Thinking", nameRo: "Ti · Gândire Introvertită", desc: "Internal logical modeling, precision and first-principles reasoning", descRo: "Analiză logică riguroasă, definire precisă și prime principii", color: "#0D9488" },
-      { id: "Fe", group: "functions", groupName: "Funcții Cognitive", groupNameEn: "Cognitive Functions", name: "Fe · Extraverted Feeling", nameRo: "Fe · Sentiment Extravertit", desc: "Interpersonal warmth, collective harmony and active empathy", descRo: "Armonizare socială, empatie expresivă, valori comunitare și sprijin", color: "#16A34A" },
-      { id: "Fi", group: "functions", groupName: "Funcții Cognitive", groupNameEn: "Cognitive Functions", name: "Fi · Sentiment Introvertit", desc: "Individual authenticity, deeply-held personal values and moral depth", descRo: "Integritate morală personală, autenticitate profundă și valori autentice", color: "#EA580C" },
+      { id: "Ne", name: "Ne · Intuition", nameRo: "Ne · Intuiție", color: "#8A3AA0", icon: COGNITIVE_FUNCTIONS.Ne?.icon || `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>` },
+      { id: "Ni", name: "Ni · Synthesis", nameRo: "Ni · Sinteză", color: "#3B49DF", icon: COGNITIVE_FUNCTIONS.Ni?.icon || `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>` },
+      { id: "Se", name: "Se · Action", nameRo: "Se · Acțiune", color: "#DC2626", icon: COGNITIVE_FUNCTIONS.Se?.icon || `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>` },
+      { id: "Si", name: "Si · Memory", nameRo: "Si · Memorie", color: "#B45309", icon: COGNITIVE_FUNCTIONS.Si?.icon || `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>` },
+      { id: "Te", name: "Te · Structure", nameRo: "Te · Structură", color: "#0284C7", icon: COGNITIVE_FUNCTIONS.Te?.icon || `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>` },
+      { id: "Ti", name: "Ti · Precision", nameRo: "Ti · Precizie", color: "#0D9488", icon: COGNITIVE_FUNCTIONS.Ti?.icon || `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>` },
+      { id: "Fe", name: "Fe · Harmony", nameRo: "Fe · Armonie", color: "#16A34A", icon: COGNITIVE_FUNCTIONS.Fe?.icon || `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>` },
+      { id: "Fi", name: "Fi · Values", nameRo: "Fi · Valori", color: "#EA580C", icon: COGNITIVE_FUNCTIONS.Fi?.icon || `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>` },
 
       // 3. Lifestyle / Energy Combinations (4)
-      { id: "EJ", group: "energy", groupName: "Energie & Stil", groupNameEn: "Energy & Style", name: "EJ · Executive / Driving", nameRo: "EJ · Directiv / Executiv", desc: "Dynamic execution, organized drive and clear outward leadership", descRo: "Energie orientată spre decizie rapidă, organizare activă și leadership", color: "#395296" },
-      { id: "EP", group: "energy", groupName: "Energie & Stil", groupNameEn: "Energy & Style", name: "EP · Explorer / Adaptive", nameRo: "EP · Explorator / Adaptabil", desc: "Enthusiastic exploration, quick adaptability and open curiosity", descRo: "Energie orientată spre explorare deschisă, inițiative noi și flexibilitate", color: "#4361ab" },
-      { id: "IJ", group: "energy", groupName: "Energie & Stil", groupNameEn: "Energy & Style", name: "IJ · Conserver / Deliberate", nameRo: "IJ · Planificator / Consecvent", desc: "Deliberate focus, quiet perseverance and disciplined consistency", descRo: "Energie orientată spre stabilitate metodică, planificare atentă și consecvență", color: "#4d69ba" },
-      { id: "IP", group: "energy", groupName: "Energie & Stil", groupNameEn: "Energy & Style", name: "IP · Inquirer / Reflective", nameRo: "IP · Reflexiv / Independent", desc: "Reflective autonomy, deep internal pace and open-minded inquiry", descRo: "Energie orientată spre autonomie personală, contemplare calmă și ritm propriu", color: "#5573c7" },
+      { id: "EJ", name: "EJ · Executive", nameRo: "EJ · Directiv", color: "#395296", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>` },
+      { id: "EP", name: "EP · Explorer", nameRo: "EP · Adaptabil", color: "#4361ab", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>` },
+      { id: "IJ", name: "IJ · Conserver", nameRo: "IJ · Planificator", color: "#4d69ba", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>` },
+      { id: "IP", name: "IP · Inquirer", nameRo: "IP · Reflexiv", color: "#5573c7", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>` },
 
       // 4. Temperament Combinations (4)
-      { id: "NT", group: "temperament", groupName: "Temperamente", groupNameEn: "Temperaments", name: "NT · Rational / Analyst", nameRo: "NT · Rațional / Analist", desc: "Conceptual mastery, strategic foresight and intellectual systems", descRo: "Orientare spre competență conceptuală, gândire strategică și sisteme logice", color: "#95637e" },
-      { id: "NF", group: "temperament", groupName: "Temperamente", groupNameEn: "Temperaments", name: "NF · Idealist / Diplomat", nameRo: "NF · Idealist / Diplomat", desc: "Human potential, authentic empathy, inspiration and meaningful ideals", descRo: "Orientare spre dezvoltarea potențialului uman, autenticitate și valori cu sens", color: "#9ac262" },
-      { id: "ST", group: "temperament", groupName: "Temperamente", groupNameEn: "Temperaments", name: "ST · Realist / Practical", nameRo: "ST · Realist / Practic", desc: "Practical realism, tangible execution, facts and operational reliability", descRo: "Orientare spre utilitate concretă, execuție fiabilă și rezolvare pragmatică", color: "#72cccd" },
-      { id: "SF", group: "temperament", groupName: "Temperamente", groupNameEn: "Temperaments", name: "SF · Social / Caregiver", nameRo: "SF · Social / Protector", desc: "Interpersonal warmth, practical care, community support and cooperation", descRo: "Orientare spre sprijin practic pentru oameni, căldură interpersonală și cooperare", color: "#e5c727" }
+      { id: "NT", name: "NT · Rational", nameRo: "NT · Rațional", color: "#95637e", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v12m-6-6h12"/></svg>` },
+      { id: "NF", name: "NF · Idealist", nameRo: "NF · Idealist", color: "#9ac262", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>` },
+      { id: "ST", name: "ST · Realist", nameRo: "ST · Practic", color: "#72cccd", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>` },
+      { id: "SF", name: "SF · Social", nameRo: "SF · Protector", color: "#e5c727", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>` }
     ];
 
     const getQuestionCategory = (q) => {
-      return q.target || q.agreementPole || (q.options && q.options[0]?.pole) || q.dimension || "other";
+      return q.target || q.agreementPole || (q.options && q.options[0]?.pole) || q.dimension || "Ne";
     };
 
-    // Filter active sections present in current quiz questions
+    // Filter only active sections that have questions in this test
     const activeSections = EDIT_SECTIONS.filter(sec =>
       questions.some(q => getQuestionCategory(q) === sec.id)
     );
 
     if (activeSections.length === 0) return;
 
+    // Ordered steps by the 24 categories
+    const steps = [];
+    activeSections.forEach(sec => {
+      const secQuestions = questions.filter(q => getQuestionCategory(q) === sec.id);
+      secQuestions.forEach(q => {
+        steps.push({ group: sec.id, question: q });
+      });
+    });
+
+    if (steps.length === 0) return;
+
     const initialAnswers = { ...(this.state.answers || {}) };
     const draftAnswers = { ...(this.state.answers || {}) };
-    let currentSectionId = initialSectionId && activeSections.some(s => s.id === initialSectionId)
-      ? initialSectionId
-      : activeSections[0].id;
+    let currentStepIndex = 0;
+    if (initialSectionId) {
+      const idx = steps.findIndex(s => s.group === initialSectionId);
+      if (idx !== -1) currentStepIndex = idx;
+    }
     let isSaving = false;
 
     const countChanges = () => {
@@ -4450,148 +4464,100 @@ class App {
       return count;
     };
 
-    const countSectionChanges = (secId) => {
+    const countGroupChanges = (groupId) => {
       let count = 0;
-      for (const q of questions) {
-        if (getQuestionCategory(q) === secId && draftAnswers[q.id] !== initialAnswers[q.id]) {
+      for (const step of steps) {
+        if (step.group === groupId && draftAnswers[step.question.id] !== initialAnswers[step.question.id]) {
           count++;
         }
       }
       return count;
     };
 
-    // Group active sections for the sidebar
-    const GROUPS = [
-      { id: "poles", name: lang === "ro" ? "Axe MBTI (8)" : "MBTI Axes (8)" },
-      { id: "functions", name: lang === "ro" ? "Funcții Cognitive (8)" : "Cognitive Functions (8)" },
-      { id: "energy", name: lang === "ro" ? "Energie & Stil (4)" : "Energy & Style (4)" },
-      { id: "temperament", name: lang === "ro" ? "Temperamente (4)" : "Temperaments (4)" }
-    ];
-
-    // Create Modal Element
+    // Create Modal Element with 12Axes authentic layout
     const backdrop = document.createElement("div");
     backdrop.className = "e-axis-sheet-backdrop";
     backdrop.id = "edit-answers-backdrop";
 
     backdrop.innerHTML = `
-      <div class="e-axis-sheet e-edit-sheet classic-mode" role="dialog" aria-modal="true" aria-labelledby="e-edit-title">
+      <div class="e-axis-sheet e-edit-sheet" role="dialog" aria-modal="true" aria-labelledby="e-edit-title">
         <span class="e-axis-sheet-handle" aria-hidden="true"></span>
         <button class="e-axis-sheet-close" id="edit-sheet-close-btn" type="button" aria-label="${lang === 'ro' ? 'Închide' : 'Close'}">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
         </button>
-
         <header class="e-edit-head">
-          <div class="e-classic-head-title">
-            <h3 id="e-edit-title">${t('editAnswersTitle', {}, lang)}</h3>
-            <span class="e-classic-total-badge">${questions.length} ${lang === 'ro' ? 'întrebări' : 'questions'} · ${activeSections.length} ${lang === 'ro' ? 'secțiuni' : 'sections'}</span>
-          </div>
-          <div class="e-classic-head-actions">
-            <button class="e-btn e-btn-ghost e-btn-sm e-edit-reset-btn" id="edit-reset-btn" type="button" style="display: none;">
-              <svg viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px; margin-right: 4px;"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8m0 0V3m0 5h5"/></svg>
-              <span>${t('editAnswersReset', {}, lang)}</span>
-            </button>
-            <span class="e-edit-count" id="edit-change-count" aria-live="polite">${t('editAnswersNoChanges', {}, lang)}</span>
-            <button class="e-btn e-btn-primary e-btn-sm e-edit-save" id="edit-save-btn" type="button" disabled>
-              ${t('editAnswersSave', {}, lang)}
-            </button>
-          </div>
+          <h3 id="e-edit-title">${t('editAnswersTitle', {}, lang)}</h3>
+          <span class="e-edit-count" id="edit-change-count" aria-live="polite">${t('editAnswersNoChanges', {}, lang)}</span>
+          <button class="e-btn e-btn-primary e-btn-sm e-edit-save" id="edit-save-btn" type="button" disabled>
+            ${t('editAnswersSave', {}, lang)}
+          </button>
         </header>
-
-        <div class="e-classic-layout">
-          <nav class="e-classic-sidebar" role="tablist" aria-label="Sections">
-            <button
-              type="button"
-              role="tab"
-              class="e-classic-sec-tab ${currentSectionId === 'ALL' ? 'active' : ''}"
-              data-section="ALL"
-              style="--sec-color: var(--accent, #395296);"
-            >
-              <span class="e-sec-pill" style="--sec-color: var(--accent, #395296);">ALL</span>
-              <span class="e-sec-name">${t('editAnswersAll', {}, lang)}</span>
-              <span class="e-sec-count">${questions.length}</span>
-              <span class="e-sec-badge" id="sec-badge-ALL" style="display: none;">0</span>
-            </button>
-
-            ${GROUPS.map(grp => {
-              const grpSections = activeSections.filter(s => s.group === grp.id);
-              if (grpSections.length === 0) return "";
+        <div class="e-edit-layout">
+          <nav class="e-edit-axes" role="tablist" aria-label="Sections">
+            ${activeSections.map(sec => {
+              const firstIdx = steps.findIndex(s => s.group === sec.id);
+              const sName = lang === "ro" ? (sec.nameRo || sec.name) : sec.name;
               return `
-                <div class="e-classic-group-label">${grp.name}</div>
-                ${grpSections.map(sec => {
-                  const sName = lang === "ro" ? (sec.nameRo || sec.name) : sec.name;
-                  const secQuestions = questions.filter(q => getQuestionCategory(q) === sec.id);
-                  return `
-                    <button
-                      type="button"
-                      role="tab"
-                      class="e-classic-sec-tab ${sec.id === currentSectionId ? 'active' : ''}"
-                      data-section="${sec.id}"
-                      style="--sec-color: ${sec.color};"
-                      title="${sName}"
-                    >
-                      <span class="e-sec-pill" style="--sec-color: ${sec.color};">${sec.id}</span>
-                      <span class="e-sec-name">${sName}</span>
-                      <span class="e-sec-count">${secQuestions.length}</span>
-                      <span class="e-sec-badge" id="sec-badge-${sec.id}" style="display: none;">0</span>
-                    </button>
-                  `;
-                }).join("")}
+                <button
+                  type="button"
+                  role="tab"
+                  class="e-edit-axis ${sec.id === steps[currentStepIndex].group ? 'e-on' : ''}"
+                  data-group="${sec.id}"
+                  data-first="${firstIdx}"
+                  style="--gc: ${sec.color};"
+                  title="${sName}"
+                >
+                  ${sec.icon}
+                  <span>${sName}</span>
+                  <span class="e-edit-badge" id="badge-${sec.id}" style="display: none;">0</span>
+                </button>
               `;
             }).join("")}
           </nav>
-
-          <main class="e-classic-stage" aria-label="Questions Editor">
-            <header class="e-classic-sec-banner" id="stage-banner"></header>
-            <div class="e-classic-stage-scroll" id="stage-questions-container"></div>
-            <footer class="e-classic-foot-nav" id="stage-foot-nav"></footer>
-          </main>
+          <section class="e-edit-stage" aria-label="Questions Deck">
+            <div class="e-deck-edit" id="edit-deck-container"></div>
+            <nav class="e-edit-foot" aria-label="Navigation">
+              <button class="e-btn e-btn-ghost e-btn-sm" id="edit-back-btn" type="button" disabled>
+                <svg class="e-arr" viewBox="0 0 24 24" aria-hidden="true" style="transform: rotate(180deg); width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2;"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
+                <span>${t('back', {}, lang)}</span>
+              </button>
+              <span class="e-edit-counter" id="edit-counter-lbl">1 / 1</span>
+              <button class="e-btn e-btn-ghost e-btn-sm" id="edit-next-btn" type="button">
+                <span>${t('next', {}, lang)}</span>
+                <svg class="e-arr" viewBox="0 0 24 24" aria-hidden="true" style="width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2;"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
+              </button>
+            </nav>
+          </section>
         </div>
       </div>
     `;
 
     document.body.appendChild(backdrop);
 
-    const bannerEl = backdrop.querySelector("#stage-banner");
-    const containerEl = backdrop.querySelector("#stage-questions-container");
-    const footNavEl = backdrop.querySelector("#stage-foot-nav");
+    const deckContainer = backdrop.querySelector("#edit-deck-container");
     const countEl = backdrop.querySelector("#edit-change-count");
     const saveBtn = backdrop.querySelector("#edit-save-btn");
-    const resetBtn = backdrop.querySelector("#edit-reset-btn");
+    const backBtn = backdrop.querySelector("#edit-back-btn");
+    const nextBtn = backdrop.querySelector("#edit-next-btn");
+    const counterEl = backdrop.querySelector("#edit-counter-lbl");
 
     const updateHeaderAndBadges = () => {
       const changes = countChanges();
       if (changes === 0) {
         countEl.textContent = t('editAnswersNoChanges', {}, lang);
-        countEl.classList.remove("has-changes");
         saveBtn.disabled = true;
-        resetBtn.style.display = "none";
       } else {
         const word = lang === "ro" ? (changes === 1 ? "modificare" : "modificări") : (changes === 1 ? "change" : "changes");
         countEl.textContent = `${changes} ${word}`;
-        countEl.classList.add("has-changes");
         saveBtn.disabled = false;
-        resetBtn.style.display = "inline-flex";
       }
-
-      // Update badge for ALL
-      const allBadge = backdrop.querySelector("#sec-badge-ALL");
-      if (allBadge) {
-        if (changes > 0) {
-          allBadge.textContent = String(changes);
-          allBadge.style.display = "inline-flex";
-        } else {
-          allBadge.style.display = "none";
-        }
-      }
-
-      // Update badges for each section
       activeSections.forEach(sec => {
-        const b = backdrop.querySelector(`#sec-badge-${sec.id}`);
+        const b = backdrop.querySelector(`#badge-${sec.id}`);
         if (b) {
-          const sChanges = countSectionChanges(sec.id);
-          if (sChanges > 0) {
-            b.textContent = String(sChanges);
-            b.style.display = "inline-flex";
+          const gChanges = countGroupChanges(sec.id);
+          if (gChanges > 0) {
+            b.textContent = String(gChanges);
+            b.style.display = "grid";
           } else {
             b.style.display = "none";
           }
@@ -4599,267 +4565,148 @@ class App {
       });
     };
 
-    const renderQuestionCardHtml = (q) => {
-      const isChanged = draftAnswers[q.id] !== initialAnswers[q.id];
-      const currentAnswer = draftAnswers[q.id];
-      const qNumStr = String(questions.indexOf(q) + 1).padStart(2, "0");
-      const qText = getQuestionText(q, lang);
-      const cat = getQuestionCategory(q);
-      const sec = activeSections.find(s => s.id === cat) || { id: cat, name: cat, color: "#3B49DF" };
-      const secName = lang === "ro" ? (sec.nameRo || sec.name) : sec.name;
+    const renderDeck = () => {
+      const currentStep = steps[currentStepIndex];
+      const currentGroup = currentStep.group;
+      const groupSteps = steps.filter(s => s.group === currentGroup);
+      const groupFirstIndex = steps.findIndex(s => s.group === currentGroup);
+      const inGroupIndex = currentStepIndex - groupFirstIndex;
 
-      let answersContentHtml = "";
-      if ((q.format === "wouldYouRather" || q.format === "direct") && q.options) {
-        answersContentHtml = `
-          <div class="e-classic-wyr-grid" role="radiogroup">
-            ${q.options.map(opt => {
-              const isSelected = currentAnswer === opt.id;
-              const optText = (lang === "ro" && opt.textRo) ? opt.textRo : opt.text;
-              return `
-                <button
-                  type="button"
-                  class="e-classic-wyr-opt ${isSelected ? 'selected' : ''}"
-                  data-answer="${opt.id}"
-                  data-qid="${q.id}"
-                  role="radio"
-                  aria-checked="${isSelected}"
-                >
-                  <span class="e-classic-wyr-tag">${lang === 'ro' ? 'OPȚIUNEA' : 'OPTION'} ${opt.id}</span>
-                  <span class="e-classic-wyr-text">${optText}</span>
-                  <span class="e-classic-wyr-indicator" aria-hidden="true">${ICONS.check}</span>
-                </button>
-              `;
-            }).join("")}
-          </div>
-        `;
-      } else {
-        const options = getAnswerOptions(lang);
-        answersContentHtml = `
-          <div class="e-classic-likert-grid" role="radiogroup">
-            ${options.map((opt) => {
-              const isSelected = currentAnswer === opt.key;
-              let iconSvg = ICONS.check;
-              if (opt.key === "NEUTRAL") iconSvg = ICONS.minus;
-              else if (opt.key === "DISAGREE" || opt.key === "STRONGLY_DISAGREE") iconSvg = ICONS.cross;
-
-              let scoreBadge = "50%";
-              if (opt.key === "STRONGLY_AGREE") scoreBadge = "100%";
-              else if (opt.key === "AGREE") scoreBadge = "75%";
-              else if (opt.key === "DISAGREE") scoreBadge = "25%";
-              else if (opt.key === "STRONGLY_DISAGREE") scoreBadge = "0%";
-
-              return `
-                <button
-                  class="e-classic-ans-btn answer-${opt.classSuffix} ${isSelected ? 'selected' : ''}"
-                  data-answer="${opt.key}"
-                  data-qid="${q.id}"
-                  type="button"
-                  role="radio"
-                  aria-checked="${isSelected}"
-                >
-                  <span class="e-classic-ans-icon" aria-hidden="true">${iconSvg}</span>
-                  <span class="e-classic-ans-label">${opt.label}</span>
-                  <span class="e-classic-ans-pct" aria-hidden="true">${scoreBadge}</span>
-                </button>
-              `;
-            }).join("")}
-          </div>
-        `;
-      }
-
-      return `
-        <article class="e-classic-qcard ${isChanged ? 'is-modified' : ''}" data-qid="${q.id}" data-category="${cat}">
-          <header class="e-classic-qcard-head">
-            <div class="e-classic-qcard-tags">
-              <span class="e-classic-qnum">#${qNumStr}</span>
-              <span class="e-classic-qsec-tag" style="--sec-col: ${sec.color};">
-                ${sec.id} · ${secName}
-              </span>
-            </div>
-            <div class="e-qcard-mod-status" style="${isChanged ? 'display:inline-flex;' : 'display:none;'}">
-              <span class="e-qcard-mod-pill">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5" fill="currentColor"/></svg>
-                ${t('editAnswersChanged', {}, lang)}
-              </span>
-              <button type="button" class="e-qcard-revert-btn" data-qid="${q.id}" title="${lang === 'ro' ? 'Revino la răspunsul inițial' : 'Revert to initial answer'}">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8m0 0V3m0 5h5"/></svg>
-                <span>${t('editAnswersInitial', {}, lang)}</span>
-              </button>
-            </div>
-          </header>
-          <div class="e-classic-qcard-body">
-            <h4 class="e-classic-qtext">${qText}</h4>
-            ${answersContentHtml}
-          </div>
-        </article>
-      `;
-    };
-
-    const renderActiveSection = () => {
-      // Update sidebar active classes
-      backdrop.querySelectorAll(".e-classic-sec-tab").forEach(tab => {
-        const sId = tab.getAttribute("data-section");
-        const isActive = sId === currentSectionId;
-        tab.classList.toggle("active", isActive);
+      // Update Group Tabs active state
+      backdrop.querySelectorAll(".e-edit-axis").forEach(tab => {
+        const gId = tab.getAttribute("data-group");
+        const isActive = gId === currentGroup;
+        tab.classList.toggle("e-on", isActive);
         tab.setAttribute("aria-selected", String(isActive));
+        if (isActive) {
+          tab.scrollIntoView({ block: "nearest", inline: "nearest" });
+        }
       });
 
-      if (currentSectionId === "ALL") {
-        bannerEl.innerHTML = `
-          <div class="e-classic-banner-left">
-            <h4 class="e-classic-banner-title">
-              <span class="e-sec-pill" style="--sec-color: var(--accent, #395296);">ALL</span>
-              <span>${t('editAnswersAll', {}, lang)}</span>
-            </h4>
-            <p class="e-classic-banner-desc">
-              ${lang === "ro"
-                ? "Toate întrebările testului grupate după cele 24 de secțiuni oficiale."
-                : "All test questions organized across the 24 official assessment sections."}
-            </p>
+      // Update foot navigation
+      backBtn.disabled = currentStepIndex === 0 || isSaving;
+      nextBtn.disabled = currentStepIndex >= steps.length - 1 || isSaving;
+
+      const groupDef = activeSections.find(s => s.id === currentGroup);
+      const gName = lang === "ro" ? (groupDef?.nameRo || groupDef?.name || currentGroup) : (groupDef?.name || currentGroup);
+      counterEl.textContent = `${gName} · ${inGroupIndex + 1} / ${groupSteps.length}`;
+
+      // Render cards: inGroupIndex - 1 to inGroupIndex + 2
+      let cardsHtml = "";
+      groupSteps.forEach((s, idx) => {
+        const pos = idx - inGroupIndex;
+        if (pos < -1 || pos > 2) return;
+        const dataPos = pos < 0 ? "out" : String(pos);
+        const q = s.question;
+        const isChanged = draftAnswers[q.id] !== initialAnswers[q.id];
+        const currentAnswer = draftAnswers[q.id];
+        const qNumStr = String(questions.indexOf(q) + 1).padStart(2, "0");
+        const qText = getQuestionText(q, lang);
+
+        let answersContentHtml = "";
+        if ((q.format === "wouldYouRather" || q.format === "direct") && q.options) {
+          answersContentHtml = `
+            <div class="wyr-options-grid" role="radiogroup">
+              ${q.options.map(opt => {
+                const isSelected = currentAnswer === opt.id;
+                const optText = (lang === "ro" && opt.textRo) ? opt.textRo : opt.text;
+                return `
+                  <button type="button" class="wyr-option-card ${isSelected ? 'selected' : ''}" data-answer="${opt.id}" data-qid="${q.id}" role="radio" aria-checked="${isSelected}">
+                    <span class="wyr-card-tag">${lang === 'ro' ? 'OPȚIUNEA' : 'OPTION'} ${opt.id}</span>
+                    <span class="wyr-card-text">${optText}</span>
+                  </button>
+                `;
+              }).join("")}
+            </div>
+          `;
+        } else {
+          const options = getAnswerOptions(lang);
+          answersContentHtml = `
+            <div class="answer-grid" role="radiogroup">
+              ${options.map((opt, i) => {
+                const isSelected = currentAnswer === opt.key;
+                let iconSvg = ICONS.check;
+                if (opt.key === "NEUTRAL") iconSvg = ICONS.minus;
+                else if (opt.key === "DISAGREE" || opt.key === "STRONGLY_DISAGREE") iconSvg = ICONS.cross;
+                return `
+                  <button class="answer-button answer-${opt.classSuffix} ${isSelected ? 'selected' : ''}" data-answer="${opt.key}" data-qid="${q.id}" type="button" role="radio" aria-checked="${isSelected}">
+                    <span class="answer-icon" aria-hidden="true">${iconSvg}</span>
+                    <span class="answer-label">${opt.label}</span>
+                    <span class="answer-key-hint" aria-hidden="true">${i + 1}</span>
+                  </button>
+                `;
+              }).join("")}
+            </div>
+          `;
+        }
+
+        cardsHtml += `
+          <div
+            class="e-edit-card ${isChanged ? 'is-changed' : ''}"
+            data-pos="${dataPos}"
+            data-qid="${q.id}"
+            ${pos !== 0 ? 'inert aria-hidden="true"' : ''}
+          >
+            <article class="question-card">
+              <span class="question-number" aria-hidden="true">${qNumStr}</span>
+              <header class="question-card-header">
+                <h2>${qText}</h2>
+              </header>
+              ${answersContentHtml}
+            </article>
           </div>
-          <span class="e-classic-banner-count">${questions.length} ${lang === 'ro' ? 'întrebări' : 'questions'}</span>
         `;
+      });
 
-        containerEl.innerHTML = questions.map(q => renderQuestionCardHtml(q)).join("");
-        footNavEl.innerHTML = `
-          <span class="e-classic-foot-counter">${questions.length} / ${questions.length}</span>
-          <button type="button" class="e-btn e-btn-primary e-btn-sm" id="foot-save-recalc-btn" ${countChanges() === 0 ? 'disabled' : ''}>
-            ${t('editAnswersSave', {}, lang)}
-          </button>
-        `;
-        const footSave = footNavEl.querySelector("#foot-save-recalc-btn");
-        if (footSave) footSave.addEventListener("click", () => saveBtn.click());
-      } else {
-        const secIndex = activeSections.findIndex(s => s.id === currentSectionId);
-        const sec = activeSections[secIndex] || activeSections[0];
-        const secQuestions = questions.filter(q => getQuestionCategory(q) === sec.id);
-        const secName = lang === "ro" ? (sec.nameRo || sec.name) : sec.name;
-        const secDesc = lang === "ro" ? (sec.descRo || sec.desc) : sec.desc;
+      deckContainer.innerHTML = cardsHtml;
 
-        bannerEl.innerHTML = `
-          <div class="e-classic-banner-left">
-            <h4 class="e-classic-banner-title">
-              <span class="e-sec-pill" style="--sec-color: ${sec.color};">${sec.id}</span>
-              <span>${secName}</span>
-            </h4>
-            <p class="e-classic-banner-desc">${secDesc}</p>
-          </div>
-          <span class="e-classic-banner-count">${secQuestions.length} ${lang === 'ro' ? 'întrebări' : 'questions'}</span>
-        `;
+      // Attach answer selection event on active card (data-pos="0")
+      const activeCard = deckContainer.querySelector('.e-edit-card[data-pos="0"]');
+      if (activeCard) {
+        activeCard.querySelectorAll("[data-answer]").forEach(btn => {
+          btn.addEventListener("click", () => {
+            if (isSaving) return;
+            const qId = btn.getAttribute("data-qid");
+            const ansKey = btn.getAttribute("data-answer");
+            if (!qId || !ansKey) return;
 
-        containerEl.innerHTML = secQuestions.map(q => renderQuestionCardHtml(q)).join("");
+            draftAnswers[qId] = ansKey;
 
-        const prevSec = secIndex > 0 ? activeSections[secIndex - 1] : null;
-        const nextSec = secIndex < activeSections.length - 1 ? activeSections[secIndex + 1] : null;
+            // Instant selection state update in 0ms (NO AUTO-ADVANCE)
+            activeCard.querySelectorAll("[data-answer]").forEach(b => {
+              const isSel = b.getAttribute("data-answer") === ansKey;
+              b.classList.toggle("selected", isSel);
+              b.setAttribute("aria-checked", String(isSel));
+            });
 
-        footNavEl.innerHTML = `
-          <button type="button" class="e-classic-foot-btn e-classic-foot-prev" id="sec-prev-btn" ${!prevSec ? 'disabled' : ''}>
-            <svg viewBox="0 0 24 24" aria-hidden="true" style="width: 15px; height: 15px; transform: rotate(180deg);"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6l6 6-6 6"/></svg>
-            <span>${prevSec ? prevSec.id : t('editAnswersPrevSection', {}, lang)}</span>
-          </button>
-          <span class="e-classic-foot-counter">${secIndex + 1} / ${activeSections.length}</span>
-          <button type="button" class="e-classic-foot-btn e-classic-foot-next" id="sec-next-btn" ${!nextSec ? 'disabled' : ''}>
-            <span>${nextSec ? nextSec.id : t('editAnswersNextSection', {}, lang)}</span>
-            <svg viewBox="0 0 24 24" aria-hidden="true" style="width: 15px; height: 15px;"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6l6 6-6 6"/></svg>
-          </button>
-        `;
+            if (draftAnswers[qId] !== initialAnswers[qId]) {
+              activeCard.classList.add("is-changed");
+            } else {
+              activeCard.classList.remove("is-changed");
+            }
 
-        const prevBtn = footNavEl.querySelector("#sec-prev-btn");
-        const nextBtn = footNavEl.querySelector("#sec-next-btn");
-        if (prevBtn && prevSec) prevBtn.addEventListener("click", () => switchSection(prevSec.id));
-        if (nextBtn && nextSec) nextBtn.addEventListener("click", () => switchSection(nextSec.id));
+            updateHeaderAndBadges();
+            // User advances deliberately using Next/Back or Arrow keys, preventing lag and jumping.
+          });
+        });
       }
-
-      containerEl.scrollTop = 0;
-      attachQuestionEvents();
     };
 
-    const attachQuestionEvents = () => {
-      // Option button clicks (Instant selection, zero lag!)
-      containerEl.querySelectorAll("[data-answer]").forEach(btn => {
-        btn.addEventListener("click", () => {
-          if (isSaving) return;
-          const qId = btn.getAttribute("data-qid");
-          const newAnswer = btn.getAttribute("data-answer");
-          if (!qId || !newAnswer) return;
-
-          const card = btn.closest(".e-classic-qcard");
-          if (card) {
-            card.querySelectorAll("[data-answer]").forEach(b => {
-              b.classList.remove("selected");
-              b.setAttribute("aria-checked", "false");
-            });
-            btn.classList.add("selected");
-            btn.setAttribute("aria-checked", "true");
-          }
-
-          draftAnswers[qId] = newAnswer;
-
-          const isModified = draftAnswers[qId] !== initialAnswers[qId];
-          if (card) {
-            card.classList.toggle("is-modified", isModified);
-            const modStatus = card.querySelector(".e-qcard-mod-status");
-            if (modStatus) modStatus.style.display = isModified ? "inline-flex" : "none";
-          }
-
-          updateHeaderAndBadges();
-        });
-      });
-
-      // Individual revert button clicks
-      containerEl.querySelectorAll(".e-qcard-revert-btn").forEach(revBtn => {
-        revBtn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          const qId = revBtn.getAttribute("data-qid");
-          if (!qId) return;
-
-          draftAnswers[qId] = initialAnswers[qId];
-
-          const card = revBtn.closest(".e-classic-qcard");
-          if (card) {
-            card.querySelectorAll("[data-answer]").forEach(b => {
-              const isMatch = b.getAttribute("data-answer") === initialAnswers[qId];
-              b.classList.toggle("selected", isMatch);
-              b.setAttribute("aria-checked", String(isMatch));
-            });
-            card.classList.remove("is-modified");
-            const modStatus = card.querySelector(".e-qcard-mod-status");
-            if (modStatus) modStatus.style.display = "none";
-          }
-
-          updateHeaderAndBadges();
-        });
-      });
+    const goTo = (newIndex) => {
+      currentStepIndex = Math.max(0, Math.min(steps.length - 1, newIndex));
+      renderDeck();
     };
 
-    const switchSection = (secId) => {
-      currentSectionId = secId;
-      renderActiveSection();
-    };
+    backBtn.addEventListener("click", () => goTo(currentStepIndex - 1));
+    nextBtn.addEventListener("click", () => goTo(currentStepIndex + 1));
 
-    // Sidebar tab clicks
-    backdrop.querySelectorAll(".e-classic-sec-tab").forEach(tab => {
+    backdrop.querySelectorAll(".e-edit-axis").forEach(tab => {
       tab.addEventListener("click", () => {
-        const sId = tab.getAttribute("data-section");
-        if (sId) switchSection(sId);
+        const firstIdx = parseInt(tab.getAttribute("data-first"), 10);
+        if (!isNaN(firstIdx)) goTo(firstIdx);
       });
     });
 
-    // Reset all changes button
-    resetBtn.addEventListener("click", () => {
-      const confirmMsg = lang === "ro"
-        ? "Resetezi toate modificările la răspunsurile inițiale?"
-        : "Reset all changes to initial answers?";
-      if (!window.confirm(confirmMsg)) return;
-
-      for (const q of questions) {
-        draftAnswers[q.id] = initialAnswers[q.id];
-      }
-      renderActiveSection();
-      updateHeaderAndBadges();
-    });
-
-    // Close modal guard
     const closeModal = () => {
       if (countChanges() > 0) {
         if (!window.confirm(t('editAnswersDiscardConfirm', {}, lang))) return;
@@ -4869,7 +4716,9 @@ class App {
     };
 
     const handleKeyDown = (e) => {
-      if (e.key === "Escape") closeModal();
+      if (e.key === "ArrowLeft") goTo(currentStepIndex - 1);
+      else if (e.key === "ArrowRight") goTo(currentStepIndex + 1);
+      else if (e.key === "Escape") closeModal();
     };
 
     document.addEventListener("keydown", handleKeyDown);
@@ -4879,37 +4728,32 @@ class App {
       if (e.target === backdrop) closeModal();
     });
 
-    // Save & Recalculate button
     saveBtn.addEventListener("click", () => {
       if (isSaving || countChanges() === 0) return;
       isSaving = true;
       saveBtn.disabled = true;
       saveBtn.textContent = t('editAnswersSaving', {}, lang);
 
-      // Persist draft answers to state and storage
-      this.state.answers = { ...draftAnswers };
-      try {
-        this.state.save();
-      } catch (e) {
+      setTimeout(() => {
+        this.state.answers = { ...draftAnswers };
         try {
-          localStorage.setItem("8func_answers_v2", JSON.stringify(this.state.answers));
-        } catch (_) {}
-      }
+          this.state.save();
+        } catch (e) {
+          try {
+            localStorage.setItem("8func_answers_v2", JSON.stringify(this.state.answers));
+          } catch (_) {}
+        }
+        if (this.state.urlResultsScores) delete this.state.urlResultsScores;
 
-      // Clear cached URL results so fresh computation from answers runs
-      if (this.state.urlResultsScores) delete this.state.urlResultsScores;
-
-      // Close modal
-      document.removeEventListener("keydown", handleKeyDown);
-      backdrop.remove();
-
-      // Recalculate all scores and re-render complete results
-      this.renderResults();
-      this.showToast(t('editAnswersSavedToast', {}, lang));
+        document.removeEventListener("keydown", handleKeyDown);
+        backdrop.remove();
+        this.renderResults();
+        this.showToast(t('editAnswersSavedToast', {}, lang));
+      }, 100);
     });
 
     updateHeaderAndBadges();
-    renderActiveSection();
+    renderDeck();
   }
 }
 
