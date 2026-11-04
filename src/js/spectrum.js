@@ -1783,7 +1783,7 @@ export class SpectrumController {
         <!-- 8 Cognitive Functions Breakdown if present -->
         ${userData.percentages ? `
           <div class="fig-modal-sec">
-            <h4 class="fig-modal-sec-title">${lang === 'ro' ? '8 Funcții Cognitive' : '8 Cognitive Functions'}</h4>
+            <h4 class="fig-modal-sec-title">${lang === 'ro' ? '8 Funcții' : '8 Functions'}</h4>
             <div class="fig-modal-funcs-grid">
               ${FUNCTIONS_LIST.map(f => {
                 const fPct = Math.round(userData.percentages[f] ?? 50);

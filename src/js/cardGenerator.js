@@ -492,23 +492,15 @@ export async function generateResultsCardCanvas({
   axisData.forEach((ax, idx) => {
     const cardY = axisCardsTopY + idx * (axisCardH + axisGapY);
 
-    // Card background - gradient between leftColor and rightColor (blend around center)
+    // Card background - gradient between leftColor and rightColor (blend from 40% to 60%)
     roundRect(ctx, rightColX, cardY, colW, axisCardH, 14);
     const grad = ctx.createLinearGradient(rightColX, cardY, rightColX + colW, cardY);
     grad.addColorStop(0, ax.leftColor);
-    grad.addColorStop(0.25, ax.leftColor);
-    grad.addColorStop(0.75, ax.rightColor);
+    grad.addColorStop(0.40, ax.leftColor);
+    grad.addColorStop(0.60, ax.rightColor);
     grad.addColorStop(1, ax.rightColor);
     ctx.fillStyle = grad;
     ctx.fill();
-
-    // Center midline on card
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(rightColX + colW / 2, cardY);
-    ctx.lineTo(rightColX + colW / 2, cardY + axisCardH);
-    ctx.stroke();
 
     // Title
     ctx.fillStyle = "#FFFFFF";

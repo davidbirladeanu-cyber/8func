@@ -1300,8 +1300,7 @@ class App {
 
     const mbtiAxesRowsHtml = axesData.map(ax => {
       return `
-        <div class="minimal-axis-card" style="background: linear-gradient(90deg, ${ax.leftColor} 0%, ${ax.leftColor} 25%, ${ax.rightColor} 75%, ${ax.rightColor} 100%); color: #ffffff;">
-          <div class="minimal-axis-midline" aria-hidden="true"></div>
+        <div class="minimal-axis-card" style="background: linear-gradient(90deg, ${ax.leftColor} 0%, ${ax.leftColor} 40%, ${ax.rightColor} 60%, ${ax.rightColor} 100%); color: #ffffff;">
           <div class="minimal-axis-top">
             <span class="minimal-axis-title">${ax.name}</span>
           </div>
@@ -1423,8 +1422,7 @@ class App {
 
     const compAxesHtml = compAxesData.map(ax => {
       return `
-        <div class="comp-v2-axis-card" style="background: linear-gradient(90deg, ${ax.leftColor} 0%, ${ax.leftColor} 25%, ${ax.rightColor} 75%, ${ax.rightColor} 100%); color: #ffffff;">
-          <div class="comp-v2-midline" aria-hidden="true"></div>
+        <div class="comp-v2-axis-card" style="background: linear-gradient(90deg, ${ax.leftColor} 0%, ${ax.leftColor} 40%, ${ax.rightColor} 60%, ${ax.rightColor} 100%); color: #ffffff;">
           <div class="comp-v2-axis-title">
             <span>${ax.name}</span>
           </div>
@@ -1499,6 +1497,32 @@ class App {
       `;
     }).join("");
 
+    // 8 Functions for Results View (Image 2 style comp-v2-axes-grid)
+    const userFuncsAxesHtml = FUNCTIONS_ORDER.map(f => {
+      const fnInfo = COGNITIVE_FUNCTIONS[f] || {};
+      const fName = lang === "ro" ? (fnInfo.nameRo || fnInfo.name || f) : (fnInfo.name || f);
+      const fKw = lang === "ro" ? (fnInfo.keywordsRo || fnInfo.keywords || "") : (fnInfo.keywords || "");
+      const fColor = getFuncTileColors(f).bg;
+      const pct = percentages[f] ?? 50;
+      const pos = Math.max(5, Math.min(95, pct));
+      return `
+        <div class="comp-v2-axis-card" style="background: ${fColor}; color: #ffffff;">
+          <div class="comp-v2-axis-title">
+            <span>${f} · ${fName}</span>
+            <span style="font-size: 0.95rem; font-weight: 800;">${pct}%</span>
+          </div>
+          <div class="comp-v2-track">
+            <div class="comp-v2-center-line" aria-hidden="true"></div>
+            <div class="comp-v2-dot-user" style="left: ${pos}%;" title="${f} · ${fName}: ${pct}%"></div>
+          </div>
+          <div class="comp-v2-labels">
+            <span class="comp-v2-lbl-left">${fKw}</span>
+            <span class="comp-v2-lbl-right">${pct}%</span>
+          </div>
+        </div>
+      `;
+    }).join("");
+
     const figN = currentComparisonFigure.axes ? currentComparisonFigure.axes.N : (currentComparisonFigure.mbti.includes("N") ? 75 : 25);
     const figT = currentComparisonFigure.axes ? currentComparisonFigure.axes.T : (currentComparisonFigure.mbti.includes("T") ? 75 : 25);
     const figCompassX = Math.max(10, Math.min(90, figT));
@@ -1549,36 +1573,6 @@ class App {
               </div>
             </article>
 
-            <!-- Cognitive Hierarchy -->
-            <section class="e-panel" id="cognitive-hierarchy">
-              <div class="e-sec-head" style="margin-bottom: 1.5rem;">
-                <h2 class="e-sec-title">${lang === "ro" ? "Ierarhia Cognitivă" : "Cognitive Hierarchy"}</h2>
-              </div>
-              <div class="hierarchy-tiles-row">
-                ${sortedFunctions.map((f, idx) => {
-                  const numStr = `#${idx + 1}`;
-                  const pct = percentages[f];
-                  let bg = "#95637e";
-                  if (f === "Ne" || f === "Ni") {
-                    bg = "#95637e";
-                  } else if (f === "Te" || f === "Ti") {
-                    bg = "#72cccd";
-                  } else if (f === "Se" || f === "Si") {
-                    bg = "#e5c727";
-                  } else if (f === "Fe" || f === "Fi") {
-                    bg = "#9ac262";
-                  }
-                  return `
-                    <div class="hierarchy-tile-sq" style="--sq-bg: ${bg}; --sq-text: #ffffff; color: #ffffff;" title="${f} (${pct}%)">
-                      <span class="hierarchy-sq-num" style="color: #ffffff;">${numStr}</span>
-                      <strong class="hierarchy-sq-code" style="color: #ffffff;">${f}</strong>
-                      <span class="hierarchy-sq-score" style="color: #ffffff;">${pct}% score</span>
-                    </div>
-                  `;
-                }).join("")}
-              </div>
-            </section>
-
             <!-- 4 Axes Minimalist (Image 3) -->
             <section class="e-panel" id="mbti-axes">
               <div class="e-sec-head" style="margin-bottom: 1.5rem;">
@@ -1592,6 +1586,16 @@ class App {
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 16l-1 4l4-1L19.586 7.414a2 2 0 0 0 0-2.828l-.172-.172a2 2 0 0 0-2.828 0zM15 6l3 3m-5 11h8"></path></svg>
                   <span>${t('editAnswersBtn', {}, lang)}</span>
                 </button>
+              </div>
+            </section>
+
+            <!-- 8 Functions (Image 2 style comp-v2-axes-grid) -->
+            <section class="e-panel" id="cognitive-functions-grid">
+              <div class="e-sec-head" style="margin-bottom: 1.5rem;">
+                <h2 class="e-sec-title">${lang === "ro" ? "8 Funcții" : "8 Functions"}</h2>
+              </div>
+              <div class="comp-v2-axes-grid">
+                ${userFuncsAxesHtml}
               </div>
             </section>
 
@@ -1748,7 +1752,12 @@ class App {
 
               <!-- Search personality bar with Autocomplete Dropdown -->
               <div class="figure-search-wrapper" style="margin-bottom: 1.25rem; position: relative;">
-                <span class="comp-search-icon" aria-hidden="true" style="position: absolute; left: 1.15rem; top: 50%; transform: translateY(-50%); pointer-events: none; opacity: 0.65; font-size: 1.1rem; line-height: 1;">🔍</span>
+                <span class="comp-search-icon" aria-hidden="true" style="position: absolute; left: 1.15rem; top: 50%; transform: translateY(-50%); pointer-events: none; opacity: 0.65; display: flex; align-items: center; justify-content: center; width: 18px; height: 18px; color: var(--text-muted, #737373);">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                </span>
                 <input 
                   type="text" 
                   id="figure-search-input" 
@@ -1782,14 +1791,14 @@ class App {
                 </div>
 
                 <div class="comp-v2-sec-heading" style="margin: 1.5rem 0 0.85rem; font-family: var(--font-display); font-size: 0.95rem; font-weight: 900; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-strong);">
-                  ${lang === 'ro' ? '4 Axe Spectrale' : '4 Spectrum Axes'}
+                  ${lang === 'ro' ? '4 Axe' : '4 Axes'}
                 </div>
                 <div class="comp-v2-axes-grid">
                   ${compAxesHtml}
                 </div>
 
                 <div class="comp-v2-sec-heading" style="margin: 2rem 0 0.85rem; font-family: var(--font-display); font-size: 0.95rem; font-weight: 900; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-strong);">
-                  ${lang === 'ro' ? '8 Funcții Cognitive' : '8 Cognitive Functions'}
+                  ${lang === 'ro' ? '8 Funcții' : '8 Functions'}
                 </div>
                 <div class="comp-v2-axes-grid">
                   ${compFuncsAxesHtml}
@@ -2091,15 +2100,12 @@ class App {
       });
     }
 
-    // Clicking a figure in Notable Figures selects that figure for comparison and scrolls to comparison section
+    // Clicking a figure in Notable Figures opens its details modal
     document.querySelectorAll(".fig-list-item").forEach(item => {
       item.addEventListener("click", () => {
         const id = item.getAttribute("data-id");
         if (id) {
-          this.selectedFigureId = id;
-          this.renderResults();
-          const compSection = document.getElementById("comparar");
-          if (compSection) compSection.scrollIntoView({ behavior: "smooth" });
+          this.openFigureDetailModal(id, true);
         }
       });
     });
@@ -4175,7 +4181,7 @@ class App {
 
         <!-- 8 Cognitive Functions Breakdown -->
         <div class="fig-modal-sec">
-          <h4 class="fig-modal-sec-title">8 Cognitive</h4>
+          <h4 class="fig-modal-sec-title">${lang === 'ro' ? '8 Funcții' : '8 Functions'}</h4>
           <div class="fig-modal-funcs-grid">
             ${FUNCTIONS_LIST.map(f => {
               const fPct = fig.scores?.[f] ?? 50;
