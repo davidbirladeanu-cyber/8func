@@ -341,12 +341,73 @@ export function calculateScores(questions, answers) {
   const axisScores = {};
   const axisPercentages = {};
 
+  // Check if we have function answers to calibrate axes
+  const hasFunctionData = FUNCTIONS_LIST.some(f => fnS[f] && fnS[f].length > 0);
+
+  // Compute cognitive function pull & Jungian archetype orientation (EP / EJ / IP / IJ)
+  const fnAxisScores = {};
+  if (hasFunctionData) {
+    const getP = (f) => percentages[f] ?? 50;
+    const domF = ranking[0] || "Ni";
+    const auxF = ranking[1] || "Te";
+    const domScore = getP(domF);
+
+    // 1. EI: Extraversion vs Introversion
+    // Aggregate energy + dominant ego-orientation
+    const energyE = 0.70 * Math.max(getP("Ne"), getP("Se"), getP("Te"), getP("Fe")) + 0.30 * ((getP("Ne") + getP("Se") + getP("Te") + getP("Fe")) / 4);
+    const energyI = 0.70 * Math.max(getP("Ni"), getP("Si"), getP("Ti"), getP("Fi")) + 0.30 * ((getP("Ni") + getP("Si") + getP("Ti") + getP("Fi")) / 4);
+    const isDomE = ["Ne", "Se", "Te", "Fe"].includes(domF);
+    const domEIPull = (isDomE ? 1 : -1) * (domScore / 100) * 15;
+    fnAxisScores.EI = clamp(50 + (energyE - energyI) * 1.2 + domEIPull);
+
+    // 2. NS: Intuition vs Sensing
+    // Primary attitude preference (75% top pole + 25% secondary pole)
+    const prefN = 0.75 * Math.max(getP("Ne"), getP("Ni")) + 0.25 * Math.min(getP("Ne"), getP("Ni"));
+    const prefS = 0.75 * Math.max(getP("Se"), getP("Si")) + 0.25 * Math.min(getP("Se"), getP("Si"));
+    const isDomN = ["Ne", "Ni"].includes(domF) || ["Ne", "Ni"].includes(auxF);
+    const isDomS = ["Se", "Si"].includes(domF) || ["Se", "Si"].includes(auxF);
+    const domNSPull = (isDomN ? 1 : isDomS ? -1 : 0) * (domScore / 100) * 15;
+    fnAxisScores.NS = clamp(50 + (prefN - prefS) * 1.2 + domNSPull);
+
+    // 3. TF: Thinking vs Feeling
+    const prefT = 0.75 * Math.max(getP("Te"), getP("Ti")) + 0.25 * Math.min(getP("Te"), getP("Ti"));
+    const prefF = 0.75 * Math.max(getP("Fe"), getP("Fi")) + 0.25 * Math.min(getP("Fe"), getP("Fi"));
+    const isDomT = ["Te", "Ti"].includes(domF) || ["Te", "Ti"].includes(auxF);
+    const isDomF = ["Fe", "Fi"].includes(domF) || ["Fe", "Fi"].includes(auxF);
+    const domTFPull = (isDomT ? 1 : isDomF ? -1 : 0) * (domScore / 100) * 15;
+    fnAxisScores.TF = clamp(50 + (prefT - prefF) * 1.2 + domTFPull);
+
+    // 4. JP: Judging vs Perceiving
+    // Jungian / Myers-Briggs archetype:
+    // EP (Ne, Se) -> P | EJ (Te, Fe) -> J | IP (Ti, Fi) -> P | IJ (Ni, Si) -> J
+    const isEJ = ["Te", "Fe"].includes(domF);
+    const isIJ = ["Ni", "Si"].includes(domF);
+    const isDomJ = isEJ || isIJ;
+    const domJPPull = (isDomJ ? 1 : -1) * (domScore / 100) * 15;
+    const prefJ = 0.75 * Math.max(getP("Te"), getP("Fe")) + 0.25 * ((getP("Te") + getP("Fe") + getP("Ni") + getP("Si")) / 4);
+    const prefP = 0.75 * Math.max(getP("Ne"), getP("Se")) + 0.25 * ((getP("Ne") + getP("Se") + getP("Ti") + getP("Fi")) / 4);
+    fnAxisScores.JP = clamp(50 + (prefJ - prefP) * 1.2 + domJPPull);
+  }
+
   AXIS_DIMENSIONS.forEach(dim => {
     const { poleA, poleB, id } = dim;
     const s = axS[id];
     const wsum = s.reduce((acc, curr) => acc + curr.w, 0);
     const m = wsum > 0 ? (s.reduce((acc, curr) => acc + curr.v * curr.w, 0) / wsum) : 0.5;
-    const pa = clamp(50 + (m - 0.5) * 100 * AXIS_STRETCH);
+    const directPa = clamp(50 + (m - 0.5) * 100 * AXIS_STRETCH);
+
+    // Organic calibration: if function data exists, blend direct axis answers with cognitive functions & hierarchy
+    let pa = directPa;
+    if (hasFunctionData && fnAxisScores[id] !== undefined) {
+      if (wsum > 0) {
+        // Direct questions exist: 60% direct answers + 40% cognitive function calibration
+        pa = clamp(0.60 * directPa + 0.40 * fnAxisScores[id]);
+      } else {
+        // No direct questions for this axis: 100% from cognitive functions
+        pa = clamp(fnAxisScores[id]);
+      }
+    }
+
     const roundA = Math.round(pa);
     const roundB = 100 - roundA;
 
@@ -359,10 +420,10 @@ export function calculateScores(questions, answers) {
       roundA,
       roundB,
       dominant: (roundA >= roundB) ? poleA : poleB,
-      directPctA: roundA,
-      directPctB: roundB,
-      funcPctA: roundA,
-      funcPctB: roundB,
+      directPctA: Math.round(directPa),
+      directPctB: 100 - Math.round(directPa),
+      funcPctA: fnAxisScores[id] !== undefined ? Math.round(fnAxisScores[id]) : roundA,
+      funcPctB: fnAxisScores[id] !== undefined ? 100 - Math.round(fnAxisScores[id]) : roundB,
       rawMeanA: Math.round(m * 100),
       rawMeanB: Math.round((1.0 - m) * 100),
       directPointsA: m * 100,

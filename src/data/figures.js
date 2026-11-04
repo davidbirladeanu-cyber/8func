@@ -10430,10 +10430,11 @@ export const FUNCTIONS = ["Ne", "Ni", "Te", "Ti", "Fe", "Fi", "Se", "Si"];
 export function calculateFigureSimilarity(userScores, userAxisScores, figure) {
   if (!figure) return 50;
 
-  // 1. Cognitive Function Vector Difference (Ne, Ni, Te, Ti, Fe, Fi, Se, Si)
-  let funcDiff = 0;
-  let topFuncBonus = 0;
+  // 1. 100% Cognitive Function Matching (Ne, Ni, Te, Ti, Fe, Fi, Se, Si) + Dominant/Auxiliary Alignment
   if (userScores && figure.scores) {
+    let funcDiff = 0;
+    let topFuncBonus = 0;
+
     FUNCTIONS.forEach(f => {
       const u = userScores[f] ?? 50;
       const fig = figure.scores[f] ?? 50;
@@ -10444,20 +10445,22 @@ export function calculateFigureSimilarity(userScores, userAxisScores, figure) {
     const userSorted = [...FUNCTIONS].sort((a, b) => (userScores[b] ?? 50) - (userScores[a] ?? 50));
     const figSorted = [...FUNCTIONS].sort((a, b) => (figure.scores[b] ?? 50) - (figure.scores[a] ?? 50));
 
-    if (userSorted[0] === figSorted[0]) topFuncBonus += 6;
-    if (userSorted[1] === figSorted[1]) topFuncBonus += 4;
-    else if (figSorted.slice(0, 2).includes(userSorted[0]) && figSorted.slice(0, 2).includes(userSorted[1])) {
-      topFuncBonus += 4;
-    }
+    if (userSorted[0] === figSorted[0]) topFuncBonus += 8;
+    else if (figSorted.slice(0, 2).includes(userSorted[0])) topFuncBonus += 4;
+
+    if (userSorted[1] === figSorted[1]) topFuncBonus += 6;
+    else if (figSorted.slice(0, 2).includes(userSorted[1])) topFuncBonus += 3;
+
+    const avgFuncDiff = funcDiff / FUNCTIONS.length;
+    const funcSimilarity = Math.max(0, Math.min(100, Math.round(100 - avgFuncDiff + topFuncBonus)));
+    return funcSimilarity;
   }
-  const avgFuncDiff = funcDiff / FUNCTIONS.length;
-  const funcSimilarity = Math.max(0, Math.min(100, Math.round(100 - avgFuncDiff + topFuncBonus)));
 
-  // 2. 4-Axis Spectrum Mean Absolute Difference (Direct Ground Truth)
-  let axisDiff = 0;
-  let axisCount = 0;
-
+  // 2. Fallback for legacy 4-Axis Spectrum (only if cognitive function scores are missing)
   if (userAxisScores && figure.axes) {
+    let axisDiff = 0;
+    let axisCount = 0;
+
     // E / I Axis Difference
     const uI = userAxisScores.EI ? (userAxisScores.EI.roundB ?? userAxisScores.EI.pctB ?? 50) : 50;
     const fI = figure.axes.I ?? 50;
@@ -10481,14 +10484,12 @@ export function calculateFigureSimilarity(userScores, userAxisScores, figure) {
     const fP = figure.axes.P ?? 50;
     axisDiff += Math.abs(uP - fP);
     axisCount++;
+
+    const avgAxisDiff = axisCount > 0 ? (axisDiff / axisCount) : 30;
+    return Math.max(0, Math.min(100, Math.round(100 - avgAxisDiff)));
   }
 
-  const avgAxisDiff = axisCount > 0 ? (axisDiff / axisCount) : 30;
-  const axisSimilarity = Math.max(0, Math.min(100, 100 - avgAxisDiff));
-
-  // Weighted blend: 60% cognitive functions (Ne, Ni, etc.) + 40% 4-axis spectrum
-  const combined = Math.round(axisSimilarity * 0.50 + funcSimilarity * 0.50);
-  return Math.max(0, Math.min(100, combined));
+  return 50;
 }
 
 /**
