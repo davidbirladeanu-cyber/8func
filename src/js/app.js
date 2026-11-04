@@ -1578,22 +1578,6 @@ class App {
               </div>
             </article>
 
-            <!-- 4 Axes Minimalist (Image 3) -->
-            <section class="e-panel" id="mbti-axes">
-              <div class="e-sec-head" style="margin-bottom: 1.5rem;">
-                <h2 class="e-sec-title">${lang === "ro" ? "4 Axe" : "4 Axes"}</h2>
-              </div>
-              <div class="minimal-axes-grid">
-                ${mbtiAxesRowsHtml}
-              </div>
-              <div class="e-axes-edit">
-                <button class="e-axes-edit-btn" id="open-edit-answers-btn" type="button">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 16l-1 4l4-1L19.586 7.414a2 2 0 0 0 0-2.828l-.172-.172a2 2 0 0 0-2.828 0zM15 6l3 3m-5 11h8"></path></svg>
-                  <span>${t('editAnswersBtn', {}, lang)}</span>
-                </button>
-              </div>
-            </section>
-
             <!-- Cognitive Hierarchy (8 Squares) -->
             <section class="e-panel" id="cognitive-hierarchy">
               <div class="e-sec-head" style="margin-bottom: 1.5rem;">
@@ -1621,6 +1605,22 @@ class App {
                     </div>
                   `;
                 }).join("")}
+              </div>
+            </section>
+
+            <!-- 4 Axes Minimalist (Image 3) -->
+            <section class="e-panel" id="mbti-axes">
+              <div class="e-sec-head" style="margin-bottom: 1.5rem;">
+                <h2 class="e-sec-title">${lang === "ro" ? "4 Axe" : "4 Axes"}</h2>
+              </div>
+              <div class="minimal-axes-grid">
+                ${mbtiAxesRowsHtml}
+              </div>
+              <div class="e-axes-edit">
+                <button class="e-axes-edit-btn" id="open-edit-answers-btn" type="button">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 16l-1 4l4-1L19.586 7.414a2 2 0 0 0 0-2.828l-.172-.172a2 2 0 0 0-2.828 0zM15 6l3 3m-5 11h8"></path></svg>
+                  <span>${t('editAnswersBtn', {}, lang)}</span>
+                </button>
               </div>
             </section>
 
