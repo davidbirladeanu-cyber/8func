@@ -1594,6 +1594,36 @@ class App {
               </div>
             </section>
 
+            <!-- Cognitive Hierarchy (8 Squares) -->
+            <section class="e-panel" id="cognitive-hierarchy">
+              <div class="e-sec-head" style="margin-bottom: 1.5rem;">
+                <h2 class="e-sec-title">${lang === "ro" ? "Ierarhia Cognitivă" : "Cognitive Hierarchy"}</h2>
+              </div>
+              <div class="hierarchy-tiles-row">
+                ${sortedFunctions.map((f, idx) => {
+                  const numStr = `#${idx + 1}`;
+                  const pct = percentages[f];
+                  let bg = "#95637e";
+                  if (f === "Ne" || f === "Ni") {
+                    bg = "#95637e";
+                  } else if (f === "Te" || f === "Ti") {
+                    bg = "#72cccd";
+                  } else if (f === "Se" || f === "Si") {
+                    bg = "#e5c727";
+                  } else if (f === "Fe" || f === "Fi") {
+                    bg = "#9ac262";
+                  }
+                  return `
+                    <div class="hierarchy-tile-sq" style="--sq-bg: ${bg}; --sq-text: #ffffff; color: #ffffff;" title="${f} (${pct}%)">
+                      <span class="hierarchy-sq-num" style="color: #ffffff;">${numStr}</span>
+                      <strong class="hierarchy-sq-code" style="color: #ffffff;">${f}</strong>
+                      <span class="hierarchy-sq-score" style="color: #ffffff;">${pct}% score</span>
+                    </div>
+                  `;
+                }).join("")}
+              </div>
+            </section>
+
             <!-- 8 Functions (Image 2 style comp-v2-axes-grid) -->
             <section class="e-panel" id="cognitive-functions-grid">
               <div class="e-sec-head" style="margin-bottom: 1.5rem;">
