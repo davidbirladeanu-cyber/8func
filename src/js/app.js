@@ -182,8 +182,8 @@ export const EDIT_SECTIONS = [
   // 3. Lifestyle / Energy Combinations (4)
   { id: "EJ", name: "Executive", nameRo: "Directiv", tag: "Executive", tagRo: "Directiv", color: "#963939", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>` },
   { id: "EP", name: "Explorer", nameRo: "Adaptabil", tag: "Explorer", tagRo: "Adaptabil", color: "#963939", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>` },
-  { id: "IJ", name: "Conserver", nameRo: "Planificator", tag: "Conserver", tagRo: "Planificator", color: "#95637e", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>` },
-  { id: "IP", name: "Inquirer", nameRo: "Reflexiv", tag: "Inquirer", tagRo: "Reflexiv", color: "#95637e", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>` },
+  { id: "IJ", name: "Conserver", nameRo: "Planificator", tag: "Conserver", tagRo: "Planificator", color: "#395296", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>` },
+  { id: "IP", name: "Inquirer", nameRo: "Reflexiv", tag: "Inquirer", tagRo: "Reflexiv", color: "#395296", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>` },
 
   // 4. Temperament Combinations (4)
   { id: "NT", name: "Rational", nameRo: "Rațional", tag: "Rational", tagRo: "Rațional", color: "#95637e", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v12m-6-6h12"/></svg>` },
@@ -1210,21 +1210,21 @@ class App {
       }
     }
 
-    // 4 Spectrum Coordinates (Recalibrated: N dreapta sus, T dreapta jos, S stanga jos, F stanga sus)
+    // 4 Spectrum Coordinates (N sus, T dreapta, S jos, F stanga)
     const pN = axisScores?.NS?.roundA ?? 50; // % N (Intuiție)
     const pS = axisScores?.NS?.roundB ?? 50; // % S (Senzație)
     const pT = axisScores?.TF?.roundA ?? 50; // % T (Gândire)
     const pF = axisScores?.TF?.roundB ?? 50; // % F (Sentiment)
-    const compassX = Math.max(8, Math.min(92, Math.round((pN + pT) / 2)));
-    const compassY = Math.max(8, Math.min(92, Math.round((pS + pT) / 2)));
+    const compassX = Math.max(8, Math.min(92, pT)); // F (stânga 0%) -> T (dreapta 100%)
+    const compassY = Math.max(8, Math.min(92, 100 - pN)); // N (sus 0%) -> S (jos 100%)
 
-    // Spectrum 2: Energy & Tactics (E dreapta sus, J dreapta jos, I stanga jos, P stanga sus)
+    // Spectrum 2: Energy & Tactics (E sus, J dreapta, I jos, P stanga)
     const pE = axisScores?.EI?.roundA ?? 50; // % E (Extraversie)
     const pI = axisScores?.EI?.roundB ?? 50; // % I (Introversie)
     const pJ = axisScores?.JP?.roundA ?? 50; // % J (Judecată)
     const pP = axisScores?.JP?.roundB ?? 50; // % P (Percepție)
-    const compass2X = Math.max(8, Math.min(92, Math.round((pE + pJ) / 2)));
-    const compass2Y = Math.max(8, Math.min(92, Math.round((pI + pJ) / 2)));
+    const compass2X = Math.max(8, Math.min(92, pJ)); // P (stânga 0%) -> J (dreapta 100%)
+    const compass2Y = Math.max(8, Math.min(92, 100 - pE)); // E (sus 0%) -> I (jos 100%)
 
     // Quadrants for both Spectrums with new IE/PJ colors
     const s1QuadCode = (pN >= pS ? "N" : "S") + (pF >= pT ? "F" : "T");
@@ -1255,6 +1255,8 @@ class App {
         rightName: lang === "ro" ? "Introversie" : "Introversion",
         leftPct: axisScores.EI.roundA, // E
         rightPct: axisScores.EI.roundB, // I
+        leftColor: "#963939",
+        rightColor: "#395296",
         color: energyColor,
         pos: Math.max(5, Math.min(95, axisScores.EI.roundB))
       },
@@ -1265,6 +1267,8 @@ class App {
         rightName: lang === "ro" ? "Senzorial" : "Sensing",
         leftPct: axisScores.NS.roundA, // N
         rightPct: axisScores.NS.roundB, // S
+        leftColor: "#95637e",
+        rightColor: "#e5c727",
         color: mindColor,
         pos: Math.max(5, Math.min(95, axisScores.NS.roundB))
       },
@@ -1275,6 +1279,8 @@ class App {
         rightName: lang === "ro" ? "Sentiment" : "Feeling",
         leftPct: axisScores.TF.roundA, // T
         rightPct: axisScores.TF.roundB, // F
+        leftColor: "#72cccd",
+        rightColor: "#9ac262",
         color: natureColor,
         pos: Math.max(5, Math.min(95, axisScores.TF.roundB))
       },
@@ -1285,6 +1291,8 @@ class App {
         rightName: lang === "ro" ? "Percepție" : "Perceiving",
         leftPct: axisScores.JP.roundA, // J
         rightPct: axisScores.JP.roundB, // P
+        leftColor: "#32d3a0",
+        rightColor: "#e59b27",
         color: tacticsColor,
         pos: Math.max(5, Math.min(95, axisScores.JP.roundB))
       }
@@ -1292,11 +1300,13 @@ class App {
 
     const mbtiAxesRowsHtml = axesData.map(ax => {
       return `
-        <div class="minimal-axis-card" style="background: ${ax.color}; color: #ffffff;">
+        <div class="minimal-axis-card" style="background: linear-gradient(90deg, ${ax.leftColor} 0%, ${ax.leftColor} 25%, ${ax.rightColor} 75%, ${ax.rightColor} 100%); color: #ffffff;">
+          <div class="minimal-axis-midline" aria-hidden="true"></div>
           <div class="minimal-axis-top">
             <span class="minimal-axis-title">${ax.name}</span>
           </div>
           <div class="minimal-axis-track">
+            <div class="minimal-axis-center-line" aria-hidden="true"></div>
             <div class="minimal-axis-thumb" style="left: ${ax.pos}%;"></div>
           </div>
           <div class="minimal-axis-labels">
@@ -1360,6 +1370,8 @@ class App {
       {
         id: "energy",
         name: lang === "ro" ? "ENERGIE" : "ENERGY",
+        leftColor: "#963939",
+        rightColor: "#395296",
         color: energyColor,
         leftLabel: lang === "ro" ? `Extraversie ${axisScores.EI.roundA}%` : `Extraversion ${axisScores.EI.roundA}%`,
         rightLabel: lang === "ro" ? `${axisScores.EI.roundB}% Introversie` : `${axisScores.EI.roundB}% Introversion`,
@@ -1371,6 +1383,8 @@ class App {
       {
         id: "mind",
         name: lang === "ro" ? "MINTE" : "MIND",
+        leftColor: "#95637e",
+        rightColor: "#e5c727",
         color: mindColor,
         leftLabel: lang === "ro" ? `Intuiție ${axisScores.NS.roundA}%` : `Intuition ${axisScores.NS.roundA}%`,
         rightLabel: lang === "ro" ? `${axisScores.NS.roundB}% Senzorial` : `${axisScores.NS.roundB}% Sensing`,
@@ -1382,6 +1396,8 @@ class App {
       {
         id: "nature",
         name: lang === "ro" ? "NATURĂ" : "NATURE",
+        leftColor: "#72cccd",
+        rightColor: "#9ac262",
         color: natureColor,
         leftLabel: lang === "ro" ? `Gândire ${axisScores.TF.roundA}%` : `Thinking ${axisScores.TF.roundA}%`,
         rightLabel: lang === "ro" ? `${axisScores.TF.roundB}% Sentiment` : `${axisScores.TF.roundB}% Feeling`,
@@ -1393,6 +1409,8 @@ class App {
       {
         id: "tactics",
         name: lang === "ro" ? "TACTICĂ" : "TACTICS",
+        leftColor: "#32d3a0",
+        rightColor: "#e59b27",
         color: tacticsColor,
         leftLabel: lang === "ro" ? `Judecată ${axisScores.JP.roundA}%` : `Judging ${axisScores.JP.roundA}%`,
         rightLabel: lang === "ro" ? `${axisScores.JP.roundB}% Percepție` : `${axisScores.JP.roundB}% Perceiving`,
@@ -1405,11 +1423,13 @@ class App {
 
     const compAxesHtml = compAxesData.map(ax => {
       return `
-        <div class="comp-v2-axis-card" style="background: ${ax.color}; color: #ffffff;">
+        <div class="comp-v2-axis-card" style="background: linear-gradient(90deg, ${ax.leftColor} 0%, ${ax.leftColor} 25%, ${ax.rightColor} 75%, ${ax.rightColor} 100%); color: #ffffff;">
+          <div class="comp-v2-midline" aria-hidden="true"></div>
           <div class="comp-v2-axis-title">
             <span>${ax.name}</span>
           </div>
           <div class="comp-v2-track">
+            <div class="comp-v2-center-line" aria-hidden="true"></div>
             <!-- White Dot (User: "punctele necolorate albe esti tu") -->
             <div class="comp-v2-dot-user" style="left: ${ax.uPos}%;" title="${userA_Name}"></div>
             <!-- Colored Dot (Figure or Person B) -->
@@ -1562,7 +1582,7 @@ class App {
             <!-- 4 Axes Minimalist (Image 3) -->
             <section class="e-panel" id="mbti-axes">
               <div class="e-sec-head" style="margin-bottom: 1.5rem;">
-                <h2 class="e-sec-title">${lang === "ro" ? "4 Axe" : "4 Axis"}</h2>
+                <h2 class="e-sec-title">${lang === "ro" ? "4 Axe" : "4 Axes"}</h2>
               </div>
               <div class="minimal-axes-grid">
                 ${mbtiAxesRowsHtml}
@@ -1582,37 +1602,45 @@ class App {
               </div>
 
               <div class="spectrum-cross-wrap">
-                <!-- Plane 1: Mind & Nature (N dreapta sus, T dreapta jos, S stanga jos, F stanga sus) -->
+                <!-- Plane 1: Mind & Nature (N sus, T dreapta, S jos, F stanga) -->
                 <div class="spectrum-cross-plane-wrap">
+                  <div class="spectrum-cardinal-lbl spectrum-lbl-top">N</div>
                   <div class="spectrum-center-row">
+                    <div class="spectrum-cardinal-lbl spectrum-lbl-left">F</div>
                     <div class="spectrum-quadrant-plane">
-                      <div class="spectrum-quadrant quad-tl" title="F · Feeling">F</div>
-                      <div class="spectrum-quadrant quad-tr" title="N · Intuition">N</div>
-                      <div class="spectrum-quadrant quad-bl" title="S · Sensing">S</div>
-                      <div class="spectrum-quadrant quad-br" title="T · Thinking">T</div>
+                      <div class="spectrum-quadrant quad-tl" title="NF · Ideation & Values"></div>
+                      <div class="spectrum-quadrant quad-tr" title="NT · Ideation & Structure"></div>
+                      <div class="spectrum-quadrant quad-bl" title="SF · Action & Values"></div>
+                      <div class="spectrum-quadrant quad-br" title="ST · Action & Structure"></div>
                       <div class="spectrum-crosshair-h"></div>
                       <div class="spectrum-crosshair-v"></div>
                       <div class="spectrum-plot-dot" style="left: ${compassX}%; top: ${compassY}%;" title="${lang === 'ro' ? 'Tu' : 'You'} (${topMbti.type}) — ${s1Coords}"></div>
                     </div>
+                    <div class="spectrum-cardinal-lbl spectrum-lbl-right">T</div>
                   </div>
+                  <div class="spectrum-cardinal-lbl spectrum-lbl-bottom">S</div>
                   <div class="spectrum-bottom-bar" style="margin-top: 0.85rem;">
                     <span class="spectrum-coord-lbl">${s1Coords}</span>
                   </div>
                 </div>
 
-                <!-- Plane 2: Energy & Tactics (E dreapta sus, J dreapta jos, I stanga jos, P stanga sus) -->
+                <!-- Plane 2: Energy & Tactics (E sus, J dreapta, I jos, P stanga) -->
                 <div class="spectrum-cross-plane-wrap">
+                  <div class="spectrum-cardinal-lbl spectrum-lbl-top">E</div>
                   <div class="spectrum-center-row">
+                    <div class="spectrum-cardinal-lbl spectrum-lbl-left">P</div>
                     <div class="spectrum-quadrant-plane spectrum-quadrant-plane-blue">
-                      <div class="spectrum-quadrant quad-ep" title="P · Perceiving">P</div>
-                      <div class="spectrum-quadrant quad-ej" title="E · Extraversion">E</div>
-                      <div class="spectrum-quadrant quad-ip" title="I · Introversion">I</div>
-                      <div class="spectrum-quadrant quad-ij" title="J · Judging">J</div>
+                      <div class="spectrum-quadrant quad-ep" title="EP · Explorer"></div>
+                      <div class="spectrum-quadrant quad-ej" title="EJ · Executive"></div>
+                      <div class="spectrum-quadrant quad-ip" title="IP · Inquirer"></div>
+                      <div class="spectrum-quadrant quad-ij" title="IJ · Conserver"></div>
                       <div class="spectrum-crosshair-h"></div>
                       <div class="spectrum-crosshair-v"></div>
                       <div class="spectrum-plot-dot" style="left: ${compass2X}%; top: ${compass2Y}%;" title="${lang === 'ro' ? 'Tu' : 'You'} (${topMbti.type}) — ${s2Coords}"></div>
                     </div>
+                    <div class="spectrum-cardinal-lbl spectrum-lbl-right">J</div>
                   </div>
+                  <div class="spectrum-cardinal-lbl spectrum-lbl-bottom">I</div>
                   <div class="spectrum-bottom-bar" style="margin-top: 0.85rem;">
                     <span class="spectrum-coord-lbl">${s2Coords}</span>
                   </div>
@@ -2853,20 +2881,20 @@ class App {
 
     const s2Top = "E";
     const s2Bottom = "I";
-    const s2Left = "J";
-    const s2Right = "P";
+    const s2Left = "P";
+    const s2Right = "J";
 
-    // Person A coordinates (Recalibrated: N dreapta sus, T dreapta jos; E dreapta sus, J dreapta jos)
-    const compassX_A = Math.max(8, Math.min(92, Math.round((personA.axisScores.NS.roundA + personA.axisScores.TF.roundA) / 2)));
-    const compassY_A = Math.max(8, Math.min(92, Math.round((personA.axisScores.NS.roundB + personA.axisScores.TF.roundA) / 2)));
-    const compass2X_A = Math.max(8, Math.min(92, Math.round((personA.axisScores.EI.roundA + personA.axisScores.JP.roundA) / 2)));
-    const compass2Y_A = Math.max(8, Math.min(92, Math.round((personA.axisScores.EI.roundB + personA.axisScores.JP.roundA) / 2)));
+    // Person A coordinates (Plane 1: N sus, T dreapta, S jos, F stanga; Plane 2: E sus, J dreapta, I jos, P stanga)
+    const compassX_A = Math.max(8, Math.min(92, personA.axisScores.TF.roundA));
+    const compassY_A = Math.max(8, Math.min(92, 100 - personA.axisScores.NS.roundA));
+    const compass2X_A = Math.max(8, Math.min(92, personA.axisScores.JP.roundA));
+    const compass2Y_A = Math.max(8, Math.min(92, 100 - personA.axisScores.EI.roundA));
 
     // Person B coordinates
-    const compassX_B = Math.max(8, Math.min(92, Math.round((personB.axisScores.NS.roundA + personB.axisScores.TF.roundA) / 2)));
-    const compassY_B = Math.max(8, Math.min(92, Math.round((personB.axisScores.NS.roundB + personB.axisScores.TF.roundA) / 2)));
-    const compass2X_B = Math.max(8, Math.min(92, Math.round((personB.axisScores.EI.roundA + personB.axisScores.JP.roundA) / 2)));
-    const compass2Y_B = Math.max(8, Math.min(92, Math.round((personB.axisScores.EI.roundB + personB.axisScores.JP.roundA) / 2)));
+    const compassX_B = Math.max(8, Math.min(92, personB.axisScores.TF.roundA));
+    const compassY_B = Math.max(8, Math.min(92, 100 - personB.axisScores.NS.roundA));
+    const compass2X_B = Math.max(8, Math.min(92, personB.axisScores.JP.roundA));
+    const compass2Y_B = Math.max(8, Math.min(92, 100 - personB.axisScores.EI.roundA));
 
     this.root.innerHTML = `
       <div class="app-shell" data-screen="compare">
@@ -3228,39 +3256,47 @@ class App {
                 </div>
 
                 <div class="spectrum-cross-wrap">
-                  <!-- Plane 1: Mind & Nature (N dreapta sus, T dreapta jos, S stanga jos, F stanga sus) -->
+                  <!-- Plane 1: Mind & Nature (N sus, T dreapta, S jos, F stanga) -->
                   <div class="spectrum-cross-plane-wrap">
+                    <div class="spectrum-cardinal-lbl spectrum-lbl-top">N</div>
                     <div class="spectrum-center-row">
+                      <div class="spectrum-cardinal-lbl spectrum-lbl-left">F</div>
                       <div class="spectrum-quadrant-plane">
-                        <div class="spectrum-quadrant quad-tl" title="F · Feeling">F</div>
-                        <div class="spectrum-quadrant quad-tr" title="N · Intuition">N</div>
-                        <div class="spectrum-quadrant quad-bl" title="S · Sensing">S</div>
-                        <div class="spectrum-quadrant quad-br" title="T · Thinking">T</div>
+                        <div class="spectrum-quadrant quad-tl" title="NF"></div>
+                        <div class="spectrum-quadrant quad-tr" title="NT"></div>
+                        <div class="spectrum-quadrant quad-bl" title="SF"></div>
+                        <div class="spectrum-quadrant quad-br" title="ST"></div>
                         <div class="spectrum-crosshair-h"></div>
                         <div class="spectrum-crosshair-v"></div>
                         <div class="spectrum-plot-dot" style="left: ${compassX_A}%; top: ${compassY_A}%; background: var(--accent); box-shadow: 0 0 0 3px #ffffff, 0 3px 8px rgba(0,0,0,0.35);" title="${personA.name} (${personA.derivedType})">${personA.name.charAt(0).toUpperCase()}</div>
                         <div class="spectrum-plot-dot" style="left: ${compassX_B}%; top: ${compassY_B}%; background: #e0682b; box-shadow: 0 0 0 3px #ffffff, 0 3px 8px rgba(0,0,0,0.35);" title="${personB.name} (${personB.derivedType})">${personB.name.charAt(0).toUpperCase()}</div>
                       </div>
+                      <div class="spectrum-cardinal-lbl spectrum-lbl-right">T</div>
                     </div>
+                    <div class="spectrum-cardinal-lbl spectrum-lbl-bottom">S</div>
                     <div class="spectrum-bottom-bar" style="margin-top: 0.85rem;">
                       <span class="spectrum-coord-lbl">${lang === 'ro' ? 'Informație & Decizie (N/S × F/T)' : 'Information & Decision (N/S × F/T)'}</span>
                     </div>
                   </div>
 
-                  <!-- Plane 2: Energy & Tactics (E dreapta sus, J dreapta jos, I stanga jos, P stanga sus) -->
+                  <!-- Plane 2: Energy & Tactics (E sus, J dreapta, I jos, P stanga) -->
                   <div class="spectrum-cross-plane-wrap">
+                    <div class="spectrum-cardinal-lbl spectrum-lbl-top">E</div>
                     <div class="spectrum-center-row">
+                      <div class="spectrum-cardinal-lbl spectrum-lbl-left">P</div>
                       <div class="spectrum-quadrant-plane spectrum-quadrant-plane-blue">
-                        <div class="spectrum-quadrant quad-ep" title="P · Perceiving">P</div>
-                        <div class="spectrum-quadrant quad-ej" title="E · Extraversion">E</div>
-                        <div class="spectrum-quadrant quad-ip" title="I · Introversion">I</div>
-                        <div class="spectrum-quadrant quad-ij" title="J · Judging">J</div>
+                        <div class="spectrum-quadrant quad-ep" title="EP"></div>
+                        <div class="spectrum-quadrant quad-ej" title="EJ"></div>
+                        <div class="spectrum-quadrant quad-ip" title="IP"></div>
+                        <div class="spectrum-quadrant quad-ij" title="IJ"></div>
                         <div class="spectrum-crosshair-h"></div>
                         <div class="spectrum-crosshair-v"></div>
                         <div class="spectrum-plot-dot" style="left: ${compass2X_A}%; top: ${compass2Y_A}%; background: var(--accent); box-shadow: 0 0 0 3px #ffffff, 0 3px 8px rgba(0,0,0,0.35);" title="${personA.name} (${personA.derivedType})">${personA.name.charAt(0).toUpperCase()}</div>
                         <div class="spectrum-plot-dot" style="left: ${compass2X_B}%; top: ${compass2Y_B}%; background: #e0682b; box-shadow: 0 0 0 3px #ffffff, 0 3px 8px rgba(0,0,0,0.35);" title="${personB.name} (${personB.derivedType})">${personB.name.charAt(0).toUpperCase()}</div>
                       </div>
+                      <div class="spectrum-cardinal-lbl spectrum-lbl-right">J</div>
                     </div>
+                    <div class="spectrum-cardinal-lbl spectrum-lbl-bottom">I</div>
                     <div class="spectrum-bottom-bar" style="margin-top: 0.85rem;">
                       <span class="spectrum-coord-lbl">${lang === 'ro' ? 'Energie & Ritm (E/I × J/P)' : 'Energy & Rhythm (E/I × J/P)'}</span>
                     </div>
@@ -4117,7 +4153,7 @@ class App {
       <div class="fig-modal-body">
         <!-- 4 Spectrum Axes -->
         <div class="fig-modal-sec">
-          <h4 class="fig-modal-sec-title">${lang === 'ro' ? '4 Axe' : '4 Axis'}</h4>
+          <h4 class="fig-modal-sec-title">${lang === 'ro' ? '4 Axe' : '4 Axes'}</h4>
           <div class="fig-modal-axes-grid">
             ${axesList.map(ax => `
               <div class="fig-modal-axis-card">

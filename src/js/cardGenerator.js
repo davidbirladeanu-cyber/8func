@@ -371,30 +371,39 @@ export async function generateResultsCardCanvas({
   ctx.lineTo(leftColX + quadHalf, matrixY + matrixSize);
   ctx.stroke();
 
-  // Quadrant Corner Labels inside (F, N, S, T)
+  // Cardinal Labels: N top, S bottom, F left, T right
   ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
-  ctx.font = `900 16px ${FONT_FAMILY}`;
+  ctx.font = `900 13px ${FONT_FAMILY}`;
   ctx.textAlign = "center";
+
+  // Top (N)
+  ctx.textBaseline = "top";
+  ctx.fillText("N", leftColX + quadHalf, matrixY + 10);
+
+  // Bottom (S)
+  ctx.textBaseline = "bottom";
+  ctx.fillText("S", leftColX + quadHalf, matrixY + matrixSize - 10);
+
+  // Left (F)
+  ctx.save();
+  ctx.textAlign = "left";
   ctx.textBaseline = "middle";
+  ctx.fillText("F", leftColX + 12, matrixY + quadHalf);
+  ctx.restore();
 
-  // Top-Left: F
-  ctx.fillText("F", leftColX + quadHalf / 2, matrixY + quadHalf / 2);
+  // Right (T)
+  ctx.save();
+  ctx.textAlign = "right";
+  ctx.textBaseline = "middle";
+  ctx.fillText("T", leftColX + matrixSize - 12, matrixY + quadHalf);
+  ctx.restore();
 
-  // Top-Right: N
-  ctx.fillText("N", leftColX + quadHalf + quadHalf / 2, matrixY + quadHalf / 2);
-
-  // Bottom-Left: S
-  ctx.fillText("S", leftColX + quadHalf / 2, matrixY + quadHalf + quadHalf / 2);
-
-  // Bottom-Right: T
-  ctx.fillText("T", leftColX + quadHalf + quadHalf / 2, matrixY + quadHalf + quadHalf / 2);
-
-  // User position dot (Recalculated: X = (pN + pT)/2, Y = (pS + pT)/2)
+  // User position dot (Plane 1: N sus, T dreapta, S jos, F stanga)
   const pN = axisScores?.NS?.roundA ?? 50;
   const pS = axisScores?.NS?.roundB ?? 50;
   const pT = axisScores?.TF?.roundA ?? 50;
-  const compassX = Math.max(12, Math.min(88, Math.round((pN + pT) / 2)));
-  const compassY = Math.max(12, Math.min(88, Math.round((pS + pT) / 2)));
+  const compassX = Math.max(12, Math.min(88, pT));
+  const compassY = Math.max(12, Math.min(88, 100 - pN));
 
   const dotPxX = leftColX + (compassX / 100) * matrixSize;
   const dotPxY = matrixY + (compassY / 100) * matrixSize;
@@ -418,7 +427,7 @@ export async function generateResultsCardCanvas({
   ctx.textBaseline = "top";
   ctx.fillStyle = "rgba(255, 255, 255, 0.72)";
   ctx.font = `800 12px ${FONT_FAMILY}`;
-  ctx.fillText(lang === "ro" ? "4 AXE" : "4 AXIS", rightColX, gridTopY);
+  ctx.fillText(lang === "ro" ? "4 AXE" : "4 AXES", rightColX, gridTopY);
 
   const pE = axisScores?.EI?.roundA ?? 50;
   const pI = axisScores?.EI?.roundB ?? 50;
@@ -441,6 +450,8 @@ export async function generateResultsCardCanvas({
     {
       title: lang === "ro" ? "ENERGIE" : "ENERGY",
       color: energyColor,
+      leftColor: "#963939",
+      rightColor: "#395296",
       leftLabel: lang === "ro" ? `Extraversie ${pE}%` : `Extraversion ${pE}%`,
       rightLabel: lang === "ro" ? `${pI}% Introversie` : `${pI}% Introversion`,
       pct: calcThumbPct(pE, pI)
@@ -448,6 +459,8 @@ export async function generateResultsCardCanvas({
     {
       title: lang === "ro" ? "MINTE" : "MIND",
       color: mindColor,
+      leftColor: "#95637e",
+      rightColor: "#e5c727",
       leftLabel: lang === "ro" ? `Intuiție ${pN}%` : `Intuition ${pN}%`,
       rightLabel: lang === "ro" ? `${pS}% Senzorial` : `${pS}% Sensing`,
       pct: calcThumbPct(pN, pS)
@@ -455,6 +468,8 @@ export async function generateResultsCardCanvas({
     {
       title: lang === "ro" ? "NATURĂ" : "NATURE",
       color: natureColor,
+      leftColor: "#72cccd",
+      rightColor: "#9ac262",
       leftLabel: lang === "ro" ? `Gândire ${pT}%` : `Thinking ${pT}%`,
       rightLabel: lang === "ro" ? `${pF}% Sentiment` : `${pF}% Feeling`,
       pct: calcThumbPct(pT, pF)
@@ -462,6 +477,8 @@ export async function generateResultsCardCanvas({
     {
       title: lang === "ro" ? "TACTICĂ" : "TACTICS",
       color: tacticsColor,
+      leftColor: "#32d3a0",
+      rightColor: "#e59b27",
       leftLabel: lang === "ro" ? `Judecată ${pJ}%` : `Judging ${pJ}%`,
       rightLabel: lang === "ro" ? `${pP}% Percepție` : `${pP}% Perceiving`,
       pct: calcThumbPct(pJ, pP)
@@ -475,10 +492,23 @@ export async function generateResultsCardCanvas({
   axisData.forEach((ax, idx) => {
     const cardY = axisCardsTopY + idx * (axisCardH + axisGapY);
 
-    // Card background - clean flat solid color (no shine/glare)
+    // Card background - gradient between leftColor and rightColor (blend around center)
     roundRect(ctx, rightColX, cardY, colW, axisCardH, 14);
-    ctx.fillStyle = ax.color;
+    const grad = ctx.createLinearGradient(rightColX, cardY, rightColX + colW, cardY);
+    grad.addColorStop(0, ax.leftColor);
+    grad.addColorStop(0.25, ax.leftColor);
+    grad.addColorStop(0.75, ax.rightColor);
+    grad.addColorStop(1, ax.rightColor);
+    ctx.fillStyle = grad;
     ctx.fill();
+
+    // Center midline on card
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(rightColX + colW / 2, cardY);
+    ctx.lineTo(rightColX + colW / 2, cardY + axisCardH);
+    ctx.stroke();
 
     // Title
     ctx.fillStyle = "#FFFFFF";
@@ -499,6 +529,15 @@ export async function generateResultsCardCanvas({
     ctx.beginPath();
     ctx.moveTo(trackX1, trackY);
     ctx.lineTo(trackX1 + trackW, trackY);
+    ctx.stroke();
+
+    // Center mark on track at 50%
+    const midTrackX = trackX1 + trackW * 0.5;
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(midTrackX, trackY - 5);
+    ctx.lineTo(midTrackX, trackY + 5);
     ctx.stroke();
 
     // White thumb knob (no glow, clean solid circle)

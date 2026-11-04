@@ -1568,7 +1568,7 @@ export class SpectrumController {
 
         <!-- 4 Spectrum Axes with fig-modal-sec-title -->
         <div class="fig-modal-sec">
-          <h4 class="fig-modal-sec-title">${lang === 'ro' ? '4 Axe' : '4 Axis'}</h4>
+          <h4 class="fig-modal-sec-title">${lang === 'ro' ? '4 Axe' : '4 Axes'}</h4>
           <div class="fig-modal-axes-grid">
             ${axesList.map(ax => `
               <div class="fig-modal-axis-card">

@@ -3255,12 +3255,27 @@ a {
 }
 
 .minimal-axis-card {
+  position: relative;
+  overflow: hidden;
   border-radius: 14px;
   padding: 1.55rem 1.65rem;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.minimal-axis-midline {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1.5px;
+  background: rgba(255, 255, 255, 0.22);
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 1;
 }
 
 .minimal-axis-card:hover {
@@ -3269,6 +3284,8 @@ a {
 }
 
 .minimal-axis-top {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -3286,11 +3303,25 @@ a {
 
 .minimal-axis-track {
   position: relative;
+  z-index: 2;
   width: 100%;
-  height: 7px;
-  background: rgba(0, 0, 0, 0.25);
+  height: 8px;
+  background: rgba(0, 0, 0, 0.3);
   border-radius: 999px;
   margin: 0.85rem 0 0.75rem 0;
+}
+
+.minimal-axis-center-line {
+  position: absolute;
+  left: 50%;
+  top: -5px;
+  bottom: -5px;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateX(-50%);
+  border-radius: 1px;
+  z-index: 2;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
 }
 
 .minimal-axis-thumb {
@@ -3301,11 +3332,14 @@ a {
   height: 18px;
   border-radius: 50%;
   background: #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  z-index: 3;
   transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .minimal-axis-labels {
+  position: relative;
+  z-index: 2;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -4388,12 +4422,27 @@ a {
 }
 
 .comp-v2-axis-card {
+  position: relative;
+  overflow: hidden;
   border-radius: 14px;
   padding: 1.55rem 1.65rem;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.comp-v2-midline {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1.5px;
+  background: rgba(255, 255, 255, 0.22);
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 1;
 }
 
 .comp-v2-axis-card:hover {
@@ -4402,6 +4451,8 @@ a {
 }
 
 .comp-v2-axis-title {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -4416,11 +4467,25 @@ a {
 
 .comp-v2-track {
   position: relative;
+  z-index: 2;
   width: 100%;
-  height: 7px;
-  background: rgba(0, 0, 0, 0.25);
+  height: 8px;
+  background: rgba(0, 0, 0, 0.3);
   border-radius: 999px;
   margin: 0.85rem 0 0.75rem 0;
+}
+
+.comp-v2-center-line {
+  position: absolute;
+  left: 50%;
+  top: -5px;
+  bottom: -5px;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateX(-50%);
+  border-radius: 1px;
+  z-index: 2;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
 }
 
 .comp-v2-dot-user {
