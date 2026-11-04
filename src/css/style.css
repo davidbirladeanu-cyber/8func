@@ -3388,10 +3388,6 @@ a {
   position: relative;
 }
 
-.spectrum-cross-panel:hover {
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28);
-}
-
 .spectrum-compass-wrap {
   display: flex;
   flex-direction: column;

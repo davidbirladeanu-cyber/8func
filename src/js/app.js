@@ -1300,7 +1300,7 @@ class App {
 
     const mbtiAxesRowsHtml = axesData.map(ax => {
       return `
-        <div class="minimal-axis-card" style="background: linear-gradient(90deg, ${ax.leftColor} 0%, ${ax.leftColor} 40%, ${ax.rightColor} 60%, ${ax.rightColor} 100%); color: #ffffff;">
+        <div class="minimal-axis-card" style="background: ${ax.color}; color: #ffffff;">
           <div class="minimal-axis-top">
             <span class="minimal-axis-title">${ax.name}</span>
           </div>
@@ -1372,8 +1372,8 @@ class App {
         leftColor: "#963939",
         rightColor: "#395296",
         color: energyColor,
-        leftLabel: lang === "ro" ? `Extraversie ${axisScores.EI.roundA}%` : `Extraversion ${axisScores.EI.roundA}%`,
-        rightLabel: lang === "ro" ? `${axisScores.EI.roundB}% Introversie` : `${axisScores.EI.roundB}% Introversion`,
+        leftLabel: lang === "ro" ? "Extraversie" : "Extraversion",
+        rightLabel: lang === "ro" ? "Introversie" : "Introversion",
         uPos: Math.max(5, Math.min(95, axisScores.EI.roundB)),
         fPos: Math.max(5, Math.min(95, currentComparisonFigure.axes ? currentComparisonFigure.axes.I : (currentComparisonFigure.mbti.includes("I") ? 75 : 25))),
         uPct: axisScores.EI.roundB,
@@ -1385,8 +1385,8 @@ class App {
         leftColor: "#95637e",
         rightColor: "#e5c727",
         color: mindColor,
-        leftLabel: lang === "ro" ? `Intuiție ${axisScores.NS.roundA}%` : `Intuition ${axisScores.NS.roundA}%`,
-        rightLabel: lang === "ro" ? `${axisScores.NS.roundB}% Senzorial` : `${axisScores.NS.roundB}% Sensing`,
+        leftLabel: lang === "ro" ? "Intuiție" : "Intuition",
+        rightLabel: lang === "ro" ? "Senzorial" : "Sensing",
         uPos: Math.max(5, Math.min(95, axisScores.NS.roundB)),
         fPos: Math.max(5, Math.min(95, currentComparisonFigure.axes ? currentComparisonFigure.axes.S : (currentComparisonFigure.mbti.includes("S") ? 75 : 25))),
         uPct: axisScores.NS.roundB,
@@ -1398,8 +1398,8 @@ class App {
         leftColor: "#72cccd",
         rightColor: "#9ac262",
         color: natureColor,
-        leftLabel: lang === "ro" ? `Gândire ${axisScores.TF.roundA}%` : `Thinking ${axisScores.TF.roundA}%`,
-        rightLabel: lang === "ro" ? `${axisScores.TF.roundB}% Sentiment` : `${axisScores.TF.roundB}% Feeling`,
+        leftLabel: lang === "ro" ? "Gândire" : "Thinking",
+        rightLabel: lang === "ro" ? "Sentiment" : "Feeling",
         uPos: Math.max(5, Math.min(95, axisScores.TF.roundB)),
         fPos: Math.max(5, Math.min(95, currentComparisonFigure.axes ? currentComparisonFigure.axes.F : (currentComparisonFigure.mbti.includes("F") ? 75 : 25))),
         uPct: axisScores.TF.roundB,
@@ -1411,8 +1411,8 @@ class App {
         leftColor: "#32d3a0",
         rightColor: "#e59b27",
         color: tacticsColor,
-        leftLabel: lang === "ro" ? `Judecată ${axisScores.JP.roundA}%` : `Judging ${axisScores.JP.roundA}%`,
-        rightLabel: lang === "ro" ? `${axisScores.JP.roundB}% Percepție` : `${axisScores.JP.roundB}% Perceiving`,
+        leftLabel: lang === "ro" ? "Judecată" : "Judging",
+        rightLabel: lang === "ro" ? "Percepție" : "Perceiving",
         uPos: Math.max(5, Math.min(95, axisScores.JP.roundB)),
         fPos: Math.max(5, Math.min(95, currentComparisonFigure.axes ? currentComparisonFigure.axes.P : (currentComparisonFigure.mbti.includes("P") ? 75 : 25))),
         uPct: axisScores.JP.roundB,
@@ -1422,16 +1422,16 @@ class App {
 
     const compAxesHtml = compAxesData.map(ax => {
       return `
-        <div class="comp-v2-axis-card" style="background: linear-gradient(90deg, ${ax.leftColor} 0%, ${ax.leftColor} 40%, ${ax.rightColor} 60%, ${ax.rightColor} 100%); color: #ffffff;">
+        <div class="comp-v2-axis-card" style="background: ${ax.color}; color: #ffffff;">
           <div class="comp-v2-axis-title">
             <span>${ax.name}</span>
           </div>
           <div class="comp-v2-track">
             <div class="comp-v2-center-line" aria-hidden="true"></div>
             <!-- White Dot (User: "punctele necolorate albe esti tu") -->
-            <div class="comp-v2-dot-user" style="left: ${ax.uPos}%;" title="${userA_Name}"></div>
+            <div class="comp-v2-dot-user" style="left: ${ax.uPos}%;" title="${userA_Name}: ${ax.uPct}%"></div>
             <!-- Colored Dot (Figure or Person B) -->
-            <div class="comp-v2-dot-fig" style="left: ${ax.fPos}%; border-color: rgba(255,255,255,0.6);" title="${userB_Name}">
+            <div class="comp-v2-dot-fig" style="left: ${ax.fPos}%; border-color: rgba(255,255,255,0.6);" title="${userB_Name}: ${ax.fPct}%">
               ${currentComparisonFigure.photo ? `
                 <img src="${currentComparisonFigure.photo}" alt="${userB_Name}" />
               ` : `
@@ -1447,26 +1447,35 @@ class App {
       `;
     }).join("");
 
-    // 8 Cognitive Functions Comparison Axes
+    // 8 Cognitive Functions Order & Custom Titles
     const FUNCTIONS_ORDER = ["Ne", "Ni", "Se", "Si", "Te", "Ti", "Fe", "Fi"];
+    const FUNCTION_TITLES = {
+      Ne: { en: "IDEATION", ro: "IDEAȚIE" },
+      Ni: { en: "SYNTHESIS", ro: "SINTEZĂ" },
+      Se: { en: "ACTION", ro: "ACȚIUNE" },
+      Si: { en: "MEMORY", ro: "MEMORIE" },
+      Te: { en: "STRUCTURE", ro: "STRUCTURĂ" },
+      Ti: { en: "PRECISION", ro: "PRECIZIE" },
+      Fe: { en: "HARMONY", ro: "ARMONIE" },
+      Fi: { en: "VALUES", ro: "VALORI" }
+    };
+
     const compFuncsAxesData = FUNCTIONS_ORDER.map(f => {
       const fnInfo = COGNITIVE_FUNCTIONS[f] || {};
-      const fName = lang === "ro" ? (fnInfo.nameRo || fnInfo.name || f) : (fnInfo.name || f);
+      const customTitle = FUNCTION_TITLES[f] ? (lang === "ro" ? FUNCTION_TITLES[f].ro : FUNCTION_TITLES[f].en) : f;
+      const fFullName = lang === "ro" ? (fnInfo.nameRo || fnInfo.name || f) : (fnInfo.name || f);
       const fColor = getFuncTileColors(f).bg;
       const uPct = percentages[f] ?? 50;
       const fPct = currentComparisonFigure.scores ? (currentComparisonFigure.scores[f] ?? 50) : 50;
-      const diff = Math.abs(uPct - fPct);
       return {
         id: f,
-        name: `${f} · ${fName}`,
+        customTitle,
+        fFullName,
         color: fColor,
-        leftLabel: `${userA_Name}: ${uPct}%`,
-        rightLabel: `${userB_Name}: ${fPct}%`,
         uPos: Math.max(5, Math.min(95, uPct)),
         fPos: Math.max(5, Math.min(95, fPct)),
         uPct,
-        fPct,
-        diff
+        fPct
       };
     });
 
@@ -1474,10 +1483,10 @@ class App {
       return `
         <div class="comp-v2-axis-card" style="background: ${fn.color}; color: #ffffff;">
           <div class="comp-v2-axis-title">
-            <span>${fn.name}</span>
-            <span style="font-size: 0.78rem; opacity: 0.92; font-weight: 800; text-transform: none; letter-spacing: normal;">Δ ${fn.diff}%</span>
+            <span>${fn.customTitle}</span>
           </div>
           <div class="comp-v2-track">
+            <div class="comp-v2-center-line" aria-hidden="true"></div>
             <!-- White Dot (User) -->
             <div class="comp-v2-dot-user" style="left: ${fn.uPos}%;" title="${userA_Name}: ${fn.uPct}%"></div>
             <!-- Colored Dot (Figure or Person B) -->
@@ -1490,8 +1499,8 @@ class App {
             </div>
           </div>
           <div class="comp-v2-labels">
-            <span class="comp-v2-lbl-left">${fn.leftLabel}</span>
-            <span class="comp-v2-lbl-right">${fn.rightLabel}</span>
+            <span class="comp-v2-lbl-left">${fn.fFullName}</span>
+            <span class="comp-v2-lbl-right"></span>
           </div>
         </div>
       `;
@@ -1500,23 +1509,22 @@ class App {
     // 8 Functions for Results View (Image 2 style comp-v2-axes-grid)
     const userFuncsAxesHtml = FUNCTIONS_ORDER.map(f => {
       const fnInfo = COGNITIVE_FUNCTIONS[f] || {};
-      const fName = lang === "ro" ? (fnInfo.nameRo || fnInfo.name || f) : (fnInfo.name || f);
-      const fKw = lang === "ro" ? (fnInfo.keywordsRo || fnInfo.keywords || "") : (fnInfo.keywords || "");
+      const customTitle = FUNCTION_TITLES[f] ? (lang === "ro" ? FUNCTION_TITLES[f].ro : FUNCTION_TITLES[f].en) : f;
+      const fFullName = lang === "ro" ? (fnInfo.nameRo || fnInfo.name || f) : (fnInfo.name || f);
       const fColor = getFuncTileColors(f).bg;
       const pct = percentages[f] ?? 50;
       const pos = Math.max(5, Math.min(95, pct));
       return `
         <div class="comp-v2-axis-card" style="background: ${fColor}; color: #ffffff;">
           <div class="comp-v2-axis-title">
-            <span>${f} · ${fName}</span>
-            <span style="font-size: 0.95rem; font-weight: 800;">${pct}%</span>
+            <span>${customTitle}</span>
           </div>
           <div class="comp-v2-track">
             <div class="comp-v2-center-line" aria-hidden="true"></div>
-            <div class="comp-v2-dot-user" style="left: ${pos}%;" title="${f} · ${fName}: ${pct}%"></div>
+            <div class="comp-v2-dot-user" style="left: ${pos}%;" title="${customTitle} · ${fFullName}: ${pct}%"></div>
           </div>
           <div class="comp-v2-labels">
-            <span class="comp-v2-lbl-left">${fKw}</span>
+            <span class="comp-v2-lbl-left">${fFullName}</span>
             <span class="comp-v2-lbl-right">${pct}%</span>
           </div>
         </div>
@@ -1600,7 +1608,7 @@ class App {
             </section>
 
             <!-- Spectrum (Cross Compass: N/S + F/T on XY, E/I + J/P on YZ - all in one) -->
-            <section class="e-panel spectrum-cross-panel" id="spectrum-compass" role="button" tabindex="0" aria-label="${lang === 'ro' ? 'Deschide Spectrul 3D' : 'Open 3D Spectrum'}" style="cursor: pointer; transition: box-shadow 0.2s;">
+            <section class="e-panel spectrum-cross-panel" id="spectrum-compass">
               <div class="e-sec-head" style="margin-bottom: 2rem;">
                 <h2 class="e-sec-title">${lang === "ro" ? "Spectru" : "Spectrum"}</h2>
               </div>
@@ -2582,14 +2590,7 @@ class App {
       });
     }
 
-    const openSpectrumSection = document.getElementById("spectrum-compass");
-    if (openSpectrumSection) {
-      const navigateToSpectrum = () => this.state.showSpectrum();
-      openSpectrumSection.addEventListener("click", navigateToSpectrum);
-      openSpectrumSection.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigateToSpectrum(); }
-      });
-    }
+
   }
 
   // ==========================================================================

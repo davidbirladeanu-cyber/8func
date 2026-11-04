@@ -492,14 +492,9 @@ export async function generateResultsCardCanvas({
   axisData.forEach((ax, idx) => {
     const cardY = axisCardsTopY + idx * (axisCardH + axisGapY);
 
-    // Card background - gradient between leftColor and rightColor (blend from 40% to 60%)
+    // Card background - solid color based on leaning pole
     roundRect(ctx, rightColX, cardY, colW, axisCardH, 14);
-    const grad = ctx.createLinearGradient(rightColX, cardY, rightColX + colW, cardY);
-    grad.addColorStop(0, ax.leftColor);
-    grad.addColorStop(0.40, ax.leftColor);
-    grad.addColorStop(0.60, ax.rightColor);
-    grad.addColorStop(1, ax.rightColor);
-    ctx.fillStyle = grad;
+    ctx.fillStyle = ax.color;
     ctx.fill();
 
     // Title
