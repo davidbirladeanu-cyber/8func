@@ -160,36 +160,36 @@ export function getMbtiTileColors(type = "") {
 // 24 Question Categories across 8 Single Poles, 8 Cognitive Functions, 4 Lifestyle, and 4 Temperament Pairs
 export const EDIT_SECTIONS = [
   // 1. MBTI Single Poles (8)
-  { id: "E", name: "Extraversion", nameRo: "Extraversie", tag: "Extraversion", tagRo: "Extraversie", color: "#963939", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>` },
-  { id: "I", name: "Introversion", nameRo: "Introversie", tag: "Introversion", tagRo: "Introversie", color: "#395296", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3.5"/></svg>` },
-  { id: "N", name: "Intuition", nameRo: "Intuiție", tag: "Intuition", tagRo: "Intuiție", color: "#95637e", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>` },
-  { id: "S", name: "Sensing", nameRo: "Senzorial", tag: "Sensing", tagRo: "Senzorial", color: "#e5c727", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>` },
-  { id: "T", name: "Thinking", nameRo: "Gândire", tag: "Thinking", tagRo: "Gândire", color: "#72cccd", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/></svg>` },
-  { id: "F", name: "Feeling", nameRo: "Sentiment", tag: "Feeling", tagRo: "Sentiment", color: "#9ac262", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>` },
-  { id: "J", name: "Judging", nameRo: "Judecată", tag: "Judging", tagRo: "Judecată", color: "#32d3a0", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>` },
-  { id: "P", name: "Perceiving", nameRo: "Percepție", tag: "Perceiving", tagRo: "Percepție", color: "#e59b27", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>` },
+  { id: "E", name: "Extraversion", nameRo: "Extraversion", tag: "Extraversion", tagRo: "Extraversion", color: "#963939", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>` },
+  { id: "I", name: "Introversion", nameRo: "Introversion", tag: "Introversion", tagRo: "Introversion", color: "#395296", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3.5"/></svg>` },
+  { id: "N", name: "Intuition", nameRo: "Intuition", tag: "Intuition", tagRo: "Intuition", color: "#95637e", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>` },
+  { id: "S", name: "Sensing", nameRo: "Sensing", tag: "Sensing", tagRo: "Sensing", color: "#e5c727", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>` },
+  { id: "T", name: "Thinking", nameRo: "Thinking", tag: "Thinking", tagRo: "Thinking", color: "#72cccd", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/></svg>` },
+  { id: "F", name: "Feeling", nameRo: "Feeling", tag: "Feeling", tagRo: "Feeling", color: "#9ac262", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>` },
+  { id: "J", name: "Judging", nameRo: "Judging", tag: "Judging", tagRo: "Judging", color: "#32d3a0", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>` },
+  { id: "P", name: "Perceiving", nameRo: "Perceiving", tag: "Perceiving", tagRo: "Perceiving", color: "#e59b27", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>` },
 
   // 2. Cognitive Functions (8)
-  { id: "Ne", name: "Ideation", nameRo: "Ideație", tag: "Ideation", tagRo: "Ideație", color: "#95637e", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>` },
-  { id: "Ni", name: "Synthesis", nameRo: "Sinteză", tag: "Synthesis", tagRo: "Sinteză", color: "#95637e", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>` },
-  { id: "Se", name: "Action", nameRo: "Acțiune", tag: "Action", tagRo: "Acțiune", color: "#e5c727", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>` },
-  { id: "Si", name: "Memory", nameRo: "Memorie", tag: "Memory", tagRo: "Memorie", color: "#e5c727", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>` },
-  { id: "Te", name: "Structure", nameRo: "Structură", tag: "Structure", tagRo: "Structură", color: "#72cccd", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>` },
-  { id: "Ti", name: "Precision", nameRo: "Precizie", tag: "Precision", tagRo: "Precizie", color: "#72cccd", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>` },
-  { id: "Fe", name: "Harmony", nameRo: "Armonie", tag: "Harmony", tagRo: "Armonie", color: "#9ac262", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>` },
-  { id: "Fi", name: "Values", nameRo: "Valori", tag: "Values", tagRo: "Valori", color: "#9ac262", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>` },
+  { id: "Ne", name: "Ideation", nameRo: "Ideation", tag: "Ideation", tagRo: "Ideation", color: "#95637e", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>` },
+  { id: "Ni", name: "Synthesis", nameRo: "Synthesis", tag: "Synthesis", tagRo: "Synthesis", color: "#95637e", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>` },
+  { id: "Se", name: "Action", nameRo: "Action", tag: "Action", tagRo: "Action", color: "#e5c727", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>` },
+  { id: "Si", name: "Memory", nameRo: "Memory", tag: "Memory", tagRo: "Memory", color: "#e5c727", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>` },
+  { id: "Te", name: "Structure", nameRo: "Structure", tag: "Structure", tagRo: "Structure", color: "#72cccd", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>` },
+  { id: "Ti", name: "Precision", nameRo: "Precision", tag: "Precision", tagRo: "Precision", color: "#72cccd", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>` },
+  { id: "Fe", name: "Harmony", nameRo: "Harmony", tag: "Harmony", tagRo: "Harmony", color: "#9ac262", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>` },
+  { id: "Fi", name: "Values", nameRo: "Values", tag: "Values", tagRo: "Values", color: "#9ac262", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>` },
 
   // 3. Lifestyle / Energy Combinations (4)
-  { id: "EJ", name: "Executive", nameRo: "Directiv", tag: "Executive", tagRo: "Directiv", color: "#963939", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>` },
-  { id: "EP", name: "Explorer", nameRo: "Adaptabil", tag: "Explorer", tagRo: "Adaptabil", color: "#963939", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>` },
-  { id: "IJ", name: "Conserver", nameRo: "Planificator", tag: "Conserver", tagRo: "Planificator", color: "#395296", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>` },
-  { id: "IP", name: "Inquirer", nameRo: "Reflexiv", tag: "Inquirer", tagRo: "Reflexiv", color: "#395296", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>` },
+  { id: "EJ", name: "Executive", nameRo: "Executive", tag: "Executive", tagRo: "Executive", color: "#963939", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>` },
+  { id: "EP", name: "Explorer", nameRo: "Explorer", tag: "Explorer", tagRo: "Explorer", color: "#963939", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>` },
+  { id: "IJ", name: "Conserver", nameRo: "Conserver", tag: "Conserver", tagRo: "Conserver", color: "#395296", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>` },
+  { id: "IP", name: "Inquirer", nameRo: "Inquirer", tag: "Inquirer", tagRo: "Inquirer", color: "#395296", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>` },
 
   // 4. Temperament Combinations (4)
-  { id: "NT", name: "Rational", nameRo: "Rațional", tag: "Rational", tagRo: "Rațional", color: "#95637e", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v12m-6-6h12"/></svg>` },
+  { id: "NT", name: "Rational", nameRo: "Rational", tag: "Rational", tagRo: "Rational", color: "#95637e", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v12m-6-6h12"/></svg>` },
   { id: "NF", name: "Idealist", nameRo: "Idealist", tag: "Idealist", tagRo: "Idealist", color: "#9ac262", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>` },
-  { id: "ST", name: "Realist", nameRo: "Practic", tag: "Realist", tagRo: "Practic", color: "#72cccd", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>` },
-  { id: "SF", name: "Social", nameRo: "Protector", tag: "Social", tagRo: "Protector", color: "#e5c727", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>` }
+  { id: "ST", name: "Realist", nameRo: "Realist", tag: "Realist", tagRo: "Realist", color: "#72cccd", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>` },
+  { id: "SF", name: "Social", nameRo: "Social", tag: "Social", tagRo: "Social", color: "#e5c727", icon: `<svg class="e-ico e-edit-axis-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>` }
 ];
 
 export const getQuestionCategory = (q) => {
@@ -198,16 +198,13 @@ export const getQuestionCategory = (q) => {
 
 export const getQuestionGroupDef = (q) => {
   const cat = getQuestionCategory(q);
-  return EDIT_SECTIONS.find(s => s.id === cat) || { id: cat, name: cat, nameRo: cat, tag: cat, tagRo: cat, color: "#102E24", icon: "" };
+  return EDIT_SECTIONS.find(s => s.id === cat) || { id: cat, name: cat, nameRo: cat, tag: cat, tagRo: cat, color: "#282828", icon: "" };
 };
 
 export const getQuestionTagLabel = (groupDef, lang = "ro") => {
   if (!groupDef) return "";
-  const raw = (lang === "ro" ? (groupDef.tagRo || groupDef.tag) : groupDef.tag)
-    || groupDef.nameRo
-    || groupDef.name
-    || groupDef.id;
-  return String(raw).replace(/^(ne|ni|se|si|te|ti|fe|fi|ej|ep|ij|ip|nt|nf|st|sf)\s*·\s*/i, "").toUpperCase();
+  const raw = groupDef.tag || groupDef.name || groupDef.id;
+  return String(raw).replace(/^(ne|ni|se|si|te|ti|fe|fi|ej|ep|ij|ip|nt|nf|st|sf)\s*[-·:]\s*/i, "").toUpperCase();
 };
 
 class App {
@@ -1450,20 +1447,20 @@ class App {
     // 8 Cognitive Functions Order & Custom Titles
     const FUNCTIONS_ORDER = ["Ne", "Ni", "Se", "Si", "Te", "Ti", "Fe", "Fi"];
     const FUNCTION_TITLES = {
-      Ne: { en: "IDEATION", ro: "IDEAȚIE" },
-      Ni: { en: "SYNTHESIS", ro: "SINTEZĂ" },
-      Se: { en: "ACTION", ro: "ACȚIUNE" },
-      Si: { en: "MEMORY", ro: "MEMORIE" },
-      Te: { en: "STRUCTURE", ro: "STRUCTURĂ" },
-      Ti: { en: "PRECISION", ro: "PRECIZIE" },
-      Fe: { en: "HARMONY", ro: "ARMONIE" },
-      Fi: { en: "VALUES", ro: "VALORI" }
+      Ne: { en: "IDEATION", ro: "IDEATION" },
+      Ni: { en: "SYNTHESIS", ro: "SYNTHESIS" },
+      Se: { en: "ACTION", ro: "ACTION" },
+      Si: { en: "MEMORY", ro: "MEMORY" },
+      Te: { en: "STRUCTURE", ro: "STRUCTURE" },
+      Ti: { en: "PRECISION", ro: "PRECISION" },
+      Fe: { en: "HARMONY", ro: "HARMONY" },
+      Fi: { en: "VALUES", ro: "VALUES" }
     };
 
     const compFuncsAxesData = FUNCTIONS_ORDER.map(f => {
       const fnInfo = COGNITIVE_FUNCTIONS[f] || {};
-      const customTitle = FUNCTION_TITLES[f] ? (lang === "ro" ? FUNCTION_TITLES[f].ro : FUNCTION_TITLES[f].en) : f;
-      const fFullName = lang === "ro" ? (fnInfo.nameRo || fnInfo.name || f) : (fnInfo.name || f);
+      const customTitle = FUNCTION_TITLES[f] ? FUNCTION_TITLES[f].en : f;
+      const fFullName = fnInfo.name || f;
       const fColor = getFuncTileColors(f).bg;
       const uPct = percentages[f] ?? 50;
       const fPct = currentComparisonFigure.scores ? (currentComparisonFigure.scores[f] ?? 50) : 50;
@@ -1509,8 +1506,8 @@ class App {
     // 8 Functions for Results View (Image 2 style comp-v2-axes-grid)
     const userFuncsAxesHtml = FUNCTIONS_ORDER.map(f => {
       const fnInfo = COGNITIVE_FUNCTIONS[f] || {};
-      const customTitle = FUNCTION_TITLES[f] ? (lang === "ro" ? FUNCTION_TITLES[f].ro : FUNCTION_TITLES[f].en) : f;
-      const fFullName = lang === "ro" ? (fnInfo.nameRo || fnInfo.name || f) : (fnInfo.name || f);
+      const customTitle = FUNCTION_TITLES[f] ? FUNCTION_TITLES[f].en : f;
+      const fFullName = fnInfo.name || f;
       const fColor = getFuncTileColors(f).bg;
       const pct = percentages[f] ?? 50;
       const pos = Math.max(5, Math.min(95, pct));
@@ -4275,6 +4272,17 @@ class App {
       return count;
     };
 
+    const getSectionDelta = (secId) => {
+      const secQuestions = questions.filter(q => getQuestionCategory(q) === secId);
+      if (secQuestions.length === 0) return 0;
+      let sum = 0;
+      secQuestions.forEach(q => {
+        const imp = calculateQuestionImpact(q, draftAnswers, questions, lang);
+        sum += imp?.deltaRound || 0;
+      });
+      return Math.round(sum / secQuestions.length);
+    };
+
     // Create Modal Element with 12Axes authentic layout
     const backdrop = document.createElement("div");
     backdrop.className = "e-axis-sheet-backdrop";
@@ -4298,6 +4306,7 @@ class App {
             ${activeSections.map(sec => {
               const firstIdx = steps.findIndex(s => s.group === sec.id);
               const sFullName = lang === "ro" ? (sec.nameRo || sec.name) : sec.name;
+              const sDelta = getSectionDelta(sec.id);
               return `
                 <button
                   type="button"
@@ -4310,6 +4319,7 @@ class App {
                 >
                   ${sec.icon}
                   <span class="e-axis-title">${sFullName}</span>
+                  <span class="e-axis-delta-pill" id="delta-pill-${sec.id}">${sDelta > 0 ? `+${sDelta}%` : `${sDelta}%`}</span>
                   <span class="e-edit-badge" id="badge-${sec.id}" style="display: none;">0</span>
                 </button>
               `;
@@ -4360,6 +4370,11 @@ class App {
           } else {
             b.style.display = "none";
           }
+        }
+        const deltaPill = backdrop.querySelector(`#delta-pill-${sec.id}`);
+        if (deltaPill) {
+          const dVal = getSectionDelta(sec.id);
+          deltaPill.textContent = dVal > 0 ? `+${dVal}%` : `${dVal}%`;
         }
       });
     };
@@ -4443,7 +4458,7 @@ class App {
             <span class="question-number" aria-hidden="true">${qNumStr}</span>
             <header class="question-card-header">
               <div class="question-header-top">
-                <div class="question-axis-tag" style="--tag-color: ${groupDef?.color || '#102E24'};">
+                <div class="question-axis-tag" style="--tag-color: ${groupDef?.color || '#282828'};">
                   <i class="question-axis-tag-ico-wrap" aria-hidden="true">${groupDef?.icon || ''}</i>
                   <span>${getQuestionTagLabel(groupDef, lang)}</span>
                 </div>

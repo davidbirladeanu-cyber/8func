@@ -849,32 +849,22 @@ export function calculateQuestionImpact(question, answers, questions, lang = "ro
 
   // 4. Combinations (EJ, EP, IJ, IP, NT, NF, ST, SF)
   if (question.category === "combination") {
+    const isStrong = (currentAns === "STRONGLY_AGREE" || currentAns === "STRONGLY_DISAGREE");
     const activePair = isAgree ? target : (opp || (target === "NT" ? "SF" : target === "NF" ? "ST" : target === "ST" ? "NF" : target === "SF" ? "NT" : target === "EJ" ? "IP" : target === "EP" ? "IJ" : target === "IJ" ? "EP" : "EJ"));
     const letters = (activePair || "").split("");
-    const parts = [];
-    letters.forEach(l => {
-      const dimId = (l === "E" || l === "I") ? "EI" : (l === "N" || l === "S") ? "NS" : (l === "T" || l === "F") ? "TF" : "JP";
-      const dimC = sCurrent.axisScores[dimId];
-      const dimN = sNeut.axisScores[dimId];
-      if (dimC && dimN) {
-        const pC = (l === dimC.poleA) ? dimC.pctA : dimC.pctB;
-        const pN = (l === dimN.poleA) ? dimN.pctA : dimN.pctB;
-        let delta = Math.round(pC - pN);
-        if (delta <= 0) delta = 1;
-        parts.push(`+${delta}% ${l}`);
-      }
-    });
+    const letterDelta = isStrong ? 4 : 2;
+    const totalDelta = letterDelta * letters.length; // e.g. 8% (strongly) or 4% (agree)
+    const text = `+${totalDelta}%`;
 
-    const text = parts.join(", ");
     return {
-      delta: 1,
-      deltaRound: 1,
+      delta: totalDelta,
+      deltaRound: totalDelta,
       target: activePair,
       userTotal: 50,
       text,
       tooltip: isAgree
-        ? (lang === "ro" ? `Acest răspuns adaugă ${parts.join(" și ")}.` : `This answer adds ${parts.join(" and ")}.`)
-        : (lang === "ro" ? `Dezacordul favorizează polii opuși: adaugă ${parts.join(" și ")}.` : `Disagreement favors opposite poles: adds ${parts.join(" and ")}.`),
+        ? (lang === "ro" ? `Acest răspuns adaugă +${totalDelta}% la trăsăturile asociate.` : `This answer adds +${totalDelta}% to associated traits.`)
+        : (lang === "ro" ? `Dezacordul favorizează trăsăturile opuse (+${totalDelta}%).` : `Disagreement favors opposite traits (+${totalDelta}%).`),
       isPositive: true,
       isNegative: false,
       isNeutral: false,
