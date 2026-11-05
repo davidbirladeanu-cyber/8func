@@ -1222,6 +1222,7 @@ class App {
       ? window.location.origin
       : "https://davidbirladeanu-cyber.github.io";
     const userFullResultUrl = `${origin}${prefix}${rawPersonAResultsPath}`;
+    this.userFullResultUrl = userFullResultUrl;
 
     // Comparison Similarity / Match
     let compareMatchPct = 0;
@@ -2243,10 +2244,10 @@ class App {
       </div>
     `;
 
-    this.attachResultsEvents(percentages, topMbti, modeConfig, answeredCount, rawScores, axisScores, derivedType, allFigures, similarFigures);
+    this.attachResultsEvents(percentages, topMbti, modeConfig, answeredCount, rawScores, axisScores, derivedType, allFigures, similarFigures, userFullResultUrl);
   }
 
-  attachResultsEvents(percentages, topMbti, modeConfig, answeredCount = 0, rawScores = {}, axisScores = {}, derivedType = "", allFigures = [], similarFigures = []) {
+  attachResultsEvents(percentages, topMbti, modeConfig, answeredCount = 0, rawScores = {}, axisScores = {}, derivedType = "", allFigures = [], similarFigures = [], userFullResultUrl = "") {
     this.attachNavEvents();
     const lang = this.state.lang || "ro";
 
@@ -2604,8 +2605,9 @@ class App {
           return;
         }
 
+        const currentAUrl = (linkAInput && linkAInput.value.trim()) || userFullResultUrl || this.userFullResultUrl || "";
         let parsedA = null;
-        if (aLink && aLink !== userFullResultUrl) {
+        if (aLink && aLink !== currentAUrl) {
           parsedA = parseComparisonInputLink(aLink);
         }
 
@@ -2614,7 +2616,7 @@ class App {
         const typeA = parsedA ? parsedA.derivedType : derivedType;
 
         this.comparisonPersonA_Name = aName;
-        this.comparisonPersonA_Link = aLink || userFullResultUrl;
+        this.comparisonPersonA_Link = aLink || currentAUrl;
         this.comparisonPersonB_Name = bName;
         this.comparisonPersonB_Link = bLink;
 
@@ -2623,7 +2625,7 @@ class App {
           percentages: scoresA,
           axisScores: axesA,
           derivedType: typeA,
-          link: aLink || userFullResultUrl,
+          link: aLink || currentAUrl,
           temperament: getTypeTemperament(typeA),
           archetype: MBTI_TYPES[typeA] || MBTI_TYPES["INTJ"]
         };
