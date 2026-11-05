@@ -1,0 +1,16 @@
+{
+  "name": "8Func — Testul Funcțiilor Cognitive",
+  "short_name": "8Func",
+  "description": "8 Cognitive Functions & 4 Spectrum Axes Personality Assessment",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0c0d12",
+  "theme_color": "#0c0d12",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
