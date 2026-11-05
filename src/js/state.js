@@ -3,7 +3,7 @@
  */
 
 import { getQuestionsForMode, TEST_MODES } from "../data/questions.js";
-import { calculateScores, parseResultsUrlPath, parseComparisonInputLink } from "./scoring.js";
+import { calculateScores, parseResultsUrlPath, parseComparisonInputLink, parseCompareUrlPath } from "./scoring.js";
 
 const STORAGE_KEYS = {
   MODE: "8func_mode_v2",
@@ -70,6 +70,10 @@ export class AppState {
     const isFiguresPath = window.location.pathname.includes("/figures") || window.location.hash === "#figures" || window.location.pathname.includes("/personalitati");
     const isSpectrumPath = window.location.pathname.includes("/spectrum") || window.location.hash === "#spectrum" || window.location.pathname.includes("/spectru");
     const isComparePath = window.location.pathname.includes("/compare") || window.location.hash.startsWith("#compare") || window.location.pathname.includes("/compara");
+    
+    // Check if compare path matches /compare/nameA/vecA/nameB/vecB
+    const compareParsed = parseCompareUrlPath(window.location.pathname) || parseCompareUrlPath(window.location.hash) || (window.location.search ? parseCompareUrlPath(window.location.search) : null);
+    
     let parsedUrlScores = parseResultsUrlPath(window.location.pathname) || parseResultsUrlPath(window.location.hash);
     let compareParams = null;
     if (typeof window !== "undefined" && window.location.search) {
@@ -82,7 +86,7 @@ export class AppState {
         if (aParam) {
           parsedUrlScores = parseComparisonInputLink(aParam);
         }
-        if (bParam || isComparePath) {
+        if (bParam || isComparePath || compareParsed) {
           compareParams = {
             a: aParam,
             b: bParam,
@@ -93,10 +97,14 @@ export class AppState {
       } catch (e) {}
     }
     this.compareParams = compareParams;
+    this.compareParsed = compareParsed;
 
-    if (compareParams && (compareParams.b || isComparePath)) {
+    if (compareParsed || (compareParams && (compareParams.b || isComparePath))) {
       this.screen = "compare";
-      if (parsedUrlScores) {
+      if (compareParsed && compareParsed.personA) {
+        this.urlResultsScores = compareParsed.personA;
+        this.lastUserResults = { percentages: compareParsed.personA.percentages, axisScores: compareParsed.personA.axisScores };
+      } else if (parsedUrlScores) {
         this.urlResultsScores = parsedUrlScores;
         this.lastUserResults = { percentages: parsedUrlScores.percentages, axisScores: parsedUrlScores.axisScores };
       }

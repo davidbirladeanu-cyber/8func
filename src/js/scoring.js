@@ -511,6 +511,93 @@ export function buildResultsUrlPath(axisScores, percentages) {
 }
 
 /**
+ * Builds standard 8Func 12-dimensional vector string:
+ * EI=89/NS=14/TF=4/JP=7/Ne=44/Ni=94/Se=48/Si=15/Te=54/Ti=67/Fe=29/Fi=50
+ */
+export function buildVectorString(axisScores, percentages) {
+  const EI = axisScores?.EI ? (axisScores.EI.roundB ?? Math.round(axisScores.EI.pctB)) : 50;
+  const NS = axisScores?.NS ? (axisScores.NS.roundB ?? Math.round(axisScores.NS.pctB)) : 50;
+  const TF = axisScores?.TF ? (axisScores.TF.roundB ?? Math.round(axisScores.TF.pctB)) : 50;
+  const JP = axisScores?.JP ? (axisScores.JP.roundB ?? Math.round(axisScores.JP.pctB)) : 50;
+
+  const Ne = percentages?.Ne ?? 50;
+  const Ni = percentages?.Ni ?? 50;
+  const Se = percentages?.Se ?? 50;
+  const Si = percentages?.Si ?? 50;
+  const Te = percentages?.Te ?? 50;
+  const Ti = percentages?.Ti ?? 50;
+  const Fe = percentages?.Fe ?? 50;
+  const Fi = percentages?.Fi ?? 50;
+
+  return `EI=${EI}/NS=${NS}/TF=${TF}/JP=${JP}/Ne=${Ne}/Ni=${Ni}/Se=${Se}/Si=${Si}/Te=${Te}/Ti=${Ti}/Fe=${Fe}/Fi=${Fi}`;
+}
+
+/**
+ * Builds the compare URL path in the format:
+ * /compare/You/EI=89/NS=14/TF=4/JP=7/Ne=44/Ni=94/Se=48/Si=15/Te=54/Ti=67/Fe=29/Fi=50/Other/EI=89/NS=14/TF=4/JP=7/Ne=44/Ni=94/Se=48/Si=15/Te=54/Ti=67/Fe=29/Fi=50/
+ */
+export function buildCompareUrlPath(nameA, axisScoresA, percentagesA, nameB, axisScoresB, percentagesB) {
+  const vecA = buildVectorString(axisScoresA, percentagesA);
+  const vecB = buildVectorString(axisScoresB, percentagesB);
+  const cleanA = encodeURIComponent((nameA || "You").trim() || "You");
+  const cleanB = encodeURIComponent((nameB || "Other").trim() || "Other");
+  return `/compare/${cleanA}/${vecA}/${cleanB}/${vecB}/`;
+}
+
+/**
+ * Parses a compare URL or path.
+ * Supports:
+ * 1. /compare/:nameA/:vectorA/:nameB/:vectorB/
+ * 2. Query parameters ?an=..&a=..&bn=..&b=.. or /compare/people?an=..
+ */
+export function parseCompareUrlPath(pathnameOrUrl) {
+  if (!pathnameOrUrl) return null;
+  const raw = String(pathnameOrUrl).trim();
+  const decoded = decodeURIComponent(raw);
+
+  // 1. Direct regex match for /compare/:nameA/:vectorA/:nameB/:vectorB
+  const match = decoded.match(/\/compare\/([^\/]+)\/((?:[A-Za-z]+=\d+\/?)+)\/([^\/]+)\/((?:[A-Za-z]+=\d+\/?)+)/);
+  if (match) {
+    const nameA = match[1].trim();
+    const vectorA = match[2];
+    const nameB = match[3].trim();
+    const vectorB = match[4];
+
+    const parsedA = parseComparisonInputLink(vectorA);
+    const parsedB = parseComparisonInputLink(vectorB);
+
+    if (parsedA && parsedB) {
+      return {
+        personA: { name: nameA, ...parsedA },
+        personB: { name: nameB, ...parsedB }
+      };
+    }
+  }
+
+  // 2. Query parameters fallback (e.g. ?an=You&a=...&bn=Other&b=...)
+  try {
+    const urlObj = new URL(raw, "https://8func.com");
+    const p = urlObj.searchParams;
+    const bVal = p.get("b");
+    if (bVal) {
+      const aVal = p.get("a");
+      const nameA = p.get("an") || "You";
+      const nameB = p.get("bn") || "Other";
+      const parsedA = aVal ? parseComparisonInputLink(aVal) : null;
+      const parsedB = parseComparisonInputLink(bVal);
+      if (parsedB) {
+        return {
+          personA: parsedA ? { name: nameA, ...parsedA } : null,
+          personB: { name: nameB, ...parsedB }
+        };
+      }
+    }
+  } catch (e) {}
+
+  return null;
+}
+
+/**
  * Parses a results URL path and extracts the score percentages and axis scores
  * Supports both new /EI=../NS=../TF=../JP=../ and legacy /I=../E=../ formats
  */
