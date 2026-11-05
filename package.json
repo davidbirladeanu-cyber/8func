@@ -1,6 +1,6 @@
 {
   "name": "8func-cognitive-test",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "8Func — Testul Funcțiilor Cognitive Jungiene (MBTI)",
   "type": "module",
