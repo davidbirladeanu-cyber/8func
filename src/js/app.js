@@ -1348,6 +1348,8 @@ class App {
 
     // Ranked Cognitive Hierarchy (1st to 8th)
     const sortedFunctions = [...FUNCTIONS_LIST].sort((a, b) => percentages[b] - percentages[a]);
+    const sortedFunctionsA = [...FUNCTIONS_LIST].sort((a, b) => (personA.percentages[b] ?? 50) - (personA.percentages[a] ?? 50));
+    const sortedFunctionsB = isComparing ? [...FUNCTIONS_LIST].sort((a, b) => (personB.percentages[b] ?? 50) - (personB.percentages[a] ?? 50)) : [];
     const hierarchyLabels = ["#1", "#2", "#3", "#4", "#5", "#6", "#7", "#8"];
 
     // What Sets You Apart: Extremes & Balanced
@@ -1795,13 +1797,12 @@ class App {
         <div class="diff-card" style="background: ${simColors.bg}; color: #ffffff;">
           <div class="diff-card-head">
             <span class="diff-badge">${lang === "ro" ? "CEA MAI SIMILARĂ" : "MOST SIMILAR"}</span>
-            <span class="diff-pct"><span style="color: #ffffff;">${mostSimilar.pA}%</span> / <span style="color: #60a5fa;">${mostSimilar.pB}%</span></span>
           </div>
           <h3 class="diff-name">${mostSimilar.f}</h3>
           <p class="diff-desc">
             ${lang === "ro" 
-              ? `Funcția cognitivă cu cea mai mare aliniere și armonie între ${userA_Name} și ${userB_Name} (${mostSimilar.sim}% similitudine).` 
-              : `The cognitive function with greatest mutual alignment between ${userA_Name} and ${userB_Name} (${mostSimilar.sim}% similarity).`}
+              ? `Funcția cognitivă cu cea mai mare aliniere și armonie între ${userA_Name} și ${userB_Name}.` 
+              : `The cognitive function with greatest mutual alignment between ${userA_Name} and ${userB_Name}.`}
           </p>
         </div>
 
@@ -1809,7 +1810,6 @@ class App {
         <div class="diff-card" style="background: ${balColors.bg}; color: #ffffff;">
           <div class="diff-card-head">
             <span class="diff-badge">${lang === "ro" ? "ECHILIBRATĂ" : "BALANCED"}</span>
-            <span class="diff-pct"><span style="color: #ffffff;">${mostBalanced.pA}%</span> / <span style="color: #60a5fa;">${mostBalanced.pB}%</span></span>
           </div>
           <h3 class="diff-name">${mostBalanced.f}</h3>
           <p class="diff-desc">
@@ -1823,13 +1823,12 @@ class App {
         <div class="diff-card" style="background: ${diffColors.bg}; color: #ffffff;">
           <div class="diff-card-head">
             <span class="diff-badge">${lang === "ro" ? "CEA MAI DIFERITĂ" : "GREATEST CONTRAST"}</span>
-            <span class="diff-pct"><span style="color: #ffffff;">${greatestDiff.pA}%</span> / <span style="color: #60a5fa;">${greatestDiff.pB}%</span></span>
           </div>
           <h3 class="diff-name">${greatestDiff.f}</h3>
           <p class="diff-desc">
             ${lang === "ro" 
-              ? `Cea mai mare discrepanță cognitivă (${greatestDiff.diff}% diferență), reprezentând contrastul principal de stil și perspectivă.` 
-              : `The largest cognitive gap (${greatestDiff.diff}% divergence), reflecting the primary contrast in perspective.`}
+              ? `Cea mai mare discrepanță cognitivă, reprezentând contrastul principal de stil și perspectivă.` 
+              : `The largest cognitive gap, reflecting the primary contrast in perspective.`}
           </p>
         </div>
       `;
@@ -1972,37 +1971,70 @@ class App {
               <div class="e-sec-head" style="margin-bottom: 1.5rem;">
                 <h2 class="e-sec-title">${lang === "ro" ? "Ierarhia Cognitivă" : "Cognitive Hierarchy"}</h2>
               </div>
-              <div class="hierarchy-tiles-row">
-                ${sortedFunctions.map((f, idx) => {
-                  const numStr = `#${idx + 1}`;
-                  const pctA = personA.percentages[f] ?? 50;
-                  const pctB = isComparing ? (personB.percentages[f] ?? 50) : null;
-                  let bg = "#95637e";
-                  if (f === "Ne" || f === "Ni") {
-                    bg = "#95637e";
-                  } else if (f === "Te" || f === "Ti") {
-                    bg = "#72cccd";
-                  } else if (f === "Se" || f === "Si") {
-                    bg = "#e5c727";
-                  } else if (f === "Fe" || f === "Fi") {
-                    bg = "#9ac262";
-                  }
-                  return `
-                    <div class="hierarchy-tile-sq" style="--sq-bg: ${bg}; --sq-text: #ffffff; color: #ffffff;" title="${f} ${isComparing ? `(⚪ ${pctA}% · 🔵 ${pctB}%)` : `(${pctA}%)`}">
-                      <span class="hierarchy-sq-num" style="color: #ffffff;">${numStr}</span>
-                      <strong class="hierarchy-sq-code" style="color: #ffffff;">${f}</strong>
-                      ${isComparing ? `
-                        <div class="hierarchy-sq-scores-compare" style="display: flex; flex-direction: column; gap: 2px; align-items: center; margin-top: 0.25rem;">
-                          <span class="hierarchy-sq-score" style="color: #ffffff; font-size: 0.74rem; font-weight: 700; line-height: 1.2;">⚪ ${pctA}%</span>
-                          <span class="hierarchy-sq-score" style="color: #93c5fd; font-size: 0.74rem; font-weight: 700; line-height: 1.2;">🔵 ${pctB}%</span>
-                        </div>
-                      ` : `
-                        <span class="hierarchy-sq-score" style="color: #ffffff;">${pctA}% score</span>
-                      `}
+              ${isComparing ? `
+                <div class="hierarchy-compare-wrap" style="display: flex; flex-direction: column; gap: 1.75rem;">
+                  <!-- Person A Hierarchy -->
+                  <div class="hierarchy-compare-person-group">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.85rem;">
+                      <span style="font-family: var(--font-display); font-size: 1rem; font-weight: 800; color: #ffffff;">
+                        ${userA_Name} <span style="color: ${getTypeTemperament(personA.derivedType).color};">(${personA.derivedType})</span>
+                      </span>
                     </div>
-                  `;
-                }).join("")}
-              </div>
+                    <div class="hierarchy-tiles-row">
+                      ${sortedFunctionsA.map((f, idx) => {
+                        const numStr = `#${idx + 1}`;
+                        const pctA = personA.percentages[f] ?? 50;
+                        const bg = getFuncTileColors(f).bg;
+                        return `
+                          <div class="hierarchy-tile-sq" style="--sq-bg: ${bg}; --sq-text: #ffffff; color: #ffffff;" title="${f} (${pctA}%)">
+                            <span class="hierarchy-sq-num" style="color: #ffffff;">${numStr}</span>
+                            <strong class="hierarchy-sq-code" style="color: #ffffff;">${f}</strong>
+                            <span class="hierarchy-sq-score" style="color: #ffffff; font-size: 0.78rem; font-weight: 700;">${pctA}%</span>
+                          </div>
+                        `;
+                      }).join("")}
+                    </div>
+                  </div>
+
+                  <!-- Person B Hierarchy -->
+                  <div class="hierarchy-compare-person-group">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.85rem;">
+                      <span style="font-family: var(--font-display); font-size: 1rem; font-weight: 800; color: #60a5fa;">
+                        ${userB_Name} <span style="color: ${getTypeTemperament(personB.derivedType).color};">(${personB.derivedType})</span>
+                      </span>
+                    </div>
+                    <div class="hierarchy-tiles-row">
+                      ${sortedFunctionsB.map((f, idx) => {
+                        const numStr = `#${idx + 1}`;
+                        const pctB = personB.percentages[f] ?? 50;
+                        const bg = getFuncTileColors(f).bg;
+                        return `
+                          <div class="hierarchy-tile-sq" style="--sq-bg: ${bg}; --sq-text: #ffffff; color: #ffffff;" title="${f} (${pctB}%)">
+                            <span class="hierarchy-sq-num" style="color: #ffffff;">${numStr}</span>
+                            <strong class="hierarchy-sq-code" style="color: #ffffff;">${f}</strong>
+                            <span class="hierarchy-sq-score" style="color: #ffffff; font-size: 0.78rem; font-weight: 700;">${pctB}%</span>
+                          </div>
+                        `;
+                      }).join("")}
+                    </div>
+                  </div>
+                </div>
+              ` : `
+                <div class="hierarchy-tiles-row">
+                  ${sortedFunctions.map((f, idx) => {
+                    const numStr = `#${idx + 1}`;
+                    const pctA = percentages[f] ?? 50;
+                    const bg = getFuncTileColors(f).bg;
+                    return `
+                      <div class="hierarchy-tile-sq" style="--sq-bg: ${bg}; --sq-text: #ffffff; color: #ffffff;" title="${f} (${pctA}%)">
+                        <span class="hierarchy-sq-num" style="color: #ffffff;">${numStr}</span>
+                        <strong class="hierarchy-sq-code" style="color: #ffffff;">${f}</strong>
+                        <span class="hierarchy-sq-score" style="color: #ffffff;">${pctA}% score</span>
+                      </div>
+                    `;
+                  }).join("")}
+                </div>
+              `}
             </section>
 
             <!-- 4 Axes Minimalist (Image 3) -->
