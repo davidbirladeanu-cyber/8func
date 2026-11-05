@@ -3829,7 +3829,7 @@ a {
   gap: 0.95rem;
   padding: 1.05rem 1.25rem;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: none;
   transition: transform var(--transition-fast), box-shadow var(--transition-fast), outline var(--transition-fast);
   cursor: pointer;
   box-sizing: border-box;
@@ -3858,7 +3858,7 @@ a {
   height: 48px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--line);
+  border: none;
   background: var(--card-bg);
   flex-shrink: 0;
 }
@@ -4225,20 +4225,21 @@ a {
 .minimal-axis-thumb.dot-other {
   background: #3b82f6 !important;
   border: 2px solid #ffffff !important;
-  box-shadow: 0 0 10px rgba(59, 130, 246, 0.75) !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4) !important;
   z-index: 4 !important;
 }
 
 .comp-v2-dot-user.dot-other {
   background: #3b82f6 !important;
   border: 2px solid #ffffff !important;
-  box-shadow: 0 0 10px rgba(59, 130, 246, 0.75) !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4) !important;
   z-index: 4 !important;
 }
 
 .spectrum-plot-dot.dot-other {
   background: #3b82f6 !important;
-  box-shadow: 0 0 0 3px #ffffff, 0 3px 10px rgba(59, 130, 246, 0.6) !important;
+  border: none !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
   z-index: 3 !important;
 }
 
@@ -4504,8 +4505,8 @@ a {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.35);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+  border: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
   z-index: 3;
   display: flex;
   align-items: center;

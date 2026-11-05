@@ -1264,8 +1264,52 @@ class App {
        Math.max(axisScores.JP.pctA, axisScores.JP.pctB)) / 4
     );
 
+    // Target profiles for archetypes (Resemble) and Notable Figures ranking
+    // When comparing, use the exact mutual average between Person A and Person B
+    let targetPercentages = percentages;
+    let targetAxisScores = axisScores;
+
+    if (isComparing) {
+      const avgPercentages = {};
+      for (const fn of FUNCTIONS_LIST) {
+        const valA = personA.percentages[fn] ?? 50;
+        const valB = personB.percentages[fn] ?? 50;
+        avgPercentages[fn] = Math.round((valA + valB) / 2);
+      }
+
+      const avgAxisScores = {
+        EI: {
+          roundA: Math.round(((personA.axisScores.EI.roundA ?? 50) + (personB.axisScores.EI.roundA ?? 50)) / 2),
+          roundB: 100 - Math.round(((personA.axisScores.EI.roundA ?? 50) + (personB.axisScores.EI.roundA ?? 50)) / 2),
+          pctA: Math.round(((personA.axisScores.EI.pctA ?? 50) + (personB.axisScores.EI.pctA ?? 50)) / 2),
+          pctB: 100 - Math.round(((personA.axisScores.EI.pctA ?? 50) + (personB.axisScores.EI.pctA ?? 50)) / 2)
+        },
+        NS: {
+          roundA: Math.round(((personA.axisScores.NS.roundA ?? 50) + (personB.axisScores.NS.roundA ?? 50)) / 2),
+          roundB: 100 - Math.round(((personA.axisScores.NS.roundA ?? 50) + (personB.axisScores.NS.roundA ?? 50)) / 2),
+          pctA: Math.round(((personA.axisScores.NS.pctA ?? 50) + (personB.axisScores.NS.pctA ?? 50)) / 2),
+          pctB: 100 - Math.round(((personA.axisScores.NS.pctA ?? 50) + (personB.axisScores.NS.pctA ?? 50)) / 2)
+        },
+        TF: {
+          roundA: Math.round(((personA.axisScores.TF.roundA ?? 50) + (personB.axisScores.TF.roundA ?? 50)) / 2),
+          roundB: 100 - Math.round(((personA.axisScores.TF.roundA ?? 50) + (personB.axisScores.TF.roundA ?? 50)) / 2),
+          pctA: Math.round(((personA.axisScores.TF.pctA ?? 50) + (personB.axisScores.TF.pctA ?? 50)) / 2),
+          pctB: 100 - Math.round(((personA.axisScores.TF.pctA ?? 50) + (personB.axisScores.TF.pctA ?? 50)) / 2)
+        },
+        JP: {
+          roundA: Math.round(((personA.axisScores.JP.roundA ?? 50) + (personB.axisScores.JP.roundA ?? 50)) / 2),
+          roundB: 100 - Math.round(((personA.axisScores.JP.roundA ?? 50) + (personB.axisScores.JP.roundA ?? 50)) / 2),
+          pctA: Math.round(((personA.axisScores.JP.pctA ?? 50) + (personB.axisScores.JP.pctA ?? 50)) / 2),
+          pctB: 100 - Math.round(((personA.axisScores.JP.pctA ?? 50) + (personB.axisScores.JP.pctA ?? 50)) / 2)
+        }
+      };
+
+      targetPercentages = avgPercentages;
+      targetAxisScores = avgAxisScores;
+    }
+
     // Calculate integrated MBTI archetype rankings combining 8 cognitive functions and 4 spectrum axes
-    const mbtiRankings = calculateBestMbtiType(percentages, axisScores);
+    const mbtiRankings = calculateBestMbtiType(targetPercentages, targetAxisScores);
     const topRanked = mbtiRankings.find(m => m.type === derivedType) || mbtiRankings[0];
 
     const topMbti = {
@@ -1279,10 +1323,12 @@ class App {
       matchPercentage: topRanked ? topRanked.matchPercentage : axisClarity
     };
 
-    // Other personality archetypes derived from integrated distribution
-    const otherMbtis = mbtiRankings.filter(m => m.type !== derivedType).slice(0, 3);
+    // Other personality archetypes derived from integrated distribution (for Resemble)
+    const otherMbtis = isComparing
+      ? mbtiRankings.slice(0, 3)
+      : mbtiRankings.filter(m => m.type !== derivedType).slice(0, 3);
     if (otherMbtis.length === 0) {
-      otherMbtis.push(...mbtiRankings.slice(1, 4));
+      otherMbtis.push(...mbtiRankings.slice(0, 3));
     }
 
     // Calculate ring SVG dash offset (radius = 62, circumference = 389.6)
@@ -1316,21 +1362,18 @@ class App {
     const lowColors = getFuncTileColors(extremeLowFunc);
 
     // Figures Ranking (10 Similar & 10 Opposite) from 196 personalities dataset
-    const { similar: similarFigures, opposite: oppositeFigures, all: allFigures } = getRankedFigures(percentages, axisScores);
+    // When comparing, ranks figures closest to the mutual average profile of Person A and Person B!
+    const { similar: similarFigures, opposite: oppositeFigures, all: allFigures } = getRankedFigures(targetPercentages, targetAxisScores);
     this.allFigures = allFigures;
     const displayedFigures = this.figuresTab === "similar" ? similarFigures : oppositeFigures;
 
     let currentComparisonFigure;
-    if (isComparing && this.customComparisonPerson) {
-      currentComparisonFigure = this.customComparisonPerson;
-    } else if (this.selectedFigureId === "custom_person" && this.customComparisonPerson) {
-      currentComparisonFigure = this.customComparisonPerson;
-    } else {
+    if (this.selectedFigureId && this.selectedFigureId !== "custom_person") {
       currentComparisonFigure = allFigures.find(f => f.id === this.selectedFigureId);
-      if (!currentComparisonFigure) {
-        currentComparisonFigure = similarFigures[0] || allFigures[0];
-        this.selectedFigureId = currentComparisonFigure.id;
-      }
+    }
+    if (!currentComparisonFigure) {
+      currentComparisonFigure = similarFigures[0] || allFigures[0];
+      this.selectedFigureId = currentComparisonFigure.id;
     }
 
     // 4 Spectrum Coordinates (N sus, T dreapta, S jos, F stanga)
@@ -1470,8 +1513,8 @@ class App {
           </div>
           <div class="minimal-axis-labels">
             ${isComparing ? `
-              <span class="axis-lbl-left">${ax.leftName} ⚪ ${ax.leftPctA}% <span style="color: #60a5fa; font-weight: 700;">🔵 ${ax.leftPctB}%</span></span>
-              <span class="axis-lbl-right">⚪ ${ax.rightPctA}% <span style="color: #60a5fa; font-weight: 700;">🔵 ${ax.rightPctB}%</span> ${ax.rightName}</span>
+              <span class="axis-lbl-left">${ax.leftName} <span style="color: #ffffff; font-weight: 700;">${ax.leftPctA}%</span> / <span style="color: #60a5fa; font-weight: 700;">${ax.leftPctB}%</span></span>
+              <span class="axis-lbl-right"><span style="color: #ffffff; font-weight: 700;">${ax.rightPctA}%</span> / <span style="color: #60a5fa; font-weight: 700;">${ax.rightPctB}%</span> ${ax.rightName}</span>
             ` : `
               <span class="axis-lbl-left">${ax.leftName} ${ax.leftPctA}%</span>
               <span class="axis-lbl-right">${ax.rightPctA}% ${ax.rightName}</span>
@@ -1517,13 +1560,11 @@ class App {
     }).join("");
 
     // Comparative Analysis Sliders (Image 2 style with Colored Boxes)
-    const isCustomPerson = this.selectedFigureId === "custom_person" && this.customComparisonPerson;
+    const isCustomPerson = false;
     const currentFigTemp = getTypeTemperament(currentComparisonFigure.mbti);
-    const figSim = calculateFigureSimilarity(percentages, axisScores, currentComparisonFigure);
-    const compCleanRole = isCustomPerson
-      ? (lang === "ro" ? "Comparație personalizată" : "Custom comparison")
-      : getFigureRole(currentComparisonFigure, lang);
-    const displayFigName = isCustomPerson ? (userB_Name || this.customComparisonPerson.name) : currentComparisonFigure.name;
+    const figSim = calculateFigureSimilarity(targetPercentages, targetAxisScores, currentComparisonFigure);
+    const compCleanRole = getFigureRole(currentComparisonFigure, lang);
+    const displayFigName = currentComparisonFigure.name;
 
     const compAxesData = [
       {
@@ -1534,9 +1575,11 @@ class App {
         color: energyColor,
         leftLabel: lang === "ro" ? "Extraversie" : "Extraversion",
         rightLabel: lang === "ro" ? "Introversie" : "Introversion",
-        uPos: Math.max(5, Math.min(95, axisScores.EI.roundB)),
+        uPos: Math.max(5, Math.min(95, personA.axisScores.EI.roundB)),
+        uPct: personA.axisScores.EI.roundB,
+        bPos: isComparing ? Math.max(5, Math.min(95, personB.axisScores.EI.roundB)) : null,
+        bPct: isComparing ? personB.axisScores.EI.roundB : null,
         fPos: Math.max(5, Math.min(95, currentComparisonFigure.axes ? currentComparisonFigure.axes.I : (currentComparisonFigure.mbti.includes("I") ? 75 : 25))),
-        uPct: axisScores.EI.roundB,
         fPct: currentComparisonFigure.axes ? currentComparisonFigure.axes.I : (currentComparisonFigure.mbti.includes("I") ? 75 : 25)
       },
       {
@@ -1547,9 +1590,11 @@ class App {
         color: mindColor,
         leftLabel: lang === "ro" ? "Intuiție" : "Intuition",
         rightLabel: lang === "ro" ? "Senzorial" : "Sensing",
-        uPos: Math.max(5, Math.min(95, axisScores.NS.roundB)),
+        uPos: Math.max(5, Math.min(95, personA.axisScores.NS.roundB)),
+        uPct: personA.axisScores.NS.roundB,
+        bPos: isComparing ? Math.max(5, Math.min(95, personB.axisScores.NS.roundB)) : null,
+        bPct: isComparing ? personB.axisScores.NS.roundB : null,
         fPos: Math.max(5, Math.min(95, currentComparisonFigure.axes ? currentComparisonFigure.axes.S : (currentComparisonFigure.mbti.includes("S") ? 75 : 25))),
-        uPct: axisScores.NS.roundB,
         fPct: currentComparisonFigure.axes ? currentComparisonFigure.axes.S : (currentComparisonFigure.mbti.includes("S") ? 75 : 25)
       },
       {
@@ -1560,9 +1605,11 @@ class App {
         color: natureColor,
         leftLabel: lang === "ro" ? "Gândire" : "Thinking",
         rightLabel: lang === "ro" ? "Sentiment" : "Feeling",
-        uPos: Math.max(5, Math.min(95, axisScores.TF.roundB)),
+        uPos: Math.max(5, Math.min(95, personA.axisScores.TF.roundB)),
+        uPct: personA.axisScores.TF.roundB,
+        bPos: isComparing ? Math.max(5, Math.min(95, personB.axisScores.TF.roundB)) : null,
+        bPct: isComparing ? personB.axisScores.TF.roundB : null,
         fPos: Math.max(5, Math.min(95, currentComparisonFigure.axes ? currentComparisonFigure.axes.F : (currentComparisonFigure.mbti.includes("F") ? 75 : 25))),
-        uPct: axisScores.TF.roundB,
         fPct: currentComparisonFigure.axes ? currentComparisonFigure.axes.F : (currentComparisonFigure.mbti.includes("F") ? 75 : 25)
       },
       {
@@ -1573,9 +1620,11 @@ class App {
         color: tacticsColor,
         leftLabel: lang === "ro" ? "Judecată" : "Judging",
         rightLabel: lang === "ro" ? "Percepție" : "Perceiving",
-        uPos: Math.max(5, Math.min(95, axisScores.JP.roundB)),
+        uPos: Math.max(5, Math.min(95, personA.axisScores.JP.roundB)),
+        uPct: personA.axisScores.JP.roundB,
+        bPos: isComparing ? Math.max(5, Math.min(95, personB.axisScores.JP.roundB)) : null,
+        bPct: isComparing ? personB.axisScores.JP.roundB : null,
         fPos: Math.max(5, Math.min(95, currentComparisonFigure.axes ? currentComparisonFigure.axes.P : (currentComparisonFigure.mbti.includes("P") ? 75 : 25))),
-        uPct: axisScores.JP.roundB,
         fPct: currentComparisonFigure.axes ? currentComparisonFigure.axes.P : (currentComparisonFigure.mbti.includes("P") ? 75 : 25)
       }
     ];
@@ -1588,10 +1637,14 @@ class App {
           </div>
           <div class="comp-v2-track">
             <div class="comp-v2-center-line" aria-hidden="true"></div>
-            <!-- White Dot (User: "punctele necolorate albe esti tu") -->
+            <!-- White Dot (User A: ⚪) -->
             <div class="comp-v2-dot-user" style="left: ${ax.uPos}%;" title="${userA_Name}: ${ax.uPct}%"></div>
-            <!-- Colored Dot (Figure or Person B) -->
-            <div class="comp-v2-dot-fig" style="left: ${ax.fPos}%; border-color: rgba(255,255,255,0.6);" title="${displayFigName}: ${ax.fPct}%">
+            <!-- Blue Dot (User B: 🔵) if comparing -->
+            ${isComparing ? `
+              <div class="comp-v2-dot-user dot-other" style="left: ${ax.bPos}%;" title="${userB_Name}: ${ax.bPct}%"></div>
+            ` : ''}
+            <!-- Figure Avatar Dot -->
+            <div class="comp-v2-dot-fig" style="left: ${ax.fPos}%; border: none;" title="${displayFigName}: ${ax.fPct}%">
               ${currentComparisonFigure.photo ? `
                 <img src="${currentComparisonFigure.photo}" alt="${displayFigName}" />
               ` : `
@@ -1625,7 +1678,8 @@ class App {
       const customTitle = FUNCTION_TITLES[f] ? FUNCTION_TITLES[f].en : f;
       const fFullName = fnInfo.name || f;
       const fColor = getFuncTileColors(f).bg;
-      const uPct = percentages[f] ?? 50;
+      const uPct = personA.percentages[f] ?? 50;
+      const bPct = isComparing ? (personB.percentages[f] ?? 50) : null;
       const fPct = currentComparisonFigure.scores ? (currentComparisonFigure.scores[f] ?? 50) : 50;
       return {
         id: f,
@@ -1633,8 +1687,10 @@ class App {
         fFullName,
         color: fColor,
         uPos: Math.max(5, Math.min(95, uPct)),
+        bPos: isComparing ? Math.max(5, Math.min(95, bPct)) : null,
         fPos: Math.max(5, Math.min(95, fPct)),
         uPct,
+        bPct,
         fPct
       };
     });
@@ -1646,11 +1702,14 @@ class App {
             <span>${fn.customTitle}</span>
           </div>
           <div class="comp-v2-track">
-            <div class="comp-v2-center-line" aria-hidden="true"></div>
-            <!-- White Dot (User) -->
+            <!-- White Dot (User A: ⚪) -->
             <div class="comp-v2-dot-user" style="left: ${fn.uPos}%;" title="${userA_Name}: ${fn.uPct}%"></div>
-            <!-- Colored Dot (Figure or Person B) -->
-            <div class="comp-v2-dot-fig" style="left: ${fn.fPos}%; border-color: rgba(255,255,255,0.6);" title="${displayFigName}: ${fn.fPct}%">
+            <!-- Blue Dot (User B: 🔵) if comparing -->
+            ${isComparing ? `
+              <div class="comp-v2-dot-user dot-other" style="left: ${fn.bPos}%;" title="${userB_Name}: ${fn.bPct}%"></div>
+            ` : ''}
+            <!-- Figure Avatar Dot -->
+            <div class="comp-v2-dot-fig" style="left: ${fn.fPos}%; border: none;" title="${displayFigName}: ${fn.fPct}%">
               ${currentComparisonFigure.photo ? `
                 <img src="${currentComparisonFigure.photo}" alt="${displayFigName}" />
               ` : `
@@ -1666,7 +1725,7 @@ class App {
       `;
     }).join("");
 
-    // 8 Functions for Results View (Image 2 style comp-v2-axes-grid)
+    // 8 Functions for Results View (Image 2 style comp-v2-axes-grid without center line)
     const userFuncsAxesHtml = FUNCTIONS_ORDER.map(f => {
       const fnInfo = COGNITIVE_FUNCTIONS[f] || {};
       const customTitle = FUNCTION_TITLES[f] ? FUNCTION_TITLES[f].en : f;
@@ -1683,7 +1742,6 @@ class App {
             <span>${customTitle}</span>
           </div>
           <div class="comp-v2-track">
-            <div class="comp-v2-center-line" aria-hidden="true"></div>
             <div class="comp-v2-dot-user" style="left: ${posA}%;" title="${userA_Name}: ${pctA}%"></div>
             ${isComparing ? `
               <div class="comp-v2-dot-user dot-other" style="left: ${posB}%;" title="${userB_Name}: ${pctB}%"></div>
@@ -1692,7 +1750,7 @@ class App {
           <div class="comp-v2-labels">
             <span class="comp-v2-lbl-left">${fFullName}</span>
             ${isComparing ? `
-              <span class="comp-v2-lbl-right">⚪ ${pctA}% · <span style="color: #60a5fa; font-weight: 700;">🔵 ${pctB}%</span></span>
+              <span class="comp-v2-lbl-right"><span style="color: #ffffff; font-weight: 700;">${pctA}%</span> / <span style="color: #60a5fa; font-weight: 700;">${pctB}%</span></span>
             ` : `
               <span class="comp-v2-lbl-right">${pctA}%</span>
             `}
@@ -1705,6 +1763,115 @@ class App {
     const figT = currentComparisonFigure.axes ? currentComparisonFigure.axes.T : (currentComparisonFigure.mbti.includes("T") ? 75 : 25);
     const figCompassX = Math.max(10, Math.min(90, figT));
     const figCompassY = Math.max(10, Math.min(90, 100 - figN));
+
+    // Differences Section Cards (Highest / Balanced / Lowest)
+    let diffCardsHtml = "";
+    if (isComparing) {
+      const funcDiffs = FUNCTIONS_LIST.map(f => {
+        const pA = personA.percentages[f] ?? 50;
+        const pB = personB.percentages[f] ?? 50;
+        const diff = Math.abs(pA - pB);
+        const sim = 100 - diff;
+        const avg = (pA + pB) / 2;
+        return { f, pA, pB, diff, sim, avg };
+      });
+
+      const sortedBySim = [...funcDiffs].sort((a, b) => b.sim - a.sim || b.avg - a.avg);
+      const mostSimilar = sortedBySim[0];
+
+      const sortedByDiff = [...funcDiffs].sort((a, b) => b.diff - a.diff);
+      const greatestDiff = sortedByDiff[0];
+
+      const balancedCandidates = funcDiffs.filter(x => x.f !== mostSimilar.f && x.f !== greatestDiff.f);
+      const mostBalanced = (balancedCandidates.length > 0 ? balancedCandidates : funcDiffs)
+        .sort((a, b) => Math.abs(a.avg - 50) - Math.abs(b.avg - 50))[0];
+
+      const simColors = getFuncTileColors(mostSimilar.f);
+      const balColors = getFuncTileColors(mostBalanced.f);
+      const diffColors = getFuncTileColors(greatestDiff.f);
+
+      diffCardsHtml = `
+        <!-- Highest Function Card (Most Similar) -->
+        <div class="diff-card" style="background: ${simColors.bg}; color: #ffffff;">
+          <div class="diff-card-head">
+            <span class="diff-badge">${lang === "ro" ? "CEA MAI SIMILARĂ" : "MOST SIMILAR"}</span>
+            <span class="diff-pct"><span style="color: #ffffff;">${mostSimilar.pA}%</span> / <span style="color: #60a5fa;">${mostSimilar.pB}%</span></span>
+          </div>
+          <h3 class="diff-name">${mostSimilar.f}</h3>
+          <p class="diff-desc">
+            ${lang === "ro" 
+              ? `Funcția cognitivă cu cea mai mare aliniere și armonie între ${userA_Name} și ${userB_Name} (${mostSimilar.sim}% similitudine).` 
+              : `The cognitive function with greatest mutual alignment between ${userA_Name} and ${userB_Name} (${mostSimilar.sim}% similarity).`}
+          </p>
+        </div>
+
+        <!-- Balanced Function Card -->
+        <div class="diff-card" style="background: ${balColors.bg}; color: #ffffff;">
+          <div class="diff-card-head">
+            <span class="diff-badge">${lang === "ro" ? "ECHILIBRATĂ" : "BALANCED"}</span>
+            <span class="diff-pct"><span style="color: #ffffff;">${mostBalanced.pA}%</span> / <span style="color: #60a5fa;">${mostBalanced.pB}%</span></span>
+          </div>
+          <h3 class="diff-name">${mostBalanced.f}</h3>
+          <p class="diff-desc">
+            ${lang === "ro" 
+              ? `Punctul de echilibru comun, funcția având o pondere moderată și stabilă în dinamica cognitivă comună.` 
+              : `Common cognitive equilibrium, maintaining a stable and balanced baseline for both.`}
+          </p>
+        </div>
+
+        <!-- Lowest Function Card (Greatest Contrast) -->
+        <div class="diff-card" style="background: ${diffColors.bg}; color: #ffffff;">
+          <div class="diff-card-head">
+            <span class="diff-badge">${lang === "ro" ? "CEA MAI DIFERITĂ" : "GREATEST CONTRAST"}</span>
+            <span class="diff-pct"><span style="color: #ffffff;">${greatestDiff.pA}%</span> / <span style="color: #60a5fa;">${greatestDiff.pB}%</span></span>
+          </div>
+          <h3 class="diff-name">${greatestDiff.f}</h3>
+          <p class="diff-desc">
+            ${lang === "ro" 
+              ? `Cea mai mare discrepanță cognitivă (${greatestDiff.diff}% diferență), reprezentând contrastul principal de stil și perspectivă.` 
+              : `The largest cognitive gap (${greatestDiff.diff}% divergence), reflecting the primary contrast in perspective.`}
+          </p>
+        </div>
+      `;
+    } else {
+      diffCardsHtml = `
+        <!-- Highest Function Card -->
+        <div class="diff-card" style="background: ${highColors.bg}; color: #ffffff;">
+          <div class="diff-card-head">
+            <span class="diff-badge">${lang === "ro" ? "DOMINANTĂ" : "HIGHEST"}</span>
+            <span class="diff-pct">${highPct}%</span>
+          </div>
+          <h3 class="diff-name">${extremeHighFunc}</h3>
+          <p class="diff-desc">
+            ${t('highestCap', {}, lang)}
+          </p>
+        </div>
+
+        <!-- Balanced Function Card -->
+        <div class="diff-card" style="background: ${balColors.bg}; color: #ffffff;">
+          <div class="diff-card-head">
+            <span class="diff-badge">${lang === "ro" ? "ECHILIBRATĂ" : "BALANCED"}</span>
+            <span class="diff-pct">${percentages[balancedFunc]}%</span>
+          </div>
+          <h3 class="diff-name">${balancedFunc}</h3>
+          <p class="diff-desc">
+            ${t('balancedCap', {}, lang)}
+          </p>
+        </div>
+
+        <!-- Lowest Function Card -->
+        <div class="diff-card" style="background: ${lowColors.bg}; color: #ffffff;">
+          <div class="diff-card-head">
+            <span class="diff-badge">${lang === "ro" ? "INFERIOARĂ" : "LOWEST"}</span>
+            <span class="diff-pct">${lowPct}%</span>
+          </div>
+          <h3 class="diff-name">${extremeLowFunc}</h3>
+          <p class="diff-desc">
+            ${t('lowestCap', {}, lang)}
+          </p>
+        </div>
+      `;
+    }
 
     this.root.innerHTML = `
       <div class="app-shell" data-screen="results">
@@ -1723,16 +1890,16 @@ class App {
                     <span class="e-tag e-tag-hero" style="background: #3b82f6; color: #ffffff !important; border: none; border-radius: 999px;">
                       ${lang === "ro" ? "Comparație" : "Comparison"} · ${userA_Name} &times; ${userB_Name}
                     </span>
-                    <h1 class="e-hero-title">${userA_Name} <span style="color: #ffffff;">(${personA.derivedType})</span> <span style="opacity: 0.5; font-weight: 400;">&times;</span> ${userB_Name} <span style="color: #60a5fa;">(${personB.derivedType})</span></h1>
+                    <h1 class="e-hero-title">${userA_Name} <span style="color: ${getTypeTemperament(personA.derivedType).color}; font-weight: 800;">(${personA.derivedType})</span> <span style="opacity: 0.5; font-weight: 400;">&times;</span> ${userB_Name} <span style="color: ${getTypeTemperament(personB.derivedType).color}; font-weight: 800;">(${personB.derivedType})</span></h1>
                     <div class="resemble-stack hero-resemble-stack">
-                      <span style="font-size: 0.75rem; font-weight: 700; color: #ffffff; margin-right: 0.25rem;">⚪ ${userA_Name}:</span>
+                      <span style="font-size: 0.75rem; font-weight: 700; color: #ffffff; margin-right: 0.25rem;">${userA_Name}:</span>
                       ${(topMbti.stack || []).map(st => {
                         const fInfo = COGNITIVE_FUNCTIONS[st];
                         const fTitle = lang === "ro" ? (fInfo?.nameRo || fInfo?.name || st) : (fInfo?.name || st);
                         const fColor = getFuncTileColors(st).bg;
                         return `<span class="resemble-stack-pill" style="background: ${fColor}; color: #ffffff;" title="${fTitle}">${st}</span>`;
                       }).join("")}
-                      <span style="font-size: 0.75rem; font-weight: 700; color: #60a5fa; margin-left: 0.5rem; margin-right: 0.25rem;">🔵 ${userB_Name}:</span>
+                      <span style="font-size: 0.75rem; font-weight: 700; color: #60a5fa; margin-left: 0.5rem; margin-right: 0.25rem;">${userB_Name}:</span>
                       ${((MBTI_TYPES[personB.derivedType] || {}).stack || []).map(st => {
                         const fInfo = COGNITIVE_FUNCTIONS[st];
                         const fTitle = lang === "ro" ? (fInfo?.nameRo || fInfo?.name || st) : (fInfo?.name || st);
@@ -1825,7 +1992,10 @@ class App {
                       <span class="hierarchy-sq-num" style="color: #ffffff;">${numStr}</span>
                       <strong class="hierarchy-sq-code" style="color: #ffffff;">${f}</strong>
                       ${isComparing ? `
-                        <span class="hierarchy-sq-score" style="color: #ffffff; font-size: 0.72rem;">⚪ ${pctA}% · <span style="color: #93c5fd; font-weight: 700;">🔵 ${pctB}%</span></span>
+                        <div class="hierarchy-sq-scores-compare" style="display: flex; flex-direction: column; gap: 2px; align-items: center; margin-top: 0.25rem;">
+                          <span class="hierarchy-sq-score" style="color: #ffffff; font-size: 0.74rem; font-weight: 700; line-height: 1.2;">⚪ ${pctA}%</span>
+                          <span class="hierarchy-sq-score" style="color: #93c5fd; font-size: 0.74rem; font-weight: 700; line-height: 1.2;">🔵 ${pctB}%</span>
+                        </div>
                       ` : `
                         <span class="hierarchy-sq-score" style="color: #ffffff;">${pctA}% score</span>
                       `}
@@ -1890,7 +2060,7 @@ class App {
                   <div class="spectrum-cardinal-lbl spectrum-lbl-bottom">S</div>
                   <div class="spectrum-bottom-bar" style="margin-top: 0.85rem;">
                     ${isComparing ? `
-                      <span class="spectrum-coord-lbl">⚪ ${userA_Name}: ${s1Coords} &nbsp;|&nbsp; <span style="color: #60a5fa;">🔵 ${userB_Name}: ${s1CoordsB}</span></span>
+                      <span class="spectrum-coord-lbl"><span style="color: #ffffff;">${userA_Name}: ${s1Coords}</span> &nbsp;|&nbsp; <span style="color: #60a5fa; font-weight: 700;">${userB_Name}: ${s1CoordsB}</span></span>
                     ` : `
                       <span class="spectrum-coord-lbl">${s1Coords}</span>
                     `}
@@ -1919,7 +2089,7 @@ class App {
                   <div class="spectrum-cardinal-lbl spectrum-lbl-bottom">I</div>
                   <div class="spectrum-bottom-bar" style="margin-top: 0.85rem;">
                     ${isComparing ? `
-                      <span class="spectrum-coord-lbl">⚪ ${userA_Name}: ${s2Coords} &nbsp;|&nbsp; <span style="color: #60a5fa;">🔵 ${userB_Name}: ${s2CoordsB}</span></span>
+                      <span class="spectrum-coord-lbl"><span style="color: #ffffff;">${userA_Name}: ${s2Coords}</span> &nbsp;|&nbsp; <span style="color: #60a5fa; font-weight: 700;">${userB_Name}: ${s2CoordsB}</span></span>
                     ` : `
                       <span class="spectrum-coord-lbl">${s2Coords}</span>
                     `}
@@ -1934,41 +2104,7 @@ class App {
                 <h2 class="e-sec-title">${lang === "ro" ? "Diferențe" : "Differences"}</h2>
               </div>
               <div class="diff-grid">
-                <!-- Highest Function Card -->
-                <div class="diff-card" style="background: ${highColors.bg}; color: #ffffff;">
-                  <div class="diff-card-head">
-                    <span class="diff-badge">${lang === "ro" ? "DOMINANTĂ" : "HIGHEST"}</span>
-                    <span class="diff-pct">${highPct}%</span>
-                  </div>
-                  <h3 class="diff-name">${extremeHighFunc}</h3>
-                  <p class="diff-desc">
-                    ${t('highestCap', {}, lang)}
-                  </p>
-                </div>
-
-                <!-- Balanced Function Card -->
-                <div class="diff-card" style="background: ${balColors.bg}; color: #ffffff;">
-                  <div class="diff-card-head">
-                    <span class="diff-badge">${lang === "ro" ? "ECHILIBRATĂ" : "BALANCED"}</span>
-                    <span class="diff-pct">${percentages[balancedFunc]}%</span>
-                  </div>
-                  <h3 class="diff-name">${balancedFunc}</h3>
-                  <p class="diff-desc">
-                    ${t('balancedCap', {}, lang)}
-                  </p>
-                </div>
-
-                <!-- Lowest Function Card -->
-                <div class="diff-card" style="background: ${lowColors.bg}; color: #ffffff;">
-                  <div class="diff-card-head">
-                    <span class="diff-badge">${lang === "ro" ? "INFERIOARĂ" : "LOWEST"}</span>
-                    <span class="diff-pct">${lowPct}%</span>
-                  </div>
-                  <h3 class="diff-name">${extremeLowFunc}</h3>
-                  <p class="diff-desc">
-                    ${t('lowestCap', {}, lang)}
-                  </p>
-                </div>
+                ${diffCardsHtml}
               </div>
             </section>
 
@@ -2052,7 +2188,7 @@ class App {
                     <img class="comp-v2-avatar" src="${currentComparisonFigure.photo}" alt="${displayFigName}" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
                     <div class="comp-v2-avatar comp-v2-avatar-fallback" style="display:none; background:${currentFigTemp.color};">${currentComparisonFigure.avatar || displayFigName.charAt(0)}</div>
                   ` : `
-                    <div class="comp-v2-avatar comp-v2-avatar-fallback" style="background:${currentFigTemp.color}26; border: 2px solid ${currentFigTemp.color};">${currentComparisonFigure.avatar || displayFigName.charAt(0)}</div>
+                    <div class="comp-v2-avatar comp-v2-avatar-fallback" style="background:${currentFigTemp.color}26; border: none;">${currentComparisonFigure.avatar || displayFigName.charAt(0)}</div>
                   `}
                   <div class="comp-v2-header-info">
                     <div class="comp-v2-top-row">
@@ -2367,12 +2503,15 @@ class App {
       });
     }
 
-    // Clicking a figure in Notable Figures opens its details modal
+    // Clicking a figure in Notable Figures selects it for Comparative Analysis
     document.querySelectorAll(".fig-list-item").forEach(item => {
       item.addEventListener("click", () => {
         const id = item.getAttribute("data-id");
         if (id) {
-          this.openFigureDetailModal(id, true);
+          this.selectedFigureId = id;
+          this.renderResults();
+          const compSec = document.getElementById("comparar");
+          if (compSec) compSec.scrollIntoView({ behavior: "smooth" });
         }
       });
     });
@@ -2429,9 +2568,9 @@ class App {
           const itemCleanRole = getFigureRole(fig, lang);
           const matchLabel = lang === "ro" ? `${fig.similarity}% compatibilitate` : `${fig.similarity}% match`;
           return `
-            <div class="autocomplete-item" data-id="${fig.id}" style="display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 1rem; border-bottom: 1px solid var(--line); cursor: pointer; transition: background 0.15s ease;">
+            <div class="autocomplete-item" data-id="${fig.id}" style="display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 1rem; border: none; cursor: pointer; transition: background 0.15s ease;">
               <div style="display: flex; align-items: center; gap: 0.75rem; min-width: 0;">
-                <div style="width: 36px; height: 36px; border-radius: 50%; overflow: hidden; background: ${temp.colorBg}; border: 1.5px solid ${temp.colorBorder}; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                <div style="width: 36px; height: 36px; border-radius: 50%; overflow: hidden; background: ${temp.colorBg}; border: none; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
                   ${fig.photo ? `
                     <img src="${fig.photo}" alt="${fig.name}" referrerpolicy="no-referrer" style="width: 100%; height: 100%; object-fit: cover; display: block;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
                     <span style="display:none; font-size: 0.95rem; color: ${temp.color}; font-weight: 700;">${fig.avatar || fig.name.charAt(0)}</span>
